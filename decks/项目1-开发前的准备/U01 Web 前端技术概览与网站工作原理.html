@@ -1,0 +1,1328 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Web 前端技术概览与网站工作原理 · 网页制作课件</title>
+<style>
+:root{
+  --bg:#EEF3FB; --bg2:#F7FAFF; --surface:#fff; --ink:#0E1B2E; --muted:#5A6C85;
+  --brand:#2F6BFF; --brand-dk:#1D46B8; --brand2:#0FB5C9; --violet:#7C5CFF; --accent:#FF8A3D;
+  --ok:#12A150; --line:#E1E8F4; --code-bg:#0D1A2B; --code-ink:#DCE7F8;
+  --font:'PingFang SC','Microsoft YaHei','Hiragino Sans GB','Source Han Sans SC',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --mono:'JetBrains Mono','SF Mono',Menlo,Consolas,'Courier New',monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+.slide{user-select:text;-webkit-user-select:text}
+.hud,.legend,.drawer,.kicker,.topbar{user-select:none;-webkit-user-select:none}
+::selection{background:rgba(47,107,255,.22)}
+html,body{height:100%}
+body{background:radial-gradient(1200px 800px at 12% 0%,#e6efff 0%,transparent 55%),
+             radial-gradient(1000px 700px at 100% 100%,#e9fbfd 0%,transparent 50%),var(--bg);
+     font-family:var(--font);color:var(--ink);overflow:hidden;-webkit-font-smoothing:antialiased}
+.wrap{height:100%;display:grid;place-items:center;padding:2.2vh 2.2vh}
+.stage{position:relative;width:100%;height:100%;max-width:calc(100vh * 16 / 9);max-height:calc(100vw * 9 / 16);
+       aspect-ratio:16/9;background:var(--bg2);border-radius:20px;overflow:hidden;
+       box-shadow:0 34px 80px -30px rgba(18,42,92,.42),0 0 0 1px rgba(255,255,255,.7) inset;
+       container-type:size}
+/* 背景装饰 */
+.bgfx{position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:0}
+.blob{position:absolute;border-radius:50%;filter:blur(46px);opacity:.5}
+.b1{width:38cqw;height:38cqw;left:-10cqw;top:-14cqw;background:linear-gradient(135deg,#bcd4ff,#8fb6ff);animation:float1 18s ease-in-out infinite}
+.b2{width:30cqw;height:30cqw;right:-8cqw;top:6cqw;background:linear-gradient(135deg,#b8f0f6,#7fe3ef);animation:float2 22s ease-in-out infinite}
+.b3{width:26cqw;height:26cqw;left:22cqw;bottom:-14cqw;background:linear-gradient(135deg,#d9ccff,#b9a6ff);animation:float3 26s ease-in-out infinite}
+@keyframes float1{50%{transform:translate(4cqw,3cqw) scale(1.06)}}
+@keyframes float2{50%{transform:translate(-4cqw,4cqw) scale(1.08)}}
+@keyframes float3{50%{transform:translate(3cqw,-4cqw) scale(1.05)}}
+.grid-lines{position:absolute;inset:0;background-image:linear-gradient(rgba(47,107,255,.05) 1px,transparent 1px),
+   linear-gradient(90deg,rgba(47,107,255,.05) 1px,transparent 1px);background-size:4cqw 4cqw;opacity:.7}
+
+/* 幻灯片 */
+.slide{position:absolute;inset:0;z-index:2;padding:4.4cqw 5cqw 4cqw;display:flex;flex-direction:column;gap:1.9cqw;
+  opacity:0;visibility:hidden;transform:translateY(1.4cqw) scale(.99);
+  transition:opacity .52s ease,transform .52s cubic-bezier(.2,.7,.2,1),visibility .52s}
+.slide.is-active{opacity:1;visibility:visible;transform:none}
+.slide.prev{transform:translateY(-1.4cqw) scale(.99)}
+.s-head{display:flex;justify-content:space-between;align-items:flex-start;gap:2cqw;flex:0 0 auto}
+.kicker{display:inline-block;font-size:1.16cqw;font-weight:700;letter-spacing:.16em;color:var(--brand);
+  background:linear-gradient(90deg,rgba(47,107,255,.12),rgba(15,181,201,.12));padding:.42cqw 1cqw;border-radius:999px;margin-bottom:.75cqw}
+.s-title{font-size:2.86cqw;font-weight:800;letter-spacing:.01em;line-height:1.2}
+.s-sub{margin-top:.6cqw;font-size:1.32cqw;color:var(--muted);line-height:1.55}
+.s-body{flex:1;min-height:0;display:flex;flex-direction:column;justify-content:center;gap:1.5cqw}
+.s-body.two{flex-direction:row;align-items:stretch;gap:2.2cqw}
+.s-body.two>*{flex:1;min-width:0}
+.s-body.col{justify-content:center}
+.col-l,.col-r{min-width:0;display:flex;flex-direction:column;justify-content:center;gap:1.2cqw}
+
+/* 入场动画 */
+.an{opacity:0}
+.is-active .an{animation:rise .66s cubic-bezier(.2,.75,.2,1) both;animation-delay:calc(var(--i,0)*95ms + 120ms)}
+@keyframes rise{from{opacity:0;transform:translateY(1.5cqw)}to{opacity:1;transform:none}}
+
+/* 封面 */
+.s-cover{flex-direction:row;align-items:center;gap:3cqw;padding:6cqw 6cqw}
+.cover-left{flex:1.15;min-width:0;z-index:2}
+.brandrow{display:flex;align-items:baseline;gap:.9cqw;margin-bottom:2.1cqw}
+.brandmark{font-size:1.7cqw;font-weight:800;color:var(--brand);letter-spacing:.08em}
+.brandsub{font-size:1.1cqw;font-weight:700;color:var(--brand2);letter-spacing:.2em}
+.cover-title{font-size:4.5cqw;font-weight:900;line-height:1.14;letter-spacing:-.01em;
+  background:linear-gradient(120deg,#12306f,#2f6bff 45%,#0fb5c9);-webkit-background-clip:text;background-clip:text;color:transparent}
+.cover-sub{margin-top:1.2cqw;font-size:1.55cqw;color:var(--muted);line-height:1.7;max-width:34cqw}
+.pills{display:flex;flex-wrap:wrap;gap:.7cqw;margin-top:1.9cqw}
+.pill{font-size:1.03cqw;font-weight:700;color:var(--brand-dk);background:rgba(47,107,255,.1);
+  border:1px solid rgba(47,107,255,.2);padding:.4cqw 1cqw;border-radius:999px}
+.pill{opacity:0}
+.is-active .pill{animation:rise .6s both;animation-delay:calc(var(--i)*95ms + 120ms)}
+.cover-meta{margin-top:2.3cqw;display:flex;align-items:center;gap:.9cqw;flex-wrap:wrap;font-size:1.02cqw;color:var(--muted)}
+.cover-meta b{color:var(--brand);font-size:1.2cqw}
+.cover-meta .dot{width:.34cqw;height:.34cqw;border-radius:50%;background:#c3cfe2}
+.cover-art{flex:.85;position:relative;min-width:0;display:grid;place-items:center}
+.orb{position:absolute;border-radius:50%;filter:blur(10px);opacity:.75}
+.o1{width:15cqw;height:15cqw;right:-1cqw;top:2cqw;background:radial-gradient(circle at 30% 30%,#9dc2ff,#4f83ff)}
+.o2{width:8cqw;height:8cqw;right:12cqw;bottom:4cqw;background:radial-gradient(circle at 30% 30%,#a9f0f7,#1fc2d6)}
+.o3{width:5cqw;height:5cqw;right:3cqw;bottom:12cqw;background:radial-gradient(circle at 30% 30%,#d5c7ff,#8a63ff)}
+.orb{animation:orb 9s ease-in-out infinite}
+.o2{animation-duration:11s}.o3{animation-duration:13s}
+@keyframes orb{50%{transform:translateY(-1.6cqw) scale(1.06)}}
+.codewin{position:relative;z-index:2;width:100%;max-width:32cqw;background:var(--code-bg);border-radius:1.2cqw;
+  box-shadow:0 30px 60px -22px rgba(13,26,43,.7);overflow:hidden;transform:rotate(-1.5deg);
+  animation:rise .8s cubic-bezier(.2,.75,.2,1) .35s both}
+.cw-bar{display:flex;gap:.5cqw;padding:.85cqw 1.1cqw;background:rgba(255,255,255,.06)}
+.cw-bar i{width:.72cqw;height:.72cqw;border-radius:50%;background:#ff5f57}
+.cw-bar i:nth-child(2){background:#febc2e}.cw-bar i:nth-child(3){background:#28c840}
+.cw-body{padding:1.3cqw 1.5cqw;font-family:var(--mono);font-size:1.06cqw;line-height:1.85;color:var(--code-ink);white-space:pre;overflow:auto}
+
+/* 章节过渡 */
+.s-section{align-items:center;justify-content:center;text-align:center}
+.sec-inner{display:flex;flex-direction:column;align-items:center}
+.sec-num{font-size:7.6cqw;font-weight:900;line-height:1;
+  background:linear-gradient(120deg,#2f6bff,#0fb5c9);-webkit-background-clip:text;background-clip:text;color:transparent;letter-spacing:-.03em}
+.sec-title{margin-top:1.2cqw;font-size:3.1cqw;font-weight:800}
+.sec-line{width:0;height:.4cqw;border-radius:99px;background:linear-gradient(90deg,var(--brand),var(--brand2));margin:1.4cqw 0}
+.is-active .sec-line{animation:draw .8s ease .5s both}
+@keyframes draw{from{width:0}to{width:11cqw}}
+.sec-sub{font-size:1.4cqw;color:var(--muted);max-width:44cqw;line-height:1.7}
+
+/* 要点列表 */
+.blist{list-style:none;display:flex;flex-direction:column;gap:1.05cqw}
+.blist li{display:flex;gap:.95cqw;align-items:flex-start;font-size:1.42cqw;line-height:1.6;
+  background:var(--surface);border:1px solid var(--line);border-radius:.85cqw;padding:1.05cqw 1.3cqw;
+  box-shadow:0 8px 22px -16px rgba(20,40,90,.5);transition:transform .25s,box-shadow .25s}
+.blist li:hover{transform:translateX(.4cqw);box-shadow:0 12px 26px -16px rgba(47,107,255,.55)}
+.blist.small li{font-size:1.24cqw;padding:.85cqw 1.1cqw}
+.blist.dense{gap:.68cqw}
+.blist.dense li{font-size:1.18cqw;padding:.72cqw 1.1cqw;line-height:1.55}
+.outline.dense{gap:.62cqw}
+.outline.dense li{padding:.72cqw 1.15cqw}
+.outline.dense .ot{font-size:1.16cqw}
+.grid.dense{gap:.95cqw}
+.card.dense{padding:1.1cqw}
+.card.dense .card-t{font-size:1.26cqw;margin-bottom:.4cqw}
+.card.dense .card-d{font-size:1.03cqw;line-height:1.55}
+.bl-dot{flex:0 0 auto;width:.62cqw;height:.62cqw;border-radius:50%;margin-top:.62cqw;
+  background:linear-gradient(135deg,var(--brand),var(--brand2));box-shadow:0 0 0 .28cqw rgba(47,107,255,.12)}
+.blist b,.blist strong{color:var(--brand-dk)}
+.blist code{font-family:var(--mono);font-size:.92em;background:#eef3ff;color:#1d46b8;padding:.1em .42em;border-radius:.35em}
+.hw li{background:linear-gradient(180deg,#fbfcff,#f3f7ff)}
+
+/* 卡片 */
+.grid{display:grid;gap:1.3cqw}
+.grid.cols-2{grid-template-columns:repeat(2,1fr)}
+.grid.cols-3{grid-template-columns:repeat(3,1fr)}
+.grid.cols-4{grid-template-columns:repeat(2,1fr)}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:1.1cqw;padding:1.5cqw;position:relative;overflow:hidden;
+  box-shadow:0 14px 32px -22px rgba(20,40,90,.55);transition:transform .28s,box-shadow .28s,border-color .28s}
+.card:hover{transform:translateY(-.5cqw);box-shadow:0 22px 40px -22px rgba(47,107,255,.5);border-color:rgba(47,107,255,.35)}
+.card::before{content:"";position:absolute;left:0;top:0;height:100%;width:.3cqw;background:linear-gradient(180deg,var(--brand),var(--brand2))}
+.card-ico{font-size:1.75cqw;margin-bottom:.6cqw}
+.card-t{font-size:1.42cqw;font-weight:800;margin-bottom:.55cqw}
+.card-d{font-size:1.14cqw;color:var(--muted);line-height:1.62}
+
+/* 表格 */
+.tbl-wrap{background:var(--surface);border:1px solid var(--line);border-radius:1.1cqw;overflow:hidden;
+  box-shadow:0 16px 36px -26px rgba(20,40,90,.6)}
+.tbl{width:100%;border-collapse:collapse;font-size:1.16cqw}
+.tbl th{background:linear-gradient(180deg,#eef4ff,#e4edff);color:var(--brand-dk);font-weight:800;text-align:left;
+  padding:.95cqw 1.2cqw;border-bottom:1px solid #d8e3f7;font-size:1.12cqw;letter-spacing:.02em}
+.tbl td{padding:.85cqw 1.2cqw;border-bottom:1px solid var(--line);line-height:1.55}
+.tbl tbody tr:last-child td{border-bottom:0}
+.tbl tbody tr:hover{background:#f7faff}
+.tbl code{font-family:var(--mono);font-size:.92em;background:#eef3ff;color:#1d46b8;padding:.08em .4em;border-radius:.35em}
+
+/* 对比 */
+.cmp-wrap{display:grid;grid-template-columns:1fr 1fr;gap:1.8cqw}
+.cmp{border-radius:1.1cqw;padding:1.4cqw;border:1px solid var(--line);background:var(--surface)}
+.cmp-h{font-size:1.4cqw;font-weight:800;margin-bottom:.9cqw;display:flex;align-items:center;gap:.6cqw}
+.cmp-a .cmp-h{color:var(--brand-dk)}
+.cmp-b .cmp-h{color:#b8730f}
+.cmp ul{list-style:none;display:flex;flex-direction:column;gap:.7cqw}
+.cmp li{font-size:1.16cqw;line-height:1.6;color:var(--muted);padding-left:1.3cqw;position:relative}
+.cmp li::before{content:"";position:absolute;left:0;top:.62cqw;width:.5cqw;height:.5cqw;border-radius:2px;background:var(--brand)}
+.cmp-b li::before{background:var(--accent)}
+.cmp-a{background:linear-gradient(180deg,#f6f9ff,#fff)}
+
+/* 步骤 */
+.steps{display:flex;flex-direction:column;gap:1cqw}
+.step{display:flex;gap:1.2cqw;align-items:flex-start;background:var(--surface);border:1px solid var(--line);
+  border-radius:.9cqw;padding:1cqw 1.25cqw}
+.step-n{flex:0 0 auto;width:2.3cqw;height:2.3cqw;border-radius:50%;display:grid;place-items:center;font-weight:800;font-size:1.15cqw;color:#fff;
+  background:linear-gradient(135deg,var(--brand),var(--brand2))}
+.step-t{font-size:1.3cqw;font-weight:800}
+.step-d{font-size:1.12cqw;color:var(--muted);line-height:1.6;margin-top:.25cqw}
+
+/* 流程图 */
+.flow{display:flex;align-items:stretch;justify-content:center;gap:0;flex-wrap:nowrap}
+.fl{flex:1;min-width:0;background:var(--surface);border:1px solid var(--line);border-radius:1cqw;padding:1.3cqw 1cqw;text-align:center;
+  box-shadow:0 12px 28px -22px rgba(20,40,90,.55)}
+.fl-ico{font-size:1.9cqw;margin-bottom:.5cqw}
+.fl-t{font-size:1.24cqw;font-weight:800;margin-bottom:.35cqw;color:var(--brand-dk)}
+.fl-d{font-size:1.02cqw;color:var(--muted);line-height:1.55}
+.fl-arrow{flex:0 0 auto;width:2.2cqw;position:relative;display:grid;place-items:center}
+.fl-arrow::after{content:"";width:1.4cqw;height:.22cqw;background:linear-gradient(90deg,var(--brand),var(--brand2));border-radius:99px;position:relative}
+.fl-arrow::before{content:"";position:absolute;right:.35cqw;width:.6cqw;height:.6cqw;border-top:.2cqw solid var(--brand2);border-right:.2cqw solid var(--brand2);transform:rotate(45deg)}
+.flow-note{margin-top:1.3cqw;font-size:1.1cqw;color:var(--muted);text-align:center;background:rgba(47,107,255,.06);border-radius:.8cqw;padding:.8cqw 1.2cqw}
+
+/* 代码 */
+.codebox{background:var(--code-bg);border-radius:1.1cqw;overflow:hidden;box-shadow:0 26px 54px -26px rgba(13,26,43,.75)}
+.cb-bar{display:flex;align-items:center;gap:.8cqw;padding:.8cqw 1.2cqw;background:rgba(255,255,255,.06);border-bottom:1px solid rgba(255,255,255,.07)}
+.cb-lang{font-family:var(--mono);font-size:.92cqw;font-weight:700;color:#7fd7e4;letter-spacing:.12em}
+.cb-file{font-family:var(--mono);font-size:.92cqw;color:#7f93ad}
+.cb-code{padding:1.25cqw 1.5cqw;font-family:var(--mono);font-size:1.06cqw;line-height:1.78;color:var(--code-ink);white-space:pre;overflow:auto;max-height:100%}
+.cb-code .pn{color:#7f93ad}.cb-code .tg{color:#6fd6ff}.cb-code .at{color:#ffcf7a}.cb-code .st{color:#a5e88a}
+.cb-code .c{color:#6b8099;font-style:italic}.cb-code .sel{color:#ffb3c8}.cb-code .cls{color:#ffd479}
+.cb-code .id{color:#9fe8ff}.cb-code .pc{color:#c8a2ff}.cb-code .prop{color:#8fd3ff}.cb-code .num{color:#f7c774}
+.cb-code .fn{color:#d0b0ff}.cb-code .imp{color:#ff8a8a}.cb-code .at-rules{color:#ff9f6b}
+.caption{margin-top:1cqw;font-size:1.08cqw;color:var(--muted);line-height:1.6}
+.caption b{color:var(--brand-dk)}
+
+/* 任务 */
+.task-goal{background:linear-gradient(180deg,#f4f8ff,#eef4ff);border:1px solid #dbe6fb;border-radius:.9cqw;padding:1.05cqw 1.25cqw;
+  font-size:1.22cqw;line-height:1.62}
+.tg-label{display:inline-block;font-weight:800;color:#fff;background:var(--brand);border-radius:.45cqw;
+  font-size:.98cqw;padding:.16cqw .6cqw;margin-right:.6cqw;vertical-align:.08cqw}
+.task-steps{list-style:none;counter-reset:ts;display:flex;flex-direction:column;gap:.75cqw}
+.task-steps li{counter-increment:ts;position:relative;padding-left:2.3cqw;font-size:1.14cqw;line-height:1.6}
+.task-steps li::before{content:counter(ts);position:absolute;left:0;top:.08cqw;width:1.55cqw;height:1.55cqw;border-radius:50%;
+  background:rgba(47,107,255,.12);color:var(--brand-dk);font-size:.92cqw;font-weight:800;display:grid;place-items:center}
+.task-code{background:var(--code-bg);border-radius:.9cqw;overflow:hidden;box-shadow:0 20px 44px -26px rgba(13,26,43,.7)}
+
+/* 演示 */
+.demo-right{display:flex;flex-direction:column;gap:1cqw;height:100%}
+.demo-frame{flex:1;width:100%;min-height:0;border:1px solid var(--line);border-radius:1cqw;background:#fff;
+  box-shadow:0 22px 46px -26px rgba(20,40,90,.6)}
+.demo-code{background:var(--code-bg);border-radius:.9cqw;overflow:hidden}
+.demo-code summary{cursor:pointer;color:#9fb6d4;font-size:1.02cqw;padding:.7cqw 1.1cqw;font-family:var(--mono);user-select:none}
+.demo-code .cb-code{padding:0 1.2cqw 1.1cqw;font-size:.96cqw}
+.hint{margin-top:1cqw;font-size:1.08cqw;color:var(--muted);background:rgba(255,138,61,.1);border-left:.3cqw solid var(--accent);
+  border-radius:.6cqw;padding:.8cqw 1.1cqw;line-height:1.6}
+.hint b{color:#c2601a}
+
+/* AI */
+.ai-card{background:linear-gradient(160deg,#171a3a,#2b2a5e 55%,#3a2a6a);border-radius:1.1cqw;padding:1.7cqw;color:#e8e6ff;
+  position:relative;overflow:hidden;box-shadow:0 24px 52px -26px rgba(40,30,90,.8)}
+.ai-card::after{content:"";position:absolute;right:-6cqw;top:-6cqw;width:14cqw;height:14cqw;border-radius:50%;
+  background:radial-gradient(circle,rgba(124,92,255,.6),transparent 65%);animation:float1 12s ease-in-out infinite}
+.ai-badge{display:inline-grid;place-items:center;width:2.6cqw;height:2.6cqw;border-radius:.7cqw;font-weight:900;font-size:1.1cqw;
+  background:linear-gradient(135deg,#7c5cff,#0fb5c9);color:#fff;margin-bottom:.9cqw;letter-spacing:.04em}
+.ai-card p{font-size:1.22cqw;line-height:1.72;position:relative;z-index:2}
+.ai-list li{border-color:rgba(124,92,255,.25);background:linear-gradient(180deg,#fbf9ff,#f5f2ff)}
+.ai-list .bl-dot{background:linear-gradient(135deg,#7c5cff,#0fb5c9)}
+
+/* 检测（可交互：点选 → 判分 → 显示解析） */
+.quiz-body{justify-content:flex-start;gap:1.1cqw}
+.quiz-top{display:flex;align-items:center;justify-content:space-between;gap:1.2cqw;flex:0 0 auto}
+.quiz-meta{font-size:1.02cqw;color:var(--muted)}
+.quiz-meta b{color:var(--brand);font-size:1.1cqw}
+.q-reveal{cursor:pointer;font-family:inherit;font-size:.98cqw;font-weight:700;color:var(--brand-dk);
+  background:#eef4ff;border:1px solid #d6e3fb;border-radius:.5cqw;padding:.4cqw .95cqw;transition:.18s}
+.q-reveal:hover{background:#e2ecff;border-color:var(--brand)}
+.quiz-acts{display:flex;align-items:center;gap:.6cqw;flex:0 0 auto}
+.q-reset-all{cursor:pointer;font-family:inherit;font-size:.98cqw;font-weight:700;color:var(--muted);
+  background:#fff;border:1px solid var(--line);border-radius:.5cqw;padding:.4cqw .9cqw;transition:.18s}
+.q-reset-all:hover{color:var(--accent);border-color:#ffd0a8;background:#fff8f2}
+.quiz{list-style:none;display:flex;flex-direction:column;gap:1cqw;overflow:auto;padding-right:.3cqw}
+.quiz.dense{gap:.55cqw}
+.quiz-body:has(.quiz.dense){gap:.7cqw}
+.quiz-item{background:var(--surface);border:1px solid var(--line);border-radius:.9cqw;padding:1cqw 1.2cqw;
+  transition:border-color .2s,box-shadow .2s}
+.quiz-item.ok{border-color:rgba(18,161,80,.45);box-shadow:0 10px 26px -20px rgba(18,161,80,.7)}
+.quiz-item.bad{border-color:rgba(214,83,79,.45);box-shadow:0 10px 26px -20px rgba(214,83,79,.6)}
+.quiz.dense .quiz-item{padding:.6cqw .95cqw}
+.quiz.dense .q{font-size:1.08cqw}
+.quiz.dense .opts{margin-top:.4cqw;gap:.45cqw}
+.quiz.dense .opt{font-size:.94cqw;padding:.22cqw .62cqw}
+.quiz.dense .q-foot{margin-top:.4cqw;min-height:1.15cqw}
+.quiz.dense .q-check{font-size:.88cqw;padding:.16cqw .6cqw}
+.quiz.dense .q-verdict{font-size:.9cqw}
+.quiz.dense .q-ans{margin-top:.4cqw;font-size:.92cqw;padding:.4cqw .7cqw}
+.q{display:flex;gap:.55cqw;align-items:baseline;font-size:1.22cqw;font-weight:700;line-height:1.5}
+.quiz.dense .q{font-size:1.12cqw}
+.q-no{font-family:var(--mono);font-size:.92cqw;font-weight:800;color:var(--brand);flex:0 0 auto}
+.q-tag{flex:0 0 auto;font-size:.8cqw;font-weight:700;color:#fff;background:var(--brand2);
+  border-radius:.32cqw;padding:.08cqw .42cqw;letter-spacing:.04em}
+.q-tag.multi{background:var(--violet)}
+.q-txt{flex:1;min-width:0}
+.opts{display:flex;flex-wrap:wrap;gap:.55cqw;margin-top:.62cqw}
+.opt{cursor:pointer;display:inline-flex;gap:.42cqw;align-items:center;font-family:inherit;text-align:left;
+  font-size:1.02cqw;line-height:1.45;color:#33456b;background:#f5f8ff;border:1px solid #e0e9fb;
+  border-radius:.55cqw;padding:.36cqw .8cqw;transition:background .16s,border-color .16s,box-shadow .16s}
+.quiz.dense .opt{font-size:.96cqw;padding:.28cqw .7cqw}
+.opt:hover{border-color:var(--brand);background:#eef4ff}
+.opt i{font-style:normal;font-family:var(--mono);font-weight:800;font-size:.88em;color:var(--brand)}
+.opt.sel{background:#e6efff;border-color:var(--brand);box-shadow:0 0 0 .16cqw rgba(47,107,255,.16)}
+.opt.right{background:rgba(18,161,80,.1);border-color:#12A150;color:#0b5f2f}
+.opt.right i{color:#0b5f2f}
+.q-foot{display:flex;align-items:center;gap:.8cqw;margin-top:.6cqw;min-height:1.5cqw}
+.q-check{cursor:pointer;font-family:inherit;font-size:.94cqw;font-weight:700;color:var(--brand);
+  background:#fff;border:1px solid #c9daff;border-radius:.45cqw;padding:.26cqw .75cqw;transition:.16s}
+.q-check:hover{background:#eef4ff}
+.q-reset{cursor:pointer;font-family:inherit;font-size:.94cqw;font-weight:700;color:var(--muted);
+  background:#fff;border:1px solid var(--line);border-radius:.45cqw;padding:.26cqw .7cqw;transition:.16s}
+.q-reset:hover{color:var(--accent);border-color:#ffd0a8;background:#fff8f2}
+.q-reset:disabled{opacity:.38;cursor:default}
+.q-reset:disabled:hover{color:var(--muted);border-color:var(--line);background:#fff}
+.quiz.dense .q-reset{font-size:.88cqw;padding:.16cqw .55cqw}
+.q-verdict{font-size:.96cqw;font-weight:700}
+.quiz-item.ok .q-verdict{color:var(--ok)}
+.quiz-item.bad .q-verdict{color:#d9534f}
+.q-ans{display:none;margin-top:.6cqw;font-size:.98cqw;line-height:1.6;color:#0f7a3d;
+  background:rgba(18,161,80,.08);border-radius:.5cqw;padding:.5cqw .8cqw}
+.quiz-item.revealed .q-ans{display:block;animation:rise .3s both}
+.q-ans b{color:#0b5f2f;margin-right:.45cqw}
+.ans-key{font-family:var(--mono);font-weight:800;margin-right:.6cqw}
+.ans-tip{color:var(--muted)}
+
+/* 目标 */
+.objs{display:grid;grid-template-columns:repeat(3,1fr);gap:1.4cqw}
+.obj{border-radius:1.1cqw;padding:1.4cqw;border:1px solid var(--line);background:var(--surface)}
+.obj-h{font-size:1.3cqw;font-weight:800;margin-bottom:.85cqw;display:flex;align-items:center;gap:.55cqw}
+.obj-h::before{content:"";width:.55cqw;height:1.35cqw;border-radius:99px}
+.obj ul{list-style:none;display:flex;flex-direction:column;gap:.62cqw}
+.obj li{font-size:1.1cqw;line-height:1.58;color:var(--muted);padding-left:1.15cqw;position:relative}
+.obj li::before{content:"";position:absolute;left:0;top:.6cqw;width:.42cqw;height:.42cqw;border-radius:50%;background:#9db4d6}
+.obj-1 .obj-h::before{background:var(--brand)}.obj-2 .obj-h::before{background:var(--brand2)}.obj-3 .obj-h::before{background:var(--accent)}
+.obj-1 .obj-h{color:var(--brand-dk)}.obj-2 .obj-h{color:#0a7b87}.obj-3 .obj-h{color:#b8730f}
+
+/* 思政 */
+.s-ideo .s-body{justify-content:center}
+.ideo-wrap{display:flex;flex-direction:column;gap:1.3cqw}
+.ideo-quote{position:relative;background:linear-gradient(180deg,#fff8f0,#fffbf6);border:1px solid #ffe3c8;border-left:.42cqw solid var(--accent);
+  border-radius:.95cqw;padding:1.6cqw 1.8cqw 1.6cqw 2.2cqw;font-size:1.3cqw;line-height:1.85;color:#4a3a28}
+.ideo-quote strong{color:#a3510a}
+.ideo-topic{font-size:1.16cqw;color:var(--muted);background:rgba(47,107,255,.06);border-radius:.8cqw;padding:.9cqw 1.2cqw;line-height:1.6}
+.it-label{display:inline-block;font-weight:800;color:#fff;background:var(--brand);border-radius:.45cqw;font-size:.96cqw;padding:.16cqw .6cqw;margin-right:.6cqw}
+
+/* 大纲 */
+.outline{list-style:none;display:flex;flex-direction:column;gap:.95cqw;counter-reset:none}
+.outline li{display:flex;align-items:center;gap:1.2cqw;background:var(--surface);border:1px solid var(--line);border-radius:.9cqw;padding:1.05cqw 1.35cqw;
+  box-shadow:0 10px 26px -22px rgba(20,40,90,.55)}
+.oi{font-family:var(--mono);font-size:1.1cqw;font-weight:800;color:var(--brand);background:rgba(47,107,255,.1);border-radius:.5cqw;padding:.28cqw .7cqw}
+.ot{font-size:1.34cqw;font-weight:700}
+
+/* 参考 */
+.refs{list-style:none;display:flex;flex-direction:column;gap:.85cqw}
+.refs li{display:flex;align-items:baseline;gap:.9cqw;background:var(--surface);border:1px solid var(--line);border-radius:.8cqw;padding:.9cqw 1.15cqw}
+.ref-idx{font-family:var(--mono);font-size:1cqw;font-weight:800;color:var(--brand)}
+.ref-t{font-size:1.16cqw;font-weight:600}
+.ref-u{font-family:var(--mono);font-size:.92cqw;color:var(--muted);word-break:break-all}
+
+/* 结束 */
+.s-end{align-items:center;justify-content:center;text-align:center;background:linear-gradient(140deg,#12203b,#1d3a78 55%,#0e6f88);}
+.s-end .end-t{color:#fff}
+.end-mark{font-size:2.4cqw;color:#7fd7e4;margin-bottom:.6cqw}
+.end-t{font-size:3.4cqw;font-weight:900;letter-spacing:.02em}
+.end-s{margin-top:1.2cqw;font-size:1.35cqw;color:#a9c4e8}
+/* 结束页导航：下一讲 / 返回总目录 */
+.end-inner{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.9cqw;max-width:74%}
+.end-next{margin-top:2.6cqw;display:inline-flex;align-items:center;gap:1cqw;text-decoration:none;
+  background:rgba(255,255,255,.09);border:1px solid rgba(140,200,235,.42);border-radius:.9cqw;
+  padding:1cqw 1.5cqw;transition:.22s;backdrop-filter:blur(6px);max-width:100%}
+.end-next:hover{background:rgba(255,255,255,.16);border-color:#7fd7e4;transform:translateY(-2px);
+  box-shadow:0 18px 40px -26px rgba(0,0,0,.9)}
+.en-lab{flex:0 0 auto;font-size:.92cqw;font-weight:800;letter-spacing:.06em;color:#0c2036;
+  background:linear-gradient(135deg,#7fd7e4,#4fc3d9);border-radius:.4cqw;padding:.2cqw .62cqw}
+.en-t{color:#eaf4ff;font-size:1.18cqw;font-weight:700;line-height:1.5}
+.en-ar{color:#7fd7e4;font-size:1.3cqw;font-weight:800}
+.end-next.is-final{cursor:default;box-shadow:none}
+.end-next.is-final:hover{transform:none;background:rgba(255,255,255,.09);border-color:rgba(140,200,235,.42);box-shadow:none}
+.end-back{margin-top:.5cqw;display:inline-flex;align-items:center;gap:.35cqw;text-decoration:none;
+  font-size:1.02cqw;color:#9fbde0;border-bottom:1px dashed rgba(159,189,224,.45);padding-bottom:.12cqw;transition:.2s}
+.end-back:hover{color:#fff;border-bottom-color:#7fd7e4}
+
+/* 进度 & HUD */
+.topbar{position:absolute;left:0;top:0;height:.42cqw;width:100%;background:rgba(47,107,255,.1);z-index:6}
+.topbar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--brand),var(--brand2),var(--violet));
+  transition:width .45s cubic-bezier(.2,.7,.2,1)}
+.hud{position:absolute;right:2.2cqw;bottom:1.5cqw;z-index:6;display:flex;align-items:center;gap:1cqw;
+  font-size:1cqw;color:var(--muted);font-family:var(--mono)}
+.hud .btn{cursor:pointer;background:rgba(255,255,255,.82);border:1px solid var(--line);border-radius:.55cqw;padding:.32cqw .7cqw;
+  transition:.2s}
+.hud .btn:hover{border-color:var(--brand);color:var(--brand)}
+.hud .btn[data-on="0"]{color:#a8b6cc;background:rgba(255,255,255,.5);border-style:dashed}
+.hud .btn[data-on="0"]:hover{color:var(--accent);border-color:#ffd0a8;border-style:solid;background:#fff8f2}
+.hud .btn[data-on="1"]{color:#0a7b87;border-color:#bfe6ea;background:rgba(15,181,201,.09)}
+.hud .btn[data-on="1"]:hover{border-color:var(--brand2);background:rgba(15,181,201,.16)}
+.pageno b{color:var(--ink)}
+.legend{position:absolute;left:2.2cqw;bottom:1.5cqw;z-index:6;font-size:.96cqw;color:#9aabc4;font-family:var(--mono)}
+.flip-toast{position:absolute;left:50%;bottom:9%;z-index:9;transform:translate(-50%,10px);
+  background:rgba(16,29,50,.9);color:#fff;font-family:var(--mono);font-size:1.02cqw;letter-spacing:.02em;
+  padding:.62cqw 1.25cqw;border-radius:999px;opacity:0;pointer-events:none;white-space:nowrap;
+  transition:opacity .22s,transform .22s;box-shadow:0 18px 40px -22px rgba(0,0,0,.8)}
+.flip-toast.show{opacity:1;transform:translate(-50%,0)}
+/* 导航抽屉 */
+.drawer{position:absolute;inset:0;z-index:8;background:rgba(12,22,40,.55);backdrop-filter:blur(6px);display:none;padding:4cqw}
+.drawer.open{display:block}
+.drawer-panel{background:var(--surface);border-radius:1.2cqw;height:100%;padding:2cqw;overflow:auto;box-shadow:0 40px 80px -30px rgba(0,0,0,.5)}
+.drawer-h{font-size:1.5cqw;font-weight:800;margin-bottom:1.2cqw;display:flex;justify-content:space-between}
+.drawer-h span{cursor:pointer;color:var(--muted);font-weight:600;font-size:1.1cqw}
+.drawer ul{list-style:none;display:grid;grid-template-columns:1fr 1fr;gap:.55cqw}
+.drawer li{display:flex;gap:.7cqw;align-items:center;padding:.6cqw .8cqw;border-radius:.6cqw;cursor:pointer;border:1px solid transparent}
+.drawer li:hover{background:#f2f6ff;border-color:#dbe6fb}
+.drawer li.cur{background:#eaf1ff;border-color:#c9daff}
+.nv-idx{font-family:var(--mono);font-size:.92cqw;color:var(--brand);font-weight:800}
+.nv-t{font-size:1.06cqw;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+/* ───────── 屏幕自适应 ─────────
+   1) 16:9 / 16:10 笔记本与投影：等比缩放（默认）
+   2) 4:3 老投影 / 上下更紧：压缩留白与圆角
+   3) 超宽屏：仍按高度定宽，不拉伸变形
+   4) 竖屏（手机、平板竖握）：改为纵向流式阅读，单列重排
+   5) 系统开启「减弱动效」时关闭所有动画
+*/
+@media (max-aspect-ratio: 4/3) and (orientation: landscape){
+  .wrap{padding:1.2vh}
+  .stage{border-radius:14px}
+  .slide{padding:3.4cqw 4.2cqw 3.2cqw;gap:1.5cqw}
+  .s-title{font-size:2.62cqw}
+  .blist{gap:.85cqw}
+  .blist li{font-size:1.32cqw;padding:.9cqw 1.15cqw}
+  .legend{display:none}
+}
+@media (min-aspect-ratio: 21/9){
+  .stage{max-width:calc(100vh * 16 / 9);max-height:calc(100vw * 9 / 16)}
+}
+@media (prefers-reduced-motion: reduce){
+  .an{opacity:1!important;animation:none!important}
+  .blob,.orb,.codewin{animation:none!important}
+  .slide{transition:none}
+}
+/* —— 竖屏：纵向流式阅读 —— */
+@media (orientation: portrait){
+  html,body{height:auto;overflow-x:hidden;overflow-y:auto}
+  html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+  body{overflow:visible;background:var(--bg)}
+  .wrap{display:block;height:auto;padding:0}
+  .stage{width:100%;height:auto;max-width:none;max-height:none;aspect-ratio:auto;border-radius:0;
+    overflow:visible;box-shadow:none;container-type:inline-size;background:transparent}
+  .bgfx{display:none}
+  .slide{position:relative;inset:auto;opacity:1!important;visibility:visible!important;transform:none!important;
+    padding:8vw 6vw 9vw;gap:5vw;min-height:auto;background:var(--bg2);border-bottom:1px solid var(--line)}
+  .slide.prev{transform:none!important}
+  .an{opacity:1!important;animation:none!important;transform:none!important}
+  .s-head{flex-direction:column;gap:0}
+  .kicker{font-size:2.6vw;padding:1vw 2.6vw;margin-bottom:2.2vw;letter-spacing:.1em}
+  .s-title{font-size:6.4vw;line-height:1.3}
+  .s-sub{margin-top:2vw;font-size:3.4vw}
+  .s-body{gap:4vw;justify-content:flex-start}
+  .s-body.two{flex-direction:column;gap:4.4vw}
+  .col-l,.col-r{gap:3.4vw}
+  /* 封面 */
+  .s-cover{flex-direction:column;align-items:flex-start;gap:5vw;padding:12vw 6vw 10vw}
+  .cover-art{display:none}
+  .brandrow{margin-bottom:4vw;gap:2vw}
+  .brandmark{font-size:4.4vw}.brandsub{font-size:3vw}
+  .cover-title{font-size:9.6vw;line-height:1.22}
+  .cover-sub{font-size:3.8vw;max-width:none;margin-top:2.6vw}
+  .pills{gap:2vw;margin-top:4vw}
+  .pill{font-size:2.8vw;padding:1.2vw 2.8vw}
+  .cover-meta{font-size:2.9vw;gap:2vw;margin-top:4vw}
+  .cover-meta b{font-size:3.4vw}
+  /* 章节页 */
+  .sec-num{font-size:17vw}
+  .sec-title{font-size:7.2vw;margin-top:3vw}
+  .sec-sub{font-size:3.6vw;max-width:none;margin-top:3vw}
+  .is-active .sec-line{animation:none;width:26vw}
+  .sec-line{margin:4vw 0}
+  /* 列表 / 卡片 */
+  .blist{gap:2.6vw}
+  .blist li{font-size:3.7vw;padding:2.8vw 3.4vw;border-radius:2.4vw;gap:2.4vw;line-height:1.62}
+  .blist.small li{font-size:3.4vw;padding:2.4vw 3vw}
+  .blist.dense li{font-size:3.3vw;padding:2.2vw 3vw}
+  .bl-dot{width:1.8vw;height:1.8vw;margin-top:1.8vw;box-shadow:0 0 0 .8vw rgba(47,107,255,.12)}
+  .outline{gap:2.4vw}
+  .outline li{padding:2.8vw 3.4vw;border-radius:2.2vw;gap:3vw}
+  .oi{font-size:2.8vw;padding:.8vw 2vw}
+  .ot{font-size:3.9vw}
+  .grid{gap:3vw}
+  .grid.cols-2,.grid.cols-3,.grid.cols-4{grid-template-columns:1fr}
+  .card{padding:4.2vw;border-radius:2.6vw}
+  .card-t{font-size:4.1vw;margin-bottom:1.6vw}
+  .card-d{font-size:3.3vw}
+  .card-ico{font-size:5.6vw;margin-bottom:1.6vw}
+  .card::before{width:.8vw}
+  /* 表格 */
+  .tbl-wrap{overflow-x:auto;border-radius:2.4vw;-webkit-overflow-scrolling:touch}
+  .tbl{font-size:3.1vw;min-width:110vw}
+  .tbl th{font-size:3vw;padding:2.4vw 2.8vw;white-space:nowrap}
+  .tbl td{padding:2.2vw 2.8vw}
+  /* 对比 */
+  .cmp-wrap{grid-template-columns:1fr;gap:3.4vw}
+  .cmp{padding:3.6vw;border-radius:2.4vw}
+  .cmp-h{font-size:3.8vw;margin-bottom:2.4vw}
+  .cmp ul{gap:2vw}
+  .cmp li{font-size:3.2vw;padding-left:3.6vw}
+  .cmp li::before{width:1.4vw;height:1.4vw;top:1.7vw}
+  /* 步骤 / 流程 */
+  .steps{gap:2.6vw}
+  .step{padding:3vw 3.4vw;border-radius:2.2vw;gap:3vw}
+  .step-n{width:7.4vw;height:7.4vw;font-size:3.2vw}
+  .step-t{font-size:3.7vw}
+  .step-d{font-size:3.2vw;margin-top:.8vw}
+  .flow{flex-direction:column;gap:1.6vw}
+  .fl{padding:3.6vw;border-radius:2.4vw}
+  .fl-ico{font-size:6.4vw}
+  .fl-t{font-size:3.9vw}
+  .fl-d{font-size:3.1vw}
+  .fl-arrow{width:100%;height:6vw;transform:rotate(90deg)}
+  .flow-note{font-size:3.1vw;padding:2.4vw 3vw;border-radius:2vw;margin-top:2.6vw}
+  /* 代码 */
+  .codebox,.task-code{border-radius:2.4vw}
+  .cb-bar{padding:2.2vw 3vw;gap:2.4vw}
+  .cb-lang,.cb-file{font-size:2.7vw}
+  .cb-code{font-size:3.1vw;line-height:1.62;padding:3vw 3.4vw}
+  .caption{font-size:3vw;margin-top:2.4vw}
+  .demo-code summary{font-size:2.9vw;padding:2.2vw 3vw}
+  .demo-code .cb-code{font-size:2.9vw}
+  /* 任务 / 演示 */
+  .task-goal{font-size:3.4vw;padding:3.2vw;border-radius:2.2vw}
+  .tg-label{font-size:2.6vw;padding:.5vw 1.8vw;margin-right:1.6vw;border-radius:1.2vw}
+  .task-steps{gap:2.4vw}
+  .task-steps li{font-size:3.3vw;padding-left:6.4vw}
+  .task-steps li::before{width:4.6vw;height:4.6vw;font-size:2.8vw}
+  .demo-right{height:auto;gap:2.6vw}
+  .demo-frame{height:66vw;min-height:190px;border-radius:2.4vw}
+  .hint{font-size:3.1vw;padding:2.6vw 3vw;border-radius:2vw;margin-top:2.6vw}
+  /* AI */
+  .ai-card{padding:4.4vw;border-radius:2.6vw}
+  .ai-card p{font-size:3.5vw}
+  .ai-badge{width:8.4vw;height:8.4vw;font-size:3.2vw;border-radius:2vw;margin-bottom:2.4vw}
+  /* 检测（!important：压过横屏 dense 的 cqw 规则，否则竖屏字号塌缩） */
+  .quiz-body{gap:3.4vw}
+  .quiz-top{flex-direction:column;align-items:flex-start;gap:2.4vw}
+  .quiz-meta{font-size:3vw}
+  .quiz-meta b{font-size:3.4vw}
+  .quiz-acts{gap:2vw}
+  .q-reveal,.q-reset-all{font-size:3vw;padding:1.6vw 3.4vw;border-radius:2vw}
+  .quiz{gap:3vw;overflow:visible}
+  .quiz.dense{gap:2.6vw}
+  .quiz-item,.quiz.dense .quiz-item{padding:3.4vw 3.6vw;border-radius:2.4vw}
+  .quiz.dense .q{font-size:3.6vw;gap:1.6vw;line-height:1.55}
+  .q-no{font-size:2.9vw}
+  .q-tag{font-size:2.4vw;padding:.3vw 1.4vw;border-radius:1.2vw}
+  .opts,.quiz.dense .opts{gap:1.8vw;margin-top:2.2vw}
+  .opt,.quiz.dense .opt{font-size:3.2vw;padding:1.4vw 2.8vw;border-radius:2vw;gap:1.4vw}
+  .q-foot,.quiz.dense .q-foot{margin-top:2vw;gap:2.4vw;min-height:0}
+  .q-check,.quiz.dense .q-check{font-size:2.9vw;padding:1.2vw 2.8vw;border-radius:1.6vw}
+  .q-reset,.quiz.dense .q-reset{font-size:2.9vw;padding:1.2vw 2.6vw;border-radius:1.6vw}
+  .q-verdict,.quiz.dense .q-verdict{font-size:2.9vw}
+  .q-ans,.quiz.dense .q-ans{font-size:3vw;padding:2.2vw 3vw;border-radius:1.8vw;margin-top:2vw}
+  /* 目标 / 思政 */
+  .objs{grid-template-columns:1fr;gap:3vw}
+  .obj{padding:4vw;border-radius:2.4vw}
+  .obj-h{font-size:3.9vw;margin-bottom:2.4vw}
+  .obj-h::before{width:1.4vw;height:4vw}
+  .obj ul{gap:2vw}
+  .obj li{font-size:3.2vw;padding-left:3.4vw}
+  .obj li::before{width:1.2vw;height:1.2vw;top:1.6vw}
+  .ideo-wrap{gap:3.4vw}
+  .ideo-quote{font-size:3.6vw;padding:4vw 4.4vw;border-radius:2.4vw;line-height:1.8}
+  .ideo-topic{font-size:3.2vw;padding:2.8vw 3.2vw;border-radius:2.2vw}
+  .it-label{font-size:2.6vw;padding:.5vw 1.6vw;border-radius:1.2vw;margin-right:1.4vw}
+  /* 参考 / 结束 */
+  .refs{gap:2.2vw}
+  .refs li{padding:2.8vw 3.2vw;border-radius:2vw;gap:2.4vw}
+  .ref-idx{font-size:2.8vw}
+  .ref-t{font-size:3.3vw}
+  .ref-u{font-size:2.7vw}
+  .s-end{align-items:center;justify-content:center;min-height:60vh}
+  .end-t{font-size:8.4vw}
+  .end-s{font-size:3.6vw;margin-top:3vw}
+  .end-mark{font-size:6vw}
+  .end-inner{max-width:none;width:100%;gap:2vw}
+  .end-next{margin-top:5vw;gap:2.2vw;padding:3vw 3.6vw;border-radius:2.4vw;flex-wrap:wrap;justify-content:center}
+  .en-lab{font-size:2.6vw;padding:.8vw 2vw;border-radius:1.2vw}
+  .en-t{font-size:3.4vw}
+  .en-ar{font-size:3.6vw}
+  .end-back{font-size:3vw;margin-top:2.6vw}
+  /* HUD / 目录：固定悬浮 */
+  .topbar{position:fixed;height:1.2vw;z-index:20}
+  .hud{position:fixed;right:3vw;bottom:calc(3vw + env(safe-area-inset-bottom));z-index:20;
+    background:rgba(255,255,255,.94);border:1px solid var(--line);border-radius:999px;
+    padding:2.2vw 3.4vw;gap:3vw;font-size:3vw;box-shadow:0 10px 30px -12px rgba(16,34,74,.35)}
+  .hud .btn{font-size:2.9vw;padding:1vw 2.4vw;border-radius:1.6vw}
+  .flip-toast{position:fixed;bottom:calc(16vw + env(safe-area-inset-bottom));z-index:21;
+    font-size:3vw;padding:2.2vw 4vw;max-width:84vw;white-space:normal;text-align:center;line-height:1.5}
+  .legend{display:none}
+  .drawer{position:fixed;padding:4vw}
+  .drawer-panel{padding:5vw;border-radius:3vw}
+  .drawer-h{font-size:4.2vw;margin-bottom:3vw}
+  .drawer-h span{font-size:3.2vw}
+  .drawer ul{grid-template-columns:1fr;gap:1.6vw}
+  .drawer li{padding:2.4vw 3vw;border-radius:2vw;gap:2.4vw}
+  .nv-idx{font-size:2.8vw}
+  .nv-t{font-size:3.2vw;white-space:normal}
+}
+/* 打印 */
+@media print{
+  body{overflow:visible}
+  .wrap{padding:0;display:block}
+  .stage{width:100%;max-width:none;height:auto;aspect-ratio:auto;border-radius:0;box-shadow:none}
+  .slide{position:relative;opacity:1!important;visibility:visible!important;transform:none!important;
+    page-break-after:always;height:100vh;width:100%}
+  .an{opacity:1!important;animation:none!important}
+  .topbar,.hud,.legend,.drawer{display:none!important}
+}
+</style>
+</head>
+<body>
+<div class="wrap"><div class="stage" id="stage">
+  <div class="bgfx"><div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div><div class="grid-lines"></div></div>
+  <div class="topbar"><i id="bar"></i></div>
+
+<section class="slide s-cover is-active" data-kind="cover">
+  <div class="cover-left">
+    <div class="brandrow an" style="--i:0">
+      <span class="brandmark">网页制作</span>
+      <span class="brandsub">HTML5 + CSS3</span>
+    </div>
+    <div class="kicker an" style="--i:1">项目1 · 第 1 单元</div>
+    <h1 class="cover-title an" style="--i:2">Web 前端技术概览与网站工作原理</h1>
+    <p class="cover-sub an" style="--i:3">从 1+X 职业标准到一次「请求—响应」的网页之旅，建立本课程的整体认知地图</p>
+    <div class="pills"><span class="pill" style="--i:3">1+X 证书标准</span><span class="pill" style="--i:4">W3C</span><span class="pill" style="--i:5">HTTP / HTTPS</span><span class="pill" style="--i:6">请求—响应</span></div>
+    <div class="cover-meta an" style="--i:8">
+      <span class="m-item"><b>40</b> 分钟</span>
+      <span class="dot"></span>
+      <span class="m-item">教材《网页制作（HTML5+CSS3）》项目1</span>
+      <span class="dot"></span>
+      <span class="m-item">电子工业出版社 · 2025 年 1 月第 1 版</span>
+    </div>
+  </div>
+  <div class="cover-art" aria-hidden="true">
+    <div class="orb o1"></div><div class="orb o2"></div><div class="orb o3"></div>
+    <div class="codewin">
+      <div class="cw-bar"><i></i><i></i><i></i></div>
+      <pre class="cw-body"><span class="pn">&lt;!</span><span class="tg">DOCTYPE</span> <span class="at">html</span><span class="pn">&gt;</span>
+<span class="pn">&lt;</span><span class="tg">html</span> <span class="at">lang</span>=<span class="st">"zh-CN"</span><span class="pn">&gt;</span>
+  <span class="pn">&lt;</span><span class="tg">head</span><span class="pn">&gt;</span> <span class="pn">&lt;</span><span class="tg">meta</span> <span class="at">charset</span>=<span class="st">"UTF-8"</span><span class="pn">&gt;</span> <span class="pn">&lt;/</span><span class="tg">head</span><span class="pn">&gt;</span>
+  <span class="pn">&lt;</span><span class="tg">body</span><span class="pn">&gt;</span>
+    <span class="pn">&lt;</span><span class="tg">h1</span><span class="pn">&gt;</span>Hello, Web<span class="pn">&lt;/</span><span class="tg">h1</span><span class="pn">&gt;</span>
+  <span class="pn">&lt;/</span><span class="tg">body</span><span class="pn">&gt;</span>
+<span class="pn">&lt;/</span><span class="tg">html</span><span class="pn">&gt;</span></pre>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-kind="objectives">
+  
+  <header class="s-head">
+    <div class="s-head-left">
+      
+      <h2 class="s-title an" style="--i:1">本单元我们要达成什么</h2>
+      <p class="s-sub an" style="--i:2">对照教材《项目1》的学习目标 / 技能目标 / 素养目标</p>
+    </div>
+  </header>
+  <div class="s-body"><div class="objs"><div class="obj obj-1" class="an " style="--i:1">
+          <div class="obj-h">知识目标</div><ul><li>了解 Web 前端技术的发展现状</li><li>掌握全栈工程师的技术特点</li><li>掌握 Web 开发环境搭建的基本步骤</li><li>掌握网站工作原理</li></ul></div><div class="obj obj-2" class="an " style="--i:2">
+          <div class="obj-h">技能目标</div><ul><li>能正确使用浏览器实现页面访问和请求</li><li>能观察与分辨本地页面访问和服务器请求的区别</li><li>能安装软件、搭建开发环境并编写测试页面</li></ul></div><div class="obj obj-3" class="an " style="--i:3">
+          <div class="obj-h">素养目标</div><ul><li>明确职业岗位道德标准</li><li>培养网络安全思想和技术报国情怀</li><li>培养严谨务实的劳动态度</li><li>培养不断探索、勇于创新的精神</li></ul></div></div></div>
+</section>
+
+<section class="slide s-ideo" data-kind="ideology">
+  
+  <header class="s-head">
+    <div class="s-head-left">
+      
+      <h2 class="s-title an" style="--i:1">制造强国与数字经济的时代命题</h2>
+      <p class="s-sub an" style="--i:2">教材《项目1》思政课堂</p>
+    </div>
+  </header>
+  <div class="s-body"><div class="ideo-wrap">
+    <div class="ideo-quote an" style="--i:1">随着全球新一轮科技革命和产业变革突飞猛进，新一代信息通信、生物、新材料、新能源等技术不断突破，并与先进制造技术加速融合，为制造业高端化、智能化、绿色化发展提供了历史机遇。当前，我国已转向高质量发展阶段，正处于转变发展方式、优化经济结构、转换增长动力的攻关期；基于新一代信息技术与先进制造技术的深度融合，<strong>培养复合型人才</strong>，加快构建智能制造发展生态，持续推进制造业数字化转型，为促进制造业高质量发展、加快建设<strong>制造强国</strong>、发展<strong>数字经济</strong>、构筑国际竞争新优势提供有力的支撑。</div>
+    <div class="ideo-topic an" style="--i:2"><span class="it-label">课堂讨论</span>网页制作是上述所有数字应用的「门面」。作为未来的 Web 前端工程师，请结合岗位谈一谈：网页质量如何影响一个企业的数字化形象？</div>
+  </div></div>
+</section>
+
+<section class="slide" data-kind="outline">
+  
+  <header class="s-head">
+    <div class="s-head-left">
+      
+      <h2 class="s-title an" style="--i:1">本单元导览</h2>
+      <p class="s-sub an" style="--i:2">四个问题，串起整个 Web 前端世界</p>
+    </div>
+  </header>
+  <div class="s-body"><ol class="outline"><li class="an " style="--i:1"><span class="oi">01</span><span class="ot">Web 前端技术在做什么？（HTML / CSS / JavaScript 的分工）</span></li><li class="an " style="--i:2"><span class="oi">02</span><span class="ot">谁来定标准？（1+X 职业技能等级标准与 W3C）</span></li><li class="an " style="--i:3"><span class="oi">03</span><span class="ot">网页和网站到底是什么？（构成要素与主页）</span></li><li class="an " style="--i:4"><span class="oi">04</span><span class="ot">网站是怎么工作的？（一次「请求—响应」的完整旅行）</span></li></ol></div>
+</section>
+
+<section class="slide s-section" data-kind="section">
+  <div class="sec-inner">
+    <div class="sec-num an" style="--i:0">1.1</div>
+    <h2 class="sec-title an" style="--i:1">Web 前端技术在做什么</h2>
+    <div class="sec-line an" style="--i:2"></div>
+    <p class="sec-sub an" style="--i:3">搞清「结构、样式、行为」三者的分工，是学习一切前端技术的起点。</p>
+  </div>
+</section>
+
+<section class="slide" data-kind="cards">
+  
+  <header class="s-head">
+    <div class="s-head-left">
+      <div class="kicker an" style="--i:0">要点分解</div>
+      <h2 class="s-title an" style="--i:1">网页前端的三项核心技术</h2>
+      <p class="s-sub an" style="--i:2">教材原文：不管 Web 前端技术如何发展，其核心就在于 HTML、CSS、JavaScript 这 3 种技术</p>
+    </div>
+  </header>
+  <div class="s-body"><div class="grid cols-3"><div class="card" class="an " style="--i:1">
+          
+          <div class="card-t">HTML5 — 结构</div>
+          <div class="card-d">负责页面的<strong>内容与语义</strong>：标题、段落、图片、链接、表格、表单……回答「页面上有什么」。</div>
+        </div><div class="card" class="an " style="--i:2">
+          
+          <div class="card-t">CSS3 — 样式</div>
+          <div class="card-d">负责页面的<strong>表现与排版</strong>：颜色、字体、盒子模型、背景、布局、过渡与动画。回答「页面长什么样」。</div>
+        </div><div class="card" class="an " style="--i:3">
+          
+          <div class="card-t">JavaScript — 行为</div>
+          <div class="card-d">负责页面的<strong>交互与逻辑</strong>：响应点击、校验表单、请求数据。回答「页面能做什么」。本课程聚焦前两项。</div>
+        </div></div></div>
+</section>
+
+<section class="slide" data-kind="bullets">
+  
+  <header class="s-head">
+    <div class="s-head-left">
+      <div class="kicker an" style="--i:0">知识要点</div>
+      <h2 class="s-title an" style="--i:1">先学「原生语言」，再学框架</h2>
+      <p class="s-sub an" style="--i:2">教材观点：框架层出不穷、更新又快，有些昙花一现只流行一时</p>
+    </div>
+  </header>
+  <div class="s-body"><ul class="blist"><li class="an " style="--i:1"><span class="bl-dot"></span><span>你可能会听到很多名词：<code>jQuery</code>、<code>AJAX</code>、<code>React</code>、<code>Angular</code>、<code>Vue</code>、<code>Node.js</code>——它们都是围绕三大核心技术的工具与框架。</span></li><li class="an " style="--i:2"><span class="bl-dot"></span><span><strong>牢固掌握 HTML / CSS / JavaScript</strong>，才能顺利学习 React、Vue、Angular 这类前端框架。</span></li><li class="an " style="--i:3"><span class="bl-dot"></span><span>教材比喻：用 PPT 做一页不难，但要做成「艺术品」，还需要<strong>配色理论、审美修养与大量实践</strong>。网页制作同理。</span></li><li class="an " style="--i:4"><span class="bl-dot"></span><span>本课程定位：<strong>静态网页设计</strong>（HTML5 + CSS3），是 1+X 初级证书的核心能力，也是后续动态交互课程的地基。</span></li></ul></div>
+</section>
+
+<section class="slide" data-kind="table">
+  
+  <header class="s-head">
+    <div class="s-head-left">
+      <div class="kicker an" style="--i:0">对照表</div>
+      <h2 class="s-title an" style="--i:1">《Web 前端开发职业技能等级标准》三级能级</h2>
+      <p class="s-sub an" style="--i:2">1+X 制度：「学历证书 + 若干职业技能等级证书」</p>
+    </div>
+  </header>
+  <div class="s-body"><div class="tbl-wrap">
+    <table class="tbl"><thead><tr><th>等级</th><th>能力要求</th><th>对应岗位能力</th></tr></thead><tbody><tr class="an " style="--i:1"><td>初级</td><td>具有<strong>静态网页设计开发</strong>能力</td><td>本课程 + 1+X 初级考试的目标</td></tr><tr class="an " style="--i:2"><td>中级</td><td>具有<strong>动态网页设计开发</strong>能力</td><td>JavaScript / 前后端数据交互</td></tr><tr class="an " style="--i:3"><td>高级</td><td>具有<strong>复杂网页设计开发</strong>能力和<strong>网站架构设计规划</strong>能力</td><td>工程化、框架与架构设计</td></tr></tbody></table>
+  </div></div>
+</section>
+
+<section class="slide" data-kind="codebullets">
+  
+  <header class="s-head">
+    <div class="s-head-left">
+      <div class="kicker an" style="--i:0">代码与要点</div>
+      <h2 class="s-title an" style="--i:1">什么是全栈工程师（full-stack engineer）</h2>
+      <p class="s-sub an" style="--i:2">「栈」= 一系列子模块的集合，不是数据结构里的「栈」</p>
+    </div>
+  </header>
+  <div class="s-body two">
+    <div class="col-l"><ul class="blist small dense"><li class="an " style="--i:1"><span class="bl-dot"></span><span>定义：掌握多种技能，对前端知识与后端架构都有深入了解，能利用多种技能解决问题、<strong>独立完成产品</strong>的人。</span></li><li class="an " style="--i:2"><span class="bl-dot"></span><span>前端侧需要熟悉：HTML、CSS、JavaScript、H5，以及 Bootstrap、EasyUI 等框架。</span></li><li class="an " style="--i:3"><span class="bl-dot"></span><span>后端侧需要熟悉：Java、ASP.NET、PHP、Node.js 或 Go 等。</span></li><li class="an " style="--i:4"><span class="bl-dot"></span><span>教材判定标准：既能开发前端又能开发后端，并能<strong>独立完成一个简单的电子商务网站</strong>。</span></li><li class="an " style="--i:5"><span class="bl-dot"></span><span>一句话：全栈工程师就是<strong>可以独立开发产品的人</strong>——思维方式更开阔、更新颖、更综合。</span></li></ul></div>
+    <div class="col-r"><div class="codebox" class="an " style="--i:1">
+      <div class="cb-bar"><span class="cb-lang">TEXT</span>
+      <span class="cb-file">知识地图</span></div>
+      <pre class="cb-code">前端技术栈
+├─ 结构  HTML / HTML5
+├─ 样式  CSS / CSS3 / 预处理器(LESS, SASS)
+├─ 行为  JavaScript / TypeScript
+└─ 框架  Vue / React / Angular …
+
+后端技术栈
+├─ 语言  Java / PHP / Go / Node.js …
+├─ 数据  MySQL / Redis …
+└─ 部署  服务器 / 云平台 / CI-CD</pre></div></div>
+  </div>
+</section>
+
+<section class="slide" data-kind="bullets">
+  
+  <header class="s-head">
+    <div class="s-head-left">
+      <div class="kicker an" style="--i:0">知识要点</div>
+      <h2 class="s-title an" style="--i:1">W3C 组织与 W3C 标准</h2>
+      <p class="s-sub an" style="--i:2">没有标准，就没有「一次编写、处处显示」的 Web</p>
+    </div>
+  </header>
+  <div class="s-body"><ul class="blist"><li class="an " style="--i:1"><span class="bl-dot"></span><span>W3C = 万维网联盟（World Wide Web Consortium），创建于 <strong>1994 年</strong>，是国际上最著名的标准化组织之一。</span></li><li class="an " style="--i:2"><span class="bl-dot"></span><span>宗旨：解决不同平台、技术和开发者带来的<strong>不兼容问题</strong>，保障 Web 信息的顺利和完整流通。</span></li><li class="an " style="--i:3"><span class="bl-dot"></span><span>标准内容包括：<strong>使用语言的规范、开发中使用的导则、解释引擎的行为</strong>等。</span></li><li class="an " style="--i:4"><span class="bl-dot"></span><span>影响深远的成果：<strong>HTML、XML、CSS</strong> 等众多标准规范，对互联网技术起到了基础性与根本性的支撑作用。</span></li></ul></div>
+</section>
+
+<section class="slide s-section" data-kind="section">
+  <div class="sec-inner">
+    <div class="sec-num an" style="--i:0">1.2</div>
+    <h2 class="sec-title an" style="--i:1">认识网页：网页、网站与主页</h2>
+    <div class="sec-line an" style="--i:2"></div>
+    <p class="sec-sub an" style="--i:3">网页是「一页」，网站是「一整套」，主页是「进门第一眼」。</p>
+  </div>
+</section>
+
+<section class="slide" data-kind="compare">
+  
+  <header class="s-head">
+    <div class="s-head-left">
+      <div class="kicker an" style="--i:0">对比辨析</div>
+      <h2 class="s-title an" style="--i:1">网页 / 网站 / 主页，别再混用</h2>
+      
+    </div>
+  </header>
+  <div class="s-body"><div class="cmp-wrap"><div class="cmp cmp-a">
+          <div class="cmp-h">网页 web page</div>
+          <ul><li class="an " style="--i:1">用户通过浏览器看到的页面</li><li class="an " style="--i:2">包含文字、图片、链接，有时还有动画、音频、视频</li><li class="an " style="--i:3">是一个「单个文件」级别的概念</li></ul></div><div class="cmp cmp-b">
+          <div class="cmp-h">网站 website / 主页 homepage</div>
+          <ul><li class="an " style="--i:3">网站：各种网页及其相关资源的<strong>集合</strong>，由多个基本网页构成</li><li class="an " style="--i:4">例如门户网站（腾讯、网易）与小型公司产品网站</li><li class="an " style="--i:5">主页：输入域名后看到的<strong>第一个网页</strong>，通常也叫「首页」</li><li class="an " style="--i:6">因为它是起始页，所以常被用作整个网站的代称</li></ul></div></div></div>
+</section>
+
+<section class="slide" data-kind="cards">
+  
+  <header class="s-head">
+    <div class="s-head-left">
+      <div class="kicker an" style="--i:0">要点分解</div>
+      <h2 class="s-title an" style="--i:1">网页的五个构成要素</h2>
+      <p class="s-sub an" style="--i:2">形态千差万别，构成要素大体相同（教材图 1-1）</p>
+    </div>
+  </header>
+  <div class="s-body"><div class="grid cols-3 dense"><div class="card dense" class="an " style="--i:1">
+          
+          <div class="card-t">文字和图片</div>
+          <div class="card-d">网页的<strong>基本构成要素</strong>。早期的网页主要通过文字或图片来表达内容。</div>
+        </div><div class="card dense" class="an " style="--i:2">
+          
+          <div class="card-t">链接</div>
+          <div class="card-d">分为「文字链接」和「图片链接」。点击即可跳转，让无数网页交错相连，<strong>这正是网页的魅力所在</strong>。</div>
+        </div><div class="card dense" class="an " style="--i:3">
+          
+          <div class="card-t">动画</div>
+          <div class="card-d">常见有 Flash 动画、GIF 动画、<strong>CSS3 动画</strong>和 JS 脚本动画。运动的内容更容易吸引注意。</div>
+        </div><div class="card dense" class="an " style="--i:4">
+          
+          <div class="card-t">表单</div>
+          <div class="card-d">能在浏览者与服务器之间进行数据「交互」的控件集合体，实现信息搜索、数据提交等功能。</div>
+        </div><div class="card dense" class="an " style="--i:5">
+          
+          <div class="card-t">音 / 视频</div>
+          <div class="card-d">网页不再局限于播放单调的 MIDI 音乐，已成为能展示视频、直播和游戏的新兴平台。</div>
+        </div><div class="card dense" class="an " style="--i:6">
+          
+          <div class="card-t">本课程与之的关系</div>
+          <div class="card-d">我们把文字、图片、链接、表格、表单用 HTML 搭好，再用 CSS 美化，动画则交给 CSS3 过渡与动画。</div>
+        </div></div></div>
+</section>
+
+<section class="slide s-section" data-kind="section">
+  <div class="sec-inner">
+    <div class="sec-num an" style="--i:0">1.3</div>
+    <h2 class="sec-title an" style="--i:1">网站工作原理</h2>
+    <div class="sec-line an" style="--i:2"></div>
+    <p class="sec-sub an" style="--i:3">你按下 Enter 的那一刻，浏览器与服务器之间发生了什么？</p>
+  </div>
+</section>
+
+<section class="slide" data-kind="flow">
+  
+  <header class="s-head">
+    <div class="s-head-left">
+      <div class="kicker an" style="--i:0">原理图解</div>
+      <h2 class="s-title an" style="--i:1">一次「请求—响应」的完整旅行</h2>
+      <p class="s-sub an" style="--i:2">从输入网址到页面呈现，全过程通常只需毫秒级</p>
+    </div>
+  </header>
+  <div class="s-body"><div class="flow"><div class="fl" class="an " style="--i:1">
+          <div class="fl-ico"></div>
+          <div class="fl-t">① 客户端发起请求</div>
+          <div class="fl-d">用户在浏览器地址栏输入网址并回车，客户端（client）向互联网发出请求（request）。</div>
+        </div><div class="fl-arrow" class="an fl-arrow" style="--i:1"></div><div class="fl" class="an " style="--i:2">
+          <div class="fl-ico"></div>
+          <div class="fl-t">② 路由转发</div>
+          <div class="fl-d">请求经互联网上不同设备的<strong>路由</strong>，被转发到目标 Web 服务器。</div>
+        </div><div class="fl-arrow" class="an fl-arrow" style="--i:2"></div><div class="fl" class="an " style="--i:3">
+          <div class="fl-ico"></div>
+          <div class="fl-t">③ 服务器处理</div>
+          <div class="fl-d">Web 服务器是驻留在互联网上的计算机程序，处理请求并返回响应。</div>
+        </div><div class="fl-arrow" class="an fl-arrow" style="--i:3"></div><div class="fl" class="an " style="--i:4">
+          <div class="fl-ico"></div>
+          <div class="fl-t">④ 浏览器渲染</div>
+          <div class="fl-d">服务器把网站文件提供给用户浏览，浏览器解析并呈现出可直观查看的页面。</div>
+        </div></div>
+  <div class="flow-note an" style="--i:5">后台技术处理了所有复杂细节；对前台用户而言，只需打开浏览器、输入网址、查看页面。</div>
+  </div>
+</section>
+
+<section class="slide" data-kind="demo">
+  
+  <header class="s-head">
+    <div class="s-head-left">
+      <div class="kicker an" style="--i:0">效果演示</div>
+      <h2 class="s-title an" style="--i:1">任务 1-1｜用浏览器访问教育部网站</h2>
+      <p class="s-sub an" style="--i:2">在地址栏输入 www.moe.gov.cn 后回车，注意观察地址栏的变化</p>
+    </div>
+  </header>
+  <div class="s-body two demo">
+    <div class="col-l"><ul class="blist small"><li class="an " style="--i:1"><span class="bl-dot"></span><span>推荐使用 <strong>Google Chrome</strong> 浏览器。</span></li><li class="an " style="--i:2"><span class="bl-dot"></span><span>在地址栏输入 <code>www.moe.gov.cn</code>，按 Enter 键。</span></li><li class="an " style="--i:3"><span class="bl-dot"></span><span>观察地址栏：浏览器<strong>自动补全了 http://</strong> 前缀。</span></li><li class="an " style="--i:4"><span class="bl-dot"></span><span>这个前缀就是「协议名」，它告诉浏览器该用哪种方式与服务器通信。</span></li></ul>
+      <div class="hint an" style="--i:5"><b>动手试试：</b>把地址换成任意网站，观察协议前缀是 http:// 还是 https://，并记录你看到的差异。</div>
+    </div>
+    <div class="col-r"><iframe class="demo-frame" title="效果预览" srcdoc="&lt;style&gt;*{box-sizing:border-box}body{margin:0;font-family:&#x27;PingFang SC&#x27;,system-ui,sans-serif}.win{width:660px;background:#fff;border-radius:14px;overflow:hidden;box-shadow:0 24px 60px -24px rgba(20,40,90,.45);border:1px solid #e2e8f2}.bar{display:flex;align-items:center;gap:10px;padding:12px 14px;background:#f1f5fb;border-bottom:1px solid #e2e8f2}.dots{display:flex;gap:6px}.dots i{width:11px;height:11px;border-radius:50%;background:#ff5f57}.dots i:nth-child(2){background:#febc2e}.dots i:nth-child(3){background:#28c840}.url{flex:1;background:#fff;border:1px solid #d7e0ee;border-radius:999px;padding:7px 14px;font-size:13px;font-family:Menlo,monospace;color:#33456b;display:flex;align-items:center;gap:2px}.proto{color:#12a150;overflow:hidden;white-space:nowrap;width:0;animation:type .8s steps(8) .3s forwards}.host{overflow:hidden;white-space:nowrap;width:0;animation:type2 .9s steps(14) .95s forwards}@keyframes type{to{width:8ch}}@keyframes type2{to{width:14ch}}.lock{color:#12a150;margin-left:auto;font-size:11px;opacity:0;animation:fade .4s 1.7s forwards}.page{padding:26px 30px;min-height:190px;position:relative}.load{position:absolute;left:0;top:0;height:3px;background:linear-gradient(90deg,#2f6bff,#0fb5c9);width:0;animation:load 1.1s 1.8s forwards}@keyframes load{0%{width:0}70%{width:78%}100%{width:100%;opacity:0}}@keyframes fade{to{opacity:1}}.content{opacity:0;animation:fade .5s 2.6s forwards}.content h1{margin:0 0 10px;font-size:22px;color:#0e1b2e}.content p{margin:0;color:#5a6c85;font-size:13.5px;line-height:1.9}.badge{display:inline-block;margin-top:14px;font-size:12px;color:#1d46b8;background:#eaf1ff;border:1px solid #c9daff;border-radius:999px;padding:4px 12px}.hintline{opacity:0;animation:fade .5s 3.2s forwards;margin-top:14px;font-size:12.5px;color:#c2601a;background:#fff3e7;border-radius:8px;padding:8px 12px}&lt;/style&gt;&lt;div class=&#x27;win&#x27;&gt;&lt;div class=&#x27;bar&#x27;&gt;&lt;div class=&#x27;dots&#x27;&gt;&lt;i&gt;&lt;/i&gt;&lt;i&gt;&lt;/i&gt;&lt;i&gt;&lt;/i&gt;&lt;/div&gt;&lt;div class=&#x27;url&#x27;&gt;&lt;span class=&#x27;proto&#x27;&gt;http://&lt;/span&gt;&lt;span class=&#x27;host&#x27;&gt;www.moe.gov.cn&lt;/span&gt;&lt;span class=&#x27;lock&#x27;&gt;🔒 安全&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class=&#x27;page&#x27;&gt;&lt;div class=&#x27;load&#x27;&gt;&lt;/div&gt;&lt;div class=&#x27;content&#x27;&gt;&lt;h1&gt;中华人民共和国教育部&lt;/h1&gt;&lt;p&gt;页面已成功加载 —— 这背后是一次完整的「请求 → 服务器 → 响应 → 渲染」过程。&lt;/p&gt;&lt;span class=&#x27;badge&#x27;&gt;HTTP 协议 · 默认端口 80&lt;/span&gt;&lt;/div&gt;&lt;div class=&#x27;hintline&#x27;&gt;观察：地址栏自动补全了 http:// —— 这就是「协议」&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;"></iframe></div>
+  </div>
+</section>
+
+<section class="slide" data-kind="compare">
+  
+  <header class="s-head">
+    <div class="s-head-left">
+      <div class="kicker an" style="--i:0">对比辨析</div>
+      <h2 class="s-title an" style="--i:1">HTTP 与 HTTPS 的区别</h2>
+      <p class="s-sub an" style="--i:2">初学者最容易混淆的两个协议</p>
+    </div>
+  </header>
+  <div class="s-body"><div class="cmp-wrap"><div class="cmp cmp-a">
+          <div class="cmp-h">HTTP · 超文本传输协议</div>
+          <ul><li class="an " style="--i:1">全名 hypertext transfer protocol</li><li class="an " style="--i:2">用于分布式、协作式和超媒体信息系统的<strong>应用层协议</strong></li><li class="an " style="--i:3">是一种发布和接收 HTML 页面的方法</li><li class="an " style="--i:4">默认工作在 TCP 的 <strong>80 端口</strong></li><li class="an " style="--i:5">数据<strong>明文传输</strong>，可被窃听与篡改</li></ul></div><div class="cmp cmp-b">
+          <div class="cmp-h">HTTPS · 超文本传输安全协议</div>
+          <ul><li class="an " style="--i:3">全名 hypertext transfer protocol secure</li><li class="an " style="--i:4">经由 HTTP 通信，但利用 <strong>SSL/TLS 加密数据包</strong></li><li class="an " style="--i:5">主要目的：对网站服务器做<strong>身份认证</strong></li><li class="an " style="--i:6">确保交换数据的<strong>私密性与完整性</strong></li><li class="an " style="--i:7">默认工作在 TCP 的 <strong>443 端口</strong></li></ul></div></div></div>
+</section>
+
+<section class="slide" data-kind="table">
+  
+  <header class="s-head">
+    <div class="s-head-left">
+      <div class="kicker an" style="--i:0">对照表</div>
+      <h2 class="s-title an" style="--i:1">常用协议及其默认端口（教材表 1-1）</h2>
+      <p class="s-sub an" style="--i:2">端口就像「出入服务器这间房子的门」，默认端口可以省略不写</p>
+    </div>
+  </header>
+  <div class="s-body"><div class="tbl-wrap">
+    <table class="tbl"><thead><tr><th>协议</th><th>默认端口</th><th>说明</th></tr></thead><tbody><tr class="an " style="--i:1"><td>FTP</td><td>21</td><td>FTP 服务器所开放的默认端口</td></tr><tr class="an " style="--i:2"><td>HTTP</td><td>80</td><td>超文本传输协议</td></tr><tr class="an " style="--i:3"><td>HTTPS</td><td>443</td><td>使用 SSL/TLS 对数据包加密的 HTTP 传输</td></tr><tr class="an " style="--i:4"><td>SMTP</td><td>25</td><td>简单邮件传送协议，用于发送邮件</td></tr><tr class="an " style="--i:5"><td>POP3</td><td>110</td><td>邮件接收协议</td></tr></tbody></table>
+  </div></div>
+</section>
+
+<section class="slide" data-kind="codebullets">
+  
+  <header class="s-head">
+    <div class="s-head-left">
+      <div class="kicker an" style="--i:0">代码与要点</div>
+      <h2 class="s-title an" style="--i:1">任务 1-2｜读懂一个网址（域名）</h2>
+      <p class="s-sub an" style="--i:2">理解域名要<strong>从右往左读</strong>：越靠右，级别越高</p>
+    </div>
+  </header>
+  <div class="s-body two">
+    <div class="col-l"><ul class="blist small dense"><li class="an " style="--i:1"><span class="bl-dot"></span><span>以 <code>www.moe.gov.cn</code> 为例，从右往左读：<code>.cn</code> → <code>.gov</code> → <code>moe</code> → <code>www</code>。</span></li><li class="an " style="--i:2"><span class="bl-dot"></span><span><code>gov.cn</code> 是<strong>一级域名</strong>：<code>.gov</code> 是政府机构顶级域名，<code>.cn</code> 是中国国家顶级域名。</span></li><li class="an " style="--i:3"><span class="bl-dot"></span><span>位于一级域名前的 <code>moe</code> 是<strong>二级域名</strong>，表示特定机构——这里是教育部（Ministry of Education）。</span></li><li class="an " style="--i:4"><span class="bl-dot"></span><span>最前面的 <code>www</code> 与它们共同构成<strong>三级域名</strong>。</span></li><li class="an " style="--i:5"><span class="bl-dot"></span><span>因此输入 <code>moe.gov.cn</code> 与 <code>www.moe.gov.cn</code> 访问结果一样——<strong>可以省略 www</strong>。</span></li><li class="an " style="--i:6"><span class="bl-dot"></span><span>为什么需要域名？IPv4 地址（如 <code>223.252.199.73</code>）难记易变，域名提供了人类可理解的网络地址。</span></li></ul></div>
+    <div class="col-r"><div class="codebox" class="an " style="--i:1">
+      <div class="cb-bar"><span class="cb-lang">TEXT</span>
+      <span class="cb-file">域名层级</span></div>
+      <pre class="cb-code">www . moe . gov . cn
+ │      │     │    └── 顶级域名：国家/地区 (.cn 中国)
+ │      │     └────── 顶级域名：机构类型 (.gov 政府)
+ │      └─────────── 二级域名：具体机构 (moe 教育部)
+ └────────────────── 三级域名：主机名 (www)
+
+读法：从右往左，级别由高到低
+等价：moe.gov.cn  ==  www.moe.gov.cn</pre></div></div>
+  </div>
+</section>
+
+<section class="slide s-ai" data-kind="ai">
+  
+  <header class="s-head">
+    <div class="s-head-left">
+      <div class="kicker an" style="--i:0">AI 前沿</div>
+      <h2 class="s-title an" style="--i:1">AI 前沿：当「网页」开始由 AI 生成</h2>
+      <p class="s-sub an" style="--i:2">教材讲原理，行业在演进——这些变化正在重塑前端岗位</p>
+    </div>
+  </header>
+  <div class="s-body two">
+    <div class="col-l"><div class="ai-card an" style="--i:1">
+      <div class="ai-badge">AI</div>
+      <p>大语言模型（LLM）已经能直接读懂自然语言并生成 HTML / CSS 代码，甚至根据一张设计稿输出可运行的页面。这并不意味着「不用学 HTML 和 CSS」——恰恰相反：<strong>只有懂结构与样式，你才能审查、调试并驾驭 AI 的输出</strong>。AI 负责「写得快」，你负责「写对、写稳、写安全」。</p></div></div>
+    <div class="col-r"><ul class="blist small ai-list"><li class="an " style="--i:2">AI 辅助编码：GitHub Copilot、通义灵码、文心快码等，可在编辑器中实时补全 HTML/CSS 代码。</li><li class="an " style="--i:3">设计稿转代码：多模态模型可根据截图/设计稿生成前端代码，前端工程师转向「评审 + 优化 + 组件化」。</li><li class="an " style="--i:4">国产大模型：DeepSeek、通义千问、文心一言等，均已具备较强的代码理解与生成能力。</li><li class="an " style="--i:5">职业提醒：AI 生成的代码需人工校核<strong>语义是否规范、无障碍是否达标、安全是否可靠</strong>——这正是本课程要训练的基本功。</li></ul></div>
+  </div>
+</section>
+
+<section class="slide" data-kind="quiz">
+  
+  <header class="s-head">
+    <div class="s-head-left">
+      <div class="kicker an" style="--i:0">随堂检测</div>
+      <h2 class="s-title an" style="--i:1">随堂检测</h2>
+      <p class="s-sub an" style="--i:2">选自教材课后选择题，检验你的理解</p>
+    </div>
+  </header>
+  <div class="s-body quiz-body">
+    <div class="quiz-top an" style="--i:0">
+      <span class="quiz-meta">共 <b>5</b> 题　·　先独立作答，再点「查看答案」；误点可「重做」</span>
+      <span class="quiz-acts">
+        <button type="button" class="q-reset-all" id="quizResetAll">全部重做</button>
+        <button type="button" class="q-reveal" id="quizReveal">显示全部答案</button>
+      </span>
+    </div>
+    <ol class="quiz dense"><li class="quiz-item single" class="an " style="--i:1" data-type="single" data-answer="A">
+          <div class="q"><span class="q-no">01</span>
+            <span class="q-tag single">单选</span><span class="q-txt">在静态页面中，（　　）用来制作页面的结构。</span></div>
+          <div class="opts"><button type="button" class="opt" data-k="A"><i>A</i><span>HTML</span></button><button type="button" class="opt" data-k="B"><i>B</i><span>CSS</span></button><button type="button" class="opt" data-k="C"><i>C</i><span>JavaScript</span></button><button type="button" class="opt" data-k="D"><i>D</i><span>以上都不是</span></button></div>
+          <div class="q-foot"><button type="button" class="q-check">查看答案</button>
+            <button type="button" class="q-reset" disabled>重做</button>
+            <span class="q-verdict"></span></div>
+          <div class="q-ans"><b>答案</b><span class="ans-key">A</span><span class="ans-tip">HTML 负责结构，CSS 负责样式，JavaScript 负责交互。</span></div>
+        </li><li class="quiz-item single" class="an " style="--i:2" data-type="single" data-answer="C">
+          <div class="q"><span class="q-no">02</span>
+            <span class="q-tag single">单选</span><span class="q-txt">下列选项中用来实现页面交互的是（　　）。</span></div>
+          <div class="opts"><button type="button" class="opt" data-k="A"><i>A</i><span>HTML</span></button><button type="button" class="opt" data-k="B"><i>B</i><span>CSS</span></button><button type="button" class="opt" data-k="C"><i>C</i><span>JavaScript</span></button><button type="button" class="opt" data-k="D"><i>D</i><span>以上都不是</span></button></div>
+          <div class="q-foot"><button type="button" class="q-check">查看答案</button>
+            <button type="button" class="q-reset" disabled>重做</button>
+            <span class="q-verdict"></span></div>
+          <div class="q-ans"><b>答案</b><span class="ans-key">C</span><span class="ans-tip">动态交互由 JavaScript、jQuery 等技术实现。</span></div>
+        </li><li class="quiz-item single" class="an " style="--i:3" data-type="single" data-answer="A">
+          <div class="q"><span class="q-no">03</span>
+            <span class="q-tag single">单选</span><span class="q-txt">在请求 Web 页面时，通常使用（　　）。</span></div>
+          <div class="opts"><button type="button" class="opt" data-k="A"><i>A</i><span>HTTP</span></button><button type="button" class="opt" data-k="B"><i>B</i><span>FTP</span></button><button type="button" class="opt" data-k="C"><i>C</i><span>SMTP</span></button><button type="button" class="opt" data-k="D"><i>D</i><span>以上都不是</span></button></div>
+          <div class="q-foot"><button type="button" class="q-check">查看答案</button>
+            <button type="button" class="q-reset" disabled>重做</button>
+            <span class="q-verdict"></span></div>
+          <div class="q-ans"><b>答案</b><span class="ans-key">A</span><span class="ans-tip">HTTP 是超文本传输协议；FTP 传文件，SMTP 发邮件。</span></div>
+        </li><li class="quiz-item multi" class="an " style="--i:4" data-type="multi" data-answer="ABC">
+          <div class="q"><span class="q-no">04</span>
+            <span class="q-tag multi">多选</span><span class="q-txt">下列关于 W3C 的说法中，正确的有（　　）。</span></div>
+          <div class="opts"><button type="button" class="opt" data-k="A"><i>A</i><span>W3C 是万维网联盟，创建于 1994 年</span></button><button type="button" class="opt" data-k="B"><i>B</i><span>其宗旨之一是解决不同平台、技术带来的不兼容问题，保障 Web 信息顺利流通</span></button><button type="button" class="opt" data-k="C"><i>C</i><span>HTML、XML、CSS 等影响深远的标准规范都出自 W3C</span></button><button type="button" class="opt" data-k="D"><i>D</i><span>W3C 标准只规范使用语言，不涉及解释引擎的行为</span></button></div>
+          <div class="q-foot"><button type="button" class="q-check">查看答案</button>
+            <button type="button" class="q-reset" disabled>重做</button>
+            <span class="q-verdict"></span></div>
+          <div class="q-ans"><b>答案</b><span class="ans-key">A、B、C</span><span class="ans-tip">W3C 标准内容包括<strong>使用语言的规范、开发导则和解释引擎的行为</strong>，D 项说法不完整。</span></div>
+        </li><li class="quiz-item multi" class="an " style="--i:5" data-type="multi" data-answer="ABD">
+          <div class="q"><span class="q-no">05</span>
+            <span class="q-tag multi">多选</span><span class="q-txt">下列关于 HTTP 与 HTTPS 的说法中，正确的有（　　）。</span></div>
+          <div class="opts"><button type="button" class="opt" data-k="A"><i>A</i><span>HTTP 是应用层协议，是发布和接收 HTML 页面的一种方法</span></button><button type="button" class="opt" data-k="B"><i>B</i><span>HTTPS 的主要目的之一是对网站服务器做身份认证</span></button><button type="button" class="opt" data-k="C"><i>C</i><span>HTTP 与 HTTPS 的默认端口分别是 443 和 80</span></button><button type="button" class="opt" data-k="D"><i>D</i><span>HTTPS 利用 SSL/TLS 加密数据包，确保数据的私密性与完整性</span></button></div>
+          <div class="q-foot"><button type="button" class="q-check">查看答案</button>
+            <button type="button" class="q-reset" disabled>重做</button>
+            <span class="q-verdict"></span></div>
+          <div class="q-ans"><b>答案</b><span class="ans-key">A、B、D</span><span class="ans-tip">端口记反了：HTTP 默认 <code>80</code>，HTTPS 默认 <code>443</code>。</span></div>
+        </li></ol>
+  </div>
+</section>
+
+<section class="slide" data-kind="summary">
+  
+  <header class="s-head">
+    <div class="s-head-left">
+      
+      <h2 class="s-title an" style="--i:1">本课小结</h2>
+      <p class="s-sub an" style="--i:2">抓住这四句话，整个 Web 前端就有了地图</p>
+    </div>
+  </header>
+  <div class="s-body"><ul class="blist"><li class="an " style="--i:1"><span class="bl-dot"></span><span>三大核心：<strong>HTML 结构、CSS 样式、JavaScript 行为</strong>——先把原生语言学扎实，再谈框架。</span></li><li class="an " style="--i:2"><span class="bl-dot"></span><span>标准体系：<strong>1+X 职业技能等级标准</strong>分初中高三级，本课程对标<strong>初级（静态网页设计开发）</strong>；<strong>W3C</strong> 负责制定 Web 技术标准。</span></li><li class="an " style="--i:3"><span class="bl-dot"></span><span>概念厘清：<strong>网页</strong>是一页，<strong>网站</strong>是集合，<strong>主页</strong>是访问网站看到的第一页。</span></li><li class="an " style="--i:4"><span class="bl-dot"></span><span>工作原理：浏览器发出<strong>请求</strong> → 经路由抵达 <strong>Web 服务器</strong> → 返回<strong>响应</strong> → 浏览器渲染呈现，全过程毫秒级完成。</span></li></ul></div>
+</section>
+
+<section class="slide" data-kind="homework">
+  
+  <header class="s-head">
+    <div class="s-head-left">
+      
+      <h2 class="s-title an" style="--i:1">课后作业</h2>
+      
+    </div>
+  </header>
+  <div class="s-body"><ul class="blist hw"><li class="an " style="--i:1"><span class="bl-dot"></span><span><strong>选择题：</strong>完成教材项目1「一、选择题」第 1～5 题，并说明每个选项为何对或错。</span></li><li class="an " style="--i:2"><span class="bl-dot"></span><span><strong>操作题：</strong>在浏览器中分别访问 3 个网站，记录其协议（http/https）、域名层级结构，写成一份不超过 200 字的小结。</span></li><li class="an " style="--i:3"><span class="bl-dot"></span><span><strong>项目讨论：</strong>目前网络安全对国民经济有着重大影响。作为新时代的 Web 前端工程师，请结合岗位，讨论并回答：如何有效保障网页设计安全、网站运行和管理安全？</span></li><li class="an " style="--i:4"><span class="bl-dot"></span><span><strong>预习：</strong>阅读教材 1.4 与 1.5，思考「站点」与「项目」在开发工具中的作用。</span></li></ul></div>
+</section>
+
+<section class="slide" data-kind="refs">
+  
+  <header class="s-head">
+    <div class="s-head-left">
+      
+      <h2 class="s-title an" style="--i:1">出处与参考</h2>
+      <p class="s-sub an" style="--i:2">本课件内容依据教材，并核对以下权威技术文档</p>
+    </div>
+  </header>
+  <div class="s-body"><ol class="refs"><li class="an " style="--i:1"><span class="ref-idx">01</span><span class="ref-t">教材《网页制作（HTML5+CSS3）》项目1 开发前的准备（1.1～1.3）</span><span class="ref-u">郑哲、傅冬 主编 · 电子工业出版社 · 2025 年 1 月第 1 版</span></li><li class="an " style="--i:2"><span class="ref-idx">02</span><span class="ref-t">MDN Web Docs · HTTP 概述（超文本传输协议权威说明）</span><span class="ref-u">https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Overview</span></li><li class="an " style="--i:3"><span class="ref-idx">03</span><span class="ref-t">MDN Web Docs · 什么是 Web 服务器</span><span class="ref-u">https://developer.mozilla.org/zh-CN/docs/Learn/Common_questions/Web_mechanics/What_is_a_web_server</span></li><li class="an " style="--i:4"><span class="ref-idx">04</span><span class="ref-t">W3C 万维网联盟官方网站（Web 标准）</span><span class="ref-u">https://www.w3.org/</span></li><li class="an " style="--i:5"><span class="ref-idx">05</span><span class="ref-t">工业和信息化部教育与考试中心 ·《Web 前端开发职业技能等级标准》</span><span class="ref-u">https://www.miiteec.org.cn/</span></li></ol></div>
+</section>
+
+<section class="slide s-end" data-kind="end">
+  <div class="end-inner">
+    <div class="end-mark an" style="--i:0">·</div>
+    <h2 class="end-t an" style="--i:1">第 1 单元 · 结束</h2>
+    <p class="end-s an" style="--i:2">下一单元我们动手搭环境、写出人生第一个 HTML 页面</p>
+    <a class="end-next an" style="--i:3" href="U02%20%E5%BC%80%E5%8F%91%E5%B7%A5%E5%85%B7%E4%B8%8E%E5%88%9B%E5%BB%BA%E7%AC%AC%E4%B8%80%E4%B8%AA%20HTML%20%E9%A1%B5%E9%9D%A2.html"><span class="en-lab">下一讲</span><span class="en-t">U02 开发工具与创建第一个 HTML 页面</span><span class="en-ar">→</span></a>
+    <a class="end-back an" style="--i:4" href="../../index.html"><span>←</span> 返回总目录</a>
+  </div>
+</section>
+  <div class="legend">← → 翻页　·　C 点击翻页开关　·　O 目录　·　F 全屏　·　P 打印　·　拖动圈选不翻页</div>
+  <div class="hud">
+    <span class="btn" id="btnClick" data-on="1" title="开启 / 关闭「点击鼠标切换页面」（快捷键 C）">点击翻页 开</span>
+    <span class="btn" id="btnNav">目录</span>
+    <span class="btn" id="btnFull">全屏</span>
+    <span class="pageno"><b id="cur">1</b> / 25</span>
+  </div>
+  <div class="flip-toast" id="flipToast"></div>
+  <div class="drawer" id="drawer">
+    <div class="drawer-panel">
+      <div class="drawer-h">本单元目录 <span id="drawerClose">关闭 ✕</span></div>
+      <ul id="drawerList"><li data-go="0"><span class="nv-idx">01</span><span class="nv-t">Web 前端技术概览与网站工作原理</span></li><li data-go="1"><span class="nv-idx">02</span><span class="nv-t">本单元我们要达成什么</span></li><li data-go="2"><span class="nv-idx">03</span><span class="nv-t">思政课堂</span></li><li data-go="3"><span class="nv-idx">04</span><span class="nv-t">导览</span></li><li data-go="4"><span class="nv-idx">05</span><span class="nv-t">1.1 Web 前端技术简介</span></li><li data-go="5"><span class="nv-idx">06</span><span class="nv-t">三项核心技术</span></li><li data-go="6"><span class="nv-idx">07</span><span class="nv-t">为什么先学原生</span></li><li data-go="7"><span class="nv-idx">08</span><span class="nv-t">1+X 等级标准</span></li><li data-go="8"><span class="nv-idx">09</span><span class="nv-t">全栈工程师</span></li><li data-go="9"><span class="nv-idx">10</span><span class="nv-t">W3C 与标准</span></li><li data-go="10"><span class="nv-idx">11</span><span class="nv-t">1.2 认识网页</span></li><li data-go="11"><span class="nv-idx">12</span><span class="nv-t">网页·网站·主页</span></li><li data-go="12"><span class="nv-idx">13</span><span class="nv-t">网页构成要素</span></li><li data-go="13"><span class="nv-idx">14</span><span class="nv-t">1.3 网站工作原理</span></li><li data-go="14"><span class="nv-idx">15</span><span class="nv-t">请求-响应流程</span></li><li data-go="15"><span class="nv-idx">16</span><span class="nv-t">任务1-1 地址栏演示</span></li><li data-go="16"><span class="nv-idx">17</span><span class="nv-t">HTTP vs HTTPS</span></li><li data-go="17"><span class="nv-idx">18</span><span class="nv-t">协议与端口</span></li><li data-go="18"><span class="nv-idx">19</span><span class="nv-t">任务1-2 域名结构</span></li><li data-go="19"><span class="nv-idx">20</span><span class="nv-t">AI 前沿</span></li><li data-go="20"><span class="nv-idx">21</span><span class="nv-t">随堂检测</span></li><li data-go="21"><span class="nv-idx">22</span><span class="nv-t">本课小结</span></li><li data-go="22"><span class="nv-idx">23</span><span class="nv-t">课后作业</span></li><li data-go="23"><span class="nv-idx">24</span><span class="nv-t">出处与参考</span></li><li data-go="24"><span class="nv-idx">25</span><span class="nv-t">结束</span></li></ul>
+    </div>
+  </div>
+</div></div>
+<script>
+(function(){
+  var slides = Array.prototype.slice.call(document.querySelectorAll('.slide'));
+  var total = slides.length, cur = 0;
+  var stage = document.getElementById('stage');
+  var bar = document.getElementById('bar'), curEl = document.getElementById('cur');
+  var drawer = document.getElementById('drawer');
+  var mqPortrait = window.matchMedia('(orientation: portrait)');
+  var flow = mqPortrait.matches;
+
+  /* ---- 点击翻页开关（记忆教师偏好，跨课件生效） ---- */
+  var clickOn = true;
+  try{ clickOn = localStorage.getItem('deck_clickflip') !== '0'; }catch(e){}
+  var btnClick = document.getElementById('btnClick');
+  var toastEl = document.getElementById('flipToast'), toastTimer = null;
+  function tip(msg){
+    if(!toastEl) return;
+    toastEl.textContent = msg;
+    toastEl.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function(){ toastEl.classList.remove('show'); }, 1500);
+  }
+  function syncClickBtn(){
+    if(!btnClick) return;
+    if(flow){                                   // 竖屏为滚屏阅读，点击翻页天然不生效
+      btnClick.textContent = '竖屏阅读';
+      btnClick.setAttribute('data-on', '0');
+      btnClick.setAttribute('title', '竖屏为纵向阅读模式，上下滚动即可；旋转为横屏后可用点击翻页');
+      return;
+    }
+    btnClick.textContent = '点击翻页 ' + (clickOn ? '开' : '关');
+    btnClick.setAttribute('data-on', clickOn ? '1' : '0');
+    btnClick.setAttribute('title', clickOn
+      ? '当前：点击鼠标可切换页面。点此关闭（快捷键 C）'
+      : '当前：点击鼠标不翻页，方便圈选讲解。点此开启（快捷键 C）');
+  }
+  function toggleClickFlip(silent){
+    clickOn = !clickOn;
+    try{ localStorage.setItem('deck_clickflip', clickOn ? '1' : '0'); }catch(e){}
+    syncClickBtn();
+    if(!silent) tip(clickOn ? '点击翻页已开启' : '点击翻页已关闭 · 仍可用 ← → 或滑动翻页');
+  }
+  syncClickBtn();
+
+  function hasSelection(){
+    var s = window.getSelection && window.getSelection();
+    return !!(s && String(s.text || s).length > 0);
+  }
+  function setIndex(n){
+    cur = Math.max(0, Math.min(total-1, n));
+    slides.forEach(function(s,i){ s.classList.toggle('is-active', i===cur); });
+    var act = slides[cur];
+    if(act && !flow) act.querySelectorAll('.an').forEach(function(el){ void el.offsetWidth; });
+    bar.style.width = (total>1 ? (cur/(total-1)*100) : 100)+'%';
+    curEl.textContent = cur+1;
+    document.querySelectorAll('#drawerList li').forEach(function(li,i){ li.classList.toggle('cur', i===cur); });
+  }
+  function go(n, instant){
+    n = Math.max(0, Math.min(total-1, n));
+    var same = (n===cur && slides[cur] && slides[cur].classList.contains('is-active'));
+    slides.forEach(function(s,i){
+      s.classList.remove('prev');
+      if(i<n) s.classList.add('prev');
+      if(i===n) s.classList.add('is-active');
+    });
+    setIndex(n);
+    if(flow){
+      var el = slides[n];
+      if(el && el.scrollIntoView) el.scrollIntoView({behavior: instant ? 'auto' : 'smooth', block:'start'});
+    } else if(same){
+      var a = slides[n]; if(a) a.querySelectorAll('.an').forEach(function(el){ void el.offsetWidth; });
+    }
+    try{ history.replaceState(null,'','#'+(n+1)); }catch(e){}
+  }
+
+  /* 键盘 */
+  document.addEventListener('keydown', function(e){
+    var k = e.key;
+    if(k==='ArrowRight'||k==='ArrowDown'||k===' '||k==='PageDown'||k==='Enter'){ e.preventDefault(); go(cur+1); }
+    else if(k==='ArrowLeft'||k==='ArrowUp'||k==='PageUp'){ e.preventDefault(); go(cur-1); }
+    else if(k==='Home'){ go(0); } else if(k==='End'){ go(total-1); }
+    else if(k==='o'||k==='O'){ drawer.classList.toggle('open'); }
+    else if(k==='f'||k==='F'){ toggleFull(); }
+    else if(k==='c'||k==='C'){ toggleClickFlip(); }
+    else if(k==='Escape'){ drawer.classList.remove('open'); }
+    else if(k==='p'||k==='P'){ window.print(); }
+  });
+  function toggleFull(){
+    if(!document.fullscreenElement){ (document.documentElement.requestFullscreen||function(){}).call(document.documentElement); }
+    else { document.exitFullscreen(); }
+  }
+
+  /* 点击翻页：拖动圈选文字、双击选词、点按钮/选项一律不翻页 */
+  var down = null, clickTimer = null;
+  function isInteractive(el){
+    return !!(el.closest('.hud')||el.closest('.drawer')||el.closest('iframe')||el.closest('summary')||
+              el.closest('details')||el.closest('.quiz')||el.closest('a')||el.closest('button')||
+              el.closest('input')||el.closest('select')||el.closest('textarea')||el.closest('label'));
+  }
+  stage.addEventListener('mousedown', function(e){ down = {x:e.clientX, y:e.clientY, t:Date.now()}; });
+  stage.addEventListener('click', function(e){
+    if(flow) return;
+    clearTimeout(clickTimer);
+    if(!clickOn) return;                           // 开关关闭：点击不翻页
+    if(e.detail > 1) return;                       // 双击 / 三击 = 选词，不翻页
+    if(isInteractive(e.target)) return;
+    if(hasSelection()) return;                     // 已有选中内容，不翻页
+    if(down && (Math.abs(e.clientX-down.x)>6 || Math.abs(e.clientY-down.y)>6)) return;  // 拖动圈选
+    if(down && (Date.now()-down.t > 800)) return;  // 长按
+    var r = stage.getBoundingClientRect();
+    var dir = (e.clientX - r.left) > r.width*0.5 ? 1 : -1;
+    clickTimer = setTimeout(function(){
+      if(hasSelection()) return;                   // 圈选期间保持静止
+      go(cur+dir);
+    }, 220);
+  });
+  document.addEventListener('dblclick', function(){ clearTimeout(clickTimer); });
+  document.addEventListener('selectionchange', function(){ if(hasSelection()) clearTimeout(clickTimer); });
+
+  /* 触摸：仅在横向滑动时翻页；竖屏交给页面滚动 */
+  var sx=null, sy=null, st=0;
+  stage.addEventListener('touchstart', function(e){
+    if(e.touches.length>1){ sx=null; return; }
+    sx=e.touches[0].clientX; sy=e.touches[0].clientY; st=Date.now();
+  }, {passive:true});
+  stage.addEventListener('touchend', function(e){
+    if(sx===null) return;
+    var dx=e.changedTouches[0].clientX-sx, dy=e.changedTouches[0].clientY-sy;
+    sx=null;
+    if(flow) return;
+    if(Date.now()-st>900) return;                  // 长按选词
+    if(hasSelection()) return;
+    if(Math.abs(dx)>55 && Math.abs(dy)<Math.abs(dx)*0.75) go(dx<0?cur+1:cur-1);
+  }, {passive:true});
+
+  /* 竖屏：滚动时同步页码与进度 */
+  if('IntersectionObserver' in window){
+    var io = new IntersectionObserver(function(entries){
+      if(!flow) return;
+      var best=null;
+      entries.forEach(function(en){
+        if(en.isIntersecting && (!best || en.intersectionRatio > best.intersectionRatio)) best = en;
+      });
+      if(best){
+        var i = slides.indexOf(best.target);
+        if(i>=0 && i!==cur) setIndex(i);
+      }
+    }, {threshold:[0.2,0.5,0.8]});
+    slides.forEach(function(s){ io.observe(s); });
+  }
+  function onOrient(){
+    flow = mqPortrait.matches;
+    syncClickBtn();
+    clearTimeout(clickTimer);
+  }
+  mqPortrait.addEventListener ? mqPortrait.addEventListener('change', onOrient) : mqPortrait.addListener(onOrient);
+
+  /* 目录 / HUD */
+  if(btnClick) btnClick.addEventListener('click', function(e){ e.stopPropagation(); toggleClickFlip(); });
+  document.getElementById('btnNav').addEventListener('click', function(e){ e.stopPropagation(); drawer.classList.add('open'); });
+  document.getElementById('btnFull').addEventListener('click', function(e){ e.stopPropagation(); toggleFull(); });
+  document.getElementById('drawerClose').addEventListener('click', function(){ drawer.classList.remove('open'); });
+  drawer.addEventListener('click', function(e){ if(e.target===drawer) drawer.classList.remove('open'); });
+  document.querySelectorAll('#drawerList li').forEach(function(li){
+    li.addEventListener('click', function(){ go(parseInt(li.dataset.go,10)); drawer.classList.remove('open'); });
+  });
+
+  /* 随堂检测：点选选项 → 判分 → 显示答案与解析 → 单选/全量重做 */
+  function keysOf(item){
+    return (item.getAttribute('data-answer')||'').toUpperCase().replace(/[^A-Z]/g,'').split('');
+  }
+  function reveal(item){
+    var ans = keysOf(item);
+    item.querySelectorAll('.opt').forEach(function(b){
+      if(ans.indexOf(b.getAttribute('data-k'))>=0) b.classList.add('right');
+    });
+    item.classList.add('revealed');
+  }
+  function resetItem(item){
+    item.classList.remove('revealed','ok','bad');
+    item.querySelectorAll('.opt').forEach(function(b){ b.classList.remove('right','sel'); });
+    var v = item.querySelector('.q-verdict'); if(v) v.textContent='';
+    var rs = item.querySelector('.q-reset'); if(rs) rs.disabled = true;
+  }
+  document.querySelectorAll('.quiz-item').forEach(function(item){
+    var qtype = item.getAttribute('data-type')||'single';
+    var btnReset = item.querySelector('.q-reset');
+    item.querySelectorAll('.opt').forEach(function(btn){
+      btn.addEventListener('click', function(ev){
+        ev.stopPropagation();
+        /* 已揭示答案后再点选项 = 重新作答，自动收起答案 */
+        if(item.classList.contains('revealed')){
+          item.classList.remove('revealed','ok','bad');
+          item.querySelectorAll('.opt').forEach(function(b){ b.classList.remove('right'); });
+          var v0 = item.querySelector('.q-verdict'); if(v0) v0.textContent='';
+        }
+        if(qtype==='single'){
+          item.querySelectorAll('.opt').forEach(function(b){ b.classList.remove('sel'); });
+          btn.classList.add('sel');
+        } else {
+          btn.classList.toggle('sel');
+        }
+        item.classList.remove('ok','bad');
+        var v = item.querySelector('.q-verdict'); if(v) v.textContent='';
+        if(btnReset) btnReset.disabled = false;
+      });
+    });
+    var chk = item.querySelector('.q-check');
+    if(chk) chk.addEventListener('click', function(ev){
+      ev.stopPropagation();
+      var ans = keysOf(item);
+      var sel = Array.prototype.slice.call(item.querySelectorAll('.opt.sel')).map(function(b){ return b.getAttribute('data-k'); });
+      var ok = sel.length>0 && sel.length===ans.length && sel.filter(function(k){ return ans.indexOf(k)>=0; }).length===ans.length;
+      reveal(item);
+      if(btnReset) btnReset.disabled = false;
+      item.classList.remove('ok','bad'); item.classList.add(ok?'ok':'bad');
+      var v = item.querySelector('.q-verdict');
+      if(v) v.textContent = ok ? '✓ 回答正确' : (sel.length ? '✗ 再想一想，正确项已标绿' : '请先选择答案');
+    });
+    if(btnReset) btnReset.addEventListener('click', function(ev){
+      ev.stopPropagation();
+      resetItem(item);
+      tip('本题已重置，可重新作答');
+    });
+  });
+  var btnReveal = document.getElementById('quizReveal');
+  if(btnReveal) btnReveal.addEventListener('click', function(ev){
+    ev.stopPropagation();
+    var on = btnReveal.getAttribute('data-on')==='1';
+    var next = !on;
+    document.querySelectorAll('.quiz-item').forEach(function(item){
+      if(next){
+        reveal(item);
+        var rs = item.querySelector('.q-reset'); if(rs) rs.disabled = false;
+      } else {
+        resetItem(item);
+      }
+    });
+    btnReveal.setAttribute('data-on', next ? '1':'0');
+    btnReveal.textContent = next ? '隐藏答案' : '显示全部答案';
+  });
+  var btnResetAll = document.getElementById('quizResetAll');
+  if(btnResetAll) btnResetAll.addEventListener('click', function(ev){
+    ev.stopPropagation();
+    document.querySelectorAll('.quiz-item').forEach(resetItem);
+    if(btnReveal){ btnReveal.setAttribute('data-on','0'); btnReveal.textContent = '显示全部答案'; }
+    tip('已清空本题全部作答，可重新开始');
+  });
+
+  var h = parseInt((location.hash||'').replace('#',''),10);
+  go(isNaN(h)?0:h-1, true);
+})();
+</script>
+</body>
+</html>

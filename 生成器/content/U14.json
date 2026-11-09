@@ -1,0 +1,494 @@
+{
+  "id": "U14",
+  "project": "项目5",
+  "project_name": "盒子模型",
+  "unit": "第 14 单元",
+  "title": "背景：颜色、图片、渐变与精灵图",
+  "subtitle": "content 盒不仅能放内容，还能铺底色、贴图、拉渐变——再用精灵图把十次请求压成一次",
+  "duration": 40,
+  "cover_tags": [
+    "background-color",
+    "background-image",
+    "repeat / position / size",
+    "linear-gradient",
+    "background-clip / origin",
+    "精灵图"
+  ],
+  "ref_book": "电子工业出版社 · 2025 年 1 月第 1 版",
+  "objectives": {
+    "knowledge": [
+      "掌握背景颜色属性的取值方式",
+      "掌握背景图片的平铺、定位与尺寸控制",
+      "掌握 linear-gradient() 渐变函数的用法",
+      "理解背景裁剪、起始定位与精灵图的原理"
+    ],
+    "skill": [
+      "能使用背景颜色与背景图片美化盒子",
+      "能用 background-position 精确定位背景图",
+      "能用渐变函数制作渐变的打卡卡片",
+      "能用精灵图实现多个图标一次加载"
+    ],
+    "literacy": [
+      "培养高尚的审美情操",
+      "培养严谨求实的学习态度",
+      "培养勇于探索、崇尚科学的劳动意识"
+    ]
+  },
+  "slides": [
+    {
+      "type": "objectives",
+      "title": "本单元我们要达成什么",
+      "subtitle": "对照教材《项目5》5.4 背景（5.4.1～5.4.3）",
+      "objectives": {
+        "knowledge": [
+          "掌握 background-color 的语法与取值",
+          "掌握 background-image、repeat、position、size 的语法与作用",
+          "掌握 linear-gradient() 渐变函数的语法",
+          "理解 background-clip、background-origin 与精灵图的用法"
+        ],
+        "skill": [
+          "能使用背景颜色与背景图片美化盒子",
+          "能用 background-position 精确定位背景图",
+          "能制作渐变背景与圆形、三横图标",
+          "能使用精灵图完成多个图标的展示"
+        ],
+        "literacy": [
+          "培养高尚的审美情操",
+          "培养严谨求实的学习态度",
+          "培养勇于探索、崇尚科学的劳动意识"
+        ]
+      }
+    },
+    {
+      "type": "ideology",
+      "title": "看得懂的界面，配得上好的产品",
+      "subtitle": "教材《项目5》思政课堂延伸讨论",
+      "nav": "思政课堂",
+      "text": "在数字化生活场景中，网页制作的影响十分深远。作为信息传递的重要载体，网页让各类资讯、服务触手可及。它不仅提供了丰富的视听效果，还通过<strong>个性化设计</strong>提升了用户体验；此外，网页制作推动了传统媒体的数字化转型，催生了新的商业模式。<strong>支付宝、Keep、京东、淘宝</strong>等各式应用影响着人们生活的方方面面，丰富了人们的数字化生活，为人们带来了诸多便利。",
+      "topic": "Keep 的打卡卡片用渐变背景传递「坚持」的情绪，京东的图标用一张精灵图完成加载。请结合岗位谈一谈：视觉细节与性能优化，哪一个更能体现工程师的价值？"
+    },
+    {
+      "type": "outline",
+      "title": "本单元导览",
+      "subtitle": "八组属性 + 三个任务，串起「盒子表面」这门学问",
+      "nav": "导览",
+      "items": [
+        "background-color 与 background-image：给盒子穿上衣服",
+        "repeat / position / size：让贴图听话地铺、准确地落、合适地缩",
+        "linear-gradient()：不依赖切图也能做出渐变（任务5-7）",
+        "attachment / clip / origin：墙纸与窗帘、背景画到哪儿",
+        "background 综合样式 + 图标、精灵图实战（任务5-8、5-9）"
+      ]
+    },
+    {
+      "type": "section",
+      "no": "5.4",
+      "title": "背景",
+      "text": "在盒子模型中，content 盒不仅可以呈现主体内容，还可以添加背景颜色或图片。",
+      "nav": "5.4 背景"
+    },
+    {
+      "type": "codebullets",
+      "title": "5.4.1 背景颜色 与 5.4.2 背景图片",
+      "subtitle": "语法5-3：background-color；语法5-4：background-image",
+      "nav": "背景颜色与图片",
+      "items": [
+        "<code>background-color</code> 的取值：颜色预设值、十六进制值、RGB 值，以及 <code>transparent</code>（透明）、<code>inherit</code>（继承）。",
+        "<code>background-image:url(image_file_path)</code> 把指定图片作为盒子的背景。",
+        "教材比喻：就像<strong>计算机桌面</strong>——背景图不够大时，桌面上只会显示它的<strong>局部</strong>。",
+        "局限：单纯使用该语法时，必须保证图片大小与盒子尺寸恰好匹配才能达到理想效果。",
+        "属性 vs 标签：<code>background-image</code> 是装饰性内容，可被背景色覆盖；<code>&lt;img&gt;</code> 是内容本身，可被搜索引擎与读屏软件识别。"
+      ],
+      "lang": "css",
+      "file": "语法5-3 / 5-4",
+      "code": "background-color:颜色预设值 | 十六进制值 | RGB 值 | transparent | inherit;\nbackground-color:#ccc;\n\nbackground-image:url(image_file_path) | inherit;\nbackground-image:url(images/01.jpg);"
+    },
+    {
+      "type": "codebullets",
+      "title": "background-repeat：让贴图铺起来",
+      "subtitle": "语法5-5：repeat | repeat-x | repeat-y | no-repeat | inherit",
+      "nav": "背景平铺",
+      "items": [
+        "素材：容器 300px×300px，背景图 hotel-wallpaper.png 尺寸仅 29px×40px。",
+        "<code>repeat</code>：x、y 双向平铺（<strong>默认值</strong>）；<code>no-repeat</code>：只显示一张。",
+        "<code>repeat-x</code>：只在水平方向平铺；<code>repeat-y</code>：只在垂直方向平铺。",
+        "配合 <code>float:left</code> + <code>margin-right</code> 可把四个盒子并排，横向对比四种效果。",
+        "典型用途：小图案平铺做页面底纹，能显著减小图片体积。"
+      ],
+      "lang": "html",
+      "file": "代码5-11 关键片段",
+      "code": "<style>\n.box{                       /* #007-#014 */\n    width: 300px;\n    height: 300px;\n    border:1px solid #666;\n    float:left;\n    margin-right: 20px;\n    background-image:url(\"image/hotel-wallpaper.png\");\n}\n.rpt-both{background-repeat: repeat;}   /* #015 */\n.rpt-no{background-repeat: no-repeat;}  /* #016 */\n.rpt-x{background-repeat: repeat-x;}    /* #017 */\n.rpt-y{background-repeat: repeat-y;}    /* #018 */\n</style>\n\n<div class=\"box rpt-no\"></div>\n<div class=\"box rpt-both\"></div>\n<div class=\"box rpt-x\"></div>\n<div class=\"box rpt-y\"></div>"
+    },
+    {
+      "type": "table",
+      "title": "表5-11 background-position 属性值",
+      "subtitle": "引出问题：为什么 no-repeat 时背景图默认出现在左上角？因为容器左上角为原点 (0,0)",
+      "nav": "背景定位",
+      "head": [
+        "属性值",
+        "描述"
+      ],
+      "rows": [
+        [
+          "表示位置的预设关键字",
+          "<code>left top</code>（<strong>默认值</strong>，左上角）、<code>center top</code>、<code>right top</code>、<code>left center</code>、<code>center center</code>、<code>right center</code>、<code>left bottom</code>、<code>center bottom</code>、<code>right bottom</code>。<br>第一个值表示水平位置，第二个值表示垂直位置；<strong>只规定一个值时另一个值默认为 center</strong>"
+        ],
+        [
+          "偏移量 xpos ypos",
+          "第一个值水平、第二个值垂直，默认值为 <code>0 0</code>，单位为 px 或 em。xpos 为正从左向右移动，ypos 为正从上向下移动；<strong>只规定一个值时另一个值是 50%（或 center）</strong>"
+        ],
+        [
+          "x% y%",
+          "第一个值水平、第二个值垂直，偏移量为<strong>相对于元素宽度与背景图片宽度之差的百分数</strong>。默认值 <code>0% 0%</code>，右下角为 <code>100% 100%</code>；<strong>只规定一个值时另一个值是 50%</strong>"
+        ]
+      ]
+    },
+    {
+      "type": "bullets",
+      "title": "定位其实很好理解：移动的是背景图本身",
+      "subtitle": "配合代码5-12 的五个位置类名一起看",
+      "nav": "定位要点",
+      "items": [
+        "五个对比值：<code>left top</code>、<code>100% 0%</code>、<code>100% 100%</code>、<code>left bottom</code>、<code>50% 50%</code>。",
+        "记住：正数表示<strong>向右 / 向下</strong>移动图片；想要显示右侧部分，就要写<strong>负值</strong>——这是精灵图的理论基础。",
+        "素材说明：HTML5-LOGO.png 实际 2048px×2048px，容器 300px×300px，故先用 <code>background-size:50%</code> 缩小一半便于观察。",
+        "口诀：<code>background-position</code> 描述的不是「图放哪儿」，而是「图的哪一点对准哪里」。"
+      ]
+    },
+    {
+      "type": "table",
+      "title": "表5-12 background-size 属性值（CSS3 新特性）",
+      "subtitle": "为什么需要它？高分屏时代普遍使用 2 倍图甚至 3 倍图",
+      "nav": "背景尺寸",
+      "head": [
+        "属性值",
+        "描述"
+      ],
+      "rows": [
+        [
+          "<code>length</code>",
+          "设置背景图片的高度和宽度。第一个值表示宽度，第二个值表示高度；<strong>只给出一个值时第二个值为 auto</strong>"
+        ],
+        [
+          "<code>percentage</code>",
+          "计算相对于<strong>背景定位区域</strong>的百分比。以空格隔开宽度和高度，以逗号隔开多重背景；只给出一个值时第二个值为 auto"
+        ],
+        [
+          "<code>cover</code>",
+          "保持图片纵横比，缩放成能<strong>完全覆盖</strong>背景定位区域的最小大小"
+        ],
+        [
+          "<code>contain</code>",
+          "保持图片纵横比，缩放成<strong>适合</strong>背景定位区域的最大大小"
+        ]
+      ]
+    },
+    {
+      "type": "compare",
+      "title": "contain 与 cover，到底差在哪",
+      "subtitle": "教材对比结论（图5-26）",
+      "nav": "contain vs cover",
+      "a": {
+        "title": "background-size:contain",
+        "items": [
+          "contain 有<strong>包含</strong>的意思",
+          "把背景图尽可能包含在容器中",
+          "<strong>没有任何裁剪</strong>",
+          "代价：容器多余的地方会<strong>留出大量空白</strong>",
+          "适合：logo、图表、必须完整展示的图"
+        ]
+      },
+      "b": {
+        "title": "background-size:cover",
+        "items": [
+          "cover 意为<strong>覆盖</strong>",
+          "用背景图<strong>尽可能覆盖</strong>当前容器",
+          "必要时<strong>裁剪</strong>背景图",
+          "优点：<strong>不留任何空白</strong>",
+          "适合：banner、卡片封面、全屏背景"
+        ]
+      }
+    },
+    {
+      "type": "compare",
+      "title": "background-attachment：墙纸与窗帘",
+      "subtitle": "教材比喻：scroll 时背景与文字像一个整体；fixed 时背景像墙纸不动，文字像窗帘照常滚动",
+      "nav": "背景滚动",
+      "a": {
+        "title": "scroll（默认值）",
+        "items": [
+          "背景图片随<strong>元素内容一起滚动</strong>",
+          "背景与前景文字像一个<strong>整体</strong>",
+          "素材同为 hotel-wallpaper.png",
+          "图5-29 为 scroll 的对照效果"
+        ]
+      },
+      "b": {
+        "title": "fixed",
+        "items": [
+          "背景图片相对于<strong>视口固定</strong>，不随内容滚动",
+          "背景像<strong>墙纸</strong>固定不动，文字像<strong>窗帘</strong>照常拉动",
+          "常用于整页背景、视差效果的简单实现",
+          "图5-30 为 fixed 的对照效果"
+        ]
+      }
+    },
+    {
+      "type": "compare",
+      "title": "background-clip 与 background-origin：画到哪 vs 从哪起",
+      "subtitle": "两者取值都是 border-box / padding-box / content-box，极易混淆",
+      "nav": "clip vs origin",
+      "a": {
+        "title": "background-clip：背景<strong>裁剪</strong>",
+        "items": [
+          "<code>border-box</code>：背景覆盖 border 盒（默认值）",
+          "<code>padding-box</code>：背景覆盖整个 padding 盒，<strong>不含边框线</strong>",
+          "<code>content-box</code>：背景仅覆盖 content 盒",
+          "作用于<strong>背景颜色与背景图片</strong>，回答「画到哪为止」"
+        ]
+      },
+      "b": {
+        "title": "background-origin：背景<strong>起始定位</strong>",
+        "items": [
+          "<code>border-box</code>：背景图起始于 border 盒左上角",
+          "<code>padding-box</code>：起始于 padding 盒左上角（默认值）",
+          "<code>content-box</code>：起始于 content 盒左上角",
+          "两者区别：origin <strong>需要有背景图片的参与</strong>，回答「从哪开始画」"
+        ]
+      }
+    },
+    {
+      "type": "codebullets",
+      "title": "5.4.3 背景综合样式",
+      "subtitle": "语法5-12：一条 background 写完所有背景相关声明",
+      "nav": "背景综合样式",
+      "items": [
+        "书写顺序：<code>bg-color bg-image position/bg-size bg-repeat bg-origin bg-clip bg-attachment</code>。",
+        "各属性值之间使用<strong>空格</strong>分隔；后续参数有需要时才添加，否则使用默认值。",
+        "<strong>必须设置背景颜色或背景图片</strong>，两者都不指定是常见的编程错误。",
+        "技巧一：<code>bg-size</code> 只能<strong>紧接着 position</strong> 出现，两者以「/」分隔，如 <code>center/80%</code>。",
+        "技巧二：origin 与 clip 取值同为 <code>&lt;box&gt;</code> 类型，出现 1 次时同时设置两者，出现 2 次时依次设置。"
+      ],
+      "lang": "css",
+      "file": "语法5-12 示例",
+      "code": "background:bg-color bg-image position/bg-size bg-repeat bg-origin bg-clip bg-attachment initial|inherit;\n\nbackground:red url(\"images/bg.png\") repeat-y;\nbackground:#fff center/80% no-repeat;\nbackground:url(\"images/bg.png\") left top/cover no-repeat content-box;"
+    },
+    {
+      "type": "task",
+      "title": "任务5-7｜制作健康打卡功能的渐变背景",
+      "subtitle": "目标：根据图5-27 健康 App 打卡卡片效果，用渐变函数实现（图5-28）",
+      "nav": "任务5-7 渐变背景",
+      "goal": "掌握 linear-gradient() 的语法与三条常见编程错误",
+      "steps": [
+        "<code>linear-gradient()</code> 是一个<strong>函数</strong>，参数 direction 表示渐变的角度和方向，其后接若干 CSS 颜色作为过渡起止色。",
+        "示例：<code>background-image: linear-gradient(45deg,#7ca9f0,#82d695);</code>，配 <code>border-radius:5px</code> 做圆角卡片。",
+        "常见编程错误①：想在网页中显示「&gt;」字符，却<strong>不使用实体引用</strong>，应写成 <code>&amp;gt;</code>。",
+        "常见编程错误②：缺少函数<strong>括号</strong>，或参数之间没有用<strong>逗号</strong>分隔。",
+        "常见编程错误③：把渐变函数错误地应用到 <code>background-color</code> 属性中——渐变是<strong>图片</strong>，应写在 <code>background-image</code> 里。"
+      ],
+      "lang": "html",
+      "file": "代码5-14 关键片段",
+      "code": "<style>\n.box{                       /* #007-#016 */\n    width: 200px;\n    height: 150px;\n    background-image: linear-gradient(45deg,#7ca9f0,#82d695);\n    border-radius: 5px;\n    line-height: 150px;\n    color:white;\n    font-size: 30px;\n    text-align: center;\n}\n</style>\n\n<div class=\"box\">\n    &gt;7 天跳绳打卡      <!-- #021 注意 > 需用实体引用 -->\n</div>"
+    },
+    {
+      "type": "demo",
+      "title": "效果演示｜渐变背景流光 + 精灵图位移取图标",
+      "subtitle": "左侧：linear-gradient(45deg,...)；右侧：视窗不动、背景图移动，就像放大镜",
+      "nav": "渐变与精灵图演示",
+      "items": [
+        "左侧卡片的背景色在两个色值之间平滑过渡，<strong>不需要任何图片文件</strong>。",
+        "右侧是一张 3×3 精灵图：素材只有一张图，却被复用成 9 个图标。",
+        "橙色视窗是目标盒子，真正变化的是 <code>background-position</code> 的<strong>负值</strong>位移。",
+        "坐标规律：向右第 2 列是 <code>-60px 0</code>，向下第 2 行是 <code>0 -60px</code>。"
+      ],
+      "hint": "把每次移动想成「把放大镜在整张图上滑动」，请求次数始终是 1 次。",
+      "html": "<style>*{box-sizing:border-box}body{margin:0;padding:12px;font-family:'PingFang SC',system-ui,sans-serif;background:linear-gradient(160deg,#f2f6ff,#eafafd)}.wrap{display:flex;gap:14px}.left{width:200px}.card{width:200px;height:140px;border-radius:8px;display:grid;place-items:center;color:#fff;font-size:22px;font-weight:600;text-align:center;background-image:linear-gradient(45deg,#7ca9f0,#0fb5c9,#82d695,#7ca9f0);background-size:400% 400%;animation:flow 7s linear infinite;box-shadow:0 16px 34px -18px rgba(20,40,90,.55)}@keyframes flow{from{background-position:0% 50%}to{background-position:100% 50%}}.note{margin-top:9px;font:10.5px/1.8 Menlo,monospace;color:#33456b}.note b{color:#1d46b8}.right{flex:1}.ttl{font-size:10.5px;color:#8b9ab2;margin-bottom:5px}.sheet{position:relative;width:180px;height:180px;display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(3,1fr);border:1px solid #b9c6dc;border-radius:6px;overflow:hidden}.cell{display:grid;place-items:center;font-size:10px;color:#fff}.win{position:absolute;width:33.333%;height:33.333%;border:2px solid #ff9800;border-radius:3px;animation:win 9s steps(1) infinite}@keyframes win{0%{left:0;top:0}11.11%{left:33.333%;top:0}22.22%{left:66.666%;top:0}33.33%{left:0;top:33.333%}44.44%{left:33.333%;top:33.333%}55.55%{left:66.666%;top:33.333%}66.66%{left:0;top:66.666%}77.77%{left:33.333%;top:66.666%}88.88%{left:66.666%;top:66.666%}100%{left:66.666%;top:66.666%}}.row2{margin-top:10px;display:flex;gap:10px;align-items:center}.box60{width:60px;height:60px;border:1px solid #b9c6dc;border-radius:6px;position:relative;overflow:hidden;flex:none}.tile{position:absolute;inset:0;display:grid;place-items:center;font-size:10px;color:#fff;opacity:0}.coord{font:11px/1.95 Menlo,monospace;color:#33456b}.pos{position:relative;display:inline-block;width:118px;height:20px}.cr{position:absolute;left:0;top:0;color:#c2185b;opacity:0;white-space:nowrap}.o1{animation:o1 9s infinite}.o2{animation:o2 9s infinite}.o3{animation:o3 9s infinite}.o4{animation:o4 9s infinite}.o5{animation:o5 9s infinite}.o6{animation:o6 9s infinite}.o7{animation:o7 9s infinite}.o8{animation:o8 9s infinite}.o9{animation:o9 9s infinite}@keyframes o1{0%,11.1%{opacity:1}11.2%,100%{opacity:0}}@keyframes o2{0%,11.1%{opacity:0}11.2%,22.2%{opacity:1}22.3%,100%{opacity:0}}@keyframes o3{0%,22.2%{opacity:0}22.3%,33.3%{opacity:1}33.4%,100%{opacity:0}}@keyframes o4{0%,33.3%{opacity:0}33.4%,44.4%{opacity:1}44.5%,100%{opacity:0}}@keyframes o5{0%,44.4%{opacity:0}44.5%,55.5%{opacity:1}55.6%,100%{opacity:0}}@keyframes o6{0%,55.5%{opacity:0}55.6%,66.6%{opacity:1}66.7%,100%{opacity:0}}@keyframes o7{0%,66.6%{opacity:0}66.7%,77.7%{opacity:1}77.8%,100%{opacity:0}}@keyframes o8{0%,77.7%{opacity:0}77.8%,88.8%{opacity:1}88.9%,100%{opacity:0}}@keyframes o9{0%,88.8%{opacity:0}88.9%,100%{opacity:1}}</style><div class='wrap'><div class='left'><div class='card'>&gt;7 天跳绳打卡</div><div class='note'>background-image:<br><b>linear-gradient(45deg,<br>#7ca9f0,#82d695)</b>;<br>无需图片资源，改色值即可换肤</div></div><div class='right'><div class='ttl'>精灵图 Sprite · 一张图承载 9 个图标</div><div class='sheet'><div class='cell' style='background:#e2574c'>苹果</div><div class='cell' style='background:#e8a33d'>香蕉</div><div class='cell' style='background:#8fbf3f'>西瓜</div><div class='cell' style='background:#4aa3c7'>葡萄</div><div class='cell' style='background:#9b6ec2'>芒果</div><div class='cell' style='background:#d7609a'>蜜桃</div><div class='cell' style='background:#3fa89b'>香梨</div><div class='cell' style='background:#c98a2e'>菠萝</div><div class='cell' style='background:#6f8fd0'>荔枝</div><div class='win'></div></div><div class='row2'><div class='box60'><div class='tile o1' style='background:#e2574c'>苹果</div><div class='tile o2' style='background:#e8a33d'>香蕉</div><div class='tile o3' style='background:#8fbf3f'>西瓜</div><div class='tile o4' style='background:#4aa3c7'>葡萄</div><div class='tile o5' style='background:#9b6ec2'>芒果</div><div class='tile o6' style='background:#d7609a'>蜜桃</div><div class='tile o7' style='background:#3fa89b'>香梨</div><div class='tile o8' style='background:#c98a2e'>菠萝</div><div class='tile o9' style='background:#6f8fd0'>荔枝</div></div><div class='coord'>background-position: <span class='pos'><span class='cr o1'>0 0</span><span class='cr o2'>-60px 0</span><span class='cr o3'>-120px 0</span><span class='cr o4'>0 -60px</span><span class='cr o5'>-60px -60px</span><span class='cr o6'>-120px -60px</span><span class='cr o7'>0 -120px</span><span class='cr o8'>-60px -120px</span><span class='cr o9'>-120px -120px</span></span><br>background-repeat: no-repeat<br>9 个图标 → 只发送 1 次请求</div></div></div></div>"
+    },
+    {
+      "type": "task",
+      "title": "任务5-8｜用背景属性制作图标",
+      "subtitle": "目标：icon-dot（实心圆）与 icon-menu（三横图标）两个移动应用常见图标",
+      "nav": "任务5-8 制作图标",
+      "goal": "掌握 currentColor 与 background-clip 的组合用法",
+      "steps": [
+        "技巧：<code>currentColor</code> 是 CSS3 中的变量，表示<strong>当前标签所继承的文字颜色</strong>，可与 color 保持同步。",
+        "共同思路：把前景色设为 lightgrey，用 <code>currentColor</code> 让背景色同步，再用 <code>background-clip:content-box</code> 把绘制区域限定为 content 盒。",
+        "<strong>icon-dot：</strong>content 盒 100×100，配 <code>border-radius:50%</code> 成为实心圆，padding 10px 留白，最外是 10px 边框。",
+        "<strong>icon-menu：</strong>content 盒高 10px，与上、下边框宽度相等，自然形成「三」字形。",
+        "关键：别忘了 <code>display:inline-block</code>，否则空的 div 无法体现宽高。"
+      ],
+      "lang": "css",
+      "file": "代码5-18 关键片段",
+      "code": ".icon-dot{                  /* #007-#017 */\n    display: inline-block;\n    width: 100px;\n    height: 100px;\n    padding:10px;\n    border:10px solid;\n    background-color: currentColor;\n    background-clip:content-box;\n    color:lightgrey;\n    border-radius: 50%;\n}\n.icon-menu{                 /* #018-#028 */\n    display: inline-block;\n    width: 140px;\n    height: 10px;\n    padding:35px 0;\n    border-top:10px solid;\n    border-bottom:10px solid;\n    color:lightgrey;\n    background-color: currentColor;\n    background-clip: content-box;\n}"
+    },
+    {
+      "type": "task",
+      "title": "任务5-9｜使用精灵图",
+      "subtitle": "素材：某水果企业为北京奥运会提供新鲜水果产品的展示框，精灵图 image/bdd.png",
+      "nav": "任务5-9 精灵图",
+      "goal": "用一张精灵图制作多个产品展示框，每个框显示一种水果",
+      "steps": [
+        "容器 <code>.box</code>：宽 172px、高 200px、<code>border:1px solid #ccc</code>、<code>float:left</code>，并统一写 <code>background:url(\"image/bdd.png\") no-repeat;</code>。",
+        "每个水果只需<strong>改一行</strong> background-position：<code>.bdd1{background-position:0 0;}</code>、<code>.bdd2{background-position:-172px 0;}</code>。",
+        "换行时横坐标归零、纵坐标递减：<code>.bdd4{background-position:0px -200px;}</code>。",
+        "坐标规律：moving right → x 取负增大；moving down → y 取负增大。",
+        "注意素材尺寸差异：第 7 个框写作 <code>-516px -98px</code>，说明该行图标高度与前面不同，需按实际测量值回填。"
+      ],
+      "lang": "css",
+      "file": "代码5-19 关键声明",
+      "code": ".box{                       /* #007-#014 */\n    width: 172px;\n    height: 200px;\n    border:1px solid #ccc;\n    float: left;\n    margin-right: 10px;\n    background: url(\"image/bdd.png\") no-repeat;\n}\n.bdd1{background-position: 0 0;}            /* #015 */\n.bdd2{background-position: -172px 0;}       /* #016 */\n.bdd3{background-position: -344px 0;}       /* #017 */\n.bdd4{background-position: 0px -200px;}     /* #018 */\n.bdd5{background-position: -172px -200px;}  /* #019 */\n.bdd6{background-position: -344px -200px;}  /* #020 */\n.bdd7{background-position: -516px -98px;}   /* #021 */"
+    },
+    {
+      "type": "bullets",
+      "title": "精灵图专题问答",
+      "subtitle": "教材问答中的五个关键知识点",
+      "nav": "精灵图专题",
+      "items": [
+        "<strong>什么是精灵图：</strong>取自英文 <code>Sprite</code> 的翻译；因为「雪碧」英文也是 Sprite，有些书上也叫<strong>雪碧图</strong>。",
+        "<strong>为什么用一张大图：</strong>①<strong>加快网页加载速度</strong>——10 张图要发 10 次请求，合成 1 张只需 1 次；②<strong>便于后期维护</strong>。",
+        "<strong>怎么用：</strong>配合 <code>background-image</code>、<code>background-repeat</code>、<code>background-position</code>，<strong>类似于放大镜的使用</strong>——看到的是局部，移动靠 background-position 精准定位。",
+        "<strong>怎么取坐标：</strong>① 用 Photoshop 等绘图软件打开原稿，用测量工具取坐标；② 用<strong>浏览器开发者工具调试</strong>，满意后回填代码。",
+        "<strong>技巧：</strong>绘图软件与开发者工具配合，可以高效获取背景图片的坐标信息。"
+      ]
+    },
+    {
+      "type": "ai",
+      "title": "AI 前沿：当图标不再需要「手量坐标」",
+      "subtitle": "精灵图解决的是请求数问题，AI 正在改变的是「做图」这件事本身",
+      "nav": "AI 前沿",
+      "text": "过去做一张精灵图，需要设计师排版、开发者量坐标；现在图标可以直接以 <strong>SVG</strong> 内联或用 icon font 引入，请求数与维护成本同时下降。AI 则进一步参与进来：给它一句话，就能生成成套 SVG 图标，甚至按品牌色自动生成渐变，替代本单元手写的 linear-gradient。",
+      "items": [
+        "图标方案演进：精灵图 → icon font（如 iconfont.cn）→ 内联 SVG symbol；现代项目更推荐 <strong>SVG symbol 雪碧（sprite）</strong>。",
+        "GitHub Copilot、通义灵码可根据 <code>background-position</code> 的取值规律，自动推算下一排图标的坐标。",
+        "DeepSeek、通义千问可以直接生成满足设计规范的 linear-gradient 色值与色标位置。",
+        "提醒：AI 生成的 SVG/渐变要检查<strong>体积、对比度与无障碍色值</strong>，好看不等于可用。"
+      ]
+    },
+    {
+      "type": "quiz",
+      "title": "随堂检测",
+      "subtitle": "选自教材 5.6 作业选择题，并补充自编题",
+      "nav": "随堂检测",
+      "items": [
+        {
+          "q": "下列属于 background-repeat 的默认值的是（　　）。（教材 5.6 第 3 题）",
+          "options": [
+            "A. no-repeat",
+            "B. repeat",
+            "C. repeat-x",
+            "D. repeat-y"
+          ],
+          "answer": "B",
+          "tip": "repeat 为默认值，即在 x、y 两个方向同时平铺。",
+          "type": "single"
+        },
+        {
+          "q": "关于背景图片，说法正确的是（　　）。（教材 5.6 第 5 题）",
+          "options": [
+            "A. 如果一个图标需要提供单击效果，则应该使用 img 标签而不是背景图片",
+            "B. 背景图片一旦被指定，将无法移动",
+            "C. 在同一个元素中，如果同时指定背景图片和背景颜色，则谁先定义，将先显示谁",
+            "D. 在同一个元素中，只能添加一张背景图片"
+          ],
+          "answer": "A",
+          "tip": "背景图片可用 background-position 移动；背景图片显示在背景颜色之上；CSS3 支持多重背景。",
+          "type": "single"
+        },
+        {
+          "q": "关于 linear-gradient()，下列说法正确的是（　　）。",
+          "options": [
+            "A. 它是一个属性值，应写在 background-color 中",
+            "B. 它是一个函数，第二个参数起为渐变的起止颜色",
+            "C. 它的第一个参数必须是颜色值",
+            "D. 它必须配合外部图片使用"
+          ],
+          "answer": "B",
+          "tip": "linear-gradient() 是函数，第一个参数 direction 表示角度和方向，其后接若干 CSS 颜色，应写在 background-image 中。",
+          "type": "single"
+        },
+        {
+          "q": "关于 background-size 的取值，下列说法正确的有（　　）。",
+          "options": [
+            "A. contain 保持纵横比，把图片完整装入容器，可能留出空白",
+            "B. cover 保持纵横比铺满容器，必要时裁剪图片",
+            "C. cover 会拉伸图片使其变形，以保证容器不留空白",
+            "D. 只给出一个长度值时，第二个值默认为 auto"
+          ],
+          "answer": "ABD",
+          "tip": "cover 与 contain 都<strong>保持纵横比</strong>，cover 是裁剪而非拉伸变形；只写一个长度值时高度取 <code>auto</code>。",
+          "type": "multi"
+        },
+        {
+          "q": "关于线性渐变与精灵图，下列说法正确的有（　　）。",
+          "options": [
+            "A. linear-gradient() 是 background-image 的取值，不能写在 background-color 中",
+            "B. linear-gradient() 的第一个参数必须是颜色值",
+            "C. 用精灵图显示图片右侧的图标时，background-position 的 x 偏移量应取负值",
+            "D. 使用精灵图后，页面中每个图标仍要单独发起一次图片请求"
+          ],
+          "answer": "AC",
+          "tip": "渐变属于图片，必须写在 <code>background-image</code>；第一个参数是方向或角度；精灵图<strong>一张图只请求一次</strong>，靠负值位移取图。",
+          "type": "multi"
+        }
+      ]
+    },
+    {
+      "type": "summary",
+      "title": "本课小结",
+      "nav": "本课小结",
+      "items": [
+        "背景八件套：<code>color</code>、<code>image</code>、<code>repeat</code>、<code>position</code>、<code>size</code>、<code>attachment</code>、<code>clip</code>、<code>origin</code>。",
+        "平铺四值：<code>repeat</code>（默认）、<code>no-repeat</code>、<code>repeat-x</code>、<code>repeat-y</code>。",
+        "尺寸两策略：<code>contain</code> 完整无损但留白，<code>cover</code> 铺满无白但会裁剪。",
+        "渐变是<strong>图片</strong>：<code>linear-gradient(角度, 色1, 色2)</code> 必须写在 <code>background-image</code> 中。",
+        "精灵图：<strong>一张图 + 负值位移</strong>，把多次请求压成一次，坐标可用 Photoshop 或开发者工具量取。"
+      ]
+    },
+    {
+      "type": "homework",
+      "title": "课后作业",
+      "subtitle": "教材 5.6 作业",
+      "nav": "课后作业",
+      "items": [
+        "<strong>选择题：</strong>完成教材项目5「一、选择题」第 1～5 题，并写出每题的判断依据。",
+        "<strong>操作题：</strong>使用教学项目源文件中的 <code>ch05/images/all_bg.gif</code> 精灵图，结合<strong>链接伪类</strong>实现鼠标指针悬停后高亮的效果（图5-38）。",
+        "<strong>拓展题：</strong>用 <code>linear-gradient()</code> 制作一张属于自己的打卡卡片，至少使用 3 个色标，并说明角度选择的理由。",
+        "<strong>项目讨论：</strong>精灵图在早期游戏制作中经常使用。请查找资料列举一个游戏案例，对比精灵图在游戏与网页中的使用原理，并讨论它的优点。"
+      ]
+    },
+    {
+      "type": "refs",
+      "title": "出处与参考",
+      "subtitle": "本课件内容依据教材，并核对以下权威技术文档",
+      "nav": "出处与参考",
+      "items": [
+        {
+          "t": "教材《网页制作（HTML5+CSS3）》项目5 盒子模型（5.4 背景）",
+          "u": "郑哲、傅冬 主编 · 电子工业出版社 · 2025 年 1 月第 1 版"
+        },
+        {
+          "t": "MDN Web Docs · background 属性",
+          "u": "https://developer.mozilla.org/zh-CN/docs/Web/CSS/background"
+        },
+        {
+          "t": "MDN Web Docs · background-position / background-size",
+          "u": "https://developer.mozilla.org/zh-CN/docs/Web/CSS/background-position"
+        },
+        {
+          "t": "MDN Web Docs · 使用 CSS 渐变（linear-gradient）",
+          "u": "https://developer.mozilla.org/zh-CN/docs/Web/CSS/CSS_images/Using_CSS_gradients"
+        },
+        {
+          "t": "MDN Web Docs · background-clip 与 background-origin",
+          "u": "https://developer.mozilla.org/zh-CN/docs/Web/CSS/background-clip"
+        }
+      ]
+    },
+    {
+      "type": "end",
+      "title": "第 14 单元 · 结束",
+      "text": "项目5 收官：盒子模型 + 边框 / 外边距 / 背景，构成了 CSS 布局的完整地基",
+      "nav": "结束"
+    }
+  ]
+}

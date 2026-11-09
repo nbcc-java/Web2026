@@ -1,0 +1,439 @@
+{
+  "id": "U02",
+  "project": "项目1",
+  "project_name": "开发前的准备",
+  "unit": "第 2 单元",
+  "title": "开发工具与创建第一个 HTML 页面",
+  "subtitle": "搭建属于自己的开发环境，写下人生第一段 HTML 代码并让它在浏览器中跑起来",
+  "duration": 40,
+  "cover_tags": [
+    "Dreamweaver",
+    "HBuilderX",
+    "VSCode",
+    "站点 / 项目",
+    "127.0.0.1"
+  ],
+  "ref_book": "电子工业出版社 · 2025 年 1 月第 1 版",
+  "objectives": {
+    "knowledge": [
+      "了解常用前端开发工具的特点与适用场景",
+      "理解「站点 / 项目」在开发中的作用",
+      "掌握 HTML 页面的创建与保存规范"
+    ],
+    "skill": [
+      "能安装并配置 Dreamweaver 或 HBuilderX",
+      "能创建站点/项目并新建 HTML 页面",
+      "能用浏览器预览页面并分辨两种预览模式"
+    ],
+    "literacy": [
+      "养成良好的文件命名与保存习惯",
+      "培养一丝不苟、规范严谨的工程意识",
+      "培养自主探索工具、迁移学习的能力"
+    ]
+  },
+  "slides": [
+    {
+      "type": "objectives",
+      "title": "本单元我们要达成什么",
+      "subtitle": "对照教材《项目1》1.4～1.5 的学习目标",
+      "objectives": {
+        "knowledge": [
+          "了解常用前端开发工具的特点",
+          "理解站点的概念与作用",
+          "掌握创建 HTML 页面的基本流程"
+        ],
+        "skill": [
+          "能安装 Dreamweaver 或 HBuilderX",
+          "能创建站点/项目并新建、保存 index.html",
+          "能用浏览器预览并分辨预览模式"
+        ],
+        "literacy": [
+          "养成规范的文件管理习惯",
+          "培养严谨务实的劳动态度",
+          "培养不断探索、勇于创新的精神"
+        ]
+      }
+    },
+    {
+      "type": "outline",
+      "title": "本单元导览",
+      "subtitle": "从「选工具」到「写出第一行代码」",
+      "nav": "导览",
+      "items": [
+        "市面上的前端开发工具有哪些？各自适合谁？",
+        "为什么要先建「站点」？它和「项目」是一回事吗？",
+        "任务 1-5：用 Dreamweaver 创建第一个 HTML 页面",
+        "任务 1-6：用 HBuilderX 创建第一个 HTML 页面",
+        "两种预览模式：服务器模式 vs 静态浏览器模式"
+      ]
+    },
+    {
+      "type": "section",
+      "no": "1.4",
+      "title": "常用开发工具简介",
+      "text": "工具只是手段——但选对工具，学习效率会成倍提升。",
+      "nav": "1.4 常用开发工具"
+    },
+    {
+      "type": "cards",
+      "title": "三款主流前端开发工具",
+      "subtitle": "教材重点演示 Dreamweaver 与 HBuilderX，同时介绍了 VSCode",
+      "nav": "三款开发工具",
+      "cols": 3,
+      "items": [
+        {
+          "title": "VSCode",
+          "text": "微软开发的<strong>跨平台、免费开源</strong>编辑器。支持语法高亮、代码补全（IntelliSense）、重构、定义跳转；内置命令行与 Git；可通过<strong>扩展商店</strong>拼装出任意开发环境，专业用户最爱。"
+        },
+        {
+          "title": "Dreamweaver",
+          "text": "Adobe 的<strong>老牌商业软件</strong>，设计/开发/发布一体化 IDE，自带实时预览与大量模板，<strong>无需安装额外插件</strong>；与 Photoshop 等无缝对接。适合缺少代码经验的初学者。"
+        },
+        {
+          "title": "HBuilderX",
+          "text": "国内 DCloud 推出的 HTML5 开发 IDE，最大的特点是<strong>又轻又快</strong>；语法提示与代码块完善，基于 Eclipse、兼容其插件。<strong>1+X 考试要求使用国产软件 HBuilderX</strong>。"
+        }
+      ]
+    },
+    {
+      "type": "table",
+      "title": "常用开发工具产品特性对照（教材表 1-2）",
+      "subtitle": "从「轻量级程度」理解几款工具的关系",
+      "nav": "工具特性对照",
+      "head": [
+        "序号",
+        "产品",
+        "开源",
+        "轻量级",
+        "可扩展",
+        "备注"
+      ],
+      "rows": [
+        [
+          "1",
+          "Eclipse",
+          "是",
+          "是",
+          "是",
+          "提供 Web 开发的集成套件"
+        ],
+        [
+          "2",
+          "VSCode",
+          "是",
+          "是",
+          "是",
+          "通过扩展插件定制开发环境"
+        ],
+        [
+          "3",
+          "HBuilderX",
+          "否",
+          "是",
+          "是",
+          "针对 Web、移动开发优化，有一定扩展性"
+        ],
+        [
+          "4",
+          "Dreamweaver",
+          "否",
+          "否",
+          "否",
+          "与 Adobe 产品集成，设计到发布全流程环境"
+        ]
+      ]
+    },
+    {
+      "type": "bullets",
+      "title": "工具怎么选？三条关键结论",
+      "subtitle": "教材给出的选型建议，请在笔记本上记下来",
+      "nav": "工具选择建议",
+      "items": [
+        "Dreamweaver 功能齐全、界面一致性高，<strong>适合没有代码编写经验的初学者</strong>，便于教学与演示。",
+        "为对接 <strong>1+X Web 前端开发职业技能等级考试（考试要求选用国产软件 HBuilderX）</strong>，本课程重点演示 Dreamweaver 与 HBuilderX。",
+        "<strong>关键结论：</strong>页面的最终显示效果取决于 HTML 代码和 CSS 样式代码——<strong>只要代码相同，用哪款工具都能达到同样效果</strong>。",
+        "补充提醒：Eclipse 与 VSCode 的插件各成体系、<strong>无法互相通用</strong>；HBuilderX 与 Eclipse 系出同门，插件可相互通用。"
+      ]
+    },
+    {
+      "type": "section",
+      "no": "1.5",
+      "title": "创建第一个 HTML 页面",
+      "text": "先建站点，再建页面——这是良好编程习惯的第一步。",
+      "nav": "1.5 创建第一个页面"
+    },
+    {
+      "type": "bullets",
+      "title": "为什么必须先创建「站点」",
+      "subtitle": "教材关键解释：站点 = 存放网站所有相关文档的本地或远程存储位置",
+      "nav": "站点的概念",
+      "items": [
+        "站点用于<strong>组织和管理所有页面文档与资源</strong>，让文件之间的关系一目了然。",
+        "开发完成后，可把站点<strong>整体上传到 Web 服务器</strong>，确保页面之间的<strong>链接引用关系不变</strong>。",
+        "良好的编程习惯：确保新建的<strong>每个页面文件都放置在指定的站点（或项目）中</strong>。",
+        "在 Dreamweaver 中叫「<strong>站点</strong>」，在 HBuilderX 中叫「<strong>项目</strong>」——作用完全相同：管理该网站的所有资源。"
+      ]
+    },
+    {
+      "type": "steps",
+      "title": "任务 1-5｜用 Dreamweaver 创建第一个 HTML 页面",
+      "subtitle": "目标：创建站点 web，新建页面并显示文字「欢迎一起学习Web 前端技术」",
+      "nav": "任务1-5 Dreamweaver",
+      "items": [
+        {
+          "title": "新建站点",
+          "text": "选择「站点 → 新建站点」，设置站点名称为 web，本地站点文件夹为 F:\\website\\。"
+        },
+        {
+          "title": "新建文档",
+          "text": "选择「文件 → 新建」，文档类型选择 HTML5，单击「创建」。"
+        },
+        {
+          "title": "输入内容",
+          "text": "把光标放在设计视图中，输入「欢迎一起学习Web 前端技术」（所见即所得）。"
+        },
+        {
+          "title": "观察代码",
+          "text": "切换到拆分视图，可看到代码视图第 9 行同步发生变化。"
+        },
+        {
+          "title": "及时保存",
+          "text": "默认文件名是 Untitled-x.html，务必「另存为」index.html，并确认保存在站点根目录。"
+        },
+        {
+          "title": "浏览器预览",
+          "text": "点击状态栏右下角图标，选择 Google Chrome 预览页面（Windows 快捷键 F12）。"
+        }
+      ]
+    },
+    {
+      "type": "steps",
+      "title": "任务 1-6｜用 HBuilderX 创建第一个 HTML 页面",
+      "subtitle": "HBuilderX 是纯绿色、免安装软件，站点以「项目」的形式呈现",
+      "nav": "任务1-6 HBuilderX",
+      "items": [
+        {
+          "title": "新建项目",
+          "text": "选择「文件 → 新建 → 项目」。"
+        },
+        {
+          "title": "配置向导",
+          "text": "① 项目类型选「普通项目」；② 命名为 web；③ 指定存放位置；④ 模板选「基本HTML 项目」；⑤ 创建。"
+        },
+        {
+          "title": "认识自动生成的结构",
+          "text": "HBuilderX 会自动创建 css、img、js 等常用文件夹以及 index.html。"
+        },
+        {
+          "title": "编辑源代码",
+          "text": "双击 index.html，以源代码方式编辑，在第 8 行输入「欢迎一起学习Web 前端技术」。"
+        },
+        {
+          "title": "留意保存状态",
+          "text": "文档未保存时，标签上会显示一个星号（*），提示该文档已被修改。"
+        },
+        {
+          "title": "点击预览",
+          "text": "单击文档工具栏右侧的「预览」按钮，用内置浏览器查看效果。"
+        }
+      ]
+    },
+    {
+      "type": "code",
+      "title": "你写下的第一个页面：index.html",
+      "subtitle": "只有 9 行代码，却是所有网页的起点",
+      "nav": "第一个页面代码",
+      "lang": "html",
+      "file": "index.html",
+      "code": "<!DOCTYPE html>\n<html lang=\"zh-CN\">\n<head>\n  <meta charset=\"UTF-8\">\n  <title>我的第一个网页</title>\n</head>\n<body>\n  欢迎一起学习Web 前端技术\n</body>\n</html>",
+      "caption": "<b>提示：</b><code>index</code>、<code>default</code> 常被服务器配置为网站的首页；<code>html</code>、<code>htm</code> 都是静态页面的默认扩展名。静态页面<strong>不需要服务器编译或解释</strong>，可直接发送给浏览器显示。"
+    },
+    {
+      "type": "demo",
+      "title": "效果预览｜让第一个页面「好看一点」",
+      "subtitle": "同样的文字，加上一点点 CSS，感受「样式」的力量",
+      "nav": "第一个页面效果",
+      "items": [
+        "左侧是刚才的 index.html 在浏览器中的呈现效果。",
+        "文字内容完全由 HTML 决定，<strong>结构 = 内容</strong>。",
+        "文字的颜色、字号、居中、背景，全部由 <strong>CSS 样式</strong>决定。",
+        "本课程的后续项目，就是系统学习如何用 CSS 让页面「既正确又好看」。"
+      ],
+      "hint": "试着把文字换成你自己的名字，再改一改颜色（提示：color 属性）。",
+      "html": "<style>*{box-sizing:border-box}body{margin:0;min-height:340px;display:grid;place-items:center;font-family:'PingFang SC',system-ui,sans-serif;background:linear-gradient(140deg,#eef4ff,#e6fbfd)}.card{text-align:center;padding:44px 56px;background:#fff;border-radius:20px;box-shadow:0 26px 60px -26px rgba(20,40,90,.5);border:1px solid #e5ecf7;animation:pop .7s cubic-bezier(.2,.8,.2,1) both}h1{margin:0;font-size:30px;background:linear-gradient(120deg,#12306f,#2f6bff 50%,#0fb5c9);-webkit-background-clip:text;background-clip:text;color:transparent;letter-spacing:.02em}p{margin:14px 0 0;color:#5a6c85;font-size:14px;line-height:1.9;animation:fade .6s .35s both}@keyframes pop{from{opacity:0;transform:translateY(18px) scale(.96)}}@keyframes fade{from{opacity:0;transform:translateY(10px)}}.tag{display:inline-block;margin-top:18px;font-size:12px;color:#1d46b8;background:#eaf1ff;border:1px solid #c9daff;border-radius:999px;padding:5px 14px;animation:fade .6s .55s both}</style><div class='card'><h1>欢迎一起学习Web 前端技术</h1><p>这段文字只用了 HTML —— 加上 CSS，它就变成了你看到的样子。</p><span class='tag'>结构 = HTML　·　样式 = CSS</span></div>"
+    },
+    {
+      "type": "compare",
+      "title": "两种预览模式，别搞混",
+      "subtitle": "Dreamweaver 的首选项 → 实时预览 中可以切换",
+      "nav": "两种预览模式",
+      "a": {
+        "title": "服务器模式（默认）",
+        "items": [
+          "Dreamweaver 自带 <strong>Node.js 服务器</strong>，以服务器模式提供页面显示",
+          "地址栏内容以 <strong>127.0.0.1</strong> 开始",
+          "目的是<strong>模拟 Web 服务器交付页面的真实效果</strong>",
+          "页面中含服务端动态脚本时，该模式有<strong>正确的交互反馈</strong>"
+        ]
+      },
+      "b": {
+        "title": "静态浏览器模式",
+        "items": [
+          "在「首选项 → 实时预览」中勾选「默认为静态浏览器中预览」",
+          "地址栏内容类似<strong>文件资源管理器的文件路径</strong>",
+          "与在本地文件夹直接双击打开文件的效果相同",
+          "<strong>无法执行</strong>需要服务器执行的动态脚本"
+        ]
+      }
+    },
+    {
+      "type": "bullets",
+      "title": "小知识：127.0.0.1 与 localhost",
+      "subtitle": "为什么预览时地址栏长这样？",
+      "nav": "回送地址",
+      "items": [
+        "<code>127.0.0.1</code> 是一个特殊的 IP 地址，称为「<strong>回送地址</strong>」（loopback address），指向本地主机，通常用于测试。",
+        "它与系统保留的域名 <code>localhost</code> 对应——<code>http://127.0.0.1/index.html</code> 与 <code>http://localhost/index.html</code> <strong>是等价的</strong>。",
+        "HBuilderX 预览时的地址形如 <code>http://127.0.0.1:8848/web/index.html</code>：<strong>127.0.0.1 表示本地主机，8848 是端口号</strong>，/web 是项目目录。"
+      ]
+    },
+    {
+      "type": "ai",
+      "title": "AI 前沿：编辑器里的「结对编程伙伴」",
+      "subtitle": "学会用 AI 加速，但别丢掉「自己会写」的底气",
+      "nav": "AI 前沿",
+      "text": "现代编辑器已经把大语言模型内置为「结对编程伙伴」：你写下 <code>注释</code>，它就能补全整段 HTML/CSS；你描述需求，它就能生成代码骨架。对初学者来说，这是极好的<strong>即时反馈与模仿范本</strong>——但前提是你具备判断代码对错的能力。",
+      "items": [
+        "AI 补全：在 VSCode / HBuilderX 中安装 AI 插件（如通义灵码、文心快码、Copilot），边写边获得建议。",
+        "AI 解释：选中一段陌生代码，让 AI 逐行解释其含义——是最好的「随堂助教」。",
+        "AI 排错：把浏览器控制台的报错信息交给 AI，快速定位问题原因。",
+        "学习建议：<strong>先用 AI 生成、再逐行读懂的代码</strong>，才真正属于你自己；抄来的代码不会长在你脑子里。"
+      ]
+    },
+    {
+      "type": "quiz",
+      "title": "随堂检测",
+      "subtitle": "选自教材项目1课后选择题",
+      "nav": "随堂检测",
+      "items": [
+        {
+          "q": "在使用 Dreamweaver 开发网站项目时，需要先创建（　　）。",
+          "options": [
+            "A. HTML5 页面",
+            "B. CSS 文件",
+            "C. 站点",
+            "D. 项目"
+          ],
+          "answer": "C",
+          "tip": "Dreamweaver 中称「站点」，HBuilderX 中称「项目」。",
+          "type": "single"
+        },
+        {
+          "q": "在使用 HBuilderX 开发网站项目时，需要先创建（　　）。",
+          "options": [
+            "A. HTML5 页面",
+            "B. CSS 文件",
+            "C. 站点",
+            "D. 项目"
+          ],
+          "answer": "D",
+          "tip": "HBuilderX 以「项目」形式组织资源。",
+          "type": "single"
+        },
+        {
+          "q": "关于静态页面，下列说法正确的是（　　）。",
+          "options": [
+            "A. 需要服务器编译后才能显示",
+            "B. 直接发送给浏览器显示",
+            "C. 必须使用数据库",
+            "D. 只能显示文字"
+          ],
+          "answer": "B",
+          "tip": "静态页面不需要服务器编译或解释，可直接在浏览器中显示。",
+          "type": "single"
+        },
+        {
+          "type": "multi",
+          "q": "关于三款主流开发工具，下列说法正确的有（　　）。",
+          "options": [
+            "A. VSCode 是微软开发的跨平台免费开源编辑器，可通过扩展商店定制开发环境",
+            "B. Dreamweaver 无需安装额外插件，适合缺少代码编写经验的初学者",
+            "C. HBuilderX 是 1+X Web 前端开发职业技能等级考试要求使用的国产软件",
+            "D. 页面最终显示效果取决于所选工具，工具越专业效果越好"
+          ],
+          "answer": "ABC",
+          "tip": "效果只取决于 HTML 与 CSS 代码，<strong>代码相同，用哪款工具都一样</strong>。"
+        },
+        {
+          "type": "multi",
+          "q": "关于站点（项目）与预览模式，下列说法正确的有（　　）。",
+          "options": [
+            "A. 站点用于组织和管理该网站的所有页面文档与资源",
+            "B. 站点整体上传到服务器后，页面之间的链接引用关系可保持不变",
+            "C. 静态浏览器模式与服务器模式效果完全一致，都能执行动态脚本",
+            "D. <code>127.0.0.1</code> 是回送地址，与系统保留域名 <code>localhost</code> 等价"
+          ],
+          "answer": "ABD",
+          "tip": "静态浏览器模式<strong>无法执行</strong>需要服务器执行的动态脚本，C 项错误。"
+        }
+      ]
+    },
+    {
+      "type": "summary",
+      "title": "本课小结",
+      "nav": "本课小结",
+      "items": [
+        "工具认知：<strong>VSCode</strong> 开源可扩展、<strong>Dreamweaver</strong> 一体化易上手、<strong>HBuilderX</strong> 轻快且为 1+X 考试指定软件。",
+        "选型结论：<strong>页面的最终显示效果只取决于代码</strong>，换工具不换效果；初学推荐 Dreamweaver，考证推荐 HBuilderX。",
+        "站点/项目：先把 <code>index.html</code> 放进站点（项目）里，才能保证链接引用关系在后续发布时保持不变。",
+        "预览模式：<strong>服务器模式</strong>（127.0.0.1 开头，模拟真实服务器）与<strong>静态浏览器模式</strong>（文件路径，不能跑动态脚本）要分清。",
+        "良好习惯：及时保存（注意星号 *）、规范命名（<code>index.html</code>）、文件归位。"
+      ]
+    },
+    {
+      "type": "homework",
+      "title": "课后作业",
+      "nav": "课后作业",
+      "items": [
+        "<strong>操作题 1：</strong>在自己电脑上安装 HBuilderX 或 Dreamweaver CC 2023 以上版本，完成安装截图并说明安装路径。",
+        "<strong>操作题 2：</strong>创建站点（项目）web，新建 index.html，页面显示「欢迎一起学习Web 前端技术」，保存并预览。",
+        "<strong>思考题：</strong>查看集成开发环境的帮助文档，记录 3 个你最喜欢的快捷键，并说明它们的用途。",
+        "<strong>预习：</strong>阅读教材项目2 2.1～2.3，思考一个问题：一个标准的 HTML 页面由哪几个部分组成？"
+      ]
+    },
+    {
+      "type": "refs",
+      "title": "出处与参考",
+      "subtitle": "本课件内容依据教材，并核对以下权威技术文档",
+      "nav": "出处与参考",
+      "items": [
+        {
+          "t": "教材《网页制作（HTML5+CSS3）》项目1 开发前的准备（1.4～1.5）",
+          "u": "郑哲、傅冬 主编 · 电子工业出版社 · 2025 年 1 月第 1 版"
+        },
+        {
+          "t": "Visual Studio Code 官方网站",
+          "u": "https://code.visualstudio.com/"
+        },
+        {
+          "t": "HBuilderX 官方网站（DCloud）",
+          "u": "https://www.dcloud.io/hbuilderx.html"
+        },
+        {
+          "t": "Adobe Dreamweaver 官方产品页",
+          "u": "https://www.adobe.com/cn/products/dreamweaver.html"
+        },
+        {
+          "t": "MDN Web Docs · HTML 基础（HTML 文档的基本结构）",
+          "u": "https://developer.mozilla.org/zh-CN/docs/Learn/Getting_started_with_the_web/HTML_basics"
+        }
+      ]
+    },
+    {
+      "type": "end",
+      "title": "第 2 单元 · 结束",
+      "text": "下一单元：走进 HTML 基础，认识标签与语义化",
+      "nav": "结束"
+    }
+  ]
+}

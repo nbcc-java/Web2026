@@ -1,0 +1,1359 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>边框与外边距 · 网页制作课件</title>
+<style>
+:root{
+  --bg:#EEF3FB; --bg2:#F7FAFF; --surface:#fff; --ink:#0E1B2E; --muted:#5A6C85;
+  --brand:#2F6BFF; --brand-dk:#1D46B8; --brand2:#0FB5C9; --violet:#7C5CFF; --accent:#FF8A3D;
+  --ok:#12A150; --line:#E1E8F4; --code-bg:#0D1A2B; --code-ink:#DCE7F8;
+  --font:'PingFang SC','Microsoft YaHei','Hiragino Sans GB','Source Han Sans SC',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --mono:'JetBrains Mono','SF Mono',Menlo,Consolas,'Courier New',monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+.slide{user-select:text;-webkit-user-select:text}
+.hud,.legend,.drawer,.kicker,.topbar{user-select:none;-webkit-user-select:none}
+::selection{background:rgba(47,107,255,.22)}
+html,body{height:100%}
+body{background:radial-gradient(1200px 800px at 12% 0%,#e6efff 0%,transparent 55%),
+             radial-gradient(1000px 700px at 100% 100%,#e9fbfd 0%,transparent 50%),var(--bg);
+     font-family:var(--font);color:var(--ink);overflow:hidden;-webkit-font-smoothing:antialiased}
+.wrap{height:100%;display:grid;place-items:center;padding:2.2vh 2.2vh}
+.stage{position:relative;width:100%;height:100%;max-width:calc(100vh * 16 / 9);max-height:calc(100vw * 9 / 16);
+       aspect-ratio:16/9;background:var(--bg2);border-radius:20px;overflow:hidden;
+       box-shadow:0 34px 80px -30px rgba(18,42,92,.42),0 0 0 1px rgba(255,255,255,.7) inset;
+       container-type:size}
+/* 背景装饰 */
+.bgfx{position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:0}
+.blob{position:absolute;border-radius:50%;filter:blur(46px);opacity:.5}
+.b1{width:38cqw;height:38cqw;left:-10cqw;top:-14cqw;background:linear-gradient(135deg,#bcd4ff,#8fb6ff);animation:float1 18s ease-in-out infinite}
+.b2{width:30cqw;height:30cqw;right:-8cqw;top:6cqw;background:linear-gradient(135deg,#b8f0f6,#7fe3ef);animation:float2 22s ease-in-out infinite}
+.b3{width:26cqw;height:26cqw;left:22cqw;bottom:-14cqw;background:linear-gradient(135deg,#d9ccff,#b9a6ff);animation:float3 26s ease-in-out infinite}
+@keyframes float1{50%{transform:translate(4cqw,3cqw) scale(1.06)}}
+@keyframes float2{50%{transform:translate(-4cqw,4cqw) scale(1.08)}}
+@keyframes float3{50%{transform:translate(3cqw,-4cqw) scale(1.05)}}
+.grid-lines{position:absolute;inset:0;background-image:linear-gradient(rgba(47,107,255,.05) 1px,transparent 1px),
+   linear-gradient(90deg,rgba(47,107,255,.05) 1px,transparent 1px);background-size:4cqw 4cqw;opacity:.7}
+
+/* 幻灯片 */
+.slide{position:absolute;inset:0;z-index:2;padding:4.4cqw 5cqw 4cqw;display:flex;flex-direction:column;gap:1.9cqw;
+  opacity:0;visibility:hidden;transform:translateY(1.4cqw) scale(.99);
+  transition:opacity .52s ease,transform .52s cubic-bezier(.2,.7,.2,1),visibility .52s}
+.slide.is-active{opacity:1;visibility:visible;transform:none}
+.slide.prev{transform:translateY(-1.4cqw) scale(.99)}
+.s-head{display:flex;justify-content:space-between;align-items:flex-start;gap:2cqw;flex:0 0 auto}
+.kicker{display:inline-block;font-size:1.16cqw;font-weight:700;letter-spacing:.16em;color:var(--brand);
+  background:linear-gradient(90deg,rgba(47,107,255,.12),rgba(15,181,201,.12));padding:.42cqw 1cqw;border-radius:999px;margin-bottom:.75cqw}
+.s-title{font-size:2.86cqw;font-weight:800;letter-spacing:.01em;line-height:1.2}
+.s-sub{margin-top:.6cqw;font-size:1.32cqw;color:var(--muted);line-height:1.55}
+.s-body{flex:1;min-height:0;display:flex;flex-direction:column;justify-content:center;gap:1.5cqw}
+.s-body.two{flex-direction:row;align-items:stretch;gap:2.2cqw}
+.s-body.two>*{flex:1;min-width:0}
+.s-body.col{justify-content:center}
+.col-l,.col-r{min-width:0;display:flex;flex-direction:column;justify-content:center;gap:1.2cqw}
+
+/* 入场动画 */
+.an{opacity:0}
+.is-active .an{animation:rise .66s cubic-bezier(.2,.75,.2,1) both;animation-delay:calc(var(--i,0)*95ms + 120ms)}
+@keyframes rise{from{opacity:0;transform:translateY(1.5cqw)}to{opacity:1;transform:none}}
+
+/* 封面 */
+.s-cover{flex-direction:row;align-items:center;gap:3cqw;padding:6cqw 6cqw}
+.cover-left{flex:1.15;min-width:0;z-index:2}
+.brandrow{display:flex;align-items:baseline;gap:.9cqw;margin-bottom:2.1cqw}
+.brandmark{font-size:1.7cqw;font-weight:800;color:var(--brand);letter-spacing:.08em}
+.brandsub{font-size:1.1cqw;font-weight:700;color:var(--brand2);letter-spacing:.2em}
+.cover-title{font-size:4.5cqw;font-weight:900;line-height:1.14;letter-spacing:-.01em;
+  background:linear-gradient(120deg,#12306f,#2f6bff 45%,#0fb5c9);-webkit-background-clip:text;background-clip:text;color:transparent}
+.cover-sub{margin-top:1.2cqw;font-size:1.55cqw;color:var(--muted);line-height:1.7;max-width:34cqw}
+.pills{display:flex;flex-wrap:wrap;gap:.7cqw;margin-top:1.9cqw}
+.pill{font-size:1.03cqw;font-weight:700;color:var(--brand-dk);background:rgba(47,107,255,.1);
+  border:1px solid rgba(47,107,255,.2);padding:.4cqw 1cqw;border-radius:999px}
+.pill{opacity:0}
+.is-active .pill{animation:rise .6s both;animation-delay:calc(var(--i)*95ms + 120ms)}
+.cover-meta{margin-top:2.3cqw;display:flex;align-items:center;gap:.9cqw;flex-wrap:wrap;font-size:1.02cqw;color:var(--muted)}
+.cover-meta b{color:var(--brand);font-size:1.2cqw}
+.cover-meta .dot{width:.34cqw;height:.34cqw;border-radius:50%;background:#c3cfe2}
+.cover-art{flex:.85;position:relative;min-width:0;display:grid;place-items:center}
+.orb{position:absolute;border-radius:50%;filter:blur(10px);opacity:.75}
+.o1{width:15cqw;height:15cqw;right:-1cqw;top:2cqw;background:radial-gradient(circle at 30% 30%,#9dc2ff,#4f83ff)}
+.o2{width:8cqw;height:8cqw;right:12cqw;bottom:4cqw;background:radial-gradient(circle at 30% 30%,#a9f0f7,#1fc2d6)}
+.o3{width:5cqw;height:5cqw;right:3cqw;bottom:12cqw;background:radial-gradient(circle at 30% 30%,#d5c7ff,#8a63ff)}
+.orb{animation:orb 9s ease-in-out infinite}
+.o2{animation-duration:11s}.o3{animation-duration:13s}
+@keyframes orb{50%{transform:translateY(-1.6cqw) scale(1.06)}}
+.codewin{position:relative;z-index:2;width:100%;max-width:32cqw;background:var(--code-bg);border-radius:1.2cqw;
+  box-shadow:0 30px 60px -22px rgba(13,26,43,.7);overflow:hidden;transform:rotate(-1.5deg);
+  animation:rise .8s cubic-bezier(.2,.75,.2,1) .35s both}
+.cw-bar{display:flex;gap:.5cqw;padding:.85cqw 1.1cqw;background:rgba(255,255,255,.06)}
+.cw-bar i{width:.72cqw;height:.72cqw;border-radius:50%;background:#ff5f57}
+.cw-bar i:nth-child(2){background:#febc2e}.cw-bar i:nth-child(3){background:#28c840}
+.cw-body{padding:1.3cqw 1.5cqw;font-family:var(--mono);font-size:1.06cqw;line-height:1.85;color:var(--code-ink);white-space:pre;overflow:auto}
+
+/* 章节过渡 */
+.s-section{align-items:center;justify-content:center;text-align:center}
+.sec-inner{display:flex;flex-direction:column;align-items:center}
+.sec-num{font-size:7.6cqw;font-weight:900;line-height:1;
+  background:linear-gradient(120deg,#2f6bff,#0fb5c9);-webkit-background-clip:text;background-clip:text;color:transparent;letter-spacing:-.03em}
+.sec-title{margin-top:1.2cqw;font-size:3.1cqw;font-weight:800}
+.sec-line{width:0;height:.4cqw;border-radius:99px;background:linear-gradient(90deg,var(--brand),var(--brand2));margin:1.4cqw 0}
+.is-active .sec-line{animation:draw .8s ease .5s both}
+@keyframes draw{from{width:0}to{width:11cqw}}
+.sec-sub{font-size:1.4cqw;color:var(--muted);max-width:44cqw;line-height:1.7}
+
+/* 要点列表 */
+.blist{list-style:none;display:flex;flex-direction:column;gap:1.05cqw}
+.blist li{display:flex;gap:.95cqw;align-items:flex-start;font-size:1.42cqw;line-height:1.6;
+  background:var(--surface);border:1px solid var(--line);border-radius:.85cqw;padding:1.05cqw 1.3cqw;
+  box-shadow:0 8px 22px -16px rgba(20,40,90,.5);transition:transform .25s,box-shadow .25s}
+.blist li:hover{transform:translateX(.4cqw);box-shadow:0 12px 26px -16px rgba(47,107,255,.55)}
+.blist.small li{font-size:1.24cqw;padding:.85cqw 1.1cqw}
+.blist.dense{gap:.68cqw}
+.blist.dense li{font-size:1.18cqw;padding:.72cqw 1.1cqw;line-height:1.55}
+.outline.dense{gap:.62cqw}
+.outline.dense li{padding:.72cqw 1.15cqw}
+.outline.dense .ot{font-size:1.16cqw}
+.grid.dense{gap:.95cqw}
+.card.dense{padding:1.1cqw}
+.card.dense .card-t{font-size:1.26cqw;margin-bottom:.4cqw}
+.card.dense .card-d{font-size:1.03cqw;line-height:1.55}
+.bl-dot{flex:0 0 auto;width:.62cqw;height:.62cqw;border-radius:50%;margin-top:.62cqw;
+  background:linear-gradient(135deg,var(--brand),var(--brand2));box-shadow:0 0 0 .28cqw rgba(47,107,255,.12)}
+.blist b,.blist strong{color:var(--brand-dk)}
+.blist code{font-family:var(--mono);font-size:.92em;background:#eef3ff;color:#1d46b8;padding:.1em .42em;border-radius:.35em}
+.hw li{background:linear-gradient(180deg,#fbfcff,#f3f7ff)}
+
+/* 卡片 */
+.grid{display:grid;gap:1.3cqw}
+.grid.cols-2{grid-template-columns:repeat(2,1fr)}
+.grid.cols-3{grid-template-columns:repeat(3,1fr)}
+.grid.cols-4{grid-template-columns:repeat(2,1fr)}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:1.1cqw;padding:1.5cqw;position:relative;overflow:hidden;
+  box-shadow:0 14px 32px -22px rgba(20,40,90,.55);transition:transform .28s,box-shadow .28s,border-color .28s}
+.card:hover{transform:translateY(-.5cqw);box-shadow:0 22px 40px -22px rgba(47,107,255,.5);border-color:rgba(47,107,255,.35)}
+.card::before{content:"";position:absolute;left:0;top:0;height:100%;width:.3cqw;background:linear-gradient(180deg,var(--brand),var(--brand2))}
+.card-ico{font-size:1.75cqw;margin-bottom:.6cqw}
+.card-t{font-size:1.42cqw;font-weight:800;margin-bottom:.55cqw}
+.card-d{font-size:1.14cqw;color:var(--muted);line-height:1.62}
+
+/* 表格 */
+.tbl-wrap{background:var(--surface);border:1px solid var(--line);border-radius:1.1cqw;overflow:hidden;
+  box-shadow:0 16px 36px -26px rgba(20,40,90,.6)}
+.tbl{width:100%;border-collapse:collapse;font-size:1.16cqw}
+.tbl th{background:linear-gradient(180deg,#eef4ff,#e4edff);color:var(--brand-dk);font-weight:800;text-align:left;
+  padding:.95cqw 1.2cqw;border-bottom:1px solid #d8e3f7;font-size:1.12cqw;letter-spacing:.02em}
+.tbl td{padding:.85cqw 1.2cqw;border-bottom:1px solid var(--line);line-height:1.55}
+.tbl tbody tr:last-child td{border-bottom:0}
+.tbl tbody tr:hover{background:#f7faff}
+.tbl code{font-family:var(--mono);font-size:.92em;background:#eef3ff;color:#1d46b8;padding:.08em .4em;border-radius:.35em}
+
+/* 对比 */
+.cmp-wrap{display:grid;grid-template-columns:1fr 1fr;gap:1.8cqw}
+.cmp{border-radius:1.1cqw;padding:1.4cqw;border:1px solid var(--line);background:var(--surface)}
+.cmp-h{font-size:1.4cqw;font-weight:800;margin-bottom:.9cqw;display:flex;align-items:center;gap:.6cqw}
+.cmp-a .cmp-h{color:var(--brand-dk)}
+.cmp-b .cmp-h{color:#b8730f}
+.cmp ul{list-style:none;display:flex;flex-direction:column;gap:.7cqw}
+.cmp li{font-size:1.16cqw;line-height:1.6;color:var(--muted);padding-left:1.3cqw;position:relative}
+.cmp li::before{content:"";position:absolute;left:0;top:.62cqw;width:.5cqw;height:.5cqw;border-radius:2px;background:var(--brand)}
+.cmp-b li::before{background:var(--accent)}
+.cmp-a{background:linear-gradient(180deg,#f6f9ff,#fff)}
+
+/* 步骤 */
+.steps{display:flex;flex-direction:column;gap:1cqw}
+.step{display:flex;gap:1.2cqw;align-items:flex-start;background:var(--surface);border:1px solid var(--line);
+  border-radius:.9cqw;padding:1cqw 1.25cqw}
+.step-n{flex:0 0 auto;width:2.3cqw;height:2.3cqw;border-radius:50%;display:grid;place-items:center;font-weight:800;font-size:1.15cqw;color:#fff;
+  background:linear-gradient(135deg,var(--brand),var(--brand2))}
+.step-t{font-size:1.3cqw;font-weight:800}
+.step-d{font-size:1.12cqw;color:var(--muted);line-height:1.6;margin-top:.25cqw}
+
+/* 流程图 */
+.flow{display:flex;align-items:stretch;justify-content:center;gap:0;flex-wrap:nowrap}
+.fl{flex:1;min-width:0;background:var(--surface);border:1px solid var(--line);border-radius:1cqw;padding:1.3cqw 1cqw;text-align:center;
+  box-shadow:0 12px 28px -22px rgba(20,40,90,.55)}
+.fl-ico{font-size:1.9cqw;margin-bottom:.5cqw}
+.fl-t{font-size:1.24cqw;font-weight:800;margin-bottom:.35cqw;color:var(--brand-dk)}
+.fl-d{font-size:1.02cqw;color:var(--muted);line-height:1.55}
+.fl-arrow{flex:0 0 auto;width:2.2cqw;position:relative;display:grid;place-items:center}
+.fl-arrow::after{content:"";width:1.4cqw;height:.22cqw;background:linear-gradient(90deg,var(--brand),var(--brand2));border-radius:99px;position:relative}
+.fl-arrow::before{content:"";position:absolute;right:.35cqw;width:.6cqw;height:.6cqw;border-top:.2cqw solid var(--brand2);border-right:.2cqw solid var(--brand2);transform:rotate(45deg)}
+.flow-note{margin-top:1.3cqw;font-size:1.1cqw;color:var(--muted);text-align:center;background:rgba(47,107,255,.06);border-radius:.8cqw;padding:.8cqw 1.2cqw}
+
+/* 代码 */
+.codebox{background:var(--code-bg);border-radius:1.1cqw;overflow:hidden;box-shadow:0 26px 54px -26px rgba(13,26,43,.75)}
+.cb-bar{display:flex;align-items:center;gap:.8cqw;padding:.8cqw 1.2cqw;background:rgba(255,255,255,.06);border-bottom:1px solid rgba(255,255,255,.07)}
+.cb-lang{font-family:var(--mono);font-size:.92cqw;font-weight:700;color:#7fd7e4;letter-spacing:.12em}
+.cb-file{font-family:var(--mono);font-size:.92cqw;color:#7f93ad}
+.cb-code{padding:1.25cqw 1.5cqw;font-family:var(--mono);font-size:1.06cqw;line-height:1.78;color:var(--code-ink);white-space:pre;overflow:auto;max-height:100%}
+.cb-code .pn{color:#7f93ad}.cb-code .tg{color:#6fd6ff}.cb-code .at{color:#ffcf7a}.cb-code .st{color:#a5e88a}
+.cb-code .c{color:#6b8099;font-style:italic}.cb-code .sel{color:#ffb3c8}.cb-code .cls{color:#ffd479}
+.cb-code .id{color:#9fe8ff}.cb-code .pc{color:#c8a2ff}.cb-code .prop{color:#8fd3ff}.cb-code .num{color:#f7c774}
+.cb-code .fn{color:#d0b0ff}.cb-code .imp{color:#ff8a8a}.cb-code .at-rules{color:#ff9f6b}
+.caption{margin-top:1cqw;font-size:1.08cqw;color:var(--muted);line-height:1.6}
+.caption b{color:var(--brand-dk)}
+
+/* 任务 */
+.task-goal{background:linear-gradient(180deg,#f4f8ff,#eef4ff);border:1px solid #dbe6fb;border-radius:.9cqw;padding:1.05cqw 1.25cqw;
+  font-size:1.22cqw;line-height:1.62}
+.tg-label{display:inline-block;font-weight:800;color:#fff;background:var(--brand);border-radius:.45cqw;
+  font-size:.98cqw;padding:.16cqw .6cqw;margin-right:.6cqw;vertical-align:.08cqw}
+.task-steps{list-style:none;counter-reset:ts;display:flex;flex-direction:column;gap:.75cqw}
+.task-steps li{counter-increment:ts;position:relative;padding-left:2.3cqw;font-size:1.14cqw;line-height:1.6}
+.task-steps li::before{content:counter(ts);position:absolute;left:0;top:.08cqw;width:1.55cqw;height:1.55cqw;border-radius:50%;
+  background:rgba(47,107,255,.12);color:var(--brand-dk);font-size:.92cqw;font-weight:800;display:grid;place-items:center}
+.task-code{background:var(--code-bg);border-radius:.9cqw;overflow:hidden;box-shadow:0 20px 44px -26px rgba(13,26,43,.7)}
+
+/* 演示 */
+.demo-right{display:flex;flex-direction:column;gap:1cqw;height:100%}
+.demo-frame{flex:1;width:100%;min-height:0;border:1px solid var(--line);border-radius:1cqw;background:#fff;
+  box-shadow:0 22px 46px -26px rgba(20,40,90,.6)}
+.demo-code{background:var(--code-bg);border-radius:.9cqw;overflow:hidden}
+.demo-code summary{cursor:pointer;color:#9fb6d4;font-size:1.02cqw;padding:.7cqw 1.1cqw;font-family:var(--mono);user-select:none}
+.demo-code .cb-code{padding:0 1.2cqw 1.1cqw;font-size:.96cqw}
+.hint{margin-top:1cqw;font-size:1.08cqw;color:var(--muted);background:rgba(255,138,61,.1);border-left:.3cqw solid var(--accent);
+  border-radius:.6cqw;padding:.8cqw 1.1cqw;line-height:1.6}
+.hint b{color:#c2601a}
+
+/* AI */
+.ai-card{background:linear-gradient(160deg,#171a3a,#2b2a5e 55%,#3a2a6a);border-radius:1.1cqw;padding:1.7cqw;color:#e8e6ff;
+  position:relative;overflow:hidden;box-shadow:0 24px 52px -26px rgba(40,30,90,.8)}
+.ai-card::after{content:"";position:absolute;right:-6cqw;top:-6cqw;width:14cqw;height:14cqw;border-radius:50%;
+  background:radial-gradient(circle,rgba(124,92,255,.6),transparent 65%);animation:float1 12s ease-in-out infinite}
+.ai-badge{display:inline-grid;place-items:center;width:2.6cqw;height:2.6cqw;border-radius:.7cqw;font-weight:900;font-size:1.1cqw;
+  background:linear-gradient(135deg,#7c5cff,#0fb5c9);color:#fff;margin-bottom:.9cqw;letter-spacing:.04em}
+.ai-card p{font-size:1.22cqw;line-height:1.72;position:relative;z-index:2}
+.ai-list li{border-color:rgba(124,92,255,.25);background:linear-gradient(180deg,#fbf9ff,#f5f2ff)}
+.ai-list .bl-dot{background:linear-gradient(135deg,#7c5cff,#0fb5c9)}
+
+/* 检测（可交互：点选 → 判分 → 显示解析） */
+.quiz-body{justify-content:flex-start;gap:1.1cqw}
+.quiz-top{display:flex;align-items:center;justify-content:space-between;gap:1.2cqw;flex:0 0 auto}
+.quiz-meta{font-size:1.02cqw;color:var(--muted)}
+.quiz-meta b{color:var(--brand);font-size:1.1cqw}
+.q-reveal{cursor:pointer;font-family:inherit;font-size:.98cqw;font-weight:700;color:var(--brand-dk);
+  background:#eef4ff;border:1px solid #d6e3fb;border-radius:.5cqw;padding:.4cqw .95cqw;transition:.18s}
+.q-reveal:hover{background:#e2ecff;border-color:var(--brand)}
+.quiz-acts{display:flex;align-items:center;gap:.6cqw;flex:0 0 auto}
+.q-reset-all{cursor:pointer;font-family:inherit;font-size:.98cqw;font-weight:700;color:var(--muted);
+  background:#fff;border:1px solid var(--line);border-radius:.5cqw;padding:.4cqw .9cqw;transition:.18s}
+.q-reset-all:hover{color:var(--accent);border-color:#ffd0a8;background:#fff8f2}
+.quiz{list-style:none;display:flex;flex-direction:column;gap:1cqw;overflow:auto;padding-right:.3cqw}
+.quiz.dense{gap:.55cqw}
+.quiz-body:has(.quiz.dense){gap:.7cqw}
+.quiz-item{background:var(--surface);border:1px solid var(--line);border-radius:.9cqw;padding:1cqw 1.2cqw;
+  transition:border-color .2s,box-shadow .2s}
+.quiz-item.ok{border-color:rgba(18,161,80,.45);box-shadow:0 10px 26px -20px rgba(18,161,80,.7)}
+.quiz-item.bad{border-color:rgba(214,83,79,.45);box-shadow:0 10px 26px -20px rgba(214,83,79,.6)}
+.quiz.dense .quiz-item{padding:.6cqw .95cqw}
+.quiz.dense .q{font-size:1.08cqw}
+.quiz.dense .opts{margin-top:.4cqw;gap:.45cqw}
+.quiz.dense .opt{font-size:.94cqw;padding:.22cqw .62cqw}
+.quiz.dense .q-foot{margin-top:.4cqw;min-height:1.15cqw}
+.quiz.dense .q-check{font-size:.88cqw;padding:.16cqw .6cqw}
+.quiz.dense .q-verdict{font-size:.9cqw}
+.quiz.dense .q-ans{margin-top:.4cqw;font-size:.92cqw;padding:.4cqw .7cqw}
+.q{display:flex;gap:.55cqw;align-items:baseline;font-size:1.22cqw;font-weight:700;line-height:1.5}
+.quiz.dense .q{font-size:1.12cqw}
+.q-no{font-family:var(--mono);font-size:.92cqw;font-weight:800;color:var(--brand);flex:0 0 auto}
+.q-tag{flex:0 0 auto;font-size:.8cqw;font-weight:700;color:#fff;background:var(--brand2);
+  border-radius:.32cqw;padding:.08cqw .42cqw;letter-spacing:.04em}
+.q-tag.multi{background:var(--violet)}
+.q-txt{flex:1;min-width:0}
+.opts{display:flex;flex-wrap:wrap;gap:.55cqw;margin-top:.62cqw}
+.opt{cursor:pointer;display:inline-flex;gap:.42cqw;align-items:center;font-family:inherit;text-align:left;
+  font-size:1.02cqw;line-height:1.45;color:#33456b;background:#f5f8ff;border:1px solid #e0e9fb;
+  border-radius:.55cqw;padding:.36cqw .8cqw;transition:background .16s,border-color .16s,box-shadow .16s}
+.quiz.dense .opt{font-size:.96cqw;padding:.28cqw .7cqw}
+.opt:hover{border-color:var(--brand);background:#eef4ff}
+.opt i{font-style:normal;font-family:var(--mono);font-weight:800;font-size:.88em;color:var(--brand)}
+.opt.sel{background:#e6efff;border-color:var(--brand);box-shadow:0 0 0 .16cqw rgba(47,107,255,.16)}
+.opt.right{background:rgba(18,161,80,.1);border-color:#12A150;color:#0b5f2f}
+.opt.right i{color:#0b5f2f}
+.q-foot{display:flex;align-items:center;gap:.8cqw;margin-top:.6cqw;min-height:1.5cqw}
+.q-check{cursor:pointer;font-family:inherit;font-size:.94cqw;font-weight:700;color:var(--brand);
+  background:#fff;border:1px solid #c9daff;border-radius:.45cqw;padding:.26cqw .75cqw;transition:.16s}
+.q-check:hover{background:#eef4ff}
+.q-reset{cursor:pointer;font-family:inherit;font-size:.94cqw;font-weight:700;color:var(--muted);
+  background:#fff;border:1px solid var(--line);border-radius:.45cqw;padding:.26cqw .7cqw;transition:.16s}
+.q-reset:hover{color:var(--accent);border-color:#ffd0a8;background:#fff8f2}
+.q-reset:disabled{opacity:.38;cursor:default}
+.q-reset:disabled:hover{color:var(--muted);border-color:var(--line);background:#fff}
+.quiz.dense .q-reset{font-size:.88cqw;padding:.16cqw .55cqw}
+.q-verdict{font-size:.96cqw;font-weight:700}
+.quiz-item.ok .q-verdict{color:var(--ok)}
+.quiz-item.bad .q-verdict{color:#d9534f}
+.q-ans{display:none;margin-top:.6cqw;font-size:.98cqw;line-height:1.6;color:#0f7a3d;
+  background:rgba(18,161,80,.08);border-radius:.5cqw;padding:.5cqw .8cqw}
+.quiz-item.revealed .q-ans{display:block;animation:rise .3s both}
+.q-ans b{color:#0b5f2f;margin-right:.45cqw}
+.ans-key{font-family:var(--mono);font-weight:800;margin-right:.6cqw}
+.ans-tip{color:var(--muted)}
+
+/* 目标 */
+.objs{display:grid;grid-template-columns:repeat(3,1fr);gap:1.4cqw}
+.obj{border-radius:1.1cqw;padding:1.4cqw;border:1px solid var(--line);background:var(--surface)}
+.obj-h{font-size:1.3cqw;font-weight:800;margin-bottom:.85cqw;display:flex;align-items:center;gap:.55cqw}
+.obj-h::before{content:"";width:.55cqw;height:1.35cqw;border-radius:99px}
+.obj ul{list-style:none;display:flex;flex-direction:column;gap:.62cqw}
+.obj li{font-size:1.1cqw;line-height:1.58;color:var(--muted);padding-left:1.15cqw;position:relative}
+.obj li::before{content:"";position:absolute;left:0;top:.6cqw;width:.42cqw;height:.42cqw;border-radius:50%;background:#9db4d6}
+.obj-1 .obj-h::before{background:var(--brand)}.obj-2 .obj-h::before{background:var(--brand2)}.obj-3 .obj-h::before{background:var(--accent)}
+.obj-1 .obj-h{color:var(--brand-dk)}.obj-2 .obj-h{color:#0a7b87}.obj-3 .obj-h{color:#b8730f}
+
+/* 思政 */
+.s-ideo .s-body{justify-content:center}
+.ideo-wrap{display:flex;flex-direction:column;gap:1.3cqw}
+.ideo-quote{position:relative;background:linear-gradient(180deg,#fff8f0,#fffbf6);border:1px solid #ffe3c8;border-left:.42cqw solid var(--accent);
+  border-radius:.95cqw;padding:1.6cqw 1.8cqw 1.6cqw 2.2cqw;font-size:1.3cqw;line-height:1.85;color:#4a3a28}
+.ideo-quote strong{color:#a3510a}
+.ideo-topic{font-size:1.16cqw;color:var(--muted);background:rgba(47,107,255,.06);border-radius:.8cqw;padding:.9cqw 1.2cqw;line-height:1.6}
+.it-label{display:inline-block;font-weight:800;color:#fff;background:var(--brand);border-radius:.45cqw;font-size:.96cqw;padding:.16cqw .6cqw;margin-right:.6cqw}
+
+/* 大纲 */
+.outline{list-style:none;display:flex;flex-direction:column;gap:.95cqw;counter-reset:none}
+.outline li{display:flex;align-items:center;gap:1.2cqw;background:var(--surface);border:1px solid var(--line);border-radius:.9cqw;padding:1.05cqw 1.35cqw;
+  box-shadow:0 10px 26px -22px rgba(20,40,90,.55)}
+.oi{font-family:var(--mono);font-size:1.1cqw;font-weight:800;color:var(--brand);background:rgba(47,107,255,.1);border-radius:.5cqw;padding:.28cqw .7cqw}
+.ot{font-size:1.34cqw;font-weight:700}
+
+/* 参考 */
+.refs{list-style:none;display:flex;flex-direction:column;gap:.85cqw}
+.refs li{display:flex;align-items:baseline;gap:.9cqw;background:var(--surface);border:1px solid var(--line);border-radius:.8cqw;padding:.9cqw 1.15cqw}
+.ref-idx{font-family:var(--mono);font-size:1cqw;font-weight:800;color:var(--brand)}
+.ref-t{font-size:1.16cqw;font-weight:600}
+.ref-u{font-family:var(--mono);font-size:.92cqw;color:var(--muted);word-break:break-all}
+
+/* 结束 */
+.s-end{align-items:center;justify-content:center;text-align:center;background:linear-gradient(140deg,#12203b,#1d3a78 55%,#0e6f88);}
+.s-end .end-t{color:#fff}
+.end-mark{font-size:2.4cqw;color:#7fd7e4;margin-bottom:.6cqw}
+.end-t{font-size:3.4cqw;font-weight:900;letter-spacing:.02em}
+.end-s{margin-top:1.2cqw;font-size:1.35cqw;color:#a9c4e8}
+/* 结束页导航：下一讲 / 返回总目录 */
+.end-inner{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.9cqw;max-width:74%}
+.end-next{margin-top:2.6cqw;display:inline-flex;align-items:center;gap:1cqw;text-decoration:none;
+  background:rgba(255,255,255,.09);border:1px solid rgba(140,200,235,.42);border-radius:.9cqw;
+  padding:1cqw 1.5cqw;transition:.22s;backdrop-filter:blur(6px);max-width:100%}
+.end-next:hover{background:rgba(255,255,255,.16);border-color:#7fd7e4;transform:translateY(-2px);
+  box-shadow:0 18px 40px -26px rgba(0,0,0,.9)}
+.en-lab{flex:0 0 auto;font-size:.92cqw;font-weight:800;letter-spacing:.06em;color:#0c2036;
+  background:linear-gradient(135deg,#7fd7e4,#4fc3d9);border-radius:.4cqw;padding:.2cqw .62cqw}
+.en-t{color:#eaf4ff;font-size:1.18cqw;font-weight:700;line-height:1.5}
+.en-ar{color:#7fd7e4;font-size:1.3cqw;font-weight:800}
+.end-next.is-final{cursor:default;box-shadow:none}
+.end-next.is-final:hover{transform:none;background:rgba(255,255,255,.09);border-color:rgba(140,200,235,.42);box-shadow:none}
+.end-back{margin-top:.5cqw;display:inline-flex;align-items:center;gap:.35cqw;text-decoration:none;
+  font-size:1.02cqw;color:#9fbde0;border-bottom:1px dashed rgba(159,189,224,.45);padding-bottom:.12cqw;transition:.2s}
+.end-back:hover{color:#fff;border-bottom-color:#7fd7e4}
+
+/* 进度 & HUD */
+.topbar{position:absolute;left:0;top:0;height:.42cqw;width:100%;background:rgba(47,107,255,.1);z-index:6}
+.topbar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--brand),var(--brand2),var(--violet));
+  transition:width .45s cubic-bezier(.2,.7,.2,1)}
+.hud{position:absolute;right:2.2cqw;bottom:1.5cqw;z-index:6;display:flex;align-items:center;gap:1cqw;
+  font-size:1cqw;color:var(--muted);font-family:var(--mono)}
+.hud .btn{cursor:pointer;background:rgba(255,255,255,.82);border:1px solid var(--line);border-radius:.55cqw;padding:.32cqw .7cqw;
+  transition:.2s}
+.hud .btn:hover{border-color:var(--brand);color:var(--brand)}
+.hud .btn[data-on="0"]{color:#a8b6cc;background:rgba(255,255,255,.5);border-style:dashed}
+.hud .btn[data-on="0"]:hover{color:var(--accent);border-color:#ffd0a8;border-style:solid;background:#fff8f2}
+.hud .btn[data-on="1"]{color:#0a7b87;border-color:#bfe6ea;background:rgba(15,181,201,.09)}
+.hud .btn[data-on="1"]:hover{border-color:var(--brand2);background:rgba(15,181,201,.16)}
+.pageno b{color:var(--ink)}
+.legend{position:absolute;left:2.2cqw;bottom:1.5cqw;z-index:6;font-size:.96cqw;color:#9aabc4;font-family:var(--mono)}
+.flip-toast{position:absolute;left:50%;bottom:9%;z-index:9;transform:translate(-50%,10px);
+  background:rgba(16,29,50,.9);color:#fff;font-family:var(--mono);font-size:1.02cqw;letter-spacing:.02em;
+  padding:.62cqw 1.25cqw;border-radius:999px;opacity:0;pointer-events:none;white-space:nowrap;
+  transition:opacity .22s,transform .22s;box-shadow:0 18px 40px -22px rgba(0,0,0,.8)}
+.flip-toast.show{opacity:1;transform:translate(-50%,0)}
+/* 导航抽屉 */
+.drawer{position:absolute;inset:0;z-index:8;background:rgba(12,22,40,.55);backdrop-filter:blur(6px);display:none;padding:4cqw}
+.drawer.open{display:block}
+.drawer-panel{background:var(--surface);border-radius:1.2cqw;height:100%;padding:2cqw;overflow:auto;box-shadow:0 40px 80px -30px rgba(0,0,0,.5)}
+.drawer-h{font-size:1.5cqw;font-weight:800;margin-bottom:1.2cqw;display:flex;justify-content:space-between}
+.drawer-h span{cursor:pointer;color:var(--muted);font-weight:600;font-size:1.1cqw}
+.drawer ul{list-style:none;display:grid;grid-template-columns:1fr 1fr;gap:.55cqw}
+.drawer li{display:flex;gap:.7cqw;align-items:center;padding:.6cqw .8cqw;border-radius:.6cqw;cursor:pointer;border:1px solid transparent}
+.drawer li:hover{background:#f2f6ff;border-color:#dbe6fb}
+.drawer li.cur{background:#eaf1ff;border-color:#c9daff}
+.nv-idx{font-family:var(--mono);font-size:.92cqw;color:var(--brand);font-weight:800}
+.nv-t{font-size:1.06cqw;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+/* ───────── 屏幕自适应 ─────────
+   1) 16:9 / 16:10 笔记本与投影：等比缩放（默认）
+   2) 4:3 老投影 / 上下更紧：压缩留白与圆角
+   3) 超宽屏：仍按高度定宽，不拉伸变形
+   4) 竖屏（手机、平板竖握）：改为纵向流式阅读，单列重排
+   5) 系统开启「减弱动效」时关闭所有动画
+*/
+@media (max-aspect-ratio: 4/3) and (orientation: landscape){
+  .wrap{padding:1.2vh}
+  .stage{border-radius:14px}
+  .slide{padding:3.4cqw 4.2cqw 3.2cqw;gap:1.5cqw}
+  .s-title{font-size:2.62cqw}
+  .blist{gap:.85cqw}
+  .blist li{font-size:1.32cqw;padding:.9cqw 1.15cqw}
+  .legend{display:none}
+}
+@media (min-aspect-ratio: 21/9){
+  .stage{max-width:calc(100vh * 16 / 9);max-height:calc(100vw * 9 / 16)}
+}
+@media (prefers-reduced-motion: reduce){
+  .an{opacity:1!important;animation:none!important}
+  .blob,.orb,.codewin{animation:none!important}
+  .slide{transition:none}
+}
+/* —— 竖屏：纵向流式阅读 —— */
+@media (orientation: portrait){
+  html,body{height:auto;overflow-x:hidden;overflow-y:auto}
+  html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+  body{overflow:visible;background:var(--bg)}
+  .wrap{display:block;height:auto;padding:0}
+  .stage{width:100%;height:auto;max-width:none;max-height:none;aspect-ratio:auto;border-radius:0;
+    overflow:visible;box-shadow:none;container-type:inline-size;background:transparent}
+  .bgfx{display:none}
+  .slide{position:relative;inset:auto;opacity:1!important;visibility:visible!important;transform:none!important;
+    padding:8vw 6vw 9vw;gap:5vw;min-height:auto;background:var(--bg2);border-bottom:1px solid var(--line)}
+  .slide.prev{transform:none!important}
+  .an{opacity:1!important;animation:none!important;transform:none!important}
+  .s-head{flex-direction:column;gap:0}
+  .kicker{font-size:2.6vw;padding:1vw 2.6vw;margin-bottom:2.2vw;letter-spacing:.1em}
+  .s-title{font-size:6.4vw;line-height:1.3}
+  .s-sub{margin-top:2vw;font-size:3.4vw}
+  .s-body{gap:4vw;justify-content:flex-start}
+  .s-body.two{flex-direction:column;gap:4.4vw}
+  .col-l,.col-r{gap:3.4vw}
+  /* 封面 */
+  .s-cover{flex-direction:column;align-items:flex-start;gap:5vw;padding:12vw 6vw 10vw}
+  .cover-art{display:none}
+  .brandrow{margin-bottom:4vw;gap:2vw}
+  .brandmark{font-size:4.4vw}.brandsub{font-size:3vw}
+  .cover-title{font-size:9.6vw;line-height:1.22}
+  .cover-sub{font-size:3.8vw;max-width:none;margin-top:2.6vw}
+  .pills{gap:2vw;margin-top:4vw}
+  .pill{font-size:2.8vw;padding:1.2vw 2.8vw}
+  .cover-meta{font-size:2.9vw;gap:2vw;margin-top:4vw}
+  .cover-meta b{font-size:3.4vw}
+  /* 章节页 */
+  .sec-num{font-size:17vw}
+  .sec-title{font-size:7.2vw;margin-top:3vw}
+  .sec-sub{font-size:3.6vw;max-width:none;margin-top:3vw}
+  .is-active .sec-line{animation:none;width:26vw}
+  .sec-line{margin:4vw 0}
+  /* 列表 / 卡片 */
+  .blist{gap:2.6vw}
+  .blist li{font-size:3.7vw;padding:2.8vw 3.4vw;border-radius:2.4vw;gap:2.4vw;line-height:1.62}
+  .blist.small li{font-size:3.4vw;padding:2.4vw 3vw}
+  .blist.dense li{font-size:3.3vw;padding:2.2vw 3vw}
+  .bl-dot{width:1.8vw;height:1.8vw;margin-top:1.8vw;box-shadow:0 0 0 .8vw rgba(47,107,255,.12)}
+  .outline{gap:2.4vw}
+  .outline li{padding:2.8vw 3.4vw;border-radius:2.2vw;gap:3vw}
+  .oi{font-size:2.8vw;padding:.8vw 2vw}
+  .ot{font-size:3.9vw}
+  .grid{gap:3vw}
+  .grid.cols-2,.grid.cols-3,.grid.cols-4{grid-template-columns:1fr}
+  .card{padding:4.2vw;border-radius:2.6vw}
+  .card-t{font-size:4.1vw;margin-bottom:1.6vw}
+  .card-d{font-size:3.3vw}
+  .card-ico{font-size:5.6vw;margin-bottom:1.6vw}
+  .card::before{width:.8vw}
+  /* 表格 */
+  .tbl-wrap{overflow-x:auto;border-radius:2.4vw;-webkit-overflow-scrolling:touch}
+  .tbl{font-size:3.1vw;min-width:110vw}
+  .tbl th{font-size:3vw;padding:2.4vw 2.8vw;white-space:nowrap}
+  .tbl td{padding:2.2vw 2.8vw}
+  /* 对比 */
+  .cmp-wrap{grid-template-columns:1fr;gap:3.4vw}
+  .cmp{padding:3.6vw;border-radius:2.4vw}
+  .cmp-h{font-size:3.8vw;margin-bottom:2.4vw}
+  .cmp ul{gap:2vw}
+  .cmp li{font-size:3.2vw;padding-left:3.6vw}
+  .cmp li::before{width:1.4vw;height:1.4vw;top:1.7vw}
+  /* 步骤 / 流程 */
+  .steps{gap:2.6vw}
+  .step{padding:3vw 3.4vw;border-radius:2.2vw;gap:3vw}
+  .step-n{width:7.4vw;height:7.4vw;font-size:3.2vw}
+  .step-t{font-size:3.7vw}
+  .step-d{font-size:3.2vw;margin-top:.8vw}
+  .flow{flex-direction:column;gap:1.6vw}
+  .fl{padding:3.6vw;border-radius:2.4vw}
+  .fl-ico{font-size:6.4vw}
+  .fl-t{font-size:3.9vw}
+  .fl-d{font-size:3.1vw}
+  .fl-arrow{width:100%;height:6vw;transform:rotate(90deg)}
+  .flow-note{font-size:3.1vw;padding:2.4vw 3vw;border-radius:2vw;margin-top:2.6vw}
+  /* 代码 */
+  .codebox,.task-code{border-radius:2.4vw}
+  .cb-bar{padding:2.2vw 3vw;gap:2.4vw}
+  .cb-lang,.cb-file{font-size:2.7vw}
+  .cb-code{font-size:3.1vw;line-height:1.62;padding:3vw 3.4vw}
+  .caption{font-size:3vw;margin-top:2.4vw}
+  .demo-code summary{font-size:2.9vw;padding:2.2vw 3vw}
+  .demo-code .cb-code{font-size:2.9vw}
+  /* 任务 / 演示 */
+  .task-goal{font-size:3.4vw;padding:3.2vw;border-radius:2.2vw}
+  .tg-label{font-size:2.6vw;padding:.5vw 1.8vw;margin-right:1.6vw;border-radius:1.2vw}
+  .task-steps{gap:2.4vw}
+  .task-steps li{font-size:3.3vw;padding-left:6.4vw}
+  .task-steps li::before{width:4.6vw;height:4.6vw;font-size:2.8vw}
+  .demo-right{height:auto;gap:2.6vw}
+  .demo-frame{height:66vw;min-height:190px;border-radius:2.4vw}
+  .hint{font-size:3.1vw;padding:2.6vw 3vw;border-radius:2vw;margin-top:2.6vw}
+  /* AI */
+  .ai-card{padding:4.4vw;border-radius:2.6vw}
+  .ai-card p{font-size:3.5vw}
+  .ai-badge{width:8.4vw;height:8.4vw;font-size:3.2vw;border-radius:2vw;margin-bottom:2.4vw}
+  /* 检测（!important：压过横屏 dense 的 cqw 规则，否则竖屏字号塌缩） */
+  .quiz-body{gap:3.4vw}
+  .quiz-top{flex-direction:column;align-items:flex-start;gap:2.4vw}
+  .quiz-meta{font-size:3vw}
+  .quiz-meta b{font-size:3.4vw}
+  .quiz-acts{gap:2vw}
+  .q-reveal,.q-reset-all{font-size:3vw;padding:1.6vw 3.4vw;border-radius:2vw}
+  .quiz{gap:3vw;overflow:visible}
+  .quiz.dense{gap:2.6vw}
+  .quiz-item,.quiz.dense .quiz-item{padding:3.4vw 3.6vw;border-radius:2.4vw}
+  .quiz.dense .q{font-size:3.6vw;gap:1.6vw;line-height:1.55}
+  .q-no{font-size:2.9vw}
+  .q-tag{font-size:2.4vw;padding:.3vw 1.4vw;border-radius:1.2vw}
+  .opts,.quiz.dense .opts{gap:1.8vw;margin-top:2.2vw}
+  .opt,.quiz.dense .opt{font-size:3.2vw;padding:1.4vw 2.8vw;border-radius:2vw;gap:1.4vw}
+  .q-foot,.quiz.dense .q-foot{margin-top:2vw;gap:2.4vw;min-height:0}
+  .q-check,.quiz.dense .q-check{font-size:2.9vw;padding:1.2vw 2.8vw;border-radius:1.6vw}
+  .q-reset,.quiz.dense .q-reset{font-size:2.9vw;padding:1.2vw 2.6vw;border-radius:1.6vw}
+  .q-verdict,.quiz.dense .q-verdict{font-size:2.9vw}
+  .q-ans,.quiz.dense .q-ans{font-size:3vw;padding:2.2vw 3vw;border-radius:1.8vw;margin-top:2vw}
+  /* 目标 / 思政 */
+  .objs{grid-template-columns:1fr;gap:3vw}
+  .obj{padding:4vw;border-radius:2.4vw}
+  .obj-h{font-size:3.9vw;margin-bottom:2.4vw}
+  .obj-h::before{width:1.4vw;height:4vw}
+  .obj ul{gap:2vw}
+  .obj li{font-size:3.2vw;padding-left:3.4vw}
+  .obj li::before{width:1.2vw;height:1.2vw;top:1.6vw}
+  .ideo-wrap{gap:3.4vw}
+  .ideo-quote{font-size:3.6vw;padding:4vw 4.4vw;border-radius:2.4vw;line-height:1.8}
+  .ideo-topic{font-size:3.2vw;padding:2.8vw 3.2vw;border-radius:2.2vw}
+  .it-label{font-size:2.6vw;padding:.5vw 1.6vw;border-radius:1.2vw;margin-right:1.4vw}
+  /* 参考 / 结束 */
+  .refs{gap:2.2vw}
+  .refs li{padding:2.8vw 3.2vw;border-radius:2vw;gap:2.4vw}
+  .ref-idx{font-size:2.8vw}
+  .ref-t{font-size:3.3vw}
+  .ref-u{font-size:2.7vw}
+  .s-end{align-items:center;justify-content:center;min-height:60vh}
+  .end-t{font-size:8.4vw}
+  .end-s{font-size:3.6vw;margin-top:3vw}
+  .end-mark{font-size:6vw}
+  .end-inner{max-width:none;width:100%;gap:2vw}
+  .end-next{margin-top:5vw;gap:2.2vw;padding:3vw 3.6vw;border-radius:2.4vw;flex-wrap:wrap;justify-content:center}
+  .en-lab{font-size:2.6vw;padding:.8vw 2vw;border-radius:1.2vw}
+  .en-t{font-size:3.4vw}
+  .en-ar{font-size:3.6vw}
+  .end-back{font-size:3vw;margin-top:2.6vw}
+  /* HUD / 目录：固定悬浮 */
+  .topbar{position:fixed;height:1.2vw;z-index:20}
+  .hud{position:fixed;right:3vw;bottom:calc(3vw + env(safe-area-inset-bottom));z-index:20;
+    background:rgba(255,255,255,.94);border:1px solid var(--line);border-radius:999px;
+    padding:2.2vw 3.4vw;gap:3vw;font-size:3vw;box-shadow:0 10px 30px -12px rgba(16,34,74,.35)}
+  .hud .btn{font-size:2.9vw;padding:1vw 2.4vw;border-radius:1.6vw}
+  .flip-toast{position:fixed;bottom:calc(16vw + env(safe-area-inset-bottom));z-index:21;
+    font-size:3vw;padding:2.2vw 4vw;max-width:84vw;white-space:normal;text-align:center;line-height:1.5}
+  .legend{display:none}
+  .drawer{position:fixed;padding:4vw}
+  .drawer-panel{padding:5vw;border-radius:3vw}
+  .drawer-h{font-size:4.2vw;margin-bottom:3vw}
+  .drawer-h span{font-size:3.2vw}
+  .drawer ul{grid-template-columns:1fr;gap:1.6vw}
+  .drawer li{padding:2.4vw 3vw;border-radius:2vw;gap:2.4vw}
+  .nv-idx{font-size:2.8vw}
+  .nv-t{font-size:3.2vw;white-space:normal}
+}
+/* 打印 */
+@media print{
+  body{overflow:visible}
+  .wrap{padding:0;display:block}
+  .stage{width:100%;max-width:none;height:auto;aspect-ratio:auto;border-radius:0;box-shadow:none}
+  .slide{position:relative;opacity:1!important;visibility:visible!important;transform:none!important;
+    page-break-after:always;height:100vh;width:100%}
+  .an{opacity:1!important;animation:none!important}
+  .topbar,.hud,.legend,.drawer{display:none!important}
+}
+</style>
+</head>
+<body>
+<div class="wrap"><div class="stage" id="stage">
+  <div class="bgfx"><div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div><div class="grid-lines"></div></div>
+  <div class="topbar"><i id="bar"></i></div>
+
+<section class="slide s-cover is-active" data-kind="cover">
+  <div class="cover-left">
+    <div class="brandrow an" style="--i:0">
+      <span class="brandmark">网页制作</span>
+      <span class="brandsub">HTML5 + CSS3</span>
+    </div>
+    <div class="kicker an" style="--i:1">项目5 · 第 13 单元</div>
+    <h1 class="cover-title an" style="--i:2">边框与外边距</h1>
+    <p class="cover-sub an" style="--i:3">用 0 宽高的盒子变出指示三角形，用科学的间距摆脱「看着差不多」的排版</p>
+    <div class="pills"><span class="pill" style="--i:3">border-style</span><span class="pill" style="--i:4">border-width</span><span class="pill" style="--i:5">border-color</span><span class="pill" style="--i:6">气泡对话框</span><span class="pill" style="--i:7">外边距合并</span></div>
+    <div class="cover-meta an" style="--i:9">
+      <span class="m-item"><b>40</b> 分钟</span>
+      <span class="dot"></span>
+      <span class="m-item">教材《网页制作（HTML5+CSS3）》项目5</span>
+      <span class="dot"></span>
+      <span class="m-item">电子工业出版社 · 2025 年 1 月第 1 版</span>
+    </div>
+  </div>
+  <div class="cover-art" aria-hidden="true">
+    <div class="orb o1"></div><div class="orb o2"></div><div class="orb o3"></div>
+    <div class="codewin">
+      <div class="cw-bar"><i></i><i></i><i></i></div>
+      <pre class="cw-body"><span class="pn">&lt;!</span><span class="tg">DOCTYPE</span> <span class="at">html</span><span class="pn">&gt;</span>
+<span class="pn">&lt;</span><span class="tg">html</span> <span class="at">lang</span>=<span class="st">"zh-CN"</span><span class="pn">&gt;</span>
+  <span class="pn">&lt;</span><span class="tg">head</span><span class="pn">&gt;</span> <span class="pn">&lt;</span><span class="tg">meta</span> <span class="at">charset</span>=<span class="st">"UTF-8"</span><span class="pn">&gt;</span> <span class="pn">&lt;/</span><span class="tg">head</span><span class="pn">&gt;</span>
+  <span class="pn">&lt;</span><span class="tg">body</span><span class="pn">&gt;</span>
+    <span class="pn">&lt;</span><span class="tg">h1</span><span class="pn">&gt;</span>Hello, Web<span class="pn">&lt;/</span><span class="tg">h1</span><span class="pn">&gt;</span>
+  <span class="pn">&lt;/</span><span class="tg">body</span><span class="pn">&gt;</span>
+<span class="pn">&lt;/</span><span class="tg">html</span><span class="pn">&gt;</span></pre>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-kind="objectives">
+  
+  <header class="s-head">
+    <div class="s-head-left">
+      
+      <h2 class="s-title an" style="--i:1">本单元我们要达成什么</h2>
+      <p class="s-sub an" style="--i:2">对照教材《项目5》5.2 边框、5.3 外边距</p>
+    </div>
+  </header>
+  <div class="s-body"><div class="objs"><div class="obj obj-1" class="an " style="--i:1">
+          <div class="obj-h">知识目标</div><ul><li>掌握边框的常用样式定义语法</li><li>掌握边框风格的应用方法</li><li>理解和掌握外边距特性</li><li>理解相邻元素与父子元素的外边距合并</li></ul></div><div class="obj obj-2" class="an " style="--i:2">
+          <div class="obj-h">技能目标</div><ul><li>能使用边框及其相关样式属性</li><li>能用边框制作三角形与气泡对话框</li><li>能使用外边距及其相关样式属性</li><li>能用 border / padding 阻止不期望的合并</li></ul></div><div class="obj obj-3" class="an " style="--i:3">
+          <div class="obj-h">素养目标</div><ul><li>培养高尚的审美情操</li><li>培养严谨求实的学习态度</li><li>培养勇于探索、崇尚科学的劳动意识</li></ul></div></div></div>
+</section>
+
+<section class="slide s-ideo" data-kind="ideology">
+  
+  <header class="s-head">
+    <div class="s-head-left">
+      
+      <h2 class="s-title an" style="--i:1">看得见的界面，看不见的规范</h2>
+      <p class="s-sub an" style="--i:2">教材《项目5》思政课堂延伸讨论</p>
+    </div>
+  </header>
+  <div class="s-body"><div class="ideo-wrap">
+    <div class="ideo-quote an" style="--i:1">在数字化生活场景中，网页制作的影响十分深远。作为信息传递的重要载体，网页让各类资讯、服务触手可及，满足了人们多元化的需求。它不仅提供了丰富的视听效果，还通过<strong>个性化设计</strong>提升了用户体验。<strong>支付宝、Keep、京东、淘宝</strong>等各式应用影响着人们生活的方方面面，丰富了人们的数字化生活，为人们带来了诸多便利。</div>
+    <div class="ideo-topic an" style="--i:2"><span class="it-label">课堂讨论</span>同一张界面，间距统一与否，观感天差地别。作为未来的前端工程师，谈一谈：为什么「留白的规范」也是一种产品品质，而不是可有可无的细节？</div>
+  </div></div>
+</section>
+
+<section class="slide" data-kind="outline">
+  
+  <header class="s-head">
+    <div class="s-head-left">
+      
+      <h2 class="s-title an" style="--i:1">本单元导览</h2>
+      <p class="s-sub an" style="--i:2">上半场玩转边框，下半场搞定间距</p>
+    </div>
+  </header>
+  <div class="s-body"><ol class="outline"><li class="an " style="--i:1"><span class="oi">01</span><span class="ot">边框三要素：风格、宽度、颜色（10 种风格一次看清）</span></li><li class="an " style="--i:2"><span class="oi">02</span><span class="ot">任务5-4：边框的神秘之旅——三角形与气泡对话框</span></li><li class="an " style="--i:3"><span class="oi">03</span><span class="ot">外边距属性与取值：margin 可以为负</span></li><li class="an " style="--i:4"><span class="oi">04</span><span class="ot">外边距合并：相邻元素、父子元素的「正正取大 / 正负相加 / 负负最负值」</span></li></ol></div>
+</section>
+
+<section class="slide s-section" data-kind="section">
+  <div class="sec-inner">
+    <div class="sec-num an" style="--i:0">5.2</div>
+    <h2 class="sec-title an" style="--i:1">边框</h2>
+    <div class="sec-line an" style="--i:2"></div>
+    <p class="sec-sub an" style="--i:3">边框主要包含风格（style）、宽度（width）和颜色（color）3 个主要元素。</p>
+  </div>
+</section>
+
+<section class="slide" data-kind="table">
+  
+  <header class="s-head">
+    <div class="s-head-left">
+      <div class="kicker an" style="--i:0">对照表</div>
+      <h2 class="s-title an" style="--i:1">表5-3 边框风格样式的相关属性</h2>
+      <p class="s-sub an" style="--i:2">技巧：某个特定方向的边框风格，按 border-方向-style 的格式设置</p>
+    </div>
+  </header>
+  <div class="s-body"><div class="tbl-wrap">
+    <table class="tbl"><thead><tr><th>属性名</th><th>描述</th></tr></thead><tbody><tr class="an " style="--i:1"><td><code>border-style</code></td><td>综合样式属性，同时设置 4 个方向的边框风格，<strong>符合值复制原则</strong></td></tr><tr class="an " style="--i:2"><td><code>border-top-style</code></td><td>设置上边框的风格</td></tr><tr class="an " style="--i:3"><td><code>border-right-style</code></td><td>设置右边框的风格</td></tr><tr class="an " style="--i:4"><td><code>border-bottom-style</code></td><td>设置下边框的风格</td></tr><tr class="an " style="--i:5"><td><code>border-left-style</code></td><td>设置左边框的风格</td></tr></tbody></table>
+  </div></div>
+</section>
+
+<section class="slide" data-kind="table">
+  
+  <header class="s-head">
+    <div class="s-head-left">
+      <div class="kicker an" style="--i:0">对照表</div>
+      <h2 class="s-title an" style="--i:1">表5-4 边框的风格值及其应用效果</h2>
+      <p class="s-sub an" style="--i:2">课堂提问：border-style:dashed solid 是什么意思？（答案：上下虚线、左右实线）</p>
+    </div>
+  </header>
+  <div class="s-body"><div class="tbl-wrap">
+    <table class="tbl"><thead><tr><th>风格值</th><th>描述</th></tr></thead><tbody><tr class="an " style="--i:1"><td><code>none</code></td><td>无边框，<strong>默认值</strong></td></tr><tr class="an " style="--i:2"><td><code>dashed</code></td><td>虚线</td></tr><tr class="an " style="--i:3"><td><code>solid</code></td><td>实线</td></tr><tr class="an " style="--i:4"><td><code>dotted</code></td><td>点状</td></tr><tr class="an " style="--i:5"><td><code>double</code></td><td>双实线</td></tr><tr class="an " style="--i:6"><td><code>groove</code></td><td>凹槽</td></tr><tr class="an " style="--i:7"><td><code>ridge</code></td><td>脊状</td></tr><tr class="an " style="--i:8"><td><code>inset</code></td><td>边框内嵌一个立体边框</td></tr><tr class="an " style="--i:9"><td><code>outset</code></td><td>边框外嵌一个立体边框</td></tr><tr class="an " style="--i:10"><td><code>inherit</code></td><td>继承父元素的边框风格</td></tr></tbody></table>
+  </div></div>
+</section>
+
+<section class="slide" data-kind="task">
+  
+  <header class="s-head">
+    <div class="s-head-left">
+      <div class="kicker an" style="--i:0">任务驱动</div>
+      <h2 class="s-title an" style="--i:1">任务5-3｜编写并查看边框风格</h2>
+      <p class="s-sub an" style="--i:2">目标：查看不同风格值在页面中的实际呈现效果（图5-7）</p>
+    </div>
+  </header>
+  <div class="s-body two">
+    <div class="col-l">
+      <div class="task-goal an" style="--i:1"><span class="tg-label">任务目标</span>用一套公共样式 + 7 个风格类，横向对比 8 种边框</div>
+      <ol class="task-steps"><li class="an " style="--i:2">定义公共样式 <code>.box</code>：固定尺寸 100×50、padding、margin、<code>border:3px solid #ccc</code>。</li><li class="an " style="--i:3">关键一步：给 <code>.box</code> 加 <code>float:left</code>，让 8 个盒子并排一行，便于横向比较。</li><li class="an " style="--i:4">再定义 <code>.box1～.box7</code>，分别只改 <code>border-style</code>，看差异一目了然。</li><li class="an " style="--i:5">HTML 中通过 <code>class="box box3"</code> 叠加使用公共样式与风格类——这就是<strong>类的组合复用</strong>。</li><li class="an " style="--i:6">观察重点：<code>groove</code>、<code>ridge</code>、<code>inset</code>、<code>outset</code> 的立体效果依赖边框颜色，浅色下可能不明显。</li></ol>
+    </div>
+    <div class="col-r"><div class="task-code" class="an " style="--i:7">
+          <pre class="cb-code"><span class="pn">&lt;</span><span class="tg">style</span><span class="pn">&gt;</span>
+.box{                       /* #007-#014 公共样式 */
+    width: 100px;
+    height: 50px;
+    padding:5px;
+    margin:10px 20px;
+    border:3px solid #ccc;
+    float:left;             /* #013 浮动并排，便于比较 */
+}
+.box1{border-style: dashed;}    /* #015-#017 */
+.box2{border-style: dotted;}    /* #018-#020 */
+.box3{border-style: double;}    /* #021-#023 */
+.box4{border-style: groove;}    /* #024-#026 */
+.box5{border-style: ridge;}     /* #027-#029 */
+.box6{border-style: inset;}     /* #030-#032 */
+.box7{border-style: outset;}    /* #033-#035 */
+<span class="pn">&lt;/</span><span class="tg">style</span><span class="pn">&gt;</span>
+
+<span class="pn">&lt;</span><span class="tg">div</span> class=&quot;box&quot;<span class="pn">&gt;</span>实线<span class="pn">&lt;/</span><span class="tg">div</span><span class="pn">&gt;</span>
+<span class="pn">&lt;</span><span class="tg">div</span> class=&quot;box box1&quot;<span class="pn">&gt;</span>虚线<span class="pn">&lt;/</span><span class="tg">div</span><span class="pn">&gt;</span>
+<span class="pn">&lt;</span><span class="tg">div</span> class=&quot;box box2&quot;<span class="pn">&gt;</span>点状<span class="pn">&lt;/</span><span class="tg">div</span><span class="pn">&gt;</span>
+...</pre></div></div>
+  </div>
+</section>
+
+<section class="slide" data-kind="table">
+  
+  <header class="s-head">
+    <div class="s-head-left">
+      <div class="kicker an" style="--i:0">对照表</div>
+      <h2 class="s-title an" style="--i:1">表5-6 边框的宽度值</h2>
+      <p class="s-sub an" style="--i:2">易错点：预设值的具体取值由浏览器厂商决定，不同浏览器可能不一样</p>
+    </div>
+  </header>
+  <div class="s-body"><div class="tbl-wrap">
+    <table class="tbl"><thead><tr><th>宽度值</th><th>描述</th></tr></thead><tbody><tr class="an " style="--i:1"><td><code>length</code></td><td>具体数值，单位可以是 px 或 em</td></tr><tr class="an " style="--i:2"><td><code>thin</code></td><td>预设值，表示细边框</td></tr><tr class="an " style="--i:3"><td><code>medium</code></td><td>预设值，表示中等边框（<strong>默认值</strong>）</td></tr><tr class="an " style="--i:4"><td><code>thick</code></td><td>预设值，表示粗边框</td></tr><tr class="an " style="--i:5"><td><code>inherit</code></td><td>继承父元素的边框宽度</td></tr></tbody></table>
+  </div></div>
+</section>
+
+<section class="slide" data-kind="bullets">
+  
+  <header class="s-head">
+    <div class="s-head-left">
+      <div class="kicker an" style="--i:0">知识要点</div>
+      <h2 class="s-title an" style="--i:1">宽度与颜色：两个必须记住的细节</h2>
+      <p class="s-sub an" style="--i:2">表5-5、表5-7、表5-8 的要点提炼</p>
+    </div>
+  </header>
+  <div class="s-body"><ul class="blist dense"><li class="an " style="--i:1"><span class="bl-dot"></span><span>宽度属性：<code>border-width</code> 综合设置 4 个方向，<code>border-top-width</code> 等设置单方向，<strong>均符合值复制原则</strong>。</span></li><li class="an " style="--i:2"><span class="bl-dot"></span><span>易错点：thin、medium、thick 的具体像素<strong>由浏览器厂商决定</strong>，有的对应 2/3/5px，有的对应 1/2/3px；要求精确时请直接写 px。</span></li><li class="an " style="--i:3"><span class="bl-dot"></span><span>颜色属性：<code>border-color</code> 与 4 个 <code>border-方向-color</code>，取值可用<strong>英文预设单词、十六进制值或 RGB 值</strong>。</span></li><li class="an " style="--i:4"><span class="bl-dot"></span><span>综合属性：<code>border</code> 可一次性设置 4 个方向的<strong>风格、宽度、颜色</strong>；单方向可用 <code>border-top</code>、<code>border-right</code> 等。</span></li><li class="an " style="--i:5"><span class="bl-dot"></span><span>注意：只有设置了 <code>border-style</code>（非 none），宽度与颜色才会显示出来——这是最常见的「边框不见了」原因。</span></li><li class="an " style="--i:6"><span class="bl-dot"></span><span>综合属性可把 3 条语句合并成 1 条：<code>border-style:solid;</code>、<code>border-width:1px;</code>、<code>border-color:red;</code> 等价于 <code>border:1px solid red;</code>；单方向简写如 <code>border-bottom:2px dashed #ccc;</code>（部门装饰线的常用写法）。</span></li></ul></div>
+</section>
+
+<section class="slide" data-kind="task">
+  
+  <header class="s-head">
+    <div class="s-head-left">
+      <div class="kicker an" style="--i:0">任务驱动</div>
+      <h2 class="s-title an" style="--i:1">任务5-4｜边框的神秘之旅：做出微信气泡对话框</h2>
+      <p class="s-sub an" style="--i:2">课堂导语：很难想象那些指示三角形跟咱们今天学的边框有什么关系，下面一起来变个魔术</p>
+    </div>
+  </header>
+  <div class="s-body two">
+    <div class="col-l">
+      <div class="task-goal an" style="--i:1"><span class="tg-label">任务目标</span>使用盒子模型的边框样式制作类似微信聊天的气泡对话框效果</div>
+      <ol class="task-steps"><li class="an " style="--i:2"><strong>步骤1 加粗边框：</strong>给 div 设 <code>width:100px;height:20px;border:48px solid blue;</code>——还看不出三角形痕迹。</li><li class="an " style="--i:3"><strong>步骤2 缩小宽高：</strong>改为 <code>width:0;height:0;border:48px solid;border-color:red yellow green blue;</code>——四个三角形出现了。</li><li class="an " style="--i:4"><strong>步骤3 加透明色：</strong><code>border-color:transparent transparent transparent blue;</code>——只留下指向右侧的蓝三角。</li><li class="an " style="--i:5">原理：当盒子没有大小（宽高均为 0）时，四条边框的交界处自然形成<strong>斜切的三角形</strong>；<code>transparent</code> 表示透明。</li><li class="an " style="--i:6"><strong>步骤4 搭结构：</strong>一个 <code>.bubble</code> 容器里放 <code>.arrow</code>（三角）与 <code>.msg</code>（正文），容器 <code>position:relative</code>、箭头 <code>position:absolute</code>。</li><li class="an " style="--i:7"><strong>步骤5 算位置：</strong>垂直居中公式 <code>top = height/2 - border-width</code>，本例为 50/2 − 12 = <strong>13px</strong>；<code>left:100%</code> 把箭头推到气泡右边缘。</li></ol>
+    </div>
+    <div class="col-r"><div class="task-code" class="an " style="--i:8">
+          <pre class="cb-code"><span class="pn">&lt;</span><span class="tg">style</span><span class="pn">&gt;</span>
+.arrow{                     /* #007-#015 */
+    width: 0px;
+    height: 0px;
+    border:12px solid;
+    border-color: transparent transparent transparent blue;
+    position: absolute;
+    left: 100%;
+    top:13px;               /* 50/2 - 12 = 13px */
+}
+.bubble{                    /* #016-#022 */
+    width: 100px;
+    height: 50px;
+    background-color: blue;
+    position: relative;
+    border-radius: 5px;
+}
+.msg{                       /* #023-#026 */
+    color:white;
+    padding:10px 5px;
+}
+<span class="pn">&lt;/</span><span class="tg">style</span><span class="pn">&gt;</span>
+
+<span class="pn">&lt;</span><span class="tg">div</span> class=&quot;bubble&quot;<span class="pn">&gt;</span>
+    <span class="pn">&lt;</span><span class="tg">div</span> class=&quot;arrow&quot;<span class="pn">&gt;</span><span class="pn">&lt;/</span><span class="tg">div</span><span class="pn">&gt;</span>
+    <span class="pn">&lt;</span><span class="tg">div</span> class=&quot;msg&quot;<span class="pn">&gt;</span>Hi,您好<span class="pn">&lt;/</span><span class="tg">div</span><span class="pn">&gt;</span>
+<span class="pn">&lt;/</span><span class="tg">div</span><span class="pn">&gt;</span></pre></div></div>
+  </div>
+</section>
+
+<section class="slide s-section" data-kind="section">
+  <div class="sec-inner">
+    <div class="sec-num an" style="--i:0">5.3</div>
+    <h2 class="sec-title an" style="--i:1">外边距</h2>
+    <div class="sec-line an" style="--i:2"></div>
+    <p class="sec-sub an" style="--i:3">与 padding 不同，margin 用于控制盒子与其他盒子之间的距离。</p>
+  </div>
+</section>
+
+<section class="slide" data-kind="table">
+  
+  <header class="s-head">
+    <div class="s-head-left">
+      <div class="kicker an" style="--i:0">对照表</div>
+      <h2 class="s-title an" style="--i:1">表5-9 外边距属性</h2>
+      <p class="s-sub an" style="--i:2">教材表头原写作「属性值」，实为属性名</p>
+    </div>
+  </header>
+  <div class="s-body"><div class="tbl-wrap">
+    <table class="tbl"><thead><tr><th>属性名</th><th>描述</th></tr></thead><tbody><tr class="an " style="--i:1"><td><code>margin</code></td><td>综合样式属性，同时设置 4 个方向的外边距</td></tr><tr class="an " style="--i:2"><td><code>margin-top</code></td><td>设置上外边距</td></tr><tr class="an " style="--i:3"><td><code>margin-right</code></td><td>设置右外边距</td></tr><tr class="an " style="--i:4"><td><code>margin-bottom</code></td><td>设置下外边距</td></tr><tr class="an " style="--i:5"><td><code>margin-left</code></td><td>设置左外边距</td></tr></tbody></table>
+  </div></div>
+</section>
+
+<section class="slide" data-kind="table">
+  
+  <header class="s-head">
+    <div class="s-head-left">
+      <div class="kicker an" style="--i:0">对照表</div>
+      <h2 class="s-title an" style="--i:1">表5-10 外边距属性的 4 个值</h2>
+      <p class="s-sub an" style="--i:2">易错点：padding 不可以取负值，而 margin 可以取负值</p>
+    </div>
+  </header>
+  <div class="s-body"><div class="tbl-wrap">
+    <table class="tbl"><thead><tr><th>属性值</th><th>描述</th></tr></thead><tbody><tr class="an " style="--i:1"><td><code>auto</code></td><td>浏览器计算外边距（块级元素水平居中的常用写法）</td></tr><tr class="an " style="--i:2"><td><code>length</code></td><td>以 px、em、cm 等为单位的数值，<strong>可以取正值、负值</strong>，默认为 0</td></tr><tr class="an " style="--i:3"><td><code>%</code></td><td>基于<strong>父元素的宽度</strong>来计算外边距</td></tr><tr class="an " style="--i:4"><td><code>inherit</code></td><td>继承父元素的外边距</td></tr></tbody></table>
+  </div></div>
+</section>
+
+<section class="slide" data-kind="compare">
+  
+  <header class="s-head">
+    <div class="s-head-left">
+      <div class="kicker an" style="--i:0">对比辨析</div>
+      <h2 class="s-title an" style="--i:1">外边距合并的两种情况</h2>
+      <p class="s-sub an" style="--i:2">垂直外边距会将两个外边距合并起来，形成同一个外边距</p>
+    </div>
+  </header>
+  <div class="s-body"><div class="cmp-wrap"><div class="cmp cmp-a">
+          <div class="cmp-h">① 相邻元素外边距合并</div>
+          <ul><li class="an " style="--i:1">上面元素的<strong>下外边距</strong>与下面元素的<strong>上外边距</strong>合并</li><li class="an " style="--i:2">前提：相邻元素为<strong>块级元素</strong>，<strong>不包括浮动和绝对定位元素</strong></li><li class="an " style="--i:3">只发生在与当前<strong>标准流方向相垂直</strong>的方向上（默认标准流水平，故合并发生在垂直方向）</li><li class="an " style="--i:4">示例：下边距 10px 与上边距 5px 合并后为 10px</li><li class="an " style="--i:5">计算规则：<strong>正正取大值、正负相加值、负负最负值</strong>；合并后的和一旦为负，相邻元素即发生重叠</li></ul></div><div class="cmp cmp-b">
+          <div class="cmp-h">② 父子元素外边距合并</div>
+          <ul><li class="an " style="--i:3">父元素 margin-top 10px + 子元素 margin-top 20px，<strong>不会得到 30px</strong></li><li class="an " style="--i:4">按计算规则合并后为 <strong>20px</strong>，用户实际看到的就是 20px</li><li class="an " style="--i:5">多个子元素时：<strong>第一个子元素的 margin-top</strong> 与<strong>最后一个子元素的 margin-bottom</strong> 参与合并</li><li class="an " style="--i:6">父子若有 margin-bottom，同样会发生合并</li></ul></div></div></div>
+</section>
+
+<section class="slide" data-kind="task">
+  
+  <header class="s-head">
+    <div class="s-head-left">
+      <div class="kicker an" style="--i:0">任务驱动</div>
+      <h2 class="s-title an" style="--i:1">任务5-5｜相邻元素外边距合并</h2>
+      <p class="s-sub an" style="--i:2">目标：构造实例并查看外边距合并的效果（图5-18）</p>
+    </div>
+  </header>
+  <div class="s-body two">
+    <div class="col-l">
+      <div class="task-goal an" style="--i:1"><span class="tg-label">任务目标</span>用三组对照：正正、正负、负负，验证三条计算规则</div>
+      <ol class="task-steps"><li class="an " style="--i:2">公共样式 <code>.box</code>：宽 300px、高 30px、文字居中、<code>border:1px solid #ccc</code>，让盒子边界可见。</li><li class="an " style="--i:3">用 <code>section</code> 容器加 <code>float:left</code> 与 <code>margin-right:50px</code>，把三组并列排放。</li><li class="an " style="--i:4">第 1 组：<code>margin-bottom:10px</code> 与 <code>margin-top:5px</code> → 合并为 <strong>10px</strong>。</li><li class="an " style="--i:5">第 2 组：<code>margin-bottom:-10px</code> 与 <code>margin-top:10px</code> → 相加为 0，<strong>无缝相接</strong>。</li><li class="an " style="--i:6">第 3 组：<code>margin-bottom:-10px</code> 与 <code>margin-top:-5px</code> → 取最负值，<strong>发生重叠</strong>。</li><li class="an " style="--i:7"><strong>教材疑误：</strong>代码中 <code>.box4</code> 写作 <code>margin-top:5px</code>，而 HTML 文本标签写作 10px，后文按 10px 计算；讲课统一按 <strong>10px</strong> 处理，「正负相加恰为 0」的结论才成立。</li></ol>
+    </div>
+    <div class="col-r"><div class="task-code" class="an " style="--i:8">
+          <pre class="cb-code"><span class="sel"><span class="cls">.box</span></span><span class="pn">{</span>                       <span class="c">/* #007-#012 公共样式 */</span>
+    <span class="prop">width</span>: <span class="num">300px</span><span class="pn">;</span>
+    <span class="prop">height</span>: <span class="num">30px</span><span class="pn">;</span>
+    <span class="prop">text-align</span>: center<span class="pn">;</span>
+    <span class="prop">border</span>:<span class="num">1px</span> solid <span class="num">#ccc</span><span class="pn">;</span><span class="pn">}</span><span class="sel">
+section</span><span class="pn">{</span>                    <span class="c">/* #013-#016 三组并排 */</span>
+    <span class="prop">float</span>:left<span class="pn">;</span>
+    <span class="prop">margin-right</span>:<span class="num">50px</span><span class="pn">;</span><span class="pn">}</span><span class="sel">
+<span class="cls">.box1</span></span><span class="pn">{</span><span class="prop">margin-bottom</span>:<span class="num">10px</span><span class="pn">;</span><span class="pn">}</span><span class="sel">      <span class="c">/* #017 正 */</span>
+<span class="cls">.box2</span></span><span class="pn">{</span><span class="prop">margin-top</span>:<span class="num">5px</span><span class="pn">;</span><span class="pn">}</span><span class="sel">          <span class="c">/* #018 正 → 合并取大值 10px */</span>
+<span class="cls">.box3</span></span><span class="pn">{</span><span class="prop">margin-bottom</span>: -<span class="num">10px</span><span class="pn">;</span><span class="pn">}</span><span class="sel">    <span class="c">/* #019 负 */</span>
+<span class="cls">.box4</span></span><span class="pn">{</span><span class="prop">margin-top</span>:<span class="num">10px</span><span class="pn">;</span><span class="pn">}</span><span class="sel">        <span class="c">/* #020 正 → 相加为 0，无缝相接 */</span>
+<span class="cls">.box5</span></span><span class="pn">{</span><span class="prop">margin-bottom</span>: -<span class="num">10px</span><span class="pn">;</span><span class="pn">}</span><span class="sel">    <span class="c">/* #021 负 */</span>
+<span class="cls">.box6</span></span><span class="pn">{</span><span class="prop">margin-top</span>:-<span class="num">5px</span><span class="pn">;</span><span class="pn">}</span>        <span class="c">/* #022 负 → 取最负值，重叠 */</span></pre></div></div>
+  </div>
+</section>
+
+<section class="slide" data-kind="demo">
+  
+  <header class="s-head">
+    <div class="s-head-left">
+      <div class="kicker an" style="--i:0">效果演示</div>
+      <h2 class="s-title an" style="--i:1">效果演示｜相邻元素外边距合并的前后对比</h2>
+      <p class="s-sub an" style="--i:2">三组对照依次「收紧」：如果相加 vs 实际渲染结果</p>
+    </div>
+  </header>
+  <div class="s-body two demo">
+    <div class="col-l"><ul class="blist small"><li class="an " style="--i:1"><span class="bl-dot"></span><span><strong>正正组：</strong>两值相加应为 15px，实际渲染按「取大值」只留 10px 间隙。</span></li><li class="an " style="--i:2"><span class="bl-dot"></span><span><strong>正负组：</strong>−10px 与 10px 相加为 0，两个盒子<strong>无缝相接</strong>，连边框都贴在一起。</span></li><li class="an " style="--i:3"><span class="bl-dot"></span><span><strong>负负组：</strong>两个负值取最负者，下面的盒子<strong>向上发生重叠</strong>。</span></li><li class="an " style="--i:4"><span class="bl-dot"></span><span>记住口诀：<strong>正正取大值、正负相加值、负负最负值</strong>。</span></li></ul>
+      <div class="hint an" style="--i:5"><b>动手试试：</b>给父容器加一行 overflow:hidden 或 border，观察父子元素 margin-top 合并是否被阻止。</div>
+    </div>
+    <div class="col-r"><iframe class="demo-frame" title="效果预览" srcdoc="&lt;style&gt;*{box-sizing:border-box}body{margin:0;padding:12px;font-family:&#x27;PingFang SC&#x27;,system-ui,sans-serif;background:linear-gradient(160deg,#f2f6ff,#eafafd)}.wrap{display:flex;gap:10px}.col{flex:1;background:#fff;border:1px solid #e6ecf7;border-radius:10px;padding:9px 10px;min-height:270px}.cap{font:600 10.5px/1.5 Menlo,monospace;color:#0e1b2e;margin-bottom:6px}.sub{font-size:10px;color:#8b9ab2;margin-bottom:8px}.bx{background:#eaf1ff;border:1px solid #c9daff;border-radius:6px;color:#1d46b8;font:11px/1.4 &#x27;PingFang SC&#x27;;padding:7px 6px;text-align:center;position:relative}.bx2{background:#fff3e7;border-color:#ffd8a8;color:#c2601a}.gA{height:0;animation:gA 6.6s infinite}@keyframes gA{0%,14%{height:15px}28%,86%{height:10px}96%,100%{height:15px}}.gB{height:0;animation:gB 6.6s infinite}@keyframes gB{0%,30%{height:0px}42%,86%{height:0px}96%,100%{height:0px}}.mC{margin-top:0;animation:mC 6.6s infinite}@keyframes mC{0%,48%{margin-top:14px}60%,86%{margin-top:-13px}96%,100%{margin-top:14px}}.tg{position:relative;height:16px;margin:5px 0 0}.tb{position:absolute;left:0;top:0;font:600 10.5px/16px Menlo,monospace;color:#c2185b;opacity:0}.ta{position:absolute;left:0;top:0;font:600 10.5px/16px Menlo,monospace;color:#0b6b3a;opacity:0}.b1{animation:b1 6.6s infinite}.a1{animation:a1 6.6s infinite}@keyframes b1{0%,14%{opacity:1}24%,100%{opacity:0}}@keyframes a1{0%,24%{opacity:0}32%,86%{opacity:1}94%,100%{opacity:0}}.b2{animation:b2 6.6s infinite}.a2{animation:a2 6.6s infinite}@keyframes b2{0%,30%{opacity:1}40%,100%{opacity:0}}@keyframes a2{0%,38%{opacity:0}46%,86%{opacity:1}94%,100%{opacity:0}}.b3{animation:b3 6.6s infinite}.a3{animation:a3 6.6s infinite}@keyframes b3{0%,48%{opacity:1}58%,100%{opacity:0}}@keyframes a3{0%,56%{opacity:0}64%,86%{opacity:1}94%,100%{opacity:0}}.foot{margin-top:10px;font-size:10.5px;color:#33456b;background:#0e1b2e;border-radius:8px;padding:7px 10px;font-family:Menlo,monospace}.k{color:#ffb300}&lt;/style&gt;&lt;div class=&#x27;wrap&#x27;&gt;&lt;div class=&#x27;col&#x27;&gt;&lt;div class=&#x27;cap&#x27;&gt;① 正正组&lt;/div&gt;&lt;div class=&#x27;sub&#x27;&gt;margin-bottom:10px ／ margin-top:5px&lt;/div&gt;&lt;div class=&#x27;bx&#x27;&gt;div1  margin-bottom:10px&lt;/div&gt;&lt;div class=&#x27;gA&#x27;&gt;&lt;/div&gt;&lt;div class=&#x27;bx bx2&#x27;&gt;div2  margin-top:5px&lt;/div&gt;&lt;div class=&#x27;tg&#x27;&gt;&lt;span class=&#x27;tb b1&#x27;&gt;相加值 15px&lt;/span&gt;&lt;span class=&#x27;ta a1&#x27;&gt;合并后 10px&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class=&#x27;col&#x27;&gt;&lt;div class=&#x27;cap&#x27;&gt;② 正负组&lt;/div&gt;&lt;div class=&#x27;sub&#x27;&gt;margin-bottom:-10px ／ margin-top:10px&lt;/div&gt;&lt;div class=&#x27;bx&#x27;&gt;div1  margin-bottom:-10px&lt;/div&gt;&lt;div class=&#x27;gB&#x27;&gt;&lt;/div&gt;&lt;div class=&#x27;bx bx2&#x27;&gt;div2  margin-top:10px&lt;/div&gt;&lt;div class=&#x27;tg&#x27;&gt;&lt;span class=&#x27;tb b2&#x27;&gt;相加值 0px&lt;/span&gt;&lt;span class=&#x27;ta a2&#x27;&gt;无缝相接&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class=&#x27;col&#x27;&gt;&lt;div class=&#x27;cap&#x27;&gt;③ 负负组&lt;/div&gt;&lt;div class=&#x27;sub&#x27;&gt;margin-bottom:-10px ／ margin-top:-5px&lt;/div&gt;&lt;div class=&#x27;bx&#x27;&gt;div1  margin-bottom:-10px&lt;/div&gt;&lt;div class=&#x27;bx bx2 mC&#x27;&gt;div2  margin-top:-5px&lt;/div&gt;&lt;div class=&#x27;tg&#x27;&gt;&lt;span class=&#x27;tb b3&#x27;&gt;相加值 -15px&lt;/span&gt;&lt;span class=&#x27;ta a3&#x27;&gt;取最负值·重叠&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class=&#x27;foot&#x27;&gt;margin 合并计算规则：&lt;span class=&#x27;k&#x27;&gt;正正取大值&lt;/span&gt; · &lt;span class=&#x27;k&#x27;&gt;正负相加值&lt;/span&gt; · &lt;span class=&#x27;k&#x27;&gt;负负最负值&lt;/span&gt;&lt;/div&gt;"></iframe></div>
+  </div>
+</section>
+
+<section class="slide" data-kind="task">
+  
+  <header class="s-head">
+    <div class="s-head-left">
+      <div class="kicker an" style="--i:0">任务驱动</div>
+      <h2 class="s-title an" style="--i:1">任务5-6｜父子元素外边距合并</h2>
+      <p class="s-sub an" style="--i:2">目标：构造父子元素外边距合并的实例并观察效果（图5-21）</p>
+    </div>
+  </header>
+  <div class="s-body two">
+    <div class="col-l">
+      <div class="task-goal an" style="--i:1"><span class="tg-label">任务目标</span>验证父子元素的 margin-top 不会简单相加，而是发生合并</div>
+      <ol class="task-steps"><li class="an " style="--i:2">结构：外层 <code>.outer</code>（虚线框）→ 中层 <code>.father</code> → 内层 <code>.son</code>（实线框）。</li><li class="an " style="--i:3">父元素指定 <code>margin-top:20px</code>，子元素也指定 <code>margin-top:20px</code>。</li><li class="an " style="--i:4">浏览器<strong>不会生成 10+20 或 20+20 的结果</strong>，而是发生合并，最终呈现 <strong>20px</strong>。</li><li class="an " style="--i:5">把外层的虚线边框去掉试一试，你会发现连最外层都被「顶」下来了。</li><li class="an " style="--i:6">结论同样适用于 <code>margin-bottom</code>：父子元素的外边距同样会合并。</li></ol>
+    </div>
+    <div class="col-r"><div class="task-code" class="an " style="--i:7">
+          <pre class="cb-code"><span class="pn">&lt;</span><span class="tg">style</span><span class="pn">&gt;</span>
+.box{                       /* #007-#009 */
+    height: 100px;
+}
+.father{                    /* #010-#012 */
+    margin-top: 20px;
+}
+.son{                       /* #013-#016 */
+    margin-top: 20px;
+    border:2px solid #333;
+}
+.outer{                     /* #017-#019 便于观察 */
+    border:2px dashed #666;
+}
+<span class="pn">&lt;/</span><span class="tg">style</span><span class="pn">&gt;</span>
+
+<span class="pn">&lt;</span><span class="tg">div</span> class=&quot;outer&quot;<span class="pn">&gt;</span>
+    <span class="pn">&lt;</span><span class="tg">div</span> class=&quot;father&quot;<span class="pn">&gt;</span>
+        <span class="pn">&lt;</span><span class="tg">div</span> class=&quot;son box&quot;<span class="pn">&gt;</span><span class="pn">&lt;/</span><span class="tg">div</span><span class="pn">&gt;</span>
+    <span class="pn">&lt;/</span><span class="tg">div</span><span class="pn">&gt;</span>
+<span class="pn">&lt;/</span><span class="tg">div</span><span class="pn">&gt;</span></pre></div></div>
+  </div>
+</section>
+
+<section class="slide" data-kind="bullets">
+  
+  <header class="s-head">
+    <div class="s-head-left">
+      <div class="kicker an" style="--i:0">知识要点</div>
+      <h2 class="s-title an" style="--i:1">如何阻止不期望的合并</h2>
+      <p class="s-sub an" style="--i:2">只要破坏其中一项条件，即可阻止合并发生</p>
+    </div>
+  </header>
+  <div class="s-body"><ul class="blist dense"><li class="an " style="--i:1"><span class="bl-dot"></span><span><strong>margin-top 合并的条件：</strong>父元素没有内容或内容在子元素之后，<strong>且没有内边距或边框</strong>。</span></li><li class="an " style="--i:2"><span class="bl-dot"></span><span><strong>margin-bottom 合并的条件：</strong>父元素没有内容或内容在子元素之前，<strong>且没有内边距或边框</strong>。</span></li><li class="an " style="--i:3"><span class="bl-dot"></span><span>阻止 margin-top 合并：给父元素加 <code>border-top</code>、加 <code>padding-top</code>，或在父子之间插入<strong>行内元素</strong>。</span></li><li class="an " style="--i:4"><span class="bl-dot"></span><span>阻止 margin-bottom 合并：加 <code>border-bottom</code>、加 <code>padding-bottom</code>、插入行内元素，或设置 <code>height</code> / <code>min-height</code> / <code>max-height</code>。</span></li><li class="an " style="--i:5"><span class="bl-dot"></span><span>现代做法：用 <strong>flex / grid 布局</strong> 建立格式化上下文，很多合并问题会自然消失。</span></li></ul></div>
+</section>
+
+<section class="slide s-ai" data-kind="ai">
+  
+  <header class="s-head">
+    <div class="s-head-left">
+      <div class="kicker an" style="--i:0">AI 前沿</div>
+      <h2 class="s-title an" style="--i:1">AI 前沿：让 AI 解释「为什么这里多了 20px」</h2>
+      <p class="s-sub an" style="--i:2">外边距合并是最典型的「看得见现象、找不到原因」问题</p>
+    </div>
+  </header>
+  <div class="s-body two">
+    <div class="col-l"><div class="ai-card an" style="--i:1">
+      <div class="ai-badge">AI</div>
+      <p>浏览器渲染没错，是<strong>你的心智模型和规范不一致</strong>——这类问题特别适合交给 AI：把父子/相邻元素的结构与 margin 值贴进去，让它按 CSS 规范逐条推演。更进一步地，Copilot、通义灵码会在你写布局时主动建议改用 flex + gap，从源头避开合并。</p></div></div>
+    <div class="col-r"><ul class="blist small ai-list"><li class="an " style="--i:2">提问模板：「这两个相邻块级元素的垂直间距为什么不是两者之和？」——大模型能准确复述外边距合并规则。</li><li class="an " style="--i:3">重构建议：GitHub Copilot、文心快码常建议用 <code>display:flex</code> + <code>gap</code> 取代一串 margin，间距更可控、无合并副作用。</li><li class="an " style="--i:4">规范出处：MDN 设有 Mastering margin collapsing 专页，是核对 AI 答案是否正确的权威依据。</li><li class="an " style="--i:5">提醒：AI 有时会把「取较大值」说成「取和」，遇到结论不一致时，<strong>以 MDN / W3C 规范为准</strong>。</li></ul></div>
+  </div>
+</section>
+
+<section class="slide" data-kind="quiz">
+  
+  <header class="s-head">
+    <div class="s-head-left">
+      <div class="kicker an" style="--i:0">随堂检测</div>
+      <h2 class="s-title an" style="--i:1">随堂检测</h2>
+      <p class="s-sub an" style="--i:2">选自教材 5.6 作业选择题，并补充自编题</p>
+    </div>
+  </header>
+  <div class="s-body quiz-body">
+    <div class="quiz-top an" style="--i:0">
+      <span class="quiz-meta">共 <b>5</b> 题　·　先独立作答，再点「查看答案」；误点可「重做」</span>
+      <span class="quiz-acts">
+        <button type="button" class="q-reset-all" id="quizResetAll">全部重做</button>
+        <button type="button" class="q-reveal" id="quizReveal">显示全部答案</button>
+      </span>
+    </div>
+    <ol class="quiz dense"><li class="quiz-item single" class="an " style="--i:1" data-type="single" data-answer="C">
+          <div class="q"><span class="q-no">01</span>
+            <span class="q-tag single">单选</span><span class="q-txt">要实现某部门通知页面中框选部分的「部门装饰线」，可以使用的样式属性是（　　）。（教材 5.6 第 1 题）</span></div>
+          <div class="opts"><button type="button" class="opt" data-k="A"><i>A</i><span>border-top</span></button><button type="button" class="opt" data-k="B"><i>B</i><span>border-right</span></button><button type="button" class="opt" data-k="C"><i>C</i><span>border-bottom</span></button><button type="button" class="opt" data-k="D"><i>D</i><span>border-left</span></button></div>
+          <div class="q-foot"><button type="button" class="q-check">查看答案</button>
+            <button type="button" class="q-reset" disabled>重做</button>
+            <span class="q-verdict"></span></div>
+          <div class="q-ans"><b>答案</b><span class="ans-key">C</span><span class="ans-tip">标题下方的装饰线一般使用 border-bottom 实现。</span></div>
+        </li><li class="quiz-item single" class="an " style="--i:2" data-type="single" data-answer="C">
+          <div class="q"><span class="q-no">02</span>
+            <span class="q-tag single">单选</span><span class="q-txt">关于边框样式属性，说法正确的是（　　）。（教材 5.6 第 2 题）</span></div>
+          <div class="opts"><button type="button" class="opt" data-k="A"><i>A</i><span>border 有 4 个方向，不能单独对某个特定方向的边框风格进行指定</span></button><button type="button" class="opt" data-k="B"><i>B</i><span>border-style-right 可以用来对右边框的风格进行指定</span></button><button type="button" class="opt" data-k="C"><i>C</i><span>在 border 简写样式中，颜色、风格和宽度 3 个值的定义顺序可以颠倒</span></button><button type="button" class="opt" data-k="D"><i>D</i><span>在使用 border-color 时，只能使用十六进制值</span></button></div>
+          <div class="q-foot"><button type="button" class="q-check">查看答案</button>
+            <button type="button" class="q-reset" disabled>重做</button>
+            <span class="q-verdict"></span></div>
+          <div class="q-ans"><b>答案</b><span class="ans-key">C</span><span class="ans-tip">单方向边框风格的正确写法是 border-right-style；border-color 可用预设单词、十六进制或 RGB 值。</span></div>
+        </li><li class="quiz-item single" class="an " style="--i:3" data-type="single" data-answer="B">
+          <div class="q"><span class="q-no">03</span>
+            <span class="q-tag single">单选</span><span class="q-txt">父子元素的 margin-top 分别为 10px 与 20px，浏览器中实际呈现的上外边距是（　　）。</span></div>
+          <div class="opts"><button type="button" class="opt" data-k="A"><i>A</i><span>10px</span></button><button type="button" class="opt" data-k="B"><i>B</i><span>20px</span></button><button type="button" class="opt" data-k="C"><i>C</i><span>30px</span></button><button type="button" class="opt" data-k="D"><i>D</i><span>0px</span></button></div>
+          <div class="q-foot"><button type="button" class="q-check">查看答案</button>
+            <button type="button" class="q-reset" disabled>重做</button>
+            <span class="q-verdict"></span></div>
+          <div class="q-ans"><b>答案</b><span class="ans-key">B</span><span class="ans-tip">父子元素发生 margin-top 合并，正正取大值，结果为 20px。</span></div>
+        </li><li class="quiz-item multi" class="an " style="--i:4" data-type="multi" data-answer="ABC">
+          <div class="q"><span class="q-no">04</span>
+            <span class="q-tag multi">多选</span><span class="q-txt">关于边框的写法与显示，下列说法正确的有（　　）。</span></div>
+          <div class="opts"><button type="button" class="opt" data-k="A"><i>A</i><span>border 简写中风格、宽度、颜色三个值的书写顺序可以颠倒</span></button><button type="button" class="opt" data-k="B"><i>B</i><span>只设置 border-width 而不设置 border-style 时，边框不会显示</span></button><button type="button" class="opt" data-k="C"><i>C</i><span>单独设置右方向边框风格，应写成 border-right-style</span></button><button type="button" class="opt" data-k="D"><i>D</i><span>宽度预设值 thin、medium、thick 在不同浏览器中的像素值完全相同</span></button></div>
+          <div class="q-foot"><button type="button" class="q-check">查看答案</button>
+            <button type="button" class="q-reset" disabled>重做</button>
+            <span class="q-verdict"></span></div>
+          <div class="q-ans"><b>答案</b><span class="ans-key">A、B、C</span><span class="ans-tip">边框必须先有非 none 的风格才会显示；单方向格式为 <code>border-方向-style</code>；<strong>thin/medium/thick 的具体像素由浏览器厂商决定</strong>。</span></div>
+        </li><li class="quiz-item multi" class="an " style="--i:5" data-type="multi" data-answer="AB">
+          <div class="q"><span class="q-no">05</span>
+            <span class="q-tag multi">多选</span><span class="q-txt">关于外边距与外边距合并，下列说法正确的有（　　）。</span></div>
+          <div class="opts"><button type="button" class="opt" data-k="A"><i>A</i><span>相邻块级元素的上下外边距相遇时会发生合并，且只发生在垂直方向</span></button><button type="button" class="opt" data-k="B"><i>B</i><span>两个正外边距合并时取较大值，而不是两者相加</span></button><button type="button" class="opt" data-k="C"><i>C</i><span>父子元素 margin-top 分别为 10px 与 20px 时，合并结果为 30px</span></button><button type="button" class="opt" data-k="D"><i>D</i><span>浮动元素、绝对定位元素同样会与相邻元素发生外边距合并</span></button></div>
+          <div class="q-foot"><button type="button" class="q-check">查看答案</button>
+            <button type="button" class="q-reset" disabled>重做</button>
+            <span class="q-verdict"></span></div>
+          <div class="q-ans"><b>答案</b><span class="ans-key">A、B</span><span class="ans-tip">父子元素的 margin-top 合并后取大值，结果为 20px；合并只发生在标准流的块级元素之间，<strong>浮动与绝对定位元素不参与</strong>。</span></div>
+        </li></ol>
+  </div>
+</section>
+
+<section class="slide" data-kind="summary">
+  
+  <header class="s-head">
+    <div class="s-head-left">
+      
+      <h2 class="s-title an" style="--i:1">本课小结</h2>
+      
+    </div>
+  </header>
+  <div class="s-body"><ul class="blist"><li class="an " style="--i:1"><span class="bl-dot"></span><span>边框三要素：<strong>风格 style、宽度 width、颜色 color</strong>；必须先有风格（非 none），边框才会显示。</span></li><li class="an " style="--i:2"><span class="bl-dot"></span><span>风格值共 10 种：<code>none</code>、<code>dashed</code>、<code>solid</code>、<code>dotted</code>、<code>double</code>、<code>groove</code>、<code>ridge</code>、<code>inset</code>、<code>outset</code>、<code>inherit</code>。</span></li><li class="an " style="--i:3"><span class="bl-dot"></span><span>宽高归零 + 加粗边框 = 三角形；<code>transparent</code> 保留需要的那一角，即可做出<strong>气泡对话框</strong>。</span></li><li class="an " style="--i:4"><span class="bl-dot"></span><span>margin 可正可负，<strong>padding 不能为负</strong>；<code>margin:0 auto</code> 可实现块级元素水平居中。</span></li><li class="an " style="--i:5"><span class="bl-dot"></span><span>外边距合并：<strong>正正取大值、正负相加值、负负最负值</strong>；用 border / padding / 高度 / flex 可阻止合并。</span></li></ul></div>
+</section>
+
+<section class="slide" data-kind="homework">
+  
+  <header class="s-head">
+    <div class="s-head-left">
+      
+      <h2 class="s-title an" style="--i:1">课后作业</h2>
+      
+    </div>
+  </header>
+  <div class="s-body"><ul class="blist hw"><li class="an " style="--i:1"><span class="bl-dot"></span><span><strong>操作题：</strong>复现教材任务5-3～5-6 四个示例，分别截图并标注关键属性值。</span></li><li class="an " style="--i:2"><span class="bl-dot"></span><span><strong>拓展题：</strong>把任务5-4 的三角箭头改成指向<strong>上方</strong>（提示：只改 border-color 中保留哪一条边），并尝试用 :after 伪类实现同样的效果。</span></li><li class="an " style="--i:3"><span class="bl-dot"></span><span><strong>思考题：</strong>列举三种可以阻止父子元素 margin-top 合并的做法，并说明它们各自的代价（例如多出的像素或额外元素）。</span></li><li class="an " style="--i:4"><span class="bl-dot"></span><span><strong>预习：</strong>阅读教材 5.4 背景，思考 background-image 与 img 标签在使用上的区别。</span></li></ul></div>
+</section>
+
+<section class="slide" data-kind="refs">
+  
+  <header class="s-head">
+    <div class="s-head-left">
+      
+      <h2 class="s-title an" style="--i:1">出处与参考</h2>
+      <p class="s-sub an" style="--i:2">本课件内容依据教材，并核对以下权威技术文档</p>
+    </div>
+  </header>
+  <div class="s-body"><ol class="refs"><li class="an " style="--i:1"><span class="ref-idx">01</span><span class="ref-t">教材《网页制作（HTML5+CSS3）》项目5 盒子模型（5.2 边框、5.3 外边距）</span><span class="ref-u">郑哲、傅冬 主编 · 电子工业出版社 · 2025 年 1 月第 1 版</span></li><li class="an " style="--i:2"><span class="ref-idx">02</span><span class="ref-t">MDN Web Docs · border 属性</span><span class="ref-u">https://developer.mozilla.org/zh-CN/docs/Web/CSS/border</span></li><li class="an " style="--i:3"><span class="ref-idx">03</span><span class="ref-t">MDN Web Docs · border-style / border-width</span><span class="ref-u">https://developer.mozilla.org/zh-CN/docs/Web/CSS/border-style</span></li><li class="an " style="--i:4"><span class="ref-idx">04</span><span class="ref-t">MDN Web Docs · 外边距合并（Mastering margin collapsing）</span><span class="ref-u">https://developer.mozilla.org/zh-CN/docs/Web/CSS/CSS_box_model/Mastering_margin_collapsing</span></li><li class="an " style="--i:5"><span class="ref-idx">05</span><span class="ref-t">MDN Web Docs · margin 属性</span><span class="ref-u">https://developer.mozilla.org/zh-CN/docs/Web/CSS/margin</span></li></ol></div>
+</section>
+
+<section class="slide s-end" data-kind="end">
+  <div class="end-inner">
+    <div class="end-mark an" style="--i:0">·</div>
+    <h2 class="end-t an" style="--i:1">第 13 单元 · 结束</h2>
+    <p class="end-s an" style="--i:2">下一单元：背景颜色、背景图片、渐变与精灵图</p>
+    <a class="end-next an" style="--i:3" href="U14%20%E8%83%8C%E6%99%AF%EF%BC%9A%E9%A2%9C%E8%89%B2%E3%80%81%E5%9B%BE%E7%89%87%E3%80%81%E6%B8%90%E5%8F%98%E4%B8%8E%E7%B2%BE%E7%81%B5%E5%9B%BE.html"><span class="en-lab">下一讲</span><span class="en-t">U14 背景：颜色、图片、渐变与精灵图</span><span class="en-ar">→</span></a>
+    <a class="end-back an" style="--i:4" href="../../index.html"><span>←</span> 返回总目录</a>
+  </div>
+</section>
+  <div class="legend">← → 翻页　·　C 点击翻页开关　·　O 目录　·　F 全屏　·　P 打印　·　拖动圈选不翻页</div>
+  <div class="hud">
+    <span class="btn" id="btnClick" data-on="1" title="开启 / 关闭「点击鼠标切换页面」（快捷键 C）">点击翻页 开</span>
+    <span class="btn" id="btnNav">目录</span>
+    <span class="btn" id="btnFull">全屏</span>
+    <span class="pageno"><b id="cur">1</b> / 25</span>
+  </div>
+  <div class="flip-toast" id="flipToast"></div>
+  <div class="drawer" id="drawer">
+    <div class="drawer-panel">
+      <div class="drawer-h">本单元目录 <span id="drawerClose">关闭 ✕</span></div>
+      <ul id="drawerList"><li data-go="0"><span class="nv-idx">01</span><span class="nv-t">边框与外边距</span></li><li data-go="1"><span class="nv-idx">02</span><span class="nv-t">本单元我们要达成什么</span></li><li data-go="2"><span class="nv-idx">03</span><span class="nv-t">思政课堂</span></li><li data-go="3"><span class="nv-idx">04</span><span class="nv-t">导览</span></li><li data-go="4"><span class="nv-idx">05</span><span class="nv-t">5.2 边框</span></li><li data-go="5"><span class="nv-idx">06</span><span class="nv-t">边框风格属性</span></li><li data-go="6"><span class="nv-idx">07</span><span class="nv-t">边框风格取值</span></li><li data-go="7"><span class="nv-idx">08</span><span class="nv-t">任务5-3</span></li><li data-go="8"><span class="nv-idx">09</span><span class="nv-t">边框宽度</span></li><li data-go="9"><span class="nv-idx">10</span><span class="nv-t">宽度与颜色</span></li><li data-go="10"><span class="nv-idx">11</span><span class="nv-t">任务5-4 气泡对话框</span></li><li data-go="11"><span class="nv-idx">12</span><span class="nv-t">5.3 外边距</span></li><li data-go="12"><span class="nv-idx">13</span><span class="nv-t">外边距属性</span></li><li data-go="13"><span class="nv-idx">14</span><span class="nv-t">外边距取值</span></li><li data-go="14"><span class="nv-idx">15</span><span class="nv-t">两种合并</span></li><li data-go="15"><span class="nv-idx">16</span><span class="nv-t">任务5-5</span></li><li data-go="16"><span class="nv-idx">17</span><span class="nv-t">外边距合并演示</span></li><li data-go="17"><span class="nv-idx">18</span><span class="nv-t">任务5-6</span></li><li data-go="18"><span class="nv-idx">19</span><span class="nv-t">阻止合并</span></li><li data-go="19"><span class="nv-idx">20</span><span class="nv-t">AI 前沿</span></li><li data-go="20"><span class="nv-idx">21</span><span class="nv-t">随堂检测</span></li><li data-go="21"><span class="nv-idx">22</span><span class="nv-t">本课小结</span></li><li data-go="22"><span class="nv-idx">23</span><span class="nv-t">课后作业</span></li><li data-go="23"><span class="nv-idx">24</span><span class="nv-t">出处与参考</span></li><li data-go="24"><span class="nv-idx">25</span><span class="nv-t">结束</span></li></ul>
+    </div>
+  </div>
+</div></div>
+<script>
+(function(){
+  var slides = Array.prototype.slice.call(document.querySelectorAll('.slide'));
+  var total = slides.length, cur = 0;
+  var stage = document.getElementById('stage');
+  var bar = document.getElementById('bar'), curEl = document.getElementById('cur');
+  var drawer = document.getElementById('drawer');
+  var mqPortrait = window.matchMedia('(orientation: portrait)');
+  var flow = mqPortrait.matches;
+
+  /* ---- 点击翻页开关（记忆教师偏好，跨课件生效） ---- */
+  var clickOn = true;
+  try{ clickOn = localStorage.getItem('deck_clickflip') !== '0'; }catch(e){}
+  var btnClick = document.getElementById('btnClick');
+  var toastEl = document.getElementById('flipToast'), toastTimer = null;
+  function tip(msg){
+    if(!toastEl) return;
+    toastEl.textContent = msg;
+    toastEl.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function(){ toastEl.classList.remove('show'); }, 1500);
+  }
+  function syncClickBtn(){
+    if(!btnClick) return;
+    if(flow){                                   // 竖屏为滚屏阅读，点击翻页天然不生效
+      btnClick.textContent = '竖屏阅读';
+      btnClick.setAttribute('data-on', '0');
+      btnClick.setAttribute('title', '竖屏为纵向阅读模式，上下滚动即可；旋转为横屏后可用点击翻页');
+      return;
+    }
+    btnClick.textContent = '点击翻页 ' + (clickOn ? '开' : '关');
+    btnClick.setAttribute('data-on', clickOn ? '1' : '0');
+    btnClick.setAttribute('title', clickOn
+      ? '当前：点击鼠标可切换页面。点此关闭（快捷键 C）'
+      : '当前：点击鼠标不翻页，方便圈选讲解。点此开启（快捷键 C）');
+  }
+  function toggleClickFlip(silent){
+    clickOn = !clickOn;
+    try{ localStorage.setItem('deck_clickflip', clickOn ? '1' : '0'); }catch(e){}
+    syncClickBtn();
+    if(!silent) tip(clickOn ? '点击翻页已开启' : '点击翻页已关闭 · 仍可用 ← → 或滑动翻页');
+  }
+  syncClickBtn();
+
+  function hasSelection(){
+    var s = window.getSelection && window.getSelection();
+    return !!(s && String(s.text || s).length > 0);
+  }
+  function setIndex(n){
+    cur = Math.max(0, Math.min(total-1, n));
+    slides.forEach(function(s,i){ s.classList.toggle('is-active', i===cur); });
+    var act = slides[cur];
+    if(act && !flow) act.querySelectorAll('.an').forEach(function(el){ void el.offsetWidth; });
+    bar.style.width = (total>1 ? (cur/(total-1)*100) : 100)+'%';
+    curEl.textContent = cur+1;
+    document.querySelectorAll('#drawerList li').forEach(function(li,i){ li.classList.toggle('cur', i===cur); });
+  }
+  function go(n, instant){
+    n = Math.max(0, Math.min(total-1, n));
+    var same = (n===cur && slides[cur] && slides[cur].classList.contains('is-active'));
+    slides.forEach(function(s,i){
+      s.classList.remove('prev');
+      if(i<n) s.classList.add('prev');
+      if(i===n) s.classList.add('is-active');
+    });
+    setIndex(n);
+    if(flow){
+      var el = slides[n];
+      if(el && el.scrollIntoView) el.scrollIntoView({behavior: instant ? 'auto' : 'smooth', block:'start'});
+    } else if(same){
+      var a = slides[n]; if(a) a.querySelectorAll('.an').forEach(function(el){ void el.offsetWidth; });
+    }
+    try{ history.replaceState(null,'','#'+(n+1)); }catch(e){}
+  }
+
+  /* 键盘 */
+  document.addEventListener('keydown', function(e){
+    var k = e.key;
+    if(k==='ArrowRight'||k==='ArrowDown'||k===' '||k==='PageDown'||k==='Enter'){ e.preventDefault(); go(cur+1); }
+    else if(k==='ArrowLeft'||k==='ArrowUp'||k==='PageUp'){ e.preventDefault(); go(cur-1); }
+    else if(k==='Home'){ go(0); } else if(k==='End'){ go(total-1); }
+    else if(k==='o'||k==='O'){ drawer.classList.toggle('open'); }
+    else if(k==='f'||k==='F'){ toggleFull(); }
+    else if(k==='c'||k==='C'){ toggleClickFlip(); }
+    else if(k==='Escape'){ drawer.classList.remove('open'); }
+    else if(k==='p'||k==='P'){ window.print(); }
+  });
+  function toggleFull(){
+    if(!document.fullscreenElement){ (document.documentElement.requestFullscreen||function(){}).call(document.documentElement); }
+    else { document.exitFullscreen(); }
+  }
+
+  /* 点击翻页：拖动圈选文字、双击选词、点按钮/选项一律不翻页 */
+  var down = null, clickTimer = null;
+  function isInteractive(el){
+    return !!(el.closest('.hud')||el.closest('.drawer')||el.closest('iframe')||el.closest('summary')||
+              el.closest('details')||el.closest('.quiz')||el.closest('a')||el.closest('button')||
+              el.closest('input')||el.closest('select')||el.closest('textarea')||el.closest('label'));
+  }
+  stage.addEventListener('mousedown', function(e){ down = {x:e.clientX, y:e.clientY, t:Date.now()}; });
+  stage.addEventListener('click', function(e){
+    if(flow) return;
+    clearTimeout(clickTimer);
+    if(!clickOn) return;                           // 开关关闭：点击不翻页
+    if(e.detail > 1) return;                       // 双击 / 三击 = 选词，不翻页
+    if(isInteractive(e.target)) return;
+    if(hasSelection()) return;                     // 已有选中内容，不翻页
+    if(down && (Math.abs(e.clientX-down.x)>6 || Math.abs(e.clientY-down.y)>6)) return;  // 拖动圈选
+    if(down && (Date.now()-down.t > 800)) return;  // 长按
+    var r = stage.getBoundingClientRect();
+    var dir = (e.clientX - r.left) > r.width*0.5 ? 1 : -1;
+    clickTimer = setTimeout(function(){
+      if(hasSelection()) return;                   // 圈选期间保持静止
+      go(cur+dir);
+    }, 220);
+  });
+  document.addEventListener('dblclick', function(){ clearTimeout(clickTimer); });
+  document.addEventListener('selectionchange', function(){ if(hasSelection()) clearTimeout(clickTimer); });
+
+  /* 触摸：仅在横向滑动时翻页；竖屏交给页面滚动 */
+  var sx=null, sy=null, st=0;
+  stage.addEventListener('touchstart', function(e){
+    if(e.touches.length>1){ sx=null; return; }
+    sx=e.touches[0].clientX; sy=e.touches[0].clientY; st=Date.now();
+  }, {passive:true});
+  stage.addEventListener('touchend', function(e){
+    if(sx===null) return;
+    var dx=e.changedTouches[0].clientX-sx, dy=e.changedTouches[0].clientY-sy;
+    sx=null;
+    if(flow) return;
+    if(Date.now()-st>900) return;                  // 长按选词
+    if(hasSelection()) return;
+    if(Math.abs(dx)>55 && Math.abs(dy)<Math.abs(dx)*0.75) go(dx<0?cur+1:cur-1);
+  }, {passive:true});
+
+  /* 竖屏：滚动时同步页码与进度 */
+  if('IntersectionObserver' in window){
+    var io = new IntersectionObserver(function(entries){
+      if(!flow) return;
+      var best=null;
+      entries.forEach(function(en){
+        if(en.isIntersecting && (!best || en.intersectionRatio > best.intersectionRatio)) best = en;
+      });
+      if(best){
+        var i = slides.indexOf(best.target);
+        if(i>=0 && i!==cur) setIndex(i);
+      }
+    }, {threshold:[0.2,0.5,0.8]});
+    slides.forEach(function(s){ io.observe(s); });
+  }
+  function onOrient(){
+    flow = mqPortrait.matches;
+    syncClickBtn();
+    clearTimeout(clickTimer);
+  }
+  mqPortrait.addEventListener ? mqPortrait.addEventListener('change', onOrient) : mqPortrait.addListener(onOrient);
+
+  /* 目录 / HUD */
+  if(btnClick) btnClick.addEventListener('click', function(e){ e.stopPropagation(); toggleClickFlip(); });
+  document.getElementById('btnNav').addEventListener('click', function(e){ e.stopPropagation(); drawer.classList.add('open'); });
+  document.getElementById('btnFull').addEventListener('click', function(e){ e.stopPropagation(); toggleFull(); });
+  document.getElementById('drawerClose').addEventListener('click', function(){ drawer.classList.remove('open'); });
+  drawer.addEventListener('click', function(e){ if(e.target===drawer) drawer.classList.remove('open'); });
+  document.querySelectorAll('#drawerList li').forEach(function(li){
+    li.addEventListener('click', function(){ go(parseInt(li.dataset.go,10)); drawer.classList.remove('open'); });
+  });
+
+  /* 随堂检测：点选选项 → 判分 → 显示答案与解析 → 单选/全量重做 */
+  function keysOf(item){
+    return (item.getAttribute('data-answer')||'').toUpperCase().replace(/[^A-Z]/g,'').split('');
+  }
+  function reveal(item){
+    var ans = keysOf(item);
+    item.querySelectorAll('.opt').forEach(function(b){
+      if(ans.indexOf(b.getAttribute('data-k'))>=0) b.classList.add('right');
+    });
+    item.classList.add('revealed');
+  }
+  function resetItem(item){
+    item.classList.remove('revealed','ok','bad');
+    item.querySelectorAll('.opt').forEach(function(b){ b.classList.remove('right','sel'); });
+    var v = item.querySelector('.q-verdict'); if(v) v.textContent='';
+    var rs = item.querySelector('.q-reset'); if(rs) rs.disabled = true;
+  }
+  document.querySelectorAll('.quiz-item').forEach(function(item){
+    var qtype = item.getAttribute('data-type')||'single';
+    var btnReset = item.querySelector('.q-reset');
+    item.querySelectorAll('.opt').forEach(function(btn){
+      btn.addEventListener('click', function(ev){
+        ev.stopPropagation();
+        /* 已揭示答案后再点选项 = 重新作答，自动收起答案 */
+        if(item.classList.contains('revealed')){
+          item.classList.remove('revealed','ok','bad');
+          item.querySelectorAll('.opt').forEach(function(b){ b.classList.remove('right'); });
+          var v0 = item.querySelector('.q-verdict'); if(v0) v0.textContent='';
+        }
+        if(qtype==='single'){
+          item.querySelectorAll('.opt').forEach(function(b){ b.classList.remove('sel'); });
+          btn.classList.add('sel');
+        } else {
+          btn.classList.toggle('sel');
+        }
+        item.classList.remove('ok','bad');
+        var v = item.querySelector('.q-verdict'); if(v) v.textContent='';
+        if(btnReset) btnReset.disabled = false;
+      });
+    });
+    var chk = item.querySelector('.q-check');
+    if(chk) chk.addEventListener('click', function(ev){
+      ev.stopPropagation();
+      var ans = keysOf(item);
+      var sel = Array.prototype.slice.call(item.querySelectorAll('.opt.sel')).map(function(b){ return b.getAttribute('data-k'); });
+      var ok = sel.length>0 && sel.length===ans.length && sel.filter(function(k){ return ans.indexOf(k)>=0; }).length===ans.length;
+      reveal(item);
+      if(btnReset) btnReset.disabled = false;
+      item.classList.remove('ok','bad'); item.classList.add(ok?'ok':'bad');
+      var v = item.querySelector('.q-verdict');
+      if(v) v.textContent = ok ? '✓ 回答正确' : (sel.length ? '✗ 再想一想，正确项已标绿' : '请先选择答案');
+    });
+    if(btnReset) btnReset.addEventListener('click', function(ev){
+      ev.stopPropagation();
+      resetItem(item);
+      tip('本题已重置，可重新作答');
+    });
+  });
+  var btnReveal = document.getElementById('quizReveal');
+  if(btnReveal) btnReveal.addEventListener('click', function(ev){
+    ev.stopPropagation();
+    var on = btnReveal.getAttribute('data-on')==='1';
+    var next = !on;
+    document.querySelectorAll('.quiz-item').forEach(function(item){
+      if(next){
+        reveal(item);
+        var rs = item.querySelector('.q-reset'); if(rs) rs.disabled = false;
+      } else {
+        resetItem(item);
+      }
+    });
+    btnReveal.setAttribute('data-on', next ? '1':'0');
+    btnReveal.textContent = next ? '隐藏答案' : '显示全部答案';
+  });
+  var btnResetAll = document.getElementById('quizResetAll');
+  if(btnResetAll) btnResetAll.addEventListener('click', function(ev){
+    ev.stopPropagation();
+    document.querySelectorAll('.quiz-item').forEach(resetItem);
+    if(btnReveal){ btnReveal.setAttribute('data-on','0'); btnReveal.textContent = '显示全部答案'; }
+    tip('已清空本题全部作答，可重新开始');
+  });
+
+  var h = parseInt((location.hash||'').replace('#',''),10);
+  go(isNaN(h)?0:h-1, true);
+})();
+</script>
+</body>
+</html>

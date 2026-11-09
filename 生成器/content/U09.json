@@ -1,0 +1,487 @@
+{
+  "id": "U09",
+  "project": "项目4",
+  "project_name": "使用CSS高级选择器美化页面",
+  "unit": "第 9 单元",
+  "title": "复合选择器：让 CSS 精准命中目标",
+  "subtitle": "交集、并集、后代、子元素、相邻兄弟、属性选择器——六种组合拳，用更少的 class 写出更准的规则",
+  "duration": 40,
+  "cover_tags": [
+    "交集选择器",
+    "后代选择器",
+    "子元素选择器",
+    "相邻兄弟选择器",
+    "属性选择器"
+  ],
+  "ref_book": "电子工业出版社 · 2025 年 1 月第 1 版",
+  "objectives": {
+    "knowledge": [
+      "掌握交集选择器语法",
+      "掌握并集选择器语法",
+      "掌握后代选择器语法",
+      "掌握子元素选择器语法",
+      "掌握相邻兄弟选择器语法",
+      "掌握属性选择器语法"
+    ],
+    "skill": [
+      "能使用交集选择器",
+      "能使用并集选择器",
+      "能使用后代选择器",
+      "能使用子元素选择器",
+      "能使用相邻兄弟选择器",
+      "能使用属性选择器"
+    ],
+    "literacy": [
+      "培养严谨求实的劳动态度",
+      "培养勇于探索、崇尚科学的意志和品德",
+      "培养科技报国的崇高理想"
+    ]
+  },
+  "slides": [
+    {
+      "type": "objectives",
+      "title": "本单元我们要达成什么",
+      "subtitle": "对照教材《项目4》4.1 复合选择器的学习目标",
+      "objectives": {
+        "knowledge": [
+          "掌握交集选择器语法",
+          "掌握并集选择器语法",
+          "掌握后代选择器语法",
+          "掌握子元素选择器语法",
+          "掌握相邻兄弟选择器语法",
+          "掌握属性选择器语法"
+        ],
+        "skill": [
+          "能使用交集选择器",
+          "能使用并集选择器",
+          "能使用后代选择器",
+          "能使用子元素选择器",
+          "能使用相邻兄弟选择器",
+          "能使用属性选择器"
+        ],
+        "literacy": [
+          "培养严谨求实的劳动态度",
+          "培养勇于探索、崇尚科学的意志和品德",
+          "培养科技报国的崇高理想"
+        ]
+      }
+    },
+    {
+      "type": "ideology",
+      "title": "航天精神：差之毫厘，谬以千里",
+      "subtitle": "教材《项目4》思政课堂",
+      "nav": "思政课堂",
+      "text": "经过几代航天人的接续奋斗，我国航天事业创造了以“两弹一星”、载人航天、月球探测为代表的辉煌成就，走出了一条自力更生、自主创新的发展道路，积淀了深厚博大的航天精神。继承和发扬航天精神是我们这代人的责任和义务。",
+      "topic": "选择器写错一个空格，样式就会落空。结合航天工程“零缺陷、零疑点”的质量要求，谈谈你对「严谨求实」这四个字在写代码时的理解。"
+    },
+    {
+      "type": "outline",
+      "title": "本单元导览",
+      "subtitle": "六种复合选择器，一条主线：如何精准命中目标元素",
+      "nav": "导览",
+      "items": [
+        "交集选择器：两个选择器<strong>直接相连</strong>，又名标签指定式选择器",
+        "并集选择器：用逗号分组，一次声明、集体受益",
+        "后代选择器 vs 子元素选择器：宽泛的上下文 与 严格的父子",
+        "相邻兄弟选择器：只认<strong>后续相邻</strong>的那一个",
+        "属性选择器：一对中括号，按属性「抓人」",
+        "综合演示：一个页面用活六种复合选择器"
+      ]
+    },
+    {
+      "type": "section",
+      "no": "4.1",
+      "title": "复合选择器",
+      "text": "复合选择器是指通过对基本选择器进行组合而形成的更为复杂的选择器。",
+      "nav": "4.1 复合选择器"
+    },
+    {
+      "type": "bullets",
+      "title": "为什么要用复合选择器",
+      "subtitle": "教材原文：复合选择器是对基本选择器进行组合而形成的更为复杂的选择器",
+      "nav": "为什么组合",
+      "items": [
+        "只用标签选择器，粒度太粗；全部加 <code>class</code>，HTML 又会被类名塞满。",
+        "复合选择器让你<strong>借结构定位元素</strong>：不必给每个元素起名字，也能精确命中。",
+        "常用复合选择器共 6 类：<strong>交集、并集、后代、子元素、相邻兄弟、属性</strong>选择器。",
+        "它们的连接符号各不相同：<strong>无符号相连</strong>、<code>,</code>、<strong>空格</strong>、<code>&gt;</code>、<code>+</code>、<code>[]</code>——记符号是第一步。"
+      ]
+    },
+    {
+      "type": "cards",
+      "title": "六类复合选择器速览",
+      "subtitle": "先建立全景图，再逐个击破",
+      "nav": "六类速览",
+      "cols": 3,
+      "items": [
+        {
+          "title": "交集选择器",
+          "text": "<code>div.nav</code>：第一个是标签选择器，第二个是类/id 选择器，<strong>中间无空格</strong>。又名标签指定式选择器。"
+        },
+        {
+          "title": "并集选择器",
+          "text": "<code>div,#main,.nav</code>：用<strong>逗号</strong>分隔，也叫分组/群组选择器，本质是样式代码的复用。"
+        },
+        {
+          "title": "后代选择器",
+          "text": "<code>ul a</code>：用<strong>空格</strong>分隔，读作「a 作为 ul 的后代」，不限嵌套层级。"
+        },
+        {
+          "title": "子元素选择器",
+          "text": "<code>h1&gt;span</code>：用 <code>&gt;</code> 连接，必须是<strong>直接父子</strong>关系，比后代选择器严格。"
+        },
+        {
+          "title": "相邻兄弟选择器",
+          "text": "<code>h1+p</code>：选中<strong>后续相邻</strong>、且符合条件的兄弟元素；前序相邻不起作用。"
+        },
+        {
+          "title": "属性选择器",
+          "text": "<code>a[href][title]</code>：由<strong>一对中括号</strong>与属性表达式构成，可按属性名或属性值匹配。"
+        }
+      ]
+    },
+    {
+      "type": "codebullets",
+      "title": "4.1.1 交集选择器（标签指定式选择器）",
+      "subtitle": "构成规则：标签选择器在前，类/id 选择器在后，直接相连、不能有任何空格",
+      "nav": "交集选择器",
+      "items": [
+        "又称<strong>标签指定式选择器</strong>，可以利用它指定具有特定类或 id 属性的标签。",
+        "<code>div.blue</code> 选中的 <code>&lt;div&gt;</code> 比一般 <code>&lt;div&gt;</code> 要求更精准，必须<strong>同时</strong>具备 <code>blue</code> 类。",
+        "教材示例：<code>div</code> 统一控制 3 个盒子，<code>div.blue</code> 命中第 1 个，<code>div#nav</code> 命中第 2 个。",
+        "写法陷阱：<code>div .blue</code>（有空格）是后代选择器，<code>div.blue</code>（无空格）才是交集选择器——<strong>一个空格，两种结果</strong>。"
+      ],
+      "lang": "html",
+      "file": "代码4-1 关键片段",
+      "code": "<style>\ndiv{                        /* #007-#012 标签选择器统一控制 */\n    width: 500px;\n    height: 30px;\n    background: antiquewhite;\n    border: 2px solid darkgray;\n}\ndiv.blue{                   /* #013-#015 交集：div 且 class=blue */\n    background: aliceblue;\n}\ndiv#nav{                    /* #016-#018 交集：div 且 id=nav */\n    background: darkgoldenrod;\n}\n</style>\n\n<div class=\"blue\">交集选择器:div.blue</div>\n<div id=\"nav\">交集选择器:div#nav</div>\n<div>标签选择器</div>"
+    },
+    {
+      "type": "codebullets",
+      "title": "4.1.2 并集选择器（分组 / 群组选择器）",
+      "subtitle": "由两个或两个以上任意选择器组成，用逗号分隔——本质是「集体声明」",
+      "nav": "并集选择器",
+      "items": [
+        "<code>div,#main,.nav{color:red;}</code> 完全等价于分别书写 <code>div</code>、<code>#main</code>、<code>.nav</code> 三条同内容规则。",
+        "作用是<strong>样式代码的有效复用</strong>：把「共性」抽出来一次声明，后面再用类选择器补充个性。",
+        "教材示例用 <code>div,span,.nav</code> 一次性让 <code>div</code>、<code>span</code>、<code>p.nav</code> 三种元素同时变红。",
+        "<strong>教材疑误提醒：</strong>代码4-2 中第 015、016 行原文闭合标签误写为 <code>&lt;/div&gt;</code>，正确应为 <code>&lt;/span&gt;</code>、<code>&lt;/p&gt;</code>，课堂请按正确写法示范。"
+      ],
+      "lang": "html",
+      "file": "代码4-2（按正确写法）",
+      "code": "<style>\ndiv,span,.nav{      /* #007-#009 并集选择器 */\n    color:red;\n}\n</style>\n\n<div>并集选择器div</div>\n<span>并集选择器span</span>\n<p class=\"nav\">并集选择器p</p>"
+    },
+    {
+      "type": "codebullets",
+      "title": "4.1.3 后代选择器",
+      "subtitle": "每个空格翻译成「xxxxx 作为 xxx 的后代」，例如 ul a 读作「a 作为 ul 的后代」",
+      "nav": "后代选择器",
+      "items": [
+        "HTML 元素的嵌套关系可视为<strong>父子关系</strong>，形成上下文关系，据此可快速定位特定元素。",
+        "直接父子关系是一种<strong>特殊的后代关系</strong>——这句话是理解子元素选择器的关键铺垫。",
+        "书写起点无硬性要求：只要上下文关系<strong>足够覆盖</strong>你要运用规则的元素即可。",
+        "良好的编程习惯：在确保选中效果的前提下，<strong>以尽可能简单为原则</strong>，便于书写和阅读。",
+        "本例 <code>ul a</code> 与 <code>ul li a</code> 效果等价，但复杂页面中容易误选，应遵循<strong>准确且精简</strong>原则。"
+      ],
+      "lang": "html",
+      "file": "代码4-3 关键片段",
+      "code": "<style>\nul,li{                  /* #007-#010 用并集选择器做初始化 */\n    margin:0px;\n    padding:0px;\n}\nul li{                  /* #011-#015 后代选择器 */\n    height: 30px;\n    background-color: lightgrey;\n    margin-bottom:2px;\n}\nul a{                   /* #016-#018 a 作为 ul 的后代 */\n    color:red;\n}\n</style>\n\n<ul>\n    <li><a href=\"\">link1</a></li>\n    <li><a href=\"\">link2</a></li>\n    ...\n</ul>\n<a href=\"\">link6</a>     <!-- #029 不在 ul 内，不被选中 -->"
+    },
+    {
+      "type": "compare",
+      "title": "后代选择器 vs 子元素选择器：最大的区别",
+      "subtitle": "一个看「祖先」，一个只看「父亲」",
+      "nav": "后代 vs 子元素",
+      "a": {
+        "title": "后代选择器　ul li a（空格）",
+        "items": [
+          "是一种<strong>较为宽泛</strong>的上下文选择器",
+          "只要符合上下文关系，<strong>不管嵌套层级如何</strong>都可以被选中",
+          "示例：<code>ul li a</code> 同时命中 <code>ul li a</code> 与 <code>ul li span a</code>",
+          "优点：写起来短；风险：复杂页面容易误选"
+        ]
+      },
+      "b": {
+        "title": "子元素选择器　ul li>a（>）",
+        "items": [
+          "是一种<strong>相对严格</strong>的上下文选择器",
+          "不仅要符合上下文关系，还要符合<strong>一定的父子关系</strong>",
+          "示例：<code>ul li&gt;a</code> 只命中 <code>li</code> 的<strong>直接子</strong>元素 <code>a</code>",
+          "嵌在 <code>span</code> 里的 <code>a</code> 不会被选中"
+        ]
+      }
+    },
+    {
+      "type": "task",
+      "title": "任务｜注释开关看差别：ul li a 与 ul li>a",
+      "subtitle": "课堂演示流程：教材代码4-4，两组列表对比",
+      "nav": "子元素选择器演示",
+      "goal": "通过取消/添加注释，观察后代选择器与子元素选择器的命中范围差异",
+      "steps": [
+        "初始运行（注释状态）：所有链接均为<strong>黄色</strong>，因为 <code>ul li a</code> 同时命中两组列表。",
+        "第 2 组列表刻意多包了一层 <code>&lt;span&gt;</code>，结构为 <code>ul li span a</code>。",
+        "取消 019–021 行注释，让 <code>ul li&gt;a</code> 生效并刷新页面。",
+        "结果：<strong>只有 link1–link5 变红色</strong>，link6–link10 保持黄色——因为它们不是 <code>li</code> 的直接子元素。"
+      ],
+      "lang": "html",
+      "code": "<style>\nul li a{                /* #016-#018 后代：命中 ul li a 与 ul li span a */\n    color:yellow;\n}\n/* ul li>a {             #019-#021 默认被注释\n    color: red;\n} */\n</style>\n\n<ul>\n    <li><a href=\"\">link1</a></li>  ...  <li><a href=\"\">link5</a></li>\n</ul>\n<ul>                            <!-- 第2组：多了一层 span -->\n    <li><span><a href=\"\">link6</a></span></li>  ...\n</ul>"
+    },
+    {
+      "type": "codebullets",
+      "title": "4.1.5 相邻兄弟选择器",
+      "subtitle": "技巧：后续相邻且符合选择器2 条件的那些元素",
+      "nav": "相邻兄弟选择器",
+      "items": [
+        "重点在「<strong>后续</strong>」二字：前序相邻的兄弟元素不起作用，这是初学者最容易犯错之处。",
+        "教材示例 <code>h1+p</code>：只选中「做文明人」这一段。",
+        "课堂拓展「考考你」：改为 <code>p+p</code>，会选中「办文明事」<strong>和</strong>「讲文明话」。",
+        "原因：对「办文明事」而言，后续相邻的「讲文明话」同样符合 <code>p+p</code> 条件。",
+        "MDN 补充：若想选中<strong>所有</strong>后续兄弟，应使用通用兄弟组合器 <code>~</code>（CSS3）。"
+      ],
+      "lang": "html",
+      "file": "代码4-5 关键片段",
+      "code": "<style>\nh1+p{                       /* #007-#012 后续相邻的兄弟 */\n    background: lemonchiffon;\n    color:#f00;\n    height: 30px;\n    border:1px solid #ccc;\n}\n</style>\n\n<h1>争创文明校园</h1>\n<p>做文明人</p>      <!-- h1+p 只选中这一段 -->\n<p>办文明事</p>\n<p>讲文明话</p>"
+    },
+    {
+      "type": "table",
+      "title": "表4-1 常见的属性选择器",
+      "subtitle": "标准 CSS 写法为半角运算符 [attr~=value]、[attr|=value]",
+      "nav": "属性选择器表",
+      "head": [
+        "类型",
+        "选择器",
+        "描述"
+      ],
+      "rows": [
+        [
+          "根据属性选择",
+          "<code>[属性]</code>",
+          "选择带有指定属性的元素"
+        ],
+        [
+          "根据属性和属性值选择",
+          "<code>[属性=值]</code>",
+          "选择带有指定属性和属性值的元素"
+        ],
+        [
+          "根据部分属性值选择",
+          "<code>[属性~=值]</code>",
+          "选择属性值中包含指定值的元素，该值必须是一个<strong>完整的单词</strong>"
+        ],
+        [
+          "子串匹配属性值",
+          "<code>[属性|=值]</code>",
+          "属性值以指定值开头，该值须是完整单词或以 “-” 连接后续内容的字符串，如 en-"
+        ],
+        [
+          "子串匹配属性值",
+          "<code>[属性^=值]</code>",
+          "选择属性值以指定值<strong>开头</strong>的元素"
+        ],
+        [
+          "子串匹配属性值",
+          "<code>[属性$=值]</code>",
+          "选择属性值以指定值<strong>结尾</strong>的元素"
+        ],
+        [
+          "子串匹配属性值",
+          "<code>[属性*=值]</code>",
+          "选择属性值中<strong>包含</strong>指定值的元素"
+        ]
+      ]
+    },
+    {
+      "type": "codebullets",
+      "title": "4.1.6 属性选择器",
+      "subtitle": "属性选择器由一对中括号和一组属性表达式表示",
+      "nav": "属性选择器示例",
+      "items": [
+        "<code>[title]</code> 选中所有带 title 属性的元素，统一设为 <code>#f6f</code>。",
+        "<code>a[href][title]</code> 两个条件同时满足，只命中「2003 年10 月15 日至16 日」这一条链接。",
+        "<code>img[alt]</code> 命中 <code>astronaut.png</code>，用 <code>float:left</code> 实现<strong>图文混排</strong>。",
+        "再用 <code>margin-right</code> 调整图文之间的距离——这是外边距的典型用法，项目5 会系统学习。",
+        "提示：属性选择器既可单独使用，也可<strong>紧跟在标签选择器之后</strong>书写，如 <code>a[href]</code>。"
+      ],
+      "lang": "html",
+      "file": "代码4-6 关键片段",
+      "code": "<style>\n[title]{                    /* #007-#009 */\n    color:#f6f;\n}\na[href]{                    /* #010-#012 */\n    text-decoration: none;\n}\na[href][title]{             /* #013-#015 */\n    font-size: 18px;\n}\nimg[alt]{                   /* #016-#022 图文混排 */\n    border:1px dashed #ccc;\n    float:left;\n    max-width: 100px;\n    padding:5px;\n    margin-right:10px;\n}\n</style>\n\n<h1 title=\"中国航天员\">中国航天员</h1>\n<a href=\"#\" title=\"任务时间\">2003 年10 月15 日至16 日</a>"
+    },
+    {
+      "type": "demo",
+      "title": "效果演示｜六种复合选择器在同页面上的命中范围",
+      "subtitle": "左侧规则逐条「点亮」，右侧同步高亮它被命中的元素",
+      "nav": "命中范围演示",
+      "items": [
+        "观察第 1 步：<code>div.card</code>（交集）只高亮那个带 <code>class=\"card\"</code> 的 div。",
+        "第 2 步：<code>h2,p,.tag</code>（并集）一口气高亮三个不同类型、不同位置的元素。",
+        "第 3、4 步：后代 <code>ul a</code> 与子元素 <code>ul&gt;li</code>，命中层级完全不同。",
+        "第 5 步：<code>h2+p</code> 只命中紧跟标题的那一段；第 6 步：<code>[title]</code> 命中带该属性的元素。"
+      ],
+      "hint": "把 <code>h2+p</code> 改成 <code>p+p</code> 再看一遍，想一想为什么会多出被选中的元素。",
+      "html": "<style>*{box-sizing:border-box}body{margin:0;padding:14px;font-family:'PingFang SC',system-ui,sans-serif;background:linear-gradient(160deg,#f2f6ff,#eafafd)}.wrap{display:flex;gap:12px}.sel{flex:1.05}.row{border:1px solid #e6ecf7;background:#fff;border-radius:9px;padding:6px 9px;margin-bottom:6px;animation:hl 7.2s infinite both}.r2{animation-delay:1.2s}.r3{animation-delay:2.4s}.r4{animation-delay:3.6s}.r5{animation-delay:4.8s}.r6{animation-delay:6s}@keyframes hl{0%,13%{opacity:1;border-color:#2f6bff;background:#eaf1ff;transform:translateX(5px)}20%,100%{opacity:.42;border-color:#e6ecf7;background:#fff;transform:none}}.k{font:600 12px/1.5 Menlo,monospace;color:#0e1b2e}.d{font-size:10.5px;color:#6b7c96}.pv{flex:1.15;background:#fff;border:1px solid #e6ecf7;border-radius:11px;padding:12px}.el{border-radius:7px;padding:1px 3px;animation:hit 7.2s infinite both}@keyframes hit{0%,13%{box-shadow:0 0 0 2px #2f6bff;background:#eaf1ff}20%,100%{box-shadow:0 0 0 0 rgba(47,107,255,0);background:transparent}}.e2{animation-delay:1.2s}.e3{animation-delay:2.4s}.e4{animation-delay:3.6s}.e5{animation-delay:4.8s}.e6{animation-delay:6s}h2{margin:0 0 6px;font-size:15px;color:#0e1b2e}.lead{margin:0 0 6px;font-size:11.5px;color:#8a2be2}h3{margin:0 0 5px;font-size:12px;color:#33456b}ul{margin:0 0 6px;padding-left:18px}li{font-size:11.5px;color:#33456b;line-height:1.8}a{color:#1d46b8;text-decoration:none}.tag{display:inline-block;font-size:10.5px;color:#0b6b3a;background:#e7f8ef;border:1px solid #b7e6c9;border-radius:999px;padding:1px 8px}.card{border:1px dashed #b9c6dc;border-radius:8px;padding:6px 8px;font-size:11px;color:#5a6c85}.bar{margin-top:8px;font-size:10.5px;color:#c2601a;background:#fff3e7;border-radius:7px;padding:6px 9px}</style><div class='wrap'><div class='sel'><div class='row'><div class='k'>div.card</div><div class='d'>交集选择器·无空格</div></div><div class='row r2'><div class='k'>h2, p, .tag</div><div class='d'>并集选择器·逗号分组</div></div><div class='row r3'><div class='k'>ul a</div><div class='d'>后代选择器·空格</div></div><div class='row r4'><div class='k'>ul&gt;li</div><div class='d'>子元素选择器·大于号</div></div><div class='row r5'><div class='k'>h2+p</div><div class='d'>相邻兄弟·后续相邻</div></div><div class='row r6'><div class='k'>[title]</div><div class='d'>属性选择器·中括号</div></div></div><div class='pv'><h2>中国航天员</h2><p class='lead el e5'>杨利伟 · 神舟五号</p><ul><li class='el e4'><a class='el e3' href='#'>费俊龙 · 神舟六号</a></li><li class='el e4'><a class='el e3' href='#'>聂海胜 · 神舟十号</a></li></ul><span class='tag el e2'>英雄机组</span><div class='card el e1'>div.card：只有这个 div 会被交集选择器命中</div><div class='bar'>提示：<span class='el e6' title='title 属性'>带 title 属性的元素</span>在最后一步才会被 [title] 选中</div></div></div>"
+    },
+    {
+      "type": "task",
+      "title": "课堂练习｜用属性选择器给「中国航天员」页面做样式",
+      "subtitle": "不新增任何 class，只靠标签 + 属性完成定位",
+      "nav": "课堂练习",
+      "goal": "在代码4-6 基础上扩展：区分站内链接与站外链接，并给所有图片加统一边框",
+      "steps": [
+        "用 <code>a[href^=\"http\"]</code> 给站外链接加上不同的颜色，提示「跳转到外部站点」。",
+        "用 <code>a[href$=\".pdf\"]</code> 给 PDF 资料链接添加一个文档标识。",
+        "用 <code>img[alt]</code> 统一给所有配图加 1px 虚线框与 <code>padding:5px</code>。",
+        "运行页面并检查：<strong>没有遗漏、也没有误伤</strong>，再截图保存。"
+      ]
+    },
+    {
+      "type": "bullets",
+      "title": "易错大盘点：五个空格/符号级陷阱",
+      "subtitle": "写完选择器，先在脑子里过一遍这五条",
+      "nav": "易错盘点",
+      "items": [
+        "<code>div.blue</code> 与 <code>div .blue</code>：前者是交集，后者是后代——<strong>一个空格差之千里</strong>。",
+        "交集选择器<strong>第一个必须是标签选择器</strong>，写成 <code>.blue div</code> 就变成后代选择器了。",
+        "相邻兄弟选择器找的是<strong>后续</strong>兄弟，前面的兄弟不会被选中。",
+        "后代选择器不是写得越长越好：在确保命中的前提下<strong>越简单越好</strong>。",
+        "属性选择器的运算符是半角：<code>[attr~=value]</code>、<code>[attr|=value]</code>，教材原表印刷为全角，请按标准写法书写。"
+      ]
+    },
+    {
+      "type": "ai",
+      "title": "AI 前沿：大模型是怎么「读懂」一个页面的",
+      "subtitle": "AI 看到的不是一张截图，而是一棵 DOM 树 + 一组选择器规则",
+      "nav": "AI 前沿",
+      "text": "你给 AI 一段 HTML，它首先要做的是构建<strong>DOM 树</strong>；而要改某处样式，它必须像今天的你一样，找出一条能精准命中目标节点的选择器路径。区别在于：AI 倾向于生成又长又稳的路径（如 <code>body > div > ul > li:nth-child(3) > a</code>），而优秀工程师会用最短、最稳定的复合选择器。",
+      "items": [
+        "GitHub Copilot、通义灵码、文心快码都能根据上下文自动补全选择器，但补全结果往往<strong>偏啰嗦</strong>，需要人工精简。",
+        "DeepSeek、通义千问等大模型可以直接回答「这段 CSS 为什么没生效」，本质是在做<strong>选择器匹配 + 优先级推理</strong>。",
+        "审查 AI 代码的重点：它写的后代链是否过长、是否过度依赖结构顺序、是否会因为 DOM 微调而失效。",
+        "结论：<strong>选择器基本功越扎实，你驾驭 AI 的能力就越强</strong>——这正是本单元的价值所在。"
+      ]
+    },
+    {
+      "type": "quiz",
+      "title": "随堂检测",
+      "subtitle": "自编题，覆盖本单元六类复合选择器",
+      "nav": "随堂检测",
+      "items": [
+        {
+          "q": "下列选择器中，能够选中 class 为 blue 的 div 元素的是（　　）。",
+          "options": [
+            "A. div,blue",
+            "B. div.blue",
+            "C. div blue",
+            "D. div#blue"
+          ],
+          "answer": "B",
+          "tip": "交集选择器：标签选择器与类选择器直接相连，中间无空格。",
+          "type": "single"
+        },
+        {
+          "q": "关于 ul a 与 ul>li>a，下列说法正确的是（　　）。",
+          "options": [
+            "A. 两者完全等价",
+            "B. ul a 只选直接子元素",
+            "C. ul>li>a 要求 a 必须是 li 的直接子元素",
+            "D. ul>li>a 能选中任意层级的后代 a"
+          ],
+          "answer": "C",
+          "tip": "子元素选择器只认直接父子；后代选择器不限层级。",
+          "type": "single"
+        },
+        {
+          "q": "有结构 h1、p、p 依次相邻，使用 h1+p 会选中（　　）。",
+          "options": [
+            "A. 第 1 个 p",
+            "B. 第 2 个 p",
+            "C. 两个 p 都选中",
+            "D. 都不选中"
+          ],
+          "answer": "A",
+          "tip": "相邻兄弟选择器只选中“后续相邻”的那一个；若写 p+p 才会选中第 2 个 p。",
+          "type": "single"
+        },
+        {
+          "type": "multi",
+          "q": "关于复合选择器，下列说法中正确的有（　　）。",
+          "options": [
+            "A. div.blue 是交集选择器，两个选择器之间不能有空格",
+            "B. div,span,.nav 是并集选择器，各选择器之间用逗号分隔",
+            "C. h1+p 中的「+」会同时选中 h1 前后相邻的两个 p",
+            "D. ul li>a 中的「>」表示 a 必须是 li 的直接子元素"
+          ],
+          "answer": "ABD",
+          "tip": "相邻兄弟选择器只认<strong>后续相邻</strong>的那一个；写成 div .blue（有空格）则变成后代选择器。"
+        },
+        {
+          "type": "multi",
+          "q": "关于后代选择器与属性选择器，下列说法中正确的有（　　）。",
+          "options": [
+            "A. [title] 选中所有带有 title 属性的元素",
+            "B. a[href^=\"http\"] 选中 href 属性值以 http 开头的链接",
+            "C. 属性选择器可以紧跟在标签选择器之后书写，如 a[href]",
+            "D. ul li a 只能选中 li 的直接子元素 a"
+          ],
+          "answer": "ABC",
+          "tip": "后代选择器<strong>不限嵌套层级</strong>，ul li span a 同样会被 ul li a 命中；只认直接父子的是子元素选择器。"
+        }
+      ]
+    },
+    {
+      "type": "summary",
+      "title": "本课小结",
+      "nav": "本课小结",
+      "items": [
+        "复合选择器是对<strong>基本选择器进行组合</strong>形成的更复杂的选择器，共 6 类。",
+        "<strong>交集</strong><code>div.blue</code> 两选择器直接相连；<strong>并集</strong><code>div,p</code> 逗号分组、集体声明。",
+        "<strong>后代</strong><code>ul a</code> 不限层级；<strong>子元素</strong><code>ul&gt;li&gt;a</code> 只认直接父子。",
+        "<strong>相邻兄弟</strong><code>h1+p</code> 只认「后续相邻」；<strong>属性</strong><code>[attr]</code> 用一对中括号表达条件。",
+        "书写原则：准确第一，其次精简；写完务必确认<strong>不多选、不漏选</strong>。"
+      ]
+    },
+    {
+      "type": "homework",
+      "title": "课后作业",
+      "nav": "课后作业",
+      "items": [
+        "<strong>操作题：</strong>复现教材代码4-1～4-6 六个示例，逐一截图，标注每段代码命中的元素。",
+        "<strong>改错题：</strong>把代码4-2 中第 015、016 行的闭合标签按教材原文写成 <code>&lt;/div&gt;</code> 运行一次，记录浏览器的容错表现，再改回正确写法。",
+        "<strong>思考题：</strong>后代选择器为什么提倡「尽可能简单」？举一个你写过的、可以用后代选择器替换掉一堆 class 的例子。",
+        "<strong>预习：</strong>阅读教材 4.2～4.3，思考同一元素被多条规则同时命中时，浏览器到底听谁的。"
+      ]
+    },
+    {
+      "type": "refs",
+      "title": "出处与参考",
+      "subtitle": "本课件内容依据教材，并核对以下权威技术文档",
+      "nav": "出处与参考",
+      "items": [
+        {
+          "t": "教材《网页制作（HTML5+CSS3）》项目4 使用CSS高级选择器美化页面（4.1 复合选择器）",
+          "u": "郑哲、傅冬 主编 · 电子工业出版社 · 2025 年 1 月第 1 版"
+        },
+        {
+          "t": "MDN Web Docs · CSS 选择器（选择器与组合器总览）",
+          "u": "https://developer.mozilla.org/zh-CN/docs/Web/CSS/CSS_selectors"
+        },
+        {
+          "t": "MDN Web Docs · 属性选择器",
+          "u": "https://developer.mozilla.org/zh-CN/docs/Web/CSS/Attribute_selectors"
+        },
+        {
+          "t": "MDN Web Docs · 后代组合器 / 子组合器 / 相邻兄弟组合器",
+          "u": "https://developer.mozilla.org/zh-CN/docs/Web/CSS/Descendant_combinator"
+        },
+        {
+          "t": "W3C · Selectors Level 4 规范",
+          "u": "https://www.w3.org/TR/selectors-4/"
+        }
+      ]
+    },
+    {
+      "type": "end",
+      "title": "第 9 单元 · 结束",
+      "text": "下一单元：行内式、内嵌式、链接式，以及 CSS 冲突的四条解决原则",
+      "nav": "结束"
+    }
+  ]
+}

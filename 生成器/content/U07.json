@@ -1,0 +1,681 @@
+{
+  "id": "U07",
+  "project": "项目3",
+  "project_name": "使用CSS基本选择器美化页面",
+  "unit": "第 7 单元",
+  "title": "字体属性、文本排版与自定义字体",
+  "subtitle": "把文字调成想要的样子：字号、字体族、字重、行高，再到用 @font-face 引入个性化字体",
+  "duration": 40,
+  "cover_tags": [
+    "font-size",
+    "font-family",
+    "line-height",
+    "文本排版",
+    "@font-face"
+  ],
+  "ref_book": "电子工业出版社 · 2025 年 1 月第 1 版",
+  "objectives": {
+    "knowledge": [
+      "掌握 font-size、font-family 等字体属性的取值",
+      "掌握 font-weight、font-style、line-height 的用法",
+      "掌握文本排版属性的用法",
+      "理解 @font-face 自定义字体的定义与引用规则"
+    ],
+    "skill": [
+      "能使用选择器对页面中的文字进行排版",
+      "能使用 font 简写属性一次定义多种字体样式",
+      "能使用 line-height 实现单行文字垂直居中",
+      "能使用 @font-face 定义并引用自定义字体"
+    ],
+    "literacy": [
+      "培养有始有终、精益求精的工匠精神",
+      "培养极致思维、用户思维的互联网思维模式",
+      "具备情趣高尚的审美意识"
+    ]
+  },
+  "slides": [
+    {
+      "type": "objectives",
+      "title": "本单元我们要达成什么",
+      "subtitle": "对照教材《项目3》3.3.4～3.3.5 的学习目标",
+      "nav": "学习目标",
+      "objectives": {
+        "knowledge": [
+          "掌握 font-size、font-family 等字体属性的取值",
+          "掌握 font-weight、font-style、line-height 的用法",
+          "掌握 text-align、text-indent 等文本排版属性的用法",
+          "理解 @font-face 自定义字体的定义与引用规则"
+        ],
+        "skill": [
+          "能使用选择器对页面中的文字进行排版",
+          "能使用 font 简写属性一次定义多种字体样式",
+          "能使用 line-height 实现单行文字垂直居中",
+          "能使用 @font-face 定义并引用自定义字体"
+        ],
+        "literacy": [
+          "培养有始有终、精益求精的工匠精神",
+          "培养极致思维、用户思维的互联网思维模式",
+          "具备情趣高尚的审美意识"
+        ]
+      }
+    },
+    {
+      "type": "ideology",
+      "title": "工匠精神：像素级的打磨，才是「提品质」",
+      "subtitle": "教材《项目3》思政课堂",
+      "nav": "思政课堂",
+      "text": "<strong>工匠精神（craftsman's spirit）</strong>是一种职业精神，它是<strong>职业道德、职业能力、职业品质</strong>的体现，是从业者的一种<strong>职业价值取向和行为表现</strong>。2016 年，《政府工作报告》提出：鼓励企业开展<strong>个性化定制、柔性化生产</strong>，培育<strong>精益求精的工匠精神</strong>，<strong>增品种、提品质、创品牌</strong>。此后，除了制造业，<strong>各行各业都提倡工匠精神</strong>。",
+      "topic": "字号、行高、字距这些「差一个像素」的细节，用户未必说得出来，却一定感受得到。请结合前端岗位谈谈：如何用精益求精的态度打磨页面的文字排版？"
+    },
+    {
+      "type": "outline",
+      "title": "本单元导览",
+      "subtitle": "从「字体三件套」到「自定义字体」，五步搞定文字",
+      "nav": "导览",
+      "items": [
+        "字体大小怎么定？px、pt、em、rem、% 到底差在哪？",
+        "字体族怎么选？通用字体、候选列表与中英混排的顺序",
+        "字重、风格与行高：加粗、倾斜，以及单行文字垂直居中（任务3-3）",
+        "font 简写属性与文本排版五件套（任务3-4、任务3-5）",
+        "自定义字体：用 @font-face 把个性化字体搬进网页（任务3-6）"
+      ]
+    },
+    {
+      "type": "section",
+      "no": "3.3.4",
+      "title": "字体属性",
+      "text": "除了 color，文字的加粗、变大、行距，都由这一节的属性说了算。",
+      "nav": "3.3.4 字体属性"
+    },
+    {
+      "type": "table",
+      "title": "font-size 属性值与常用单位（教材表3-3 及单位对比）",
+      "subtitle": "为什么需要这么多数值类型？为的是兼容不同浏览器与移动设备尺寸",
+      "nav": "font-size 与单位",
+      "head": [
+        "取值 / 单位",
+        "描述"
+      ],
+      "rows": [
+        [
+          "medium",
+          "如果不设置，则为<strong>浏览器的默认字体大小</strong>，通常为 <strong>16px</strong>"
+        ],
+        [
+          "length",
+          "某个<strong>固定值</strong>，常用单位为<strong>像素（px）、em、点（pt）、rem</strong>；使用最频繁，数值越大字体越大"
+        ],
+        [
+          "百分比",
+          "基于<strong>父元素或默认值</strong>的百分比（%），是一个<strong>相对值</strong>"
+        ],
+        [
+          "inherit",
+          "<strong>继承父元素的字体大小</strong>；当前元素未设置字体大小时，会自动继承父元素"
+        ],
+        [
+          "px",
+          "主要用于<strong>计算机屏幕</strong>，一个像素对应屏幕上的一个像素点；<strong>固定大小、不具伸缩性</strong>，在种类繁多的移动设备上不太可行"
+        ],
+        [
+          "pt",
+          "英文 point 的缩写，主要用于<strong>印刷媒体</strong>，是 <strong>Photoshop、AI 中默认字体大小单位</strong>；<strong>1 点 = 1 英寸的 1/72</strong>，同样不具伸缩性，现在网页中已很少使用"
+        ],
+        [
+          "em",
+          "<strong>相对长度单位</strong>，相对于<strong>当前元素</strong>的字体大小；未设置时相对浏览器默认字体大小，<strong>具有伸缩性</strong>。教材换算：默认时 <strong>1em = 12pt = 16px</strong>"
+        ],
+        [
+          "rem",
+          "全称 <strong>root em（根 em）</strong>，CSS3 新增，<strong>总是相对于 HTML 根元素</strong>；既可只改根元素就成比例调整所有字体，又能避免字体大小<strong>逐层复合的连锁反应</strong>；除 IE8 及更早版本外，主流浏览器均支持"
+        ],
+        [
+          "%",
+          "与 em 一样相对于<strong>父元素或默认值</strong>，<strong>100% = 1em</strong>；同样具有伸缩性，适合移动设备"
+        ]
+      ]
+    },
+    {
+      "type": "codebullets",
+      "title": "font-family 属性控制字体族（语法3-5）",
+      "subtitle": "为什么不是一个字体名，而是一长串候选列表？",
+      "nav": "font-family",
+      "items": [
+        "用户的计算机<strong>可能没有安装设计师指定的字体</strong>，因此需要一个<strong>候选的字体族列表</strong>，让浏览器决定最佳的显示效果。",
+        "字体族分<strong>通用字体</strong>与<strong>具体字体</strong>两大类；浏览器按 <code>font-family</code> 列表<strong>从左到右的优先顺序</strong>查找并显示。",
+        "<strong>排列原则：</strong>最佳字体置于<strong>优先顺位</strong>，相近字体置于<strong>候选顺位</strong>，<strong>通用字体作为最后保障</strong>。",
+        "<strong>引号规则：</strong>字体名称中<strong>包含空格</strong>（如 Times New Roman）时须加双引号；为兼容性考虑，<strong>建议对所有中文字体加双引号</strong>。",
+        "<strong>中文字体的英文名：</strong><code>Microsoft YaHei</code> 微软雅黑、<code>SimSun</code> 宋体、<code>SimHei</code> 黑体；某些版本的 Firefox 与 Opera 不支持 SimSun，宋体甚至写成 Unicode 形式 <code>\"\\5b8b\\4f53\"</code>。",
+        "<strong>中西文混排：</strong>通常<strong>把西文字体靠前放</strong>——西文字体不含汉字，若中文字体优先级更高，会导致指定的西文字体不显示。"
+      ],
+      "lang": "css",
+      "file": "语法3-5",
+      "code": "/* 定义语法 */\nfont-family:字体族1,字体族2,…,通用字体族|inherit\n/* 示例 */\nfont-family:Tahoma,\"Microsoft YaHei\",\"SimSun\",Sans-Serif;\n\n/* 宋体的 Unicode 写法（兼容 Firefox / Opera） */\nfont-family:tahoma,\"microsoft yahei\",\"\\5b8b\\4f53\",sans-serif"
+    },
+    {
+      "type": "table",
+      "title": "表3-4 6 种通用字体（教材表）",
+      "subtitle": "通用字体是所有系统都安装的基础字体，用来兜底，避免客户端没装指定字体",
+      "nav": "表3-4 通用字体",
+      "head": [
+        "字体",
+        "含义"
+      ],
+      "rows": [
+        [
+          "Serif",
+          "<strong>衬线字体</strong>：衬线是指除字母结构笔画之外的装饰性笔画；衬线强调每个字母笔画的开始和结束，<strong>宋体就是典型的中文衬线字体</strong>"
+        ],
+        [
+          "Sans-serif",
+          "<strong>非衬线字体</strong>：没有边角装饰；教材示例——<strong>Google 首页中的文字就是典型的非衬线字体</strong>"
+        ],
+        [
+          "Monospace",
+          "<strong>等宽字体</strong>"
+        ],
+        [
+          "Cursive",
+          "<strong>手写字体</strong>"
+        ],
+        [
+          "Fantasy",
+          "<strong>奇幻字体</strong>"
+        ],
+        [
+          "System UI",
+          "<strong>系统 UI 字体</strong>"
+        ]
+      ]
+    },
+    {
+      "type": "demo",
+      "title": "现场演示｜字体属性一览",
+      "subtitle": "衬线与非衬线、字重、字体风格，以及 em 的伸缩性",
+      "nav": "字体属性演示",
+      "items": [
+        "<strong>衬线字体</strong>有边角装饰，源于古罗马石碑上用<strong>方头笔刷</strong>书写后雕凿的收尾笔画；<strong>宋体即典型中文衬线字体</strong>。",
+        "<strong>非衬线字体</strong>没有边角装饰，Google 首页的文字就是典型代表。",
+        "<code>font-weight</code>：默认 normal（400），bold 为粗体（700），bolder 更粗；<strong>数值只能整百调整</strong>。",
+        "<code>font-style</code>：italic 与 oblique 非常相近，实际使用时<strong>多用 italic 表示倾斜</strong>。",
+        "右侧动画演示 <strong>em 的伸缩性</strong>：1em 随当前字体大小自动重新计算，因此特别适合移动设备。"
+      ],
+      "hint": "把 font-size 从 16px 改成 20px，观察以 em 为单位的元素如何「跟着变」——这就是相对单位的价值。",
+      "html": "<style>*{box-sizing:border-box}body{margin:0;font-family:'PingFang SC',system-ui,sans-serif}.wrap{width:660px;background:#fff;border:1px solid #e5ecf7;border-radius:14px;overflow:hidden;box-shadow:0 20px 44px -22px rgba(20,40,90,.45)}.hd{background:#f6f9ff;border-bottom:1px solid #e5ecf7;padding:9px 16px;font-size:12.5px;color:#5a6c85}.hd b{font-family:Menlo,monospace;color:#1d46b8}.bd{padding:14px 16px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.cell{border:1px solid #e8eef8;border-radius:10px;padding:8px 12px;background:#fcfdff;animation:up .6s both}.cell:nth-child(2){animation-delay:.1s}.cell:nth-child(3){animation-delay:.2s}.cell:nth-child(4){animation-delay:.3s}.lb{display:block;font:11px Menlo,monospace;color:#8b9ab1;margin-bottom:3px}.cell p{margin:0;font-size:17px;color:#0e1b2e}.serif{font-family:'Times New Roman',SimSun,serif}.sans{font-family:Tahoma,'Microsoft YaHei',sans-serif}.w400{font-weight:400}.w700{font-weight:700}.w900{font-weight:900}.it{font-style:italic}.n{font-style:normal}.cell em{font-size:16px}.bar{margin-top:12px;display:flex;align-items:center;gap:14px;border:1px dashed #c9daff;border-radius:10px;padding:8px 14px;background:#fafcff}.grow{font-size:12px;font-weight:700;color:#1d46b8;animation:grow 3.2s ease-in-out infinite}.tk{font-size:12px;color:#5a6c85}@keyframes grow{0%{font-size:12px}50%{font-size:34px}100%{font-size:12px}}@keyframes up{from{opacity:0;transform:translateY(8px)}}</style><div class='wrap'><div class='hd'>font-family / font-weight / font-style · <b>1em = 16px（可伸缩）</b></div><div class='bd'><div class='grid'><div class='cell'><span class='lb'>Serif 衬线字体</span><p class='serif'>工匠精神 Craftsman</p></div><div class='cell'><span class='lb'>Sans-serif 非衬线字体</span><p class='sans'>工匠精神 Craftsman</p></div><div class='cell'><span class='lb'>font-weight</span><p><span class='w400'>标准</span> <span class='w700'>bold</span> <span class='w900'>bolder</span></p></div><div class='cell'><span class='lb'>font-style</span><p><em class='n'>normal</em> · <em class='it'>italic 斜体</em></p></div></div><div class='bar'><span class='lb'>em 的伸缩性</span><span class='grow'>A</span><span class='tk'>1em 随当前字体大小自动重新计算</span></div></div></div>"
+    },
+    {
+      "type": "table",
+      "title": "表3-5 / 表3-6 字重与字体风格（教材表）",
+      "subtitle": "师生问答：h1 默认有加粗效果，能否用 font-weight:normal 去掉？——当然可以，这正是 CSS 的神奇之处",
+      "nav": "表3-5/3-6 字重与风格",
+      "head": [
+        "属性",
+        "属性值",
+        "描述"
+      ],
+      "rows": [
+        [
+          "font-weight",
+          "normal",
+          "<strong>默认值</strong>，标准字体粗细（对应数值 400）"
+        ],
+        [
+          "font-weight",
+          "bold",
+          "粗体（对应数值 700）"
+        ],
+        [
+          "font-weight",
+          "bolder",
+          "更粗的字体"
+        ],
+        [
+          "font-weight",
+          "100 / 200 / … / 900",
+          "<strong>由细到粗的数值</strong>；<strong>只能整百调整</strong>，相近数值表现差异不明显"
+        ],
+        [
+          "font-weight",
+          "lighter",
+          "更细的字体"
+        ],
+        [
+          "font-weight",
+          "inherit",
+          "继承父元素的字体粗细"
+        ],
+        [
+          "font-style",
+          "normal",
+          "<strong>默认值</strong>，标准字体"
+        ],
+        [
+          "font-style",
+          "italic",
+          "斜体字体"
+        ],
+        [
+          "font-style",
+          "oblique",
+          "倾斜字体（与 italic 非常相近，实际多用 italic）"
+        ],
+        [
+          "font-style",
+          "inherit",
+          "继承父元素的字体风格"
+        ]
+      ]
+    },
+    {
+      "type": "table",
+      "title": "表3-7 line-height 属性值（教材表）",
+      "subtitle": "行高通常指两行文字基线之间的距离；默认约为当前字体大小的 110%～120%",
+      "nav": "表3-7 行高",
+      "head": [
+        "属性值",
+        "描述"
+      ],
+      "rows": [
+        [
+          "normal",
+          "<strong>默认值</strong>，通常为<strong>当前字体大小的 110%～120%</strong>"
+        ],
+        [
+          "number",
+          "<strong>不带任何单位的数值</strong>，行距为<strong>当前字体大小乘该数值</strong>，效果类似于 em"
+        ],
+        [
+          "length",
+          "以 <strong>px、em、pt</strong> 为单位的<strong>固定值</strong>"
+        ],
+        [
+          "百分比",
+          "相对于<strong>当前字体大小的百分比</strong>"
+        ],
+        [
+          "inherit",
+          "继承父元素的文字行高"
+        ]
+      ]
+    },
+    {
+      "type": "demo",
+      "title": "任务3-3｜单行文字的垂直居中",
+      "subtitle": "行距 = 行高 − 字体高度；把行高设为容器高度，文字就垂直居中了",
+      "nav": "任务3-3 演示",
+      "items": [
+        "<strong>行高</strong>是两行文字<strong>基线</strong>之间的距离；<strong>行距</strong>是上一行底线与下一行顶线之间的距离，即 <strong>行距 = 行高 − 字体高度</strong>。",
+        "把行距再分成相等的<strong>上间距</strong>和<strong>下间距</strong>：<strong>行高 = 上间距 + 字体高度 + 下间距</strong>，默认情况下字体高度垂直居中。",
+        "要<strong>实现元素在容器中垂直居中，只需把行高设置为元素容器的高度</strong>——这就是本任务的核心。",
+        "教师补充：为保证阅读舒适性，<strong>通常把行高设为当前字体大小的 1.4～1.5 倍</strong>。",
+        "<strong>常见的编程错误：</strong>行高是<strong>非负的正整数，使用负数是错误的</strong>。"
+      ],
+      "hint": "把容器的 height 与 p 的 line-height 同时改成 200px，观察居中效果是否依然成立。",
+      "lang": "html",
+      "file": "代码3-5",
+      "code": "<!DOCTYPE html>\n<html>\n  <head>\n    <meta charset=\"utf-8\">\n    <title>垂直居中</title>\n    <style>\n      .parent{\n        height:300px;\n        border:1px solid #ccc;\n      }\n      p{\n        line-height:300px;\n        text-align:center;\n      }\n    </style>\n  </head>\n  <body>\n    <div class=\"parent\">\n      <p>WebDesign 课程</p>\n    </div>\n  </body>\n</html>",
+      "html": "<style>*{box-sizing:border-box}body{margin:0;font-family:'PingFang SC',system-ui,sans-serif}.wrap{width:660px;background:#fff;border:1px solid #e5ecf7;border-radius:14px;overflow:hidden;box-shadow:0 20px 44px -22px rgba(20,40,90,.45)}.hd{background:#f6f9ff;border-bottom:1px solid #e5ecf7;padding:9px 16px;font-size:12.5px;color:#5a6c85}.hd b{font-family:Menlo,monospace;color:#1d46b8}.bd{display:flex;gap:16px;padding:14px 16px}.col{flex:1}.lb{display:block;font:11px Menlo,monospace;color:#8b9ab1;margin-bottom:6px}.box{height:130px;border:1px solid #ccc;border-radius:8px;position:relative;background:#fcfdff}.def p{margin:0;line-height:normal;text-align:center;padding-top:6px;color:#8b9ab1}.ok p{margin:0;line-height:130px;text-align:center;font-size:16px;color:#0e1b2e}.mid{position:absolute;left:0;right:0;top:65px;border-top:1px dashed #2f6bff;opacity:0;animation:show 3s infinite}.mid::after{content:'容器高度 / 2';position:absolute;right:6px;top:-16px;font-size:10px;color:#2f6bff;background:#eaf1ff;border-radius:4px;padding:1px 5px}.ok{animation:glow 3s infinite}@keyframes show{0%,10%{opacity:0}25%,70%{opacity:1}90%,100%{opacity:0}}@keyframes glow{0%,100%{box-shadow:0 0 0 0 rgba(47,107,255,0)}50%{box-shadow:0 0 0 4px rgba(47,107,255,.12)}}</style><div class='wrap'><div class='hd'>任务3-3 <b>.parent{height:300px}</b> · <b>p{line-height:300px}</b> —— 行高 = 容器高度</div><div class='bd'><div class='col'><span class='lb'>默认行高（文字贴顶）</span><div class='box def'><p>WebDesign 课程</p></div></div><div class='col'><span class='lb'>line-height = 容器高度</span><div class='box ok'><p>WebDesign 课程</p><div class='mid'></div></div></div></div></div>"
+    },
+    {
+      "type": "codebullets",
+      "title": "font 简写属性（语法3-9）",
+      "subtitle": "一次性定义多种字体样式，也叫综合样式属性",
+      "nav": "font 简写属性",
+      "items": [
+        "写法顺序：<code>font: font-style | font-variant | font-weight | font-size/line-height | font-family;</code>",
+        "<strong>常见的编程错误：</strong><code>line-height</code> 在 font 简写属性中<strong>必须和 font-size 连用</strong>，并写成「<strong>font-size/line-height</strong>」的形式。",
+        "<strong>技巧：</strong>font 简写属性中<strong>至少包含 font-size 和 font-family 两个值</strong>，不设置的其他值使用默认值。",
+        "教材示例 <code>font: italic bold 12px/2em \"SimSun\",sans-serif</code> 等价于分别书写 5 条独立声明。"
+      ],
+      "lang": "css",
+      "file": "语法3-9",
+      "code": "/* 定义语法 */\nfont: font-style | font-variant | font-weight | font-size/line-height |\nfont-family;\n\n/* 示例 */\nfont: italic bold 12px/2em \"SimSun\",sans-serif\n\n/* 等价于 */\nfont-style:italic;\nfont-weight:bold;\nfont-size:12px;\nline-height:2em;\nfont-family:\"simsun\",sans-serif;"
+    },
+    {
+      "type": "task",
+      "title": "任务3-4｜字体综合练习",
+      "subtitle": "目标：用字体属性做出「Web Design 课程」的效果（教材图3-13）",
+      "nav": "任务3-4",
+      "goal": "综合使用 <code>font-family</code>、<code>color</code>、<code>font-weight</code>、<code>font-style</code>，并通过<strong>伪元素 ::first-letter 实现首字母下沉</strong>（放大 2 倍）。",
+      "steps": [
+        {
+          "title": "设定整体字体与颜色",
+          "text": "在 <code>p</code> 上写 <code>font-family</code>（含 Unicode 宋体写法）与 <code>color:#f00</code>。"
+        },
+        {
+          "title": "强调英文部分",
+          "text": "用 <code>&lt;span&gt;</code> 包裹英文，设置 <code>font-weight:bolder</code> 与 <code>font-style:italic</code>。"
+        },
+        {
+          "title": "首字母下沉",
+          "text": "写 <code>p::first-letter { font-size:2em; }</code>，让段落第一个字符放大 2 倍（更详细用法见 3.3.7）。"
+        },
+        {
+          "title": "对比思考",
+          "text": "不用伪元素时，需要用 <code>&lt;span&gt;</code> 包裹首字符——伪元素是一种<strong>简化的做法</strong>。"
+        }
+      ],
+      "lang": "html",
+      "code": "<!DOCTYPE html>\n<html>\n  <head>\n    <meta charset=\"utf-8\">\n    <title>字体属性</title>\n    <style>\n      p {\n        font-family: tahoma, \"microsoft yahei\", \"\\5b8b\\4f53\", sans-serif;\n        color:#f00;\n      }\n      span {\n        font-weight: bolder;\n        font-style: italic;\n      }\n      p::first-letter {\n        font-size: 2em;\n      }\n    </style>\n  </head>\n  <body>\n    <p>\n      <span>\n        Web Design\n      </span>\n      课程\n    </p>\n  </body>\n</html>"
+    },
+    {
+      "type": "table",
+      "title": "表3-8～表3-10 对齐、缩进与文字修饰（教材表）",
+      "subtitle": "用 CSS 的 text-align 代替标签的 align 属性，才符合「内容与样式分离」",
+      "nav": "表3-8~3-10",
+      "head": [
+        "属性",
+        "属性值",
+        "描述"
+      ],
+      "rows": [
+        [
+          "text-align",
+          "left",
+          "<strong>默认值</strong>，左对齐"
+        ],
+        [
+          "text-align",
+          "right",
+          "右对齐"
+        ],
+        [
+          "text-align",
+          "center",
+          "居中"
+        ],
+        [
+          "text-align",
+          "inherit",
+          "继承父元素的 text-align 属性值"
+        ],
+        [
+          "text-indent",
+          "length",
+          "以 <strong>px、pt、em</strong> 为单位的固定值，<strong>默认为 0</strong>；常用 <code>text-indent:2em</code> 实现首行缩进 2 个字符"
+        ],
+        [
+          "text-indent",
+          "百分比",
+          "相对于<strong>父元素宽度</strong>的百分比"
+        ],
+        [
+          "text-indent",
+          "inherit",
+          "继承父元素的 text-indent 属性值"
+        ],
+        [
+          "text-decoration",
+          "none",
+          "<strong>默认值</strong>，没有装饰线"
+        ],
+        [
+          "text-decoration",
+          "underline",
+          "下画线"
+        ],
+        [
+          "text-decoration",
+          "overline",
+          "上画线"
+        ],
+        [
+          "text-decoration",
+          "line-through",
+          "删除线"
+        ],
+        [
+          "text-decoration",
+          "inherit",
+          "继承父元素的 text-decoration 属性值"
+        ]
+      ]
+    },
+    {
+      "type": "table",
+      "title": "表3-11～表3-12 字符间距与单词间距（教材表）",
+      "subtitle": "CSS 通过识别单词之间的空格来判断是否构成一个单词",
+      "nav": "表3-11~3-12",
+      "head": [
+        "属性",
+        "属性值",
+        "描述"
+      ],
+      "rows": [
+        [
+          "letter-spacing",
+          "normal",
+          "<strong>默认值</strong>，字符间距为 0"
+        ],
+        [
+          "letter-spacing",
+          "length",
+          "以 <strong>px、em、pt</strong> 为单位的固定值，<strong>可以为负值</strong>"
+        ],
+        [
+          "letter-spacing",
+          "inherit",
+          "继承父元素的 letter-spacing 属性值"
+        ],
+        [
+          "word-spacing",
+          "normal",
+          "<strong>默认值</strong>，单词间距为 0"
+        ],
+        [
+          "word-spacing",
+          "length",
+          "以 <strong>px、em、pt</strong> 为单位的固定值，<strong>可以为负值</strong>"
+        ],
+        [
+          "word-spacing",
+          "inherit",
+          "继承父元素的 word-spacing 属性值"
+        ]
+      ]
+    },
+    {
+      "type": "demo",
+      "title": "任务3-5｜文字排版控制",
+      "subtitle": "用素材 T03-04.html 编写 CSS 文字样式，实现教材图3-14 的效果",
+      "nav": "任务3-5 演示",
+      "items": [
+        "段落 <code>p</code> 使用 <strong>font 简写属性</strong>：<code>font: 16px/2em \"SimSun\", Sans-serif</code>，并设 <code>text-indent:2em</code> 实现<strong>首行缩进 2 个字符</strong>。",
+        "<code>span</code> 部分：<strong>红色、较粗（bolder）的微软雅黑字体</strong>，带<strong>下画线</strong>，字符间距 <strong>1.05em</strong>。",
+        "外层 <code>div</code> 宽度 600px 并加 1px 灰色边框，作为排版容器。",
+        "<strong>悬念验证：</strong>中文段落中字词之间不需要空格分隔，使用 <code>word-spacing</code> 还有效果吗？请动手试一试。"
+      ],
+      "hint": "给段落加上 word-spacing:1em，观察中文是否发生变化，并解释原因（提示：CSS 靠空格识别单词）。",
+      "lang": "html",
+      "file": "代码3-7",
+      "code": "<!DOCTYPE html>\n<html>\n  <head>\n    <meta charset=\"utf-8\">\n    <title>字词控制</title>\n    <style>\n      p {\n        font: 16px/2em \"SimSun\", Sans-serif;\n        text-indent: 2em;\n      }\n      span {\n        color: red;\n        font-weight: bolder;\n        font-family: \"Microsoft YaHei\", serif;\n        text-decoration: underline;\n        letter-spacing: 1.05em;\n      }\n      div {\n        width: 600px;\n        border: 1px solid #ccc;\n      }\n    </style>\n  </head>\n  <body>\n    <div id=\"outer\">\n      <p>\n        <span>宁波城市职业技术学院</span>创建于2003 年，学校的前身是宁波大学职业技术教育学院，是一所面向现代服务业，培养高素质技术技能应用型人才的全日制普通高等职业院校。\n      </p>\n      <p>\n        学校办学起步早，办学起点高，2022 年，学校以 A++ 等级位列武书连一流高职高专排行榜第 20 位。\n      </p>\n    </div>\n  </body>\n</html>",
+      "html": "<style>*{box-sizing:border-box}body{margin:0;font-family:'PingFang SC',system-ui,sans-serif}.wrap{width:660px;background:#fff;border:1px solid #e5ecf7;border-radius:14px;overflow:hidden;box-shadow:0 20px 44px -22px rgba(20,40,90,.45)}.hd{background:#f6f9ff;border-bottom:1px solid #e5ecf7;padding:9px 16px;font-size:12.5px;color:#5a6c85}.hd b{font-family:Menlo,monospace;color:#1d46b8}.bd{padding:14px 16px}.paper{border:1px solid #ccc;border-radius:6px;padding:12px 14px;background:#fff}.paper p{margin:0 0 6px;font:14px/2em SimSun,serif;color:#333;text-indent:2em;animation:fade .8s both}.paper p:nth-child(2){animation-delay:.35s}.paper span{color:red;font-weight:bolder;font-family:'Microsoft YaHei',serif;text-decoration:underline;letter-spacing:1.05em;animation:hot 2.6s 1s infinite}@keyframes hot{0%,100%{background:rgba(255,0,0,0)}50%{background:rgba(255,0,0,.10)}}@keyframes fade{from{opacity:0;transform:translateY(6px)}}.ft{margin-top:8px;font-size:11.5px;color:#8b9ab1;text-align:center}</style><div class='wrap'><div class='hd'>任务3-5 <b>p{font:16px/2em; text-indent:2em}</b> · <b>span{红色+bolder+下划线+1.05em}</b></div><div class='bd'><div class='paper'><p><span>宁波城市职业技术学院</span>创建于2003 年，学校的前身是宁波大学职业技术教育学院，是一所面向现代服务业，培养高素质技术技能应用型人才的全日制普通高等职业院校。</p><p>学校办学起步早，办学起点高，2022 年，学校以 A++ 等级位列武书连一流高职高专排行榜第 20 位。</p></div><div class='ft'>首行缩进 2 字符 · 行高 2em · 字符间距 1.05em</div></div></div>"
+    },
+    {
+      "type": "codebullets",
+      "title": "3.3.5 自定义字体：@font-face",
+      "subtitle": "除了系统字体，还可以引入个性化字体文件，实现特定的艺术效果",
+      "nav": "@font-face",
+      "items": [
+        "通过 CSS 的 <strong>at 规则（at-rule）@font-face</strong> 指定一个用于显示的自定义字体，字体通过 <code>src</code> 属性加载。",
+        "<code>src</code> 属性值可以是<strong>相对路径或 URL 地址</strong>，分别从<strong>用户本地或远程服务器</strong>加载字体文件。",
+        "使用分两步：<strong>① 定义自定义字体</strong>（@font-face）；<strong>② 引用自定义字体</strong>（像普通字体一样用 font-family 使用）。",
+        "<strong>注意事项：</strong>自定义字体的名称要<strong>符合标识符的定义规则</strong>；引用时须与定义的名称<strong>完全一致</strong>。",
+        "<strong>常见的编程错误：</strong>引用的字体名称与自定义的字体名称<strong>不一致</strong>，是自定义字体不起作用的常见原因。"
+      ],
+      "lang": "css",
+      "file": "自定义字体语法",
+      "code": "@font-face{\n  font-family:自定义字体的名称;\n  src: url('fontfile_url');\n}\n\n/* 示例：定义 */\n@font-face{\n  font-family:qigong;\n  src: url('assets/qigong.ttf');\n}\n\n/* 引用：名称必须完全一致 */\nfont-family:qigong;"
+    },
+    {
+      "type": "task",
+      "title": "任务3-6｜使用自定义字体",
+      "subtitle": "教材背景：启功先生是近代著名的书法家、红学家，「有始有终 精益求精」为其书法作品",
+      "nav": "任务3-6",
+      "goal": "通过<strong>自定义字体规则和引用字体语法</strong>，使用自定义<strong>思源黑体（SourceHanSansCN）</strong>制作教材图3-16 所示的页面效果。",
+      "steps": [
+        {
+          "title": "准备字体文件",
+          "text": "把字体文件（如 <code>SourceHanSansCN-Bold.otf</code>）放入项目的 <strong>assets 文件夹</strong>中。"
+        },
+        {
+          "title": "定义自定义字体",
+          "text": "在 <code>&lt;style&gt;</code> 中写 <code>@font-face{ src:url(…); font-family:SourceHanSansCN; }</code>。"
+        },
+        {
+          "title": "引用自定义字体",
+          "text": "选择 <code>h2</code> 标签，写 <code>font-family:SourceHanSansCN</code> 与 <code>font-size:3em</code>，把自定义字体应用到目标对象。"
+        },
+        {
+          "title": "拓展练习",
+          "text": "1998—1999 年受启功先生推荐，「<strong>方正启体字库</strong>」由秦永龙先生书写、北京北大方正电子有限公司制作；可下载该字体替换思源黑体，对比效果。"
+        }
+      ],
+      "lang": "html",
+      "code": "<!DOCTYPE html>\n<html>\n  <head>\n    <meta charset=\"utf-8\">\n    <title>有始有终、精益求精</title>\n    <style>\n      @font-face{\n        src:url('./assets/ SourceHanSansCN-Bold.otf');\n        font-family: SourceHanSansCN;\n      }\n      h2{\n        font-family: SourceHanSansCN;\n        font-size: 3em;\n      }\n    </style>\n  </head>\n  <body>\n    <h2>有始有终</h2>\n    <h2>精益求精</h2>\n  </body>\n</html>",
+      "caption": "<b>代码说明：</b>007～010 行定义了自定义字体 SourceHanSansCN 并引入本地字体文件；011～014 行选择 h2 标签，将字体指定为 SourceHanSansCN。<b>教材疑误提示：</b>代码3-8 中路径 <code>'./assets/ SourceHanSansCN-Bold.otf'</code> 在 <code>assets/</code> 后含有一个空格，疑为排版误差，<strong>实际应写作 './assets/SourceHanSansCN-Bold.otf'</strong>。"
+    },
+    {
+      "type": "ai",
+      "title": "AI 前沿：让 AI 帮你做字体方案，但别忘了版权与性能",
+      "subtitle": "字体是设计与工程的交叉点，AI 能提速，判断仍在你",
+      "nav": "AI 前沿",
+      "text": "字体排版本质上是<strong>设计决策</strong>。如今可以让 AI 先给出一版 <code>font-family</code> 候选列表、行高与字距方案，再由你结合品牌调性、可读性与加载性能做取舍——AI 负责「出方案」，你负责「定标准」。",
+      "items": [
+        "通义灵码、文心快码、GitHub Copilot 可根据注释自动生成 <code>font</code> 简写属性与排版样式，并给出 px/em/rem 的取值建议。",
+        "DeepSeek、通义千问能直接比较 <strong>em 与 rem 的适用场景</strong>，并给出移动端响应式排版的代码示例。",
+        "自定义字体方面，AI 可快速生成 <code>@font-face</code> 代码，但<strong>字体版权、文件体积与加载性能</strong>必须由人工把关。",
+        "职业提醒：中文字体文件动辄数 MB，课堂作业可以用，生产环境要考虑<strong>字体子集化与加载策略</strong>。"
+      ]
+    },
+    {
+      "type": "quiz",
+      "title": "随堂检测",
+      "subtitle": "第 1 题选自教材 3.5 作业「一、选择题」，第 2～3 题为配套自测",
+      "nav": "随堂检测",
+      "items": [
+        {
+          "q": "关于文字的样式排版，说法错误的是（　　）。",
+          "options": [
+            "A. 设置字体大小使用 font-size 属性",
+            "B. 设置字体粗细使用 font-weight 属性",
+            "C. 设置文字行距使用 line-height 属性",
+            "D. 设置字体颜色使用 font-color 属性"
+          ],
+          "answer": "D",
+          "tip": "设置字体颜色使用的是 color 属性，CSS 中并没有 font-color 这个属性。",
+          "type": "single"
+        },
+        {
+          "q": "下列单位中，总是相对于 HTML 根元素、可避免字体大小逐层复合的是（　　）。",
+          "options": [
+            "A. px",
+            "B. pt",
+            "C. em",
+            "D. rem"
+          ],
+          "answer": "D",
+          "tip": "rem 即 root em，CSS3 新增，始终相对于 HTML 根元素；em 相对于当前元素（或父元素）。",
+          "type": "single"
+        },
+        {
+          "q": "要用 @font-face 引入自定义字体，下列说法正确的是（　　）。",
+          "options": [
+            "A. 直接用 src 属性即可，无需定义字体名",
+            "B. 引用时的字体名必须与 @font-face 中定义的名称完全一致",
+            "C. 自定义字体只能放在远程服务器，不能用本地路径",
+            "D. font-family 中不能出现自定义字体名"
+          ],
+          "answer": "B",
+          "tip": "名称不一致是自定义字体不起作用的常见原因；src 既可用相对路径，也可用 URL。",
+          "type": "single"
+        },
+        {
+          "type": "multi",
+          "q": "关于 font-family 属性，下列说法中正确的有（　　）。",
+          "options": [
+            "A. 浏览器按候选列表从左到右的顺序查找并显示字体",
+            "B. 字体名称中含空格时须加双引号，中文字体建议也加双引号",
+            "C. 通用字体族通常放在列表最后，作为兜底保障",
+            "D. 中西文混排时，通常把中文字体放在列表最前面"
+          ],
+          "answer": "ABC",
+          "tip": "中西文混排应把<strong>西文字体靠前</strong>：中文字体优先级更高时，指定的西文字体将无法显示。"
+        },
+        {
+          "type": "multi",
+          "q": "关于 font 简写属性与 line-height，下列说法中正确的有（　　）。",
+          "options": [
+            "A. font 简写中至少应包含 font-size 和 font-family 两个值",
+            "B. 简写中的 line-height 必须与 font-size 连用，写成 font-size/line-height",
+            "C. line-height 允许使用负值，以便把行距压得更紧凑",
+            "D. 把行高设置为容器高度，可实现单行文字在容器中垂直居中"
+          ],
+          "answer": "ABD",
+          "tip": "行高是<strong>非负</strong>的，使用负数是错误的；单行居中靠「行高 = 容器高度」。"
+        }
+      ]
+    },
+    {
+      "type": "summary",
+      "title": "本课小结",
+      "nav": "本课小结",
+      "items": [
+        "字体三件套：<code>font-size</code>（medium/length/百分比/inherit，px·pt·em·rem·%）、<code>font-family</code>（候选列表＋通用字体兜底）、<code>font-weight</code> 与 <code>font-style</code>。",
+        "字体族要点：中文字体<strong>建议加双引号</strong>并优先使用英文名，中英混排时<strong>西文字体靠前</strong>；衬线字体有边角装饰，<strong>宋体即典型中文衬线字体</strong>。",
+        "行高：默认约为字体大小的 <strong>110%～120%</strong>，<strong>行距 = 行高 − 字体高度</strong>；把<strong>行高设为容器高度</strong>即可实现单行文字垂直居中。",
+        "排版五件套：<code>text-align</code>、<code>text-indent</code>、<code>text-decoration</code>、<code>letter-spacing</code>、<code>word-spacing</code>；<code>font</code> 简写时 <strong>line-height 必须与 font-size 连用</strong>。",
+        "自定义字体：<code>@font-face</code> 定义（<code>src</code> 加载）＋<code>font-family</code> 引用，<strong>两处字体名必须完全一致</strong>。"
+      ]
+    },
+    {
+      "type": "homework",
+      "title": "课后作业",
+      "nav": "课后作业",
+      "items": [
+        "<strong>选择题：</strong>完成教材 3.5 作业「一、选择题」第 2 题，并说明其余三个选项为什么正确。",
+        "<strong>操作题（教材原题）：</strong>请使用 <code>@font-face</code> 自定义字体语法、引用规则和<strong>思源黑体</strong>，以<strong>《沁园春·雪》</strong>这首词为主题，实现个性化的图文创作。",
+        "<strong>验证题：</strong>在中文段落上分别使用 <code>letter-spacing</code> 与 <code>word-spacing</code>，记录两者的效果差异并解释原因。",
+        "<strong>项目讨论（教材原题）：</strong>简述<strong>自定义字体的基本步骤和实现要点</strong>，并在下次课做 2 分钟分享。"
+      ]
+    },
+    {
+      "type": "refs",
+      "title": "出处与参考",
+      "subtitle": "本课件内容依据教材，并核对以下权威技术文档",
+      "nav": "出处与参考",
+      "items": [
+        {
+          "t": "教材《网页制作（HTML5+CSS3）》项目3 使用CSS基本选择器美化页面（3.3.4～3.3.5）",
+          "u": "郑哲、傅冬 主编 · 电子工业出版社 · 2025 年 1 月第 1 版"
+        },
+        {
+          "t": "MDN Web Docs · font-family",
+          "u": "https://developer.mozilla.org/zh-CN/docs/Web/CSS/font-family"
+        },
+        {
+          "t": "MDN Web Docs · font-size",
+          "u": "https://developer.mozilla.org/zh-CN/docs/Web/CSS/font-size"
+        },
+        {
+          "t": "MDN Web Docs · font-weight 与 font-style",
+          "u": "https://developer.mozilla.org/zh-CN/docs/Web/CSS/font-weight"
+        },
+        {
+          "t": "MDN Web Docs · line-height",
+          "u": "https://developer.mozilla.org/zh-CN/docs/Web/CSS/line-height"
+        },
+        {
+          "t": "MDN Web Docs · @font-face（自定义字体）",
+          "u": "https://developer.mozilla.org/zh-CN/docs/Web/CSS/@font-face"
+        }
+      ]
+    },
+    {
+      "type": "end",
+      "title": "第 7 单元 · 结束",
+      "text": "下一单元：伪类、伪元素与通用选择器——处理文档树之外的世界",
+      "nav": "结束"
+    }
+  ]
+}

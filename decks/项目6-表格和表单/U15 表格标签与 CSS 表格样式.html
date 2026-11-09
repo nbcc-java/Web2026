@@ -1,0 +1,1354 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>表格标签与 CSS 表格样式 · 网页制作课件</title>
+<style>
+:root{
+  --bg:#EEF3FB; --bg2:#F7FAFF; --surface:#fff; --ink:#0E1B2E; --muted:#5A6C85;
+  --brand:#2F6BFF; --brand-dk:#1D46B8; --brand2:#0FB5C9; --violet:#7C5CFF; --accent:#FF8A3D;
+  --ok:#12A150; --line:#E1E8F4; --code-bg:#0D1A2B; --code-ink:#DCE7F8;
+  --font:'PingFang SC','Microsoft YaHei','Hiragino Sans GB','Source Han Sans SC',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --mono:'JetBrains Mono','SF Mono',Menlo,Consolas,'Courier New',monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+.slide{user-select:text;-webkit-user-select:text}
+.hud,.legend,.drawer,.kicker,.topbar{user-select:none;-webkit-user-select:none}
+::selection{background:rgba(47,107,255,.22)}
+html,body{height:100%}
+body{background:radial-gradient(1200px 800px at 12% 0%,#e6efff 0%,transparent 55%),
+             radial-gradient(1000px 700px at 100% 100%,#e9fbfd 0%,transparent 50%),var(--bg);
+     font-family:var(--font);color:var(--ink);overflow:hidden;-webkit-font-smoothing:antialiased}
+.wrap{height:100%;display:grid;place-items:center;padding:2.2vh 2.2vh}
+.stage{position:relative;width:100%;height:100%;max-width:calc(100vh * 16 / 9);max-height:calc(100vw * 9 / 16);
+       aspect-ratio:16/9;background:var(--bg2);border-radius:20px;overflow:hidden;
+       box-shadow:0 34px 80px -30px rgba(18,42,92,.42),0 0 0 1px rgba(255,255,255,.7) inset;
+       container-type:size}
+/* 背景装饰 */
+.bgfx{position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:0}
+.blob{position:absolute;border-radius:50%;filter:blur(46px);opacity:.5}
+.b1{width:38cqw;height:38cqw;left:-10cqw;top:-14cqw;background:linear-gradient(135deg,#bcd4ff,#8fb6ff);animation:float1 18s ease-in-out infinite}
+.b2{width:30cqw;height:30cqw;right:-8cqw;top:6cqw;background:linear-gradient(135deg,#b8f0f6,#7fe3ef);animation:float2 22s ease-in-out infinite}
+.b3{width:26cqw;height:26cqw;left:22cqw;bottom:-14cqw;background:linear-gradient(135deg,#d9ccff,#b9a6ff);animation:float3 26s ease-in-out infinite}
+@keyframes float1{50%{transform:translate(4cqw,3cqw) scale(1.06)}}
+@keyframes float2{50%{transform:translate(-4cqw,4cqw) scale(1.08)}}
+@keyframes float3{50%{transform:translate(3cqw,-4cqw) scale(1.05)}}
+.grid-lines{position:absolute;inset:0;background-image:linear-gradient(rgba(47,107,255,.05) 1px,transparent 1px),
+   linear-gradient(90deg,rgba(47,107,255,.05) 1px,transparent 1px);background-size:4cqw 4cqw;opacity:.7}
+
+/* 幻灯片 */
+.slide{position:absolute;inset:0;z-index:2;padding:4.4cqw 5cqw 4cqw;display:flex;flex-direction:column;gap:1.9cqw;
+  opacity:0;visibility:hidden;transform:translateY(1.4cqw) scale(.99);
+  transition:opacity .52s ease,transform .52s cubic-bezier(.2,.7,.2,1),visibility .52s}
+.slide.is-active{opacity:1;visibility:visible;transform:none}
+.slide.prev{transform:translateY(-1.4cqw) scale(.99)}
+.s-head{display:flex;justify-content:space-between;align-items:flex-start;gap:2cqw;flex:0 0 auto}
+.kicker{display:inline-block;font-size:1.16cqw;font-weight:700;letter-spacing:.16em;color:var(--brand);
+  background:linear-gradient(90deg,rgba(47,107,255,.12),rgba(15,181,201,.12));padding:.42cqw 1cqw;border-radius:999px;margin-bottom:.75cqw}
+.s-title{font-size:2.86cqw;font-weight:800;letter-spacing:.01em;line-height:1.2}
+.s-sub{margin-top:.6cqw;font-size:1.32cqw;color:var(--muted);line-height:1.55}
+.s-body{flex:1;min-height:0;display:flex;flex-direction:column;justify-content:center;gap:1.5cqw}
+.s-body.two{flex-direction:row;align-items:stretch;gap:2.2cqw}
+.s-body.two>*{flex:1;min-width:0}
+.s-body.col{justify-content:center}
+.col-l,.col-r{min-width:0;display:flex;flex-direction:column;justify-content:center;gap:1.2cqw}
+
+/* 入场动画 */
+.an{opacity:0}
+.is-active .an{animation:rise .66s cubic-bezier(.2,.75,.2,1) both;animation-delay:calc(var(--i,0)*95ms + 120ms)}
+@keyframes rise{from{opacity:0;transform:translateY(1.5cqw)}to{opacity:1;transform:none}}
+
+/* 封面 */
+.s-cover{flex-direction:row;align-items:center;gap:3cqw;padding:6cqw 6cqw}
+.cover-left{flex:1.15;min-width:0;z-index:2}
+.brandrow{display:flex;align-items:baseline;gap:.9cqw;margin-bottom:2.1cqw}
+.brandmark{font-size:1.7cqw;font-weight:800;color:var(--brand);letter-spacing:.08em}
+.brandsub{font-size:1.1cqw;font-weight:700;color:var(--brand2);letter-spacing:.2em}
+.cover-title{font-size:4.5cqw;font-weight:900;line-height:1.14;letter-spacing:-.01em;
+  background:linear-gradient(120deg,#12306f,#2f6bff 45%,#0fb5c9);-webkit-background-clip:text;background-clip:text;color:transparent}
+.cover-sub{margin-top:1.2cqw;font-size:1.55cqw;color:var(--muted);line-height:1.7;max-width:34cqw}
+.pills{display:flex;flex-wrap:wrap;gap:.7cqw;margin-top:1.9cqw}
+.pill{font-size:1.03cqw;font-weight:700;color:var(--brand-dk);background:rgba(47,107,255,.1);
+  border:1px solid rgba(47,107,255,.2);padding:.4cqw 1cqw;border-radius:999px}
+.pill{opacity:0}
+.is-active .pill{animation:rise .6s both;animation-delay:calc(var(--i)*95ms + 120ms)}
+.cover-meta{margin-top:2.3cqw;display:flex;align-items:center;gap:.9cqw;flex-wrap:wrap;font-size:1.02cqw;color:var(--muted)}
+.cover-meta b{color:var(--brand);font-size:1.2cqw}
+.cover-meta .dot{width:.34cqw;height:.34cqw;border-radius:50%;background:#c3cfe2}
+.cover-art{flex:.85;position:relative;min-width:0;display:grid;place-items:center}
+.orb{position:absolute;border-radius:50%;filter:blur(10px);opacity:.75}
+.o1{width:15cqw;height:15cqw;right:-1cqw;top:2cqw;background:radial-gradient(circle at 30% 30%,#9dc2ff,#4f83ff)}
+.o2{width:8cqw;height:8cqw;right:12cqw;bottom:4cqw;background:radial-gradient(circle at 30% 30%,#a9f0f7,#1fc2d6)}
+.o3{width:5cqw;height:5cqw;right:3cqw;bottom:12cqw;background:radial-gradient(circle at 30% 30%,#d5c7ff,#8a63ff)}
+.orb{animation:orb 9s ease-in-out infinite}
+.o2{animation-duration:11s}.o3{animation-duration:13s}
+@keyframes orb{50%{transform:translateY(-1.6cqw) scale(1.06)}}
+.codewin{position:relative;z-index:2;width:100%;max-width:32cqw;background:var(--code-bg);border-radius:1.2cqw;
+  box-shadow:0 30px 60px -22px rgba(13,26,43,.7);overflow:hidden;transform:rotate(-1.5deg);
+  animation:rise .8s cubic-bezier(.2,.75,.2,1) .35s both}
+.cw-bar{display:flex;gap:.5cqw;padding:.85cqw 1.1cqw;background:rgba(255,255,255,.06)}
+.cw-bar i{width:.72cqw;height:.72cqw;border-radius:50%;background:#ff5f57}
+.cw-bar i:nth-child(2){background:#febc2e}.cw-bar i:nth-child(3){background:#28c840}
+.cw-body{padding:1.3cqw 1.5cqw;font-family:var(--mono);font-size:1.06cqw;line-height:1.85;color:var(--code-ink);white-space:pre;overflow:auto}
+
+/* 章节过渡 */
+.s-section{align-items:center;justify-content:center;text-align:center}
+.sec-inner{display:flex;flex-direction:column;align-items:center}
+.sec-num{font-size:7.6cqw;font-weight:900;line-height:1;
+  background:linear-gradient(120deg,#2f6bff,#0fb5c9);-webkit-background-clip:text;background-clip:text;color:transparent;letter-spacing:-.03em}
+.sec-title{margin-top:1.2cqw;font-size:3.1cqw;font-weight:800}
+.sec-line{width:0;height:.4cqw;border-radius:99px;background:linear-gradient(90deg,var(--brand),var(--brand2));margin:1.4cqw 0}
+.is-active .sec-line{animation:draw .8s ease .5s both}
+@keyframes draw{from{width:0}to{width:11cqw}}
+.sec-sub{font-size:1.4cqw;color:var(--muted);max-width:44cqw;line-height:1.7}
+
+/* 要点列表 */
+.blist{list-style:none;display:flex;flex-direction:column;gap:1.05cqw}
+.blist li{display:flex;gap:.95cqw;align-items:flex-start;font-size:1.42cqw;line-height:1.6;
+  background:var(--surface);border:1px solid var(--line);border-radius:.85cqw;padding:1.05cqw 1.3cqw;
+  box-shadow:0 8px 22px -16px rgba(20,40,90,.5);transition:transform .25s,box-shadow .25s}
+.blist li:hover{transform:translateX(.4cqw);box-shadow:0 12px 26px -16px rgba(47,107,255,.55)}
+.blist.small li{font-size:1.24cqw;padding:.85cqw 1.1cqw}
+.blist.dense{gap:.68cqw}
+.blist.dense li{font-size:1.18cqw;padding:.72cqw 1.1cqw;line-height:1.55}
+.outline.dense{gap:.62cqw}
+.outline.dense li{padding:.72cqw 1.15cqw}
+.outline.dense .ot{font-size:1.16cqw}
+.grid.dense{gap:.95cqw}
+.card.dense{padding:1.1cqw}
+.card.dense .card-t{font-size:1.26cqw;margin-bottom:.4cqw}
+.card.dense .card-d{font-size:1.03cqw;line-height:1.55}
+.bl-dot{flex:0 0 auto;width:.62cqw;height:.62cqw;border-radius:50%;margin-top:.62cqw;
+  background:linear-gradient(135deg,var(--brand),var(--brand2));box-shadow:0 0 0 .28cqw rgba(47,107,255,.12)}
+.blist b,.blist strong{color:var(--brand-dk)}
+.blist code{font-family:var(--mono);font-size:.92em;background:#eef3ff;color:#1d46b8;padding:.1em .42em;border-radius:.35em}
+.hw li{background:linear-gradient(180deg,#fbfcff,#f3f7ff)}
+
+/* 卡片 */
+.grid{display:grid;gap:1.3cqw}
+.grid.cols-2{grid-template-columns:repeat(2,1fr)}
+.grid.cols-3{grid-template-columns:repeat(3,1fr)}
+.grid.cols-4{grid-template-columns:repeat(2,1fr)}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:1.1cqw;padding:1.5cqw;position:relative;overflow:hidden;
+  box-shadow:0 14px 32px -22px rgba(20,40,90,.55);transition:transform .28s,box-shadow .28s,border-color .28s}
+.card:hover{transform:translateY(-.5cqw);box-shadow:0 22px 40px -22px rgba(47,107,255,.5);border-color:rgba(47,107,255,.35)}
+.card::before{content:"";position:absolute;left:0;top:0;height:100%;width:.3cqw;background:linear-gradient(180deg,var(--brand),var(--brand2))}
+.card-ico{font-size:1.75cqw;margin-bottom:.6cqw}
+.card-t{font-size:1.42cqw;font-weight:800;margin-bottom:.55cqw}
+.card-d{font-size:1.14cqw;color:var(--muted);line-height:1.62}
+
+/* 表格 */
+.tbl-wrap{background:var(--surface);border:1px solid var(--line);border-radius:1.1cqw;overflow:hidden;
+  box-shadow:0 16px 36px -26px rgba(20,40,90,.6)}
+.tbl{width:100%;border-collapse:collapse;font-size:1.16cqw}
+.tbl th{background:linear-gradient(180deg,#eef4ff,#e4edff);color:var(--brand-dk);font-weight:800;text-align:left;
+  padding:.95cqw 1.2cqw;border-bottom:1px solid #d8e3f7;font-size:1.12cqw;letter-spacing:.02em}
+.tbl td{padding:.85cqw 1.2cqw;border-bottom:1px solid var(--line);line-height:1.55}
+.tbl tbody tr:last-child td{border-bottom:0}
+.tbl tbody tr:hover{background:#f7faff}
+.tbl code{font-family:var(--mono);font-size:.92em;background:#eef3ff;color:#1d46b8;padding:.08em .4em;border-radius:.35em}
+
+/* 对比 */
+.cmp-wrap{display:grid;grid-template-columns:1fr 1fr;gap:1.8cqw}
+.cmp{border-radius:1.1cqw;padding:1.4cqw;border:1px solid var(--line);background:var(--surface)}
+.cmp-h{font-size:1.4cqw;font-weight:800;margin-bottom:.9cqw;display:flex;align-items:center;gap:.6cqw}
+.cmp-a .cmp-h{color:var(--brand-dk)}
+.cmp-b .cmp-h{color:#b8730f}
+.cmp ul{list-style:none;display:flex;flex-direction:column;gap:.7cqw}
+.cmp li{font-size:1.16cqw;line-height:1.6;color:var(--muted);padding-left:1.3cqw;position:relative}
+.cmp li::before{content:"";position:absolute;left:0;top:.62cqw;width:.5cqw;height:.5cqw;border-radius:2px;background:var(--brand)}
+.cmp-b li::before{background:var(--accent)}
+.cmp-a{background:linear-gradient(180deg,#f6f9ff,#fff)}
+
+/* 步骤 */
+.steps{display:flex;flex-direction:column;gap:1cqw}
+.step{display:flex;gap:1.2cqw;align-items:flex-start;background:var(--surface);border:1px solid var(--line);
+  border-radius:.9cqw;padding:1cqw 1.25cqw}
+.step-n{flex:0 0 auto;width:2.3cqw;height:2.3cqw;border-radius:50%;display:grid;place-items:center;font-weight:800;font-size:1.15cqw;color:#fff;
+  background:linear-gradient(135deg,var(--brand),var(--brand2))}
+.step-t{font-size:1.3cqw;font-weight:800}
+.step-d{font-size:1.12cqw;color:var(--muted);line-height:1.6;margin-top:.25cqw}
+
+/* 流程图 */
+.flow{display:flex;align-items:stretch;justify-content:center;gap:0;flex-wrap:nowrap}
+.fl{flex:1;min-width:0;background:var(--surface);border:1px solid var(--line);border-radius:1cqw;padding:1.3cqw 1cqw;text-align:center;
+  box-shadow:0 12px 28px -22px rgba(20,40,90,.55)}
+.fl-ico{font-size:1.9cqw;margin-bottom:.5cqw}
+.fl-t{font-size:1.24cqw;font-weight:800;margin-bottom:.35cqw;color:var(--brand-dk)}
+.fl-d{font-size:1.02cqw;color:var(--muted);line-height:1.55}
+.fl-arrow{flex:0 0 auto;width:2.2cqw;position:relative;display:grid;place-items:center}
+.fl-arrow::after{content:"";width:1.4cqw;height:.22cqw;background:linear-gradient(90deg,var(--brand),var(--brand2));border-radius:99px;position:relative}
+.fl-arrow::before{content:"";position:absolute;right:.35cqw;width:.6cqw;height:.6cqw;border-top:.2cqw solid var(--brand2);border-right:.2cqw solid var(--brand2);transform:rotate(45deg)}
+.flow-note{margin-top:1.3cqw;font-size:1.1cqw;color:var(--muted);text-align:center;background:rgba(47,107,255,.06);border-radius:.8cqw;padding:.8cqw 1.2cqw}
+
+/* 代码 */
+.codebox{background:var(--code-bg);border-radius:1.1cqw;overflow:hidden;box-shadow:0 26px 54px -26px rgba(13,26,43,.75)}
+.cb-bar{display:flex;align-items:center;gap:.8cqw;padding:.8cqw 1.2cqw;background:rgba(255,255,255,.06);border-bottom:1px solid rgba(255,255,255,.07)}
+.cb-lang{font-family:var(--mono);font-size:.92cqw;font-weight:700;color:#7fd7e4;letter-spacing:.12em}
+.cb-file{font-family:var(--mono);font-size:.92cqw;color:#7f93ad}
+.cb-code{padding:1.25cqw 1.5cqw;font-family:var(--mono);font-size:1.06cqw;line-height:1.78;color:var(--code-ink);white-space:pre;overflow:auto;max-height:100%}
+.cb-code .pn{color:#7f93ad}.cb-code .tg{color:#6fd6ff}.cb-code .at{color:#ffcf7a}.cb-code .st{color:#a5e88a}
+.cb-code .c{color:#6b8099;font-style:italic}.cb-code .sel{color:#ffb3c8}.cb-code .cls{color:#ffd479}
+.cb-code .id{color:#9fe8ff}.cb-code .pc{color:#c8a2ff}.cb-code .prop{color:#8fd3ff}.cb-code .num{color:#f7c774}
+.cb-code .fn{color:#d0b0ff}.cb-code .imp{color:#ff8a8a}.cb-code .at-rules{color:#ff9f6b}
+.caption{margin-top:1cqw;font-size:1.08cqw;color:var(--muted);line-height:1.6}
+.caption b{color:var(--brand-dk)}
+
+/* 任务 */
+.task-goal{background:linear-gradient(180deg,#f4f8ff,#eef4ff);border:1px solid #dbe6fb;border-radius:.9cqw;padding:1.05cqw 1.25cqw;
+  font-size:1.22cqw;line-height:1.62}
+.tg-label{display:inline-block;font-weight:800;color:#fff;background:var(--brand);border-radius:.45cqw;
+  font-size:.98cqw;padding:.16cqw .6cqw;margin-right:.6cqw;vertical-align:.08cqw}
+.task-steps{list-style:none;counter-reset:ts;display:flex;flex-direction:column;gap:.75cqw}
+.task-steps li{counter-increment:ts;position:relative;padding-left:2.3cqw;font-size:1.14cqw;line-height:1.6}
+.task-steps li::before{content:counter(ts);position:absolute;left:0;top:.08cqw;width:1.55cqw;height:1.55cqw;border-radius:50%;
+  background:rgba(47,107,255,.12);color:var(--brand-dk);font-size:.92cqw;font-weight:800;display:grid;place-items:center}
+.task-code{background:var(--code-bg);border-radius:.9cqw;overflow:hidden;box-shadow:0 20px 44px -26px rgba(13,26,43,.7)}
+
+/* 演示 */
+.demo-right{display:flex;flex-direction:column;gap:1cqw;height:100%}
+.demo-frame{flex:1;width:100%;min-height:0;border:1px solid var(--line);border-radius:1cqw;background:#fff;
+  box-shadow:0 22px 46px -26px rgba(20,40,90,.6)}
+.demo-code{background:var(--code-bg);border-radius:.9cqw;overflow:hidden}
+.demo-code summary{cursor:pointer;color:#9fb6d4;font-size:1.02cqw;padding:.7cqw 1.1cqw;font-family:var(--mono);user-select:none}
+.demo-code .cb-code{padding:0 1.2cqw 1.1cqw;font-size:.96cqw}
+.hint{margin-top:1cqw;font-size:1.08cqw;color:var(--muted);background:rgba(255,138,61,.1);border-left:.3cqw solid var(--accent);
+  border-radius:.6cqw;padding:.8cqw 1.1cqw;line-height:1.6}
+.hint b{color:#c2601a}
+
+/* AI */
+.ai-card{background:linear-gradient(160deg,#171a3a,#2b2a5e 55%,#3a2a6a);border-radius:1.1cqw;padding:1.7cqw;color:#e8e6ff;
+  position:relative;overflow:hidden;box-shadow:0 24px 52px -26px rgba(40,30,90,.8)}
+.ai-card::after{content:"";position:absolute;right:-6cqw;top:-6cqw;width:14cqw;height:14cqw;border-radius:50%;
+  background:radial-gradient(circle,rgba(124,92,255,.6),transparent 65%);animation:float1 12s ease-in-out infinite}
+.ai-badge{display:inline-grid;place-items:center;width:2.6cqw;height:2.6cqw;border-radius:.7cqw;font-weight:900;font-size:1.1cqw;
+  background:linear-gradient(135deg,#7c5cff,#0fb5c9);color:#fff;margin-bottom:.9cqw;letter-spacing:.04em}
+.ai-card p{font-size:1.22cqw;line-height:1.72;position:relative;z-index:2}
+.ai-list li{border-color:rgba(124,92,255,.25);background:linear-gradient(180deg,#fbf9ff,#f5f2ff)}
+.ai-list .bl-dot{background:linear-gradient(135deg,#7c5cff,#0fb5c9)}
+
+/* 检测（可交互：点选 → 判分 → 显示解析） */
+.quiz-body{justify-content:flex-start;gap:1.1cqw}
+.quiz-top{display:flex;align-items:center;justify-content:space-between;gap:1.2cqw;flex:0 0 auto}
+.quiz-meta{font-size:1.02cqw;color:var(--muted)}
+.quiz-meta b{color:var(--brand);font-size:1.1cqw}
+.q-reveal{cursor:pointer;font-family:inherit;font-size:.98cqw;font-weight:700;color:var(--brand-dk);
+  background:#eef4ff;border:1px solid #d6e3fb;border-radius:.5cqw;padding:.4cqw .95cqw;transition:.18s}
+.q-reveal:hover{background:#e2ecff;border-color:var(--brand)}
+.quiz-acts{display:flex;align-items:center;gap:.6cqw;flex:0 0 auto}
+.q-reset-all{cursor:pointer;font-family:inherit;font-size:.98cqw;font-weight:700;color:var(--muted);
+  background:#fff;border:1px solid var(--line);border-radius:.5cqw;padding:.4cqw .9cqw;transition:.18s}
+.q-reset-all:hover{color:var(--accent);border-color:#ffd0a8;background:#fff8f2}
+.quiz{list-style:none;display:flex;flex-direction:column;gap:1cqw;overflow:auto;padding-right:.3cqw}
+.quiz.dense{gap:.55cqw}
+.quiz-body:has(.quiz.dense){gap:.7cqw}
+.quiz-item{background:var(--surface);border:1px solid var(--line);border-radius:.9cqw;padding:1cqw 1.2cqw;
+  transition:border-color .2s,box-shadow .2s}
+.quiz-item.ok{border-color:rgba(18,161,80,.45);box-shadow:0 10px 26px -20px rgba(18,161,80,.7)}
+.quiz-item.bad{border-color:rgba(214,83,79,.45);box-shadow:0 10px 26px -20px rgba(214,83,79,.6)}
+.quiz.dense .quiz-item{padding:.6cqw .95cqw}
+.quiz.dense .q{font-size:1.08cqw}
+.quiz.dense .opts{margin-top:.4cqw;gap:.45cqw}
+.quiz.dense .opt{font-size:.94cqw;padding:.22cqw .62cqw}
+.quiz.dense .q-foot{margin-top:.4cqw;min-height:1.15cqw}
+.quiz.dense .q-check{font-size:.88cqw;padding:.16cqw .6cqw}
+.quiz.dense .q-verdict{font-size:.9cqw}
+.quiz.dense .q-ans{margin-top:.4cqw;font-size:.92cqw;padding:.4cqw .7cqw}
+.q{display:flex;gap:.55cqw;align-items:baseline;font-size:1.22cqw;font-weight:700;line-height:1.5}
+.quiz.dense .q{font-size:1.12cqw}
+.q-no{font-family:var(--mono);font-size:.92cqw;font-weight:800;color:var(--brand);flex:0 0 auto}
+.q-tag{flex:0 0 auto;font-size:.8cqw;font-weight:700;color:#fff;background:var(--brand2);
+  border-radius:.32cqw;padding:.08cqw .42cqw;letter-spacing:.04em}
+.q-tag.multi{background:var(--violet)}
+.q-txt{flex:1;min-width:0}
+.opts{display:flex;flex-wrap:wrap;gap:.55cqw;margin-top:.62cqw}
+.opt{cursor:pointer;display:inline-flex;gap:.42cqw;align-items:center;font-family:inherit;text-align:left;
+  font-size:1.02cqw;line-height:1.45;color:#33456b;background:#f5f8ff;border:1px solid #e0e9fb;
+  border-radius:.55cqw;padding:.36cqw .8cqw;transition:background .16s,border-color .16s,box-shadow .16s}
+.quiz.dense .opt{font-size:.96cqw;padding:.28cqw .7cqw}
+.opt:hover{border-color:var(--brand);background:#eef4ff}
+.opt i{font-style:normal;font-family:var(--mono);font-weight:800;font-size:.88em;color:var(--brand)}
+.opt.sel{background:#e6efff;border-color:var(--brand);box-shadow:0 0 0 .16cqw rgba(47,107,255,.16)}
+.opt.right{background:rgba(18,161,80,.1);border-color:#12A150;color:#0b5f2f}
+.opt.right i{color:#0b5f2f}
+.q-foot{display:flex;align-items:center;gap:.8cqw;margin-top:.6cqw;min-height:1.5cqw}
+.q-check{cursor:pointer;font-family:inherit;font-size:.94cqw;font-weight:700;color:var(--brand);
+  background:#fff;border:1px solid #c9daff;border-radius:.45cqw;padding:.26cqw .75cqw;transition:.16s}
+.q-check:hover{background:#eef4ff}
+.q-reset{cursor:pointer;font-family:inherit;font-size:.94cqw;font-weight:700;color:var(--muted);
+  background:#fff;border:1px solid var(--line);border-radius:.45cqw;padding:.26cqw .7cqw;transition:.16s}
+.q-reset:hover{color:var(--accent);border-color:#ffd0a8;background:#fff8f2}
+.q-reset:disabled{opacity:.38;cursor:default}
+.q-reset:disabled:hover{color:var(--muted);border-color:var(--line);background:#fff}
+.quiz.dense .q-reset{font-size:.88cqw;padding:.16cqw .55cqw}
+.q-verdict{font-size:.96cqw;font-weight:700}
+.quiz-item.ok .q-verdict{color:var(--ok)}
+.quiz-item.bad .q-verdict{color:#d9534f}
+.q-ans{display:none;margin-top:.6cqw;font-size:.98cqw;line-height:1.6;color:#0f7a3d;
+  background:rgba(18,161,80,.08);border-radius:.5cqw;padding:.5cqw .8cqw}
+.quiz-item.revealed .q-ans{display:block;animation:rise .3s both}
+.q-ans b{color:#0b5f2f;margin-right:.45cqw}
+.ans-key{font-family:var(--mono);font-weight:800;margin-right:.6cqw}
+.ans-tip{color:var(--muted)}
+
+/* 目标 */
+.objs{display:grid;grid-template-columns:repeat(3,1fr);gap:1.4cqw}
+.obj{border-radius:1.1cqw;padding:1.4cqw;border:1px solid var(--line);background:var(--surface)}
+.obj-h{font-size:1.3cqw;font-weight:800;margin-bottom:.85cqw;display:flex;align-items:center;gap:.55cqw}
+.obj-h::before{content:"";width:.55cqw;height:1.35cqw;border-radius:99px}
+.obj ul{list-style:none;display:flex;flex-direction:column;gap:.62cqw}
+.obj li{font-size:1.1cqw;line-height:1.58;color:var(--muted);padding-left:1.15cqw;position:relative}
+.obj li::before{content:"";position:absolute;left:0;top:.6cqw;width:.42cqw;height:.42cqw;border-radius:50%;background:#9db4d6}
+.obj-1 .obj-h::before{background:var(--brand)}.obj-2 .obj-h::before{background:var(--brand2)}.obj-3 .obj-h::before{background:var(--accent)}
+.obj-1 .obj-h{color:var(--brand-dk)}.obj-2 .obj-h{color:#0a7b87}.obj-3 .obj-h{color:#b8730f}
+
+/* 思政 */
+.s-ideo .s-body{justify-content:center}
+.ideo-wrap{display:flex;flex-direction:column;gap:1.3cqw}
+.ideo-quote{position:relative;background:linear-gradient(180deg,#fff8f0,#fffbf6);border:1px solid #ffe3c8;border-left:.42cqw solid var(--accent);
+  border-radius:.95cqw;padding:1.6cqw 1.8cqw 1.6cqw 2.2cqw;font-size:1.3cqw;line-height:1.85;color:#4a3a28}
+.ideo-quote strong{color:#a3510a}
+.ideo-topic{font-size:1.16cqw;color:var(--muted);background:rgba(47,107,255,.06);border-radius:.8cqw;padding:.9cqw 1.2cqw;line-height:1.6}
+.it-label{display:inline-block;font-weight:800;color:#fff;background:var(--brand);border-radius:.45cqw;font-size:.96cqw;padding:.16cqw .6cqw;margin-right:.6cqw}
+
+/* 大纲 */
+.outline{list-style:none;display:flex;flex-direction:column;gap:.95cqw;counter-reset:none}
+.outline li{display:flex;align-items:center;gap:1.2cqw;background:var(--surface);border:1px solid var(--line);border-radius:.9cqw;padding:1.05cqw 1.35cqw;
+  box-shadow:0 10px 26px -22px rgba(20,40,90,.55)}
+.oi{font-family:var(--mono);font-size:1.1cqw;font-weight:800;color:var(--brand);background:rgba(47,107,255,.1);border-radius:.5cqw;padding:.28cqw .7cqw}
+.ot{font-size:1.34cqw;font-weight:700}
+
+/* 参考 */
+.refs{list-style:none;display:flex;flex-direction:column;gap:.85cqw}
+.refs li{display:flex;align-items:baseline;gap:.9cqw;background:var(--surface);border:1px solid var(--line);border-radius:.8cqw;padding:.9cqw 1.15cqw}
+.ref-idx{font-family:var(--mono);font-size:1cqw;font-weight:800;color:var(--brand)}
+.ref-t{font-size:1.16cqw;font-weight:600}
+.ref-u{font-family:var(--mono);font-size:.92cqw;color:var(--muted);word-break:break-all}
+
+/* 结束 */
+.s-end{align-items:center;justify-content:center;text-align:center;background:linear-gradient(140deg,#12203b,#1d3a78 55%,#0e6f88);}
+.s-end .end-t{color:#fff}
+.end-mark{font-size:2.4cqw;color:#7fd7e4;margin-bottom:.6cqw}
+.end-t{font-size:3.4cqw;font-weight:900;letter-spacing:.02em}
+.end-s{margin-top:1.2cqw;font-size:1.35cqw;color:#a9c4e8}
+/* 结束页导航：下一讲 / 返回总目录 */
+.end-inner{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.9cqw;max-width:74%}
+.end-next{margin-top:2.6cqw;display:inline-flex;align-items:center;gap:1cqw;text-decoration:none;
+  background:rgba(255,255,255,.09);border:1px solid rgba(140,200,235,.42);border-radius:.9cqw;
+  padding:1cqw 1.5cqw;transition:.22s;backdrop-filter:blur(6px);max-width:100%}
+.end-next:hover{background:rgba(255,255,255,.16);border-color:#7fd7e4;transform:translateY(-2px);
+  box-shadow:0 18px 40px -26px rgba(0,0,0,.9)}
+.en-lab{flex:0 0 auto;font-size:.92cqw;font-weight:800;letter-spacing:.06em;color:#0c2036;
+  background:linear-gradient(135deg,#7fd7e4,#4fc3d9);border-radius:.4cqw;padding:.2cqw .62cqw}
+.en-t{color:#eaf4ff;font-size:1.18cqw;font-weight:700;line-height:1.5}
+.en-ar{color:#7fd7e4;font-size:1.3cqw;font-weight:800}
+.end-next.is-final{cursor:default;box-shadow:none}
+.end-next.is-final:hover{transform:none;background:rgba(255,255,255,.09);border-color:rgba(140,200,235,.42);box-shadow:none}
+.end-back{margin-top:.5cqw;display:inline-flex;align-items:center;gap:.35cqw;text-decoration:none;
+  font-size:1.02cqw;color:#9fbde0;border-bottom:1px dashed rgba(159,189,224,.45);padding-bottom:.12cqw;transition:.2s}
+.end-back:hover{color:#fff;border-bottom-color:#7fd7e4}
+
+/* 进度 & HUD */
+.topbar{position:absolute;left:0;top:0;height:.42cqw;width:100%;background:rgba(47,107,255,.1);z-index:6}
+.topbar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--brand),var(--brand2),var(--violet));
+  transition:width .45s cubic-bezier(.2,.7,.2,1)}
+.hud{position:absolute;right:2.2cqw;bottom:1.5cqw;z-index:6;display:flex;align-items:center;gap:1cqw;
+  font-size:1cqw;color:var(--muted);font-family:var(--mono)}
+.hud .btn{cursor:pointer;background:rgba(255,255,255,.82);border:1px solid var(--line);border-radius:.55cqw;padding:.32cqw .7cqw;
+  transition:.2s}
+.hud .btn:hover{border-color:var(--brand);color:var(--brand)}
+.hud .btn[data-on="0"]{color:#a8b6cc;background:rgba(255,255,255,.5);border-style:dashed}
+.hud .btn[data-on="0"]:hover{color:var(--accent);border-color:#ffd0a8;border-style:solid;background:#fff8f2}
+.hud .btn[data-on="1"]{color:#0a7b87;border-color:#bfe6ea;background:rgba(15,181,201,.09)}
+.hud .btn[data-on="1"]:hover{border-color:var(--brand2);background:rgba(15,181,201,.16)}
+.pageno b{color:var(--ink)}
+.legend{position:absolute;left:2.2cqw;bottom:1.5cqw;z-index:6;font-size:.96cqw;color:#9aabc4;font-family:var(--mono)}
+.flip-toast{position:absolute;left:50%;bottom:9%;z-index:9;transform:translate(-50%,10px);
+  background:rgba(16,29,50,.9);color:#fff;font-family:var(--mono);font-size:1.02cqw;letter-spacing:.02em;
+  padding:.62cqw 1.25cqw;border-radius:999px;opacity:0;pointer-events:none;white-space:nowrap;
+  transition:opacity .22s,transform .22s;box-shadow:0 18px 40px -22px rgba(0,0,0,.8)}
+.flip-toast.show{opacity:1;transform:translate(-50%,0)}
+/* 导航抽屉 */
+.drawer{position:absolute;inset:0;z-index:8;background:rgba(12,22,40,.55);backdrop-filter:blur(6px);display:none;padding:4cqw}
+.drawer.open{display:block}
+.drawer-panel{background:var(--surface);border-radius:1.2cqw;height:100%;padding:2cqw;overflow:auto;box-shadow:0 40px 80px -30px rgba(0,0,0,.5)}
+.drawer-h{font-size:1.5cqw;font-weight:800;margin-bottom:1.2cqw;display:flex;justify-content:space-between}
+.drawer-h span{cursor:pointer;color:var(--muted);font-weight:600;font-size:1.1cqw}
+.drawer ul{list-style:none;display:grid;grid-template-columns:1fr 1fr;gap:.55cqw}
+.drawer li{display:flex;gap:.7cqw;align-items:center;padding:.6cqw .8cqw;border-radius:.6cqw;cursor:pointer;border:1px solid transparent}
+.drawer li:hover{background:#f2f6ff;border-color:#dbe6fb}
+.drawer li.cur{background:#eaf1ff;border-color:#c9daff}
+.nv-idx{font-family:var(--mono);font-size:.92cqw;color:var(--brand);font-weight:800}
+.nv-t{font-size:1.06cqw;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+/* ───────── 屏幕自适应 ─────────
+   1) 16:9 / 16:10 笔记本与投影：等比缩放（默认）
+   2) 4:3 老投影 / 上下更紧：压缩留白与圆角
+   3) 超宽屏：仍按高度定宽，不拉伸变形
+   4) 竖屏（手机、平板竖握）：改为纵向流式阅读，单列重排
+   5) 系统开启「减弱动效」时关闭所有动画
+*/
+@media (max-aspect-ratio: 4/3) and (orientation: landscape){
+  .wrap{padding:1.2vh}
+  .stage{border-radius:14px}
+  .slide{padding:3.4cqw 4.2cqw 3.2cqw;gap:1.5cqw}
+  .s-title{font-size:2.62cqw}
+  .blist{gap:.85cqw}
+  .blist li{font-size:1.32cqw;padding:.9cqw 1.15cqw}
+  .legend{display:none}
+}
+@media (min-aspect-ratio: 21/9){
+  .stage{max-width:calc(100vh * 16 / 9);max-height:calc(100vw * 9 / 16)}
+}
+@media (prefers-reduced-motion: reduce){
+  .an{opacity:1!important;animation:none!important}
+  .blob,.orb,.codewin{animation:none!important}
+  .slide{transition:none}
+}
+/* —— 竖屏：纵向流式阅读 —— */
+@media (orientation: portrait){
+  html,body{height:auto;overflow-x:hidden;overflow-y:auto}
+  html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+  body{overflow:visible;background:var(--bg)}
+  .wrap{display:block;height:auto;padding:0}
+  .stage{width:100%;height:auto;max-width:none;max-height:none;aspect-ratio:auto;border-radius:0;
+    overflow:visible;box-shadow:none;container-type:inline-size;background:transparent}
+  .bgfx{display:none}
+  .slide{position:relative;inset:auto;opacity:1!important;visibility:visible!important;transform:none!important;
+    padding:8vw 6vw 9vw;gap:5vw;min-height:auto;background:var(--bg2);border-bottom:1px solid var(--line)}
+  .slide.prev{transform:none!important}
+  .an{opacity:1!important;animation:none!important;transform:none!important}
+  .s-head{flex-direction:column;gap:0}
+  .kicker{font-size:2.6vw;padding:1vw 2.6vw;margin-bottom:2.2vw;letter-spacing:.1em}
+  .s-title{font-size:6.4vw;line-height:1.3}
+  .s-sub{margin-top:2vw;font-size:3.4vw}
+  .s-body{gap:4vw;justify-content:flex-start}
+  .s-body.two{flex-direction:column;gap:4.4vw}
+  .col-l,.col-r{gap:3.4vw}
+  /* 封面 */
+  .s-cover{flex-direction:column;align-items:flex-start;gap:5vw;padding:12vw 6vw 10vw}
+  .cover-art{display:none}
+  .brandrow{margin-bottom:4vw;gap:2vw}
+  .brandmark{font-size:4.4vw}.brandsub{font-size:3vw}
+  .cover-title{font-size:9.6vw;line-height:1.22}
+  .cover-sub{font-size:3.8vw;max-width:none;margin-top:2.6vw}
+  .pills{gap:2vw;margin-top:4vw}
+  .pill{font-size:2.8vw;padding:1.2vw 2.8vw}
+  .cover-meta{font-size:2.9vw;gap:2vw;margin-top:4vw}
+  .cover-meta b{font-size:3.4vw}
+  /* 章节页 */
+  .sec-num{font-size:17vw}
+  .sec-title{font-size:7.2vw;margin-top:3vw}
+  .sec-sub{font-size:3.6vw;max-width:none;margin-top:3vw}
+  .is-active .sec-line{animation:none;width:26vw}
+  .sec-line{margin:4vw 0}
+  /* 列表 / 卡片 */
+  .blist{gap:2.6vw}
+  .blist li{font-size:3.7vw;padding:2.8vw 3.4vw;border-radius:2.4vw;gap:2.4vw;line-height:1.62}
+  .blist.small li{font-size:3.4vw;padding:2.4vw 3vw}
+  .blist.dense li{font-size:3.3vw;padding:2.2vw 3vw}
+  .bl-dot{width:1.8vw;height:1.8vw;margin-top:1.8vw;box-shadow:0 0 0 .8vw rgba(47,107,255,.12)}
+  .outline{gap:2.4vw}
+  .outline li{padding:2.8vw 3.4vw;border-radius:2.2vw;gap:3vw}
+  .oi{font-size:2.8vw;padding:.8vw 2vw}
+  .ot{font-size:3.9vw}
+  .grid{gap:3vw}
+  .grid.cols-2,.grid.cols-3,.grid.cols-4{grid-template-columns:1fr}
+  .card{padding:4.2vw;border-radius:2.6vw}
+  .card-t{font-size:4.1vw;margin-bottom:1.6vw}
+  .card-d{font-size:3.3vw}
+  .card-ico{font-size:5.6vw;margin-bottom:1.6vw}
+  .card::before{width:.8vw}
+  /* 表格 */
+  .tbl-wrap{overflow-x:auto;border-radius:2.4vw;-webkit-overflow-scrolling:touch}
+  .tbl{font-size:3.1vw;min-width:110vw}
+  .tbl th{font-size:3vw;padding:2.4vw 2.8vw;white-space:nowrap}
+  .tbl td{padding:2.2vw 2.8vw}
+  /* 对比 */
+  .cmp-wrap{grid-template-columns:1fr;gap:3.4vw}
+  .cmp{padding:3.6vw;border-radius:2.4vw}
+  .cmp-h{font-size:3.8vw;margin-bottom:2.4vw}
+  .cmp ul{gap:2vw}
+  .cmp li{font-size:3.2vw;padding-left:3.6vw}
+  .cmp li::before{width:1.4vw;height:1.4vw;top:1.7vw}
+  /* 步骤 / 流程 */
+  .steps{gap:2.6vw}
+  .step{padding:3vw 3.4vw;border-radius:2.2vw;gap:3vw}
+  .step-n{width:7.4vw;height:7.4vw;font-size:3.2vw}
+  .step-t{font-size:3.7vw}
+  .step-d{font-size:3.2vw;margin-top:.8vw}
+  .flow{flex-direction:column;gap:1.6vw}
+  .fl{padding:3.6vw;border-radius:2.4vw}
+  .fl-ico{font-size:6.4vw}
+  .fl-t{font-size:3.9vw}
+  .fl-d{font-size:3.1vw}
+  .fl-arrow{width:100%;height:6vw;transform:rotate(90deg)}
+  .flow-note{font-size:3.1vw;padding:2.4vw 3vw;border-radius:2vw;margin-top:2.6vw}
+  /* 代码 */
+  .codebox,.task-code{border-radius:2.4vw}
+  .cb-bar{padding:2.2vw 3vw;gap:2.4vw}
+  .cb-lang,.cb-file{font-size:2.7vw}
+  .cb-code{font-size:3.1vw;line-height:1.62;padding:3vw 3.4vw}
+  .caption{font-size:3vw;margin-top:2.4vw}
+  .demo-code summary{font-size:2.9vw;padding:2.2vw 3vw}
+  .demo-code .cb-code{font-size:2.9vw}
+  /* 任务 / 演示 */
+  .task-goal{font-size:3.4vw;padding:3.2vw;border-radius:2.2vw}
+  .tg-label{font-size:2.6vw;padding:.5vw 1.8vw;margin-right:1.6vw;border-radius:1.2vw}
+  .task-steps{gap:2.4vw}
+  .task-steps li{font-size:3.3vw;padding-left:6.4vw}
+  .task-steps li::before{width:4.6vw;height:4.6vw;font-size:2.8vw}
+  .demo-right{height:auto;gap:2.6vw}
+  .demo-frame{height:66vw;min-height:190px;border-radius:2.4vw}
+  .hint{font-size:3.1vw;padding:2.6vw 3vw;border-radius:2vw;margin-top:2.6vw}
+  /* AI */
+  .ai-card{padding:4.4vw;border-radius:2.6vw}
+  .ai-card p{font-size:3.5vw}
+  .ai-badge{width:8.4vw;height:8.4vw;font-size:3.2vw;border-radius:2vw;margin-bottom:2.4vw}
+  /* 检测（!important：压过横屏 dense 的 cqw 规则，否则竖屏字号塌缩） */
+  .quiz-body{gap:3.4vw}
+  .quiz-top{flex-direction:column;align-items:flex-start;gap:2.4vw}
+  .quiz-meta{font-size:3vw}
+  .quiz-meta b{font-size:3.4vw}
+  .quiz-acts{gap:2vw}
+  .q-reveal,.q-reset-all{font-size:3vw;padding:1.6vw 3.4vw;border-radius:2vw}
+  .quiz{gap:3vw;overflow:visible}
+  .quiz.dense{gap:2.6vw}
+  .quiz-item,.quiz.dense .quiz-item{padding:3.4vw 3.6vw;border-radius:2.4vw}
+  .quiz.dense .q{font-size:3.6vw;gap:1.6vw;line-height:1.55}
+  .q-no{font-size:2.9vw}
+  .q-tag{font-size:2.4vw;padding:.3vw 1.4vw;border-radius:1.2vw}
+  .opts,.quiz.dense .opts{gap:1.8vw;margin-top:2.2vw}
+  .opt,.quiz.dense .opt{font-size:3.2vw;padding:1.4vw 2.8vw;border-radius:2vw;gap:1.4vw}
+  .q-foot,.quiz.dense .q-foot{margin-top:2vw;gap:2.4vw;min-height:0}
+  .q-check,.quiz.dense .q-check{font-size:2.9vw;padding:1.2vw 2.8vw;border-radius:1.6vw}
+  .q-reset,.quiz.dense .q-reset{font-size:2.9vw;padding:1.2vw 2.6vw;border-radius:1.6vw}
+  .q-verdict,.quiz.dense .q-verdict{font-size:2.9vw}
+  .q-ans,.quiz.dense .q-ans{font-size:3vw;padding:2.2vw 3vw;border-radius:1.8vw;margin-top:2vw}
+  /* 目标 / 思政 */
+  .objs{grid-template-columns:1fr;gap:3vw}
+  .obj{padding:4vw;border-radius:2.4vw}
+  .obj-h{font-size:3.9vw;margin-bottom:2.4vw}
+  .obj-h::before{width:1.4vw;height:4vw}
+  .obj ul{gap:2vw}
+  .obj li{font-size:3.2vw;padding-left:3.4vw}
+  .obj li::before{width:1.2vw;height:1.2vw;top:1.6vw}
+  .ideo-wrap{gap:3.4vw}
+  .ideo-quote{font-size:3.6vw;padding:4vw 4.4vw;border-radius:2.4vw;line-height:1.8}
+  .ideo-topic{font-size:3.2vw;padding:2.8vw 3.2vw;border-radius:2.2vw}
+  .it-label{font-size:2.6vw;padding:.5vw 1.6vw;border-radius:1.2vw;margin-right:1.4vw}
+  /* 参考 / 结束 */
+  .refs{gap:2.2vw}
+  .refs li{padding:2.8vw 3.2vw;border-radius:2vw;gap:2.4vw}
+  .ref-idx{font-size:2.8vw}
+  .ref-t{font-size:3.3vw}
+  .ref-u{font-size:2.7vw}
+  .s-end{align-items:center;justify-content:center;min-height:60vh}
+  .end-t{font-size:8.4vw}
+  .end-s{font-size:3.6vw;margin-top:3vw}
+  .end-mark{font-size:6vw}
+  .end-inner{max-width:none;width:100%;gap:2vw}
+  .end-next{margin-top:5vw;gap:2.2vw;padding:3vw 3.6vw;border-radius:2.4vw;flex-wrap:wrap;justify-content:center}
+  .en-lab{font-size:2.6vw;padding:.8vw 2vw;border-radius:1.2vw}
+  .en-t{font-size:3.4vw}
+  .en-ar{font-size:3.6vw}
+  .end-back{font-size:3vw;margin-top:2.6vw}
+  /* HUD / 目录：固定悬浮 */
+  .topbar{position:fixed;height:1.2vw;z-index:20}
+  .hud{position:fixed;right:3vw;bottom:calc(3vw + env(safe-area-inset-bottom));z-index:20;
+    background:rgba(255,255,255,.94);border:1px solid var(--line);border-radius:999px;
+    padding:2.2vw 3.4vw;gap:3vw;font-size:3vw;box-shadow:0 10px 30px -12px rgba(16,34,74,.35)}
+  .hud .btn{font-size:2.9vw;padding:1vw 2.4vw;border-radius:1.6vw}
+  .flip-toast{position:fixed;bottom:calc(16vw + env(safe-area-inset-bottom));z-index:21;
+    font-size:3vw;padding:2.2vw 4vw;max-width:84vw;white-space:normal;text-align:center;line-height:1.5}
+  .legend{display:none}
+  .drawer{position:fixed;padding:4vw}
+  .drawer-panel{padding:5vw;border-radius:3vw}
+  .drawer-h{font-size:4.2vw;margin-bottom:3vw}
+  .drawer-h span{font-size:3.2vw}
+  .drawer ul{grid-template-columns:1fr;gap:1.6vw}
+  .drawer li{padding:2.4vw 3vw;border-radius:2vw;gap:2.4vw}
+  .nv-idx{font-size:2.8vw}
+  .nv-t{font-size:3.2vw;white-space:normal}
+}
+/* 打印 */
+@media print{
+  body{overflow:visible}
+  .wrap{padding:0;display:block}
+  .stage{width:100%;max-width:none;height:auto;aspect-ratio:auto;border-radius:0;box-shadow:none}
+  .slide{position:relative;opacity:1!important;visibility:visible!important;transform:none!important;
+    page-break-after:always;height:100vh;width:100%}
+  .an{opacity:1!important;animation:none!important}
+  .topbar,.hud,.legend,.drawer{display:none!important}
+}
+</style>
+</head>
+<body>
+<div class="wrap"><div class="stage" id="stage">
+  <div class="bgfx"><div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div><div class="grid-lines"></div></div>
+  <div class="topbar"><i id="bar"></i></div>
+
+<section class="slide s-cover is-active" data-kind="cover">
+  <div class="cover-left">
+    <div class="brandrow an" style="--i:0">
+      <span class="brandmark">网页制作</span>
+      <span class="brandsub">HTML5 + CSS3</span>
+    </div>
+    <div class="kicker an" style="--i:1">项目6 · 第 15 单元</div>
+    <h1 class="cover-title an" style="--i:2">表格标签与 CSS 表格样式</h1>
+    <p class="cover-sub an" style="--i:3">从一张金牌榜出发，掌握结构化表格标签与表格样式属性，让数据既清晰又好看</p>
+    <div class="pills"><span class="pill" style="--i:3">table / tr / td</span><span class="pill" style="--i:4">th 与 td</span><span class="pill" style="--i:5">border-collapse</span><span class="pill" style="--i:6">colspan / rowspan</span></div>
+    <div class="cover-meta an" style="--i:8">
+      <span class="m-item"><b>40</b> 分钟</span>
+      <span class="dot"></span>
+      <span class="m-item">教材《网页制作（HTML5+CSS3）》项目6</span>
+      <span class="dot"></span>
+      <span class="m-item">电子工业出版社 · 2025 年 1 月第 1 版</span>
+    </div>
+  </div>
+  <div class="cover-art" aria-hidden="true">
+    <div class="orb o1"></div><div class="orb o2"></div><div class="orb o3"></div>
+    <div class="codewin">
+      <div class="cw-bar"><i></i><i></i><i></i></div>
+      <pre class="cw-body"><span class="pn">&lt;!</span><span class="tg">DOCTYPE</span> <span class="at">html</span><span class="pn">&gt;</span>
+<span class="pn">&lt;</span><span class="tg">html</span> <span class="at">lang</span>=<span class="st">"zh-CN"</span><span class="pn">&gt;</span>
+  <span class="pn">&lt;</span><span class="tg">head</span><span class="pn">&gt;</span> <span class="pn">&lt;</span><span class="tg">meta</span> <span class="at">charset</span>=<span class="st">"UTF-8"</span><span class="pn">&gt;</span> <span class="pn">&lt;/</span><span class="tg">head</span><span class="pn">&gt;</span>
+  <span class="pn">&lt;</span><span class="tg">body</span><span class="pn">&gt;</span>
+    <span class="pn">&lt;</span><span class="tg">h1</span><span class="pn">&gt;</span>Hello, Web<span class="pn">&lt;/</span><span class="tg">h1</span><span class="pn">&gt;</span>
+  <span class="pn">&lt;/</span><span class="tg">body</span><span class="pn">&gt;</span>
+<span class="pn">&lt;/</span><span class="tg">html</span><span class="pn">&gt;</span></pre>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-kind="objectives">
+  
+  <header class="s-head">
+    <div class="s-head-left">
+      
+      <h2 class="s-title an" style="--i:1">本单元我们要达成什么</h2>
+      <p class="s-sub an" style="--i:2">对照教材《项目6》6.1～6.3 的学习目标 / 技能目标 / 素养目标</p>
+    </div>
+  </header>
+  <div class="s-body"><div class="objs"><div class="obj obj-1" class="an " style="--i:1">
+          <div class="obj-h">知识目标</div><ul><li>了解表格的两个作用</li><li>掌握表格标签及语义</li><li>掌握表格数据的导入方法</li><li>掌握 CSS 表格相关样式属性的用法</li></ul></div><div class="obj obj-2" class="an " style="--i:2">
+          <div class="obj-h">技能目标</div><ul><li>能正确使用表格标签创建表格</li><li>能使用表格样式属性美化表格</li><li>能使用 Emmet 语法快速生成表格结构</li></ul></div><div class="obj obj-3" class="an " style="--i:3">
+          <div class="obj-h">素养目标</div><ul><li>培养以用户为中心的产品质量意识</li><li>培养勇于探索、崇尚科学的意志和品德</li><li>遵守网络规范、网络法规</li></ul></div></div></div>
+</section>
+
+<section class="slide s-ideo" data-kind="ideology">
+  
+  <header class="s-head">
+    <div class="s-head-left">
+      
+      <h2 class="s-title an" style="--i:1">北京冬奥精神：把数据讲清楚，也是一种专业</h2>
+      <p class="s-sub an" style="--i:2">教材《项目6》思政课堂</p>
+    </div>
+  </header>
+  <div class="s-body"><div class="ideo-wrap">
+    <div class="ideo-quote an" style="--i:1">2022 年 2 月 4 日至 20 日，北京冬奥会在我国北京市和张家口市联合举行，它是一次全球性的体育盛会。在这次冬奥会上，展现出了<strong>胸怀大局、自信开放、迎难而上、追求卓越、共创未来</strong>的“<strong>北京冬奥精神</strong>”。它激励着我们这代人坚持理想信念，坚定不移地为社会主义伟大事业而奋斗；坚持实事求是，脚踏实地地去创造。我们要把爱国之情、报国之志转化为实际行动，努力拼搏，为祖国争光！</div>
+    <div class="ideo-topic an" style="--i:2"><span class="it-label">课堂讨论</span>奖牌榜、成绩单、统计表都是网页中最常见的数据呈现形式。作为未来的 Web 前端工程师，请结合岗位谈一谈：为什么在做数据展示页面时，「标签语义正确」比「看起来像个表格」更重要？</div>
+  </div></div>
+</section>
+
+<section class="slide" data-kind="outline">
+  
+  <header class="s-head">
+    <div class="s-head-left">
+      
+      <h2 class="s-title an" style="--i:1">本单元导览</h2>
+      <p class="s-sub an" style="--i:2">四个问题，带你从「会写表格」走向「会做表格」</p>
+    </div>
+  </header>
+  <div class="s-body"><ol class="outline dense"><li class="an " style="--i:1"><span class="oi">01</span><span class="ot">表格在网页中到底有哪两个作用？（布局 / 呈现数据）</span></li><li class="an " style="--i:2"><span class="oi">02</span><span class="ot">一个完整的表格由哪些标签构成？（table、tr、th、td、caption、thead、tbody、tfoot）</span></li><li class="an " style="--i:3"><span class="oi">03</span><span class="ot">任务6-1：用 Emmet 语法快速制作金牌榜表格</span></li><li class="an " style="--i:4"><span class="oi">04</span><span class="ot">有哪些与表格相关的 CSS 样式属性？（border-collapse、border-spacing、caption-side、table-layout）</span></li><li class="an " style="--i:5"><span class="oi">05</span><span class="ot">任务6-2：导入外部数据创建表格，并用 CSS 完成美化</span></li></ol></div>
+</section>
+
+<section class="slide s-section" data-kind="section">
+  <div class="sec-inner">
+    <div class="sec-num an" style="--i:0">6.1</div>
+    <h2 class="sec-title an" style="--i:1">表格的两个作用</h2>
+    <div class="sec-line an" style="--i:2"></div>
+    <p class="sec-sub an" style="--i:3">表格最初是用来「摆数据」的，中间被借去做布局，如今又回到了原点。</p>
+  </div>
+</section>
+
+<section class="slide" data-kind="cards">
+  
+  <header class="s-head">
+    <div class="s-head-left">
+      <div class="kicker an" style="--i:0">要点分解</div>
+      <h2 class="s-title an" style="--i:1">表格在网页制作历史进程中的两个作用</h2>
+      <p class="s-sub an" style="--i:2">教材原文：① 实现网页内容的布局　② 呈现相关的数据</p>
+    </div>
+  </header>
+  <div class="s-body"><div class="grid cols-3"><div class="card" class="an " style="--i:1">
+          
+          <div class="card-t">作用一：实现网页内容的布局</div>
+          <div class="card-d">通过单元格的分割和合并，生成具有 <strong>①～⑦ 七个不同板块</strong>的复杂界面（图6-1）。这是 <strong>2008 年以前</strong>表格的重要用途。</div>
+        </div><div class="card" class="an " style="--i:2">
+          
+          <div class="card-t">作用二：呈现相关的数据</div>
+          <div class="card-d">以行列形式把数据罗列出来，结构紧凑、清晰直观（图6-2 为汽车详细参数）。<strong>目前表格的主要用途已回归到呈现数据。</strong></div>
+        </div><div class="card" class="an " style="--i:3">
+          
+          <div class="card-t">生活中的表格</div>
+          <div class="card-d">财务报表、<strong>课程表</strong>、问卷调查表……表格的结构化特征，使它成为日常工作中最常见的信息组织方式。</div>
+        </div></div></div>
+</section>
+
+<section class="slide" data-kind="bullets">
+  
+  <header class="s-head">
+    <div class="s-head-left">
+      <div class="kicker an" style="--i:0">知识要点</div>
+      <h2 class="s-title an" style="--i:1">表格的发展脉络：从布局回到数据</h2>
+      <p class="s-sub an" style="--i:2">教材观点：CSS 出现后，使用表格布局网页的方式已逐渐被抛弃</p>
+    </div>
+  </header>
+  <div class="s-body"><ul class="blist dense"><li class="an " style="--i:1"><span class="bl-dot"></span><span>表格初衷是以<strong>行列形式将数据罗列出来</strong>，结构紧凑、清晰直观，日常生活中被大量使用。</span></li><li class="an " style="--i:2"><span class="bl-dot"></span><span>由于表格可灵活合并单元格，<strong>2008 年以前</strong>表格的一个用途是实现网页内容布局。</span></li><li class="an " style="--i:3"><span class="bl-dot"></span><span>随着前端技术发展，<strong>CSS 出现后</strong>，使用表格布局网页的方式已逐渐被抛弃。</span></li><li class="an " style="--i:4"><span class="bl-dot"></span><span>目前表格的主要用途回归到它的初衷——<strong>呈现数据</strong>。</span></li><li class="an " style="--i:5"><span class="bl-dot"></span><span>本项目的学习目标因此聚焦两件事：与表格相关的<strong>结构化标签</strong>，以及与<strong>美化表格相关的 CSS 样式属性</strong>。</span></li></ul></div>
+</section>
+
+<section class="slide s-section" data-kind="section">
+  <div class="sec-inner">
+    <div class="sec-num an" style="--i:0">6.2</div>
+    <h2 class="sec-title an" style="--i:1">表格标签</h2>
+    <div class="sec-line an" style="--i:2"></div>
+    <p class="sec-sub an" style="--i:3">行、列、单元格，加上三个分区与一个标题——这就是表格的全部骨架。</p>
+  </div>
+</section>
+
+<section class="slide" data-kind="table">
+  
+  <header class="s-head">
+    <div class="s-head-left">
+      <div class="kicker an" style="--i:0">对照表</div>
+      <h2 class="s-title an" style="--i:1">表6-1 表格标签（教材完整还原）</h2>
+      <p class="s-sub an" style="--i:2">一个表格通常包括行、列和单元格 3 个部分，也可划分为页眉、主体、页脚 3 个区域</p>
+    </div>
+  </header>
+  <div class="s-body"><div class="tbl-wrap">
+    <table class="tbl"><thead><tr><th>标签名</th><th>描述</th></tr></thead><tbody><tr class="an " style="--i:1"><td><code>&lt;table&gt;</code></td><td>定义表格</td></tr><tr class="an " style="--i:2"><td><code>&lt;tr&gt;</code></td><td>定义表格行（table row）</td></tr><tr class="an " style="--i:3"><td><code>&lt;th&gt;</code></td><td>定义表格字段的标题（table heading）</td></tr><tr class="an " style="--i:4"><td><code>&lt;td&gt;</code></td><td>定义表格的数据（table data）</td></tr><tr class="an " style="--i:5"><td><code>&lt;thead&gt;</code></td><td>定义表格页眉</td></tr><tr class="an " style="--i:6"><td><code>&lt;tbody&gt;</code></td><td>定义表格主体</td></tr><tr class="an " style="--i:7"><td><code>&lt;tfoot&gt;</code></td><td>定义表格页脚</td></tr><tr class="an " style="--i:8"><td><code>&lt;caption&gt;</code></td><td>定义表格标题，默认在表格中居中显示</td></tr></tbody></table>
+  </div></div>
+</section>
+
+<section class="slide" data-kind="compare">
+  
+  <header class="s-head">
+    <div class="s-head-left">
+      <div class="kicker an" style="--i:0">对比辨析</div>
+      <h2 class="s-title an" style="--i:1">标题单元格与数据单元格，别混用</h2>
+      <p class="s-sub an" style="--i:2">教材问答要点：样式上有区别，语义上区别更明显</p>
+    </div>
+  </header>
+  <div class="s-body"><div class="cmp-wrap"><div class="cmp cmp-a">
+          <div class="cmp-h">th · 标题单元格</div>
+          <ul><li class="an " style="--i:1"><strong>自带加粗样式</strong>，在默认情况下内容是<strong>居中</strong>的</li><li class="an " style="--i:2">语义上用来<strong>存放标题信息</strong></li><li class="an " style="--i:3">教材并未规定它的位置：<strong>既可以出现在第一行，也可以出现在第一列或其他位置</strong></li></ul></div><div class="cmp cmp-b">
+          <div class="cmp-h">td · 数据单元格</div>
+          <ul><li class="an " style="--i:3">默认<strong>不加粗、居左</strong>显示</li><li class="an " style="--i:4">语义上用来<strong>承载数据</strong></li><li class="an " style="--i:5">与 <code>th</code> 一样，都是 <code>tr</code> 的子元素；整行单元格数量决定列数</li></ul></div></div></div>
+</section>
+
+<section class="slide" data-kind="bullets">
+  
+  <header class="s-head">
+    <div class="s-head-left">
+      <div class="kicker an" style="--i:0">知识要点</div>
+      <h2 class="s-title an" style="--i:1">表格的三个分区与表格标题</h2>
+      <p class="s-sub an" style="--i:2">thead / tbody / tfoot 不能单独使用，需要配合使用</p>
+    </div>
+  </header>
+  <div class="s-body"><ul class="blist dense"><li class="an " style="--i:1"><span class="bl-dot"></span><span><code>&lt;thead&gt;</code> 是表格的<strong>表头</strong>分组，<code>&lt;tbody&gt;</code> 是<strong>主体内容</strong>分组，<code>&lt;tfoot&gt;</code> 是<strong>页脚（表注）</strong>分组，常用来放汇总数据。</span></li><li class="an " style="--i:2"><span class="bl-dot"></span><span>划分意义一：使浏览器有能力支持独立于表格表头和页脚的<strong>表格正文滚动</strong>。</span></li><li class="an " style="--i:3"><span class="bl-dot"></span><span>划分意义二：长表格打印时，表头和页脚可打印在<strong>包含表格数据的每个页面上</strong>。</span></li><li class="an " style="--i:4"><span class="bl-dot"></span><span>划分意义三：可用 <strong>CSS 对这些区域分别设置样式</strong>，配合项目4 的后代选择器非常好用。</span></li><li class="an " style="--i:5"><span class="bl-dot"></span><span><code>&lt;caption&gt;</code> 定义表格标题，<strong>默认在表格中居中显示</strong>；其 <code>align</code> 属性可取 left、center、right（默认 center），<code>valign</code> 可取 top、bottom（默认 top）。</span></li></ul></div>
+</section>
+
+<section class="slide" data-kind="table">
+  
+  <header class="s-head">
+    <div class="s-head-left">
+      <div class="kicker an" style="--i:0">对照表</div>
+      <h2 class="s-title an" style="--i:1">表格、行与单元格的常用标签属性（教材表6-3～表6-5 合并）</h2>
+      <p class="s-sub an" style="--i:2">教材结论：在 HTML5 中，除了 colspan 和 rowspan，其余属性都不建议使用</p>
+    </div>
+  </header>
+  <div class="s-body"><div class="tbl-wrap">
+    <table class="tbl"><thead><tr><th>属性名</th><th>作用对象</th><th>描述</th></tr></thead><tbody><tr class="an " style="--i:1"><td><code>border</code></td><td>table</td><td>定义表格边框线的粗细，默认没有边框线</td></tr><tr class="an " style="--i:2"><td><code>width</code> / <code>height</code></td><td>table、td、th</td><td>定义宽高，百分比相对于父元素（表格）的宽高</td></tr><tr class="an " style="--i:3"><td><code>align</code></td><td>table、tr、td</td><td>定义水平对齐方式，默认靠左对齐</td></tr><tr class="an " style="--i:4"><td><code>bgcolor</code></td><td>table、tr、td</td><td>定义背景颜色，可取十六进制值、RGB 值或预设颜色值</td></tr><tr class="an " style="--i:5"><td><code>cellpadding</code></td><td>table</td><td>定义单元格的<strong>内边距</strong>，即数据与边框线之间的距离</td></tr><tr class="an " style="--i:6"><td><code>cellspacing</code></td><td>table</td><td>定义单元格的<strong>间距</strong>，即单元格与单元格之间的距离</td></tr><tr class="an " style="--i:7"><td><code>valign</code></td><td>tr、td</td><td>定义单元格的垂直对齐方式，默认<strong>垂直居中（middle）</strong></td></tr><tr class="an " style="--i:8"><td><code>colspan</code></td><td>td、th</td><td>定义单元格可<strong>跨越列的数目</strong>（合并列）</td></tr><tr class="an " style="--i:9"><td><code>rowspan</code></td><td>td、th</td><td>定义单元格可<strong>跨越行的数目</strong>（合并行）</td></tr></tbody></table>
+  </div></div>
+</section>
+
+<section class="slide" data-kind="task">
+  
+  <header class="s-head">
+    <div class="s-head-left">
+      <div class="kicker an" style="--i:0">任务驱动</div>
+      <h2 class="s-title an" style="--i:1">任务6-1｜使用 Emmet 语法制作金牌榜表格</h2>
+      <p class="s-sub an" style="--i:2">目标：制作 2008 年北京奥运会金牌榜表格，效果如图6-4 所示</p>
+    </div>
+  </header>
+  <div class="s-body two">
+    <div class="col-l">
+      <div class="task-goal an" style="--i:1"><span class="tg-label">任务目标</span>将本书所附教学项目源文件中的图片素材放置在对应项目的 images 文件夹中，然后制作 2008 年北京奥运会金牌榜表格。</div>
+      <ol class="task-steps"><li class="an " style="--i:2">观察行列数：共 <strong>7 行 4 列</strong>（包含标题行）。</li><li class="an " style="--i:3">使用 Emmet 语法快速生成基本结构：<code>table&gt;tr*7&gt;td*4</code>。</li><li class="an " style="--i:4">将数据依次填入；<strong>将表格第一行单元格标签由 td 修改为 th</strong>。</li><li class="an " style="--i:5">给 <code>table</code> 依次添加 <code>bgcolor</code>、<code>border</code>、<code>align</code>、<code>width</code> 属性查看效果。</li><li class="an " style="--i:6">对行添加 <code>align</code>、<code>bgcolor</code> 实现居中和<strong>间隔底纹</strong>。</li></ol>
+    </div>
+    <div class="col-r"><div class="task-code" class="an " style="--i:7">
+          <pre class="cb-code"><span class="pn">&lt;</span><span class="tg">table</span><span class="pn">&gt;</span>
+    <span class="pn">&lt;</span><span class="tg">tr</span><span class="pn">&gt;</span>
+        <span class="pn">&lt;</span><span class="tg">th</span><span class="pn">&gt;</span>国家/地区<span class="pn">&lt;/</span><span class="tg">th</span><span class="pn">&gt;</span>
+        <span class="pn">&lt;</span><span class="tg">th</span><span class="pn">&gt;</span><span class="pn">&lt;</span><span class="tg">i</span> class=&quot;golden&quot;<span class="pn">&gt;</span><span class="pn">&lt;/</span><span class="tg">i</span><span class="pn">&gt;</span><span class="pn">&lt;/</span><span class="tg">th</span><span class="pn">&gt;</span>
+        <span class="pn">&lt;</span><span class="tg">th</span><span class="pn">&gt;</span><span class="pn">&lt;</span><span class="tg">i</span> class=&quot;silver&quot;<span class="pn">&gt;</span><span class="pn">&lt;/</span><span class="tg">i</span><span class="pn">&gt;</span><span class="pn">&lt;/</span><span class="tg">th</span><span class="pn">&gt;</span>
+        <span class="pn">&lt;</span><span class="tg">th</span><span class="pn">&gt;</span><span class="pn">&lt;</span><span class="tg">i</span> class=&quot;copper&quot;<span class="pn">&gt;</span><span class="pn">&lt;/</span><span class="tg">i</span><span class="pn">&gt;</span><span class="pn">&lt;/</span><span class="tg">th</span><span class="pn">&gt;</span>
+    <span class="pn">&lt;/</span><span class="tg">tr</span><span class="pn">&gt;</span>
+    <span class="pn">&lt;</span><span class="tg">tr</span><span class="pn">&gt;</span>
+        <span class="pn">&lt;</span><span class="tg">td</span><span class="pn">&gt;</span>中国<span class="pn">&lt;/</span><span class="tg">td</span><span class="pn">&gt;</span>   <span class="pn">&lt;</span><span class="tg">td</span><span class="pn">&gt;</span>51<span class="pn">&lt;/</span><span class="tg">td</span><span class="pn">&gt;</span>  <span class="pn">&lt;</span><span class="tg">td</span><span class="pn">&gt;</span>21<span class="pn">&lt;/</span><span class="tg">td</span><span class="pn">&gt;</span>  <span class="pn">&lt;</span><span class="tg">td</span><span class="pn">&gt;</span>28<span class="pn">&lt;/</span><span class="tg">td</span><span class="pn">&gt;</span>
+    <span class="pn">&lt;/</span><span class="tg">tr</span><span class="pn">&gt;</span>
+    <span class="pn">&lt;</span><span class="tg">tr</span><span class="pn">&gt;</span>
+        <span class="pn">&lt;</span><span class="tg">td</span><span class="pn">&gt;</span>美国<span class="pn">&lt;/</span><span class="tg">td</span><span class="pn">&gt;</span>   <span class="pn">&lt;</span><span class="tg">td</span><span class="pn">&gt;</span>36<span class="pn">&lt;/</span><span class="tg">td</span><span class="pn">&gt;</span>  <span class="pn">&lt;</span><span class="tg">td</span><span class="pn">&gt;</span>38<span class="pn">&lt;/</span><span class="tg">td</span><span class="pn">&gt;</span>  <span class="pn">&lt;</span><span class="tg">td</span><span class="pn">&gt;</span>36<span class="pn">&lt;/</span><span class="tg">td</span><span class="pn">&gt;</span>
+    <span class="pn">&lt;/</span><span class="tg">tr</span><span class="pn">&gt;</span>
+    <span class="pn">&lt;</span><span class="tg">tr</span><span class="pn">&gt;</span>
+        <span class="pn">&lt;</span><span class="tg">td</span><span class="pn">&gt;</span>俄罗斯<span class="pn">&lt;/</span><span class="tg">td</span><span class="pn">&gt;</span> <span class="pn">&lt;</span><span class="tg">td</span><span class="pn">&gt;</span>23<span class="pn">&lt;/</span><span class="tg">td</span><span class="pn">&gt;</span>  <span class="pn">&lt;</span><span class="tg">td</span><span class="pn">&gt;</span>21<span class="pn">&lt;/</span><span class="tg">td</span><span class="pn">&gt;</span>  <span class="pn">&lt;</span><span class="tg">td</span><span class="pn">&gt;</span>28<span class="pn">&lt;/</span><span class="tg">td</span><span class="pn">&gt;</span>
+    <span class="pn">&lt;/</span><span class="tg">tr</span><span class="pn">&gt;</span>
+    <span class="pn">&lt;</span><span class="tg">tr</span><span class="pn">&gt;</span>
+        <span class="pn">&lt;</span><span class="tg">td</span><span class="pn">&gt;</span>英国<span class="pn">&lt;/</span><span class="tg">td</span><span class="pn">&gt;</span>   <span class="pn">&lt;</span><span class="tg">td</span><span class="pn">&gt;</span>19<span class="pn">&lt;/</span><span class="tg">td</span><span class="pn">&gt;</span>  <span class="pn">&lt;</span><span class="tg">td</span><span class="pn">&gt;</span>13<span class="pn">&lt;/</span><span class="tg">td</span><span class="pn">&gt;</span>  <span class="pn">&lt;</span><span class="tg">td</span><span class="pn">&gt;</span>15<span class="pn">&lt;/</span><span class="tg">td</span><span class="pn">&gt;</span>
+    <span class="pn">&lt;/</span><span class="tg">tr</span><span class="pn">&gt;</span>
+    <span class="pn">&lt;</span><span class="tg">tr</span><span class="pn">&gt;</span>
+        <span class="pn">&lt;</span><span class="tg">td</span><span class="pn">&gt;</span>德国<span class="pn">&lt;/</span><span class="tg">td</span><span class="pn">&gt;</span>   <span class="pn">&lt;</span><span class="tg">td</span><span class="pn">&gt;</span>16<span class="pn">&lt;/</span><span class="tg">td</span><span class="pn">&gt;</span>  <span class="pn">&lt;</span><span class="tg">td</span><span class="pn">&gt;</span>10<span class="pn">&lt;/</span><span class="tg">td</span><span class="pn">&gt;</span>  <span class="pn">&lt;</span><span class="tg">td</span><span class="pn">&gt;</span>15<span class="pn">&lt;/</span><span class="tg">td</span><span class="pn">&gt;</span>
+    <span class="pn">&lt;/</span><span class="tg">tr</span><span class="pn">&gt;</span>
+    <span class="pn">&lt;</span><span class="tg">tr</span><span class="pn">&gt;</span>
+        <span class="pn">&lt;</span><span class="tg">td</span><span class="pn">&gt;</span>澳大利亚<span class="pn">&lt;/</span><span class="tg">td</span><span class="pn">&gt;</span> <span class="pn">&lt;</span><span class="tg">td</span><span class="pn">&gt;</span>14<span class="pn">&lt;/</span><span class="tg">td</span><span class="pn">&gt;</span> <span class="pn">&lt;</span><span class="tg">td</span><span class="pn">&gt;</span>15<span class="pn">&lt;/</span><span class="tg">td</span><span class="pn">&gt;</span>  <span class="pn">&lt;</span><span class="tg">td</span><span class="pn">&gt;</span>17<span class="pn">&lt;/</span><span class="tg">td</span><span class="pn">&gt;</span>
+    <span class="pn">&lt;/</span><span class="tg">tr</span><span class="pn">&gt;</span>
+<span class="pn">&lt;/</span><span class="tg">table</span><span class="pn">&gt;</span></pre></div></div>
+  </div>
+</section>
+
+<section class="slide" data-kind="demo">
+  
+  <header class="s-head">
+    <div class="s-head-left">
+      <div class="kicker an" style="--i:0">效果演示</div>
+      <h2 class="s-title an" style="--i:1">效果演示｜会「呼吸」的金牌榜表格</h2>
+      <p class="s-sub an" style="--i:2">把教材里的 7 行 4 列金牌榜，用 CSS 表格样式属性再美化一遍</p>
+    </div>
+  </header>
+  <div class="s-body two demo">
+    <div class="col-l"><ul class="blist small"><li class="an " style="--i:1"><span class="bl-dot"></span><span>整张表格用 <code>border-collapse:collapse</code> 把<strong>双线边框折叠成一条线</strong>。</span></li><li class="an " style="--i:2"><span class="bl-dot"></span><span>用 <code>tbody tr:nth-child(odd)</code> 实现<strong>斑马纹</strong>，长表格再也不容易看串行。</span></li><li class="an " style="--i:3"><span class="bl-dot"></span><span>用 <code>tbody tr:hover</code> 实现<strong>悬停高亮</strong>并轻微放大，鼠标指哪行看哪行。</span></li><li class="an " style="--i:4"><span class="bl-dot"></span><span>表头用 <code>thead th</code> 单独着色，页脚用 <code>tfoot</code> 放汇总行——这就是分区标签的价值。</span></li></ul>
+      <div class="hint an" style="--i:5"><b>动手试试：</b>试着把 nth-child(odd) 改成 even，看看斑马纹会不会从第二行开始；再把 hover 的 transform 去掉，体会交互反馈的差异。</div>
+    </div>
+    <div class="col-r"><iframe class="demo-frame" title="效果预览" srcdoc="&lt;style&gt;*{box-sizing:border-box}body{margin:0;font-family:&#x27;PingFang SC&#x27;,system-ui,sans-serif;background:linear-gradient(160deg,#eef4ff,#f8fbff);padding:12px 14px}.u15{text-align:center}.u15 .cap{font-size:19px;font-weight:800;color:#12306f;margin:0 0 9px;animation:u15r .6s both}.u15 .cap em{font-style:normal;color:#c8860a}table.u15t{border-collapse:collapse;width:100%;font-size:12px;color:#4a5b73;background:#fff;box-shadow:0 18px 38px -22px rgba(20,40,90,.5);animation:u15r .6s .12s both}table.u15t th,table.u15t td{border:1px solid #dde5f0;padding:6px 4px;text-align:center;vertical-align:middle}table.u15t thead th{background:#2f6bff;color:#fff;border-color:#2f6bff;font-weight:700}table.u15t tbody tr{transition:background .25s,transform .25s}table.u15t tbody tr:nth-child(odd){background:#f5f8ff}table.u15t tbody tr:hover{background:#fff5dc;transform:scale(1.015)}table.u15t td:first-child{text-align:left;padding-left:12px;font-weight:600;color:#23324a}.u15m{display:inline-block;width:14px;height:14px;border-radius:50%;vertical-align:-2px;box-shadow:inset 0 -2px 3px rgba(0,0,0,.2)}.u15m.g{background:radial-gradient(circle at 32% 30%,#ffeaa7,#dfa211)}.u15m.s{background:radial-gradient(circle at 32% 30%,#f4f6f9,#98a5b3)}.u15m.b{background:radial-gradient(circle at 32% 30%,#f3c49b,#ad6733)}.u15t tfoot td{background:#eaf1ff;color:#1d46b8;font-weight:700}.u15tip{margin:9px 0 0;font-size:11.5px;color:#6b7c94;animation:u15r .6s .35s both}@keyframes u15r{from{opacity:0;transform:translateY(12px)}}&lt;/style&gt;
+&lt;div class=&#x27;u15&#x27;&gt;
+&lt;p class=&#x27;cap&#x27;&gt;2008 年北京奥运会&lt;em&gt;金牌榜&lt;/em&gt;&lt;/p&gt;
+&lt;table class=&#x27;u15t&#x27;&gt;
+&lt;thead&gt;&lt;tr&gt;&lt;th&gt;国家/地区&lt;/th&gt;&lt;th&gt;&lt;i class=&#x27;u15m g&#x27;&gt;&lt;/i&gt;&lt;/th&gt;&lt;th&gt;&lt;i class=&#x27;u15m s&#x27;&gt;&lt;/i&gt;&lt;/th&gt;&lt;th&gt;&lt;i class=&#x27;u15m b&#x27;&gt;&lt;/i&gt;&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;中国&lt;/td&gt;&lt;td&gt;51&lt;/td&gt;&lt;td&gt;21&lt;/td&gt;&lt;td&gt;28&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;美国&lt;/td&gt;&lt;td&gt;36&lt;/td&gt;&lt;td&gt;38&lt;/td&gt;&lt;td&gt;36&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;俄罗斯&lt;/td&gt;&lt;td&gt;23&lt;/td&gt;&lt;td&gt;21&lt;/td&gt;&lt;td&gt;28&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;英国&lt;/td&gt;&lt;td&gt;19&lt;/td&gt;&lt;td&gt;13&lt;/td&gt;&lt;td&gt;15&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;德国&lt;/td&gt;&lt;td&gt;16&lt;/td&gt;&lt;td&gt;10&lt;/td&gt;&lt;td&gt;15&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;澳大利亚&lt;/td&gt;&lt;td&gt;14&lt;/td&gt;&lt;td&gt;15&lt;/td&gt;&lt;td&gt;17&lt;/td&gt;&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;tfoot&gt;&lt;tr&gt;&lt;td&gt;合计&lt;/td&gt;&lt;td&gt;159&lt;/td&gt;&lt;td&gt;118&lt;/td&gt;&lt;td&gt;139&lt;/td&gt;&lt;/tr&gt;&lt;/tfoot&gt;
+&lt;/table&gt;
+&lt;p class=&#x27;u15tip&#x27;&gt;border-collapse 折叠双线 · nth-child(odd) 斑马纹 · :hover 悬停高亮&lt;/p&gt;
+&lt;/div&gt;"></iframe></div>
+  </div>
+</section>
+
+<section class="slide s-section" data-kind="section">
+  <div class="sec-inner">
+    <div class="sec-num an" style="--i:0">6.3</div>
+    <h2 class="sec-title an" style="--i:1">CSS 表格相关样式属性</h2>
+    <div class="sec-line an" style="--i:2"></div>
+    <p class="sec-sub an" style="--i:3">把美化工作从「标签属性」搬到「样式属性」，表格才真正好维护。</p>
+  </div>
+</section>
+
+<section class="slide" data-kind="table">
+  
+  <header class="s-head">
+    <div class="s-head-left">
+      <div class="kicker an" style="--i:0">对照表</div>
+      <h2 class="s-title an" style="--i:1">表6-6 CSS 表格相关样式属性（教材完整还原）</h2>
+      <p class="s-sub an" style="--i:2">四个属性，解决「边框、间距、标题位置、列宽算法」四类问题</p>
+    </div>
+  </header>
+  <div class="s-body"><div class="tbl-wrap">
+    <table class="tbl"><thead><tr><th>属性名</th><th>属性值</th><th>描述</th></tr></thead><tbody><tr class="an " style="--i:1"><td><code>border-collapse</code></td><td>separate<br>｜collapse</td><td>默认值为 <strong>separate</strong>，表格边框线和单元格边框线分开；取 collapse 时二者合并为一条线</td></tr><tr class="an " style="--i:2"><td><code>border-spacing</code></td><td>length</td><td>指定相邻单元格边框线之间的距离，单位为 px、em 等。定义<strong>两个参数值</strong>时，第一个为水平间隔、第二个为垂直间隔</td></tr><tr class="an " style="--i:3"><td><code>caption-side</code></td><td>top<br>｜bottom</td><td>默认值为 <strong>top</strong>，表示表格标题显示在表格上方</td></tr><tr class="an " style="--i:4"><td><code>table-layout</code></td><td>automatic<br>｜fixed</td><td>默认 <strong>automatic</strong> 使用自动表格布局算法，调整表格及单元格宽度以适应内容；取 <strong>fixed</strong> 时需用 width 显式指定表格宽度，否则该关键字不起作用</td></tr></tbody></table>
+  </div></div>
+</section>
+
+<section class="slide" data-kind="codebullets">
+  
+  <header class="s-head">
+    <div class="s-head-left">
+      <div class="kicker an" style="--i:0">代码与要点</div>
+      <h2 class="s-title an" style="--i:1">单元格的 9 种对齐方式</h2>
+      <p class="s-sub an" style="--i:2">教材问答要点：和 Word 中表格的单元格对齐方式一样，共 3×3 = 9 种</p>
+    </div>
+  </header>
+  <div class="s-body two">
+    <div class="col-l"><ul class="blist small dense"><li class="an " style="--i:1"><span class="bl-dot"></span><span>对齐方式分为：左上、中上、右上、左中、中中、右中、左底、中底、右底，共 <strong>9 种</strong>。</span></li><li class="an " style="--i:2"><span class="bl-dot"></span><span>水平方向仍使用 <code>text-align</code>：<code>left</code>、<code>center</code>、<code>right</code>。</span></li><li class="an " style="--i:3"><span class="bl-dot"></span><span>垂直方向使用针对表格专门提供的 <code>vertical-align</code>：<code>top</code>、<code>middle</code>、<code>bottom</code>。</span></li><li class="an " style="--i:4"><span class="bl-dot"></span><span>两者配合使用便有 <strong>3×3 = 9 种</strong>；<strong>单元格的默认对齐方式是「左中」</strong>，即 text-align:left、vertical-align:middle。</span></li><li class="an " style="--i:5"><span class="bl-dot"></span><span><strong>技巧：</strong><code>valign</code> 是标签属性、<code>vertical-align</code> 是样式属性，功能相同——写法上一个用缩写、一个用「<strong>烤肉串</strong>」式全拼，别写混。</span></li></ul></div>
+    <div class="col-r"><div class="codebox" class="an " style="--i:1">
+      <div class="cb-bar"><span class="cb-lang">TEXT</span>
+      <span class="cb-file">9 宫格对齐</span></div>
+      <pre class="cb-code">             text-align:left   center   right
+vertical-align:top     左上      中上     右上
+vertical-align:middle  左中      中中     右中   ← 默认值在「左中」
+vertical-align:bottom  左底      中底     右底
+
+写法：
+  tr td, tr th{ text-align:center; vertical-align:middle; }</pre></div></div>
+  </div>
+</section>
+
+<section class="slide" data-kind="task">
+  
+  <header class="s-head">
+    <div class="s-head-left">
+      <div class="kicker an" style="--i:0">任务驱动</div>
+      <h2 class="s-title an" style="--i:1">任务6-2｜导入数据创建表格</h2>
+      <p class="s-sub an" style="--i:2">目标：根据 GoldenMedalRank.txt 与素材精灵图，用 CSS 表格样式属性完成金牌榜</p>
+    </div>
+  </header>
+  <div class="s-body two">
+    <div class="col-l">
+      <div class="task-goal an" style="--i:1"><span class="tg-label">任务目标</span>使用 Dreamweaver 的 Import → Tabular Data 功能把 Tab 分隔的文本数据直接变成表格，再用 CSS 完成美化（图6-11）。</div>
+      <ol class="task-steps"><li class="an " style="--i:2">将光标放置在 <code>body</code> 标签内部，选择 <strong>File → Import → Tabular Data</strong> 命令。</li><li class="an " style="--i:3">① 选择 <strong>GoldenMedalRank.txt</strong> 所在的物理磁盘位置。</li><li class="an " style="--i:4">② 指定数据分隔符——该文件中数据使用 <strong>Tab</strong> 进行分隔。</li><li class="an " style="--i:5">③ 指定生成的表格大小——这里指定为固定的 <strong>600 Pixels</strong>。</li><li class="an " style="--i:6">④ 指定 Cell padding、Cell spacing、Border：<strong>前两者留空表示使用默认值</strong>，Border 输入 <strong>1</strong>。</li><li class="an " style="--i:7">单击 OK 完成导入，自动生成表格的 HTML 代码。</li><li class="an " style="--i:8">打开 <strong>CSS Designer</strong> 面板，新建样式表文件 <strong>style.css</strong>，存放在 css 文件夹中，并以 <strong>Link</strong> 方式引入。</li><li class="an " style="--i:9">测量素材精灵图：金、银、铜牌图标尺寸为 <strong>18px×17px</strong>，获取其背景坐标后写入 CSS。</li></ol>
+    </div>
+    <div class="col-r"></div>
+  </div>
+</section>
+
+<section class="slide" data-kind="code">
+  
+  <header class="s-head">
+    <div class="s-head-left">
+      <div class="kicker an" style="--i:0">代码示例</div>
+      <h2 class="s-title an" style="--i:1">代码6-3｜金牌榜表格的相关 CSS 代码（教材完整还原）</h2>
+      <p class="s-sub an" style="--i:2">折叠边框 + 首列着色 + 精灵图图标，三招让表格脱胎换骨</p>
+    </div>
+  </header>
+  <div class="s-body col"><div class="codebox" class="an " style="--i:1">
+      <div class="cb-bar"><span class="cb-lang">CSS</span>
+      <span class="cb-file">css/style.css</span></div>
+      <pre class="cb-code">@charset &quot<span class="pn">;</span>UTF-8&quot<span class="pn">;</span><span class="pn">;</span><span class="sel">
+table</span><span class="pn">{</span>
+    <span class="prop">border-collapse</span>: collapse<span class="pn">;</span>
+    <span class="prop">color</span>:<span class="num">#<span class="num">666</span></span><span class="pn">;</span>
+    <span class="prop">font-size</span>: <span class="num">12px</span><span class="pn">;</span>
+    <span class="prop">margin</span>:<span class="num">0</span> auto<span class="pn">;</span>
+    <span class="prop">border</span>:<span class="num">1px</span> solid <span class="num">#ccc</span><span class="pn">;</span><span class="pn">}</span><span class="sel">
+tr td,tr th</span><span class="pn">{</span>
+    <span class="prop">text-align</span>: center<span class="pn">;</span>
+    <span class="prop">vertical-align</span>: middle<span class="pn">;</span><span class="pn">}</span><span class="sel">
+th<span class="pc">:first-child</span></span><span class="pn">{</span>
+    <span class="prop">background-color</span>: <span class="num">#ccc</span><span class="pn">;</span>
+    <span class="prop">color</span>:white<span class="pn">;</span><span class="pn">}</span><span class="sel">
+th i</span><span class="pn">{</span>
+    <span class="prop">background</span>: <span class="fn">url</span>(&quot<span class="pn">;</span>../images/all_bg_01.gif&quot<span class="pn">;</span>) no-repeat<span class="pn">;</span>
+    <span class="prop">display</span>: inline-block<span class="pn">;</span>
+    <span class="prop">width</span>: <span class="num">18px</span><span class="pn">;</span>
+    <span class="prop">height</span>: <span class="num">17px</span><span class="pn">;</span><span class="pn">}</span><span class="sel">
+caption</span><span class="pn">{</span>
+    <span class="prop">font-size</span>: <span class="num">26px</span><span class="pn">;</span>
+    <span class="prop">font-weight</span>: bold<span class="pn">;</span><span class="pn">}</span><span class="sel">
+<span class="cls">.golden</span></span><span class="pn">{</span>
+    <span class="prop">background-position</span>: <span class="num">0</span> -<span class="num">79px</span><span class="pn">;</span><span class="pn">}</span><span class="sel">
+<span class="cls">.silver</span></span><span class="pn">{</span>
+    <span class="prop">background-position</span>:-<span class="num">18px</span> -<span class="num">79px</span><span class="pn">;</span><span class="pn">}</span><span class="sel">
+<span class="cls">.copper</span></span><span class="pn">{</span>
+    <span class="prop">background-position</span>: -<span class="num">36px</span> -<span class="num">79px</span><span class="pn">;</span><span class="pn">}</span></pre>
+    </div>
+    <div class="caption an" style="--i:2">教材讲解要点：<code>th:first-child</code> 用<strong>伪类</strong>指定第一个标题单元格的样式；<code>th i</code> 把精灵图作为背景图片，并将 <code>i</code> 指定为 <strong>18px×17px</strong> 的<strong>行内块</strong>；三条 background-position 语句分别显示金、银、铜牌图标。</div>
+  </div>
+</section>
+
+<section class="slide s-ai" data-kind="ai">
+  
+  <header class="s-head">
+    <div class="s-head-left">
+      <div class="kicker an" style="--i:0">AI 前沿</div>
+      <h2 class="s-title an" style="--i:1">AI 前沿：让 AI 帮你「读懂」并重构一张表格</h2>
+      <p class="s-sub an" style="--i:2">表格是结构化数据，也是大模型最擅长处理的内容形态之一</p>
+    </div>
+  </header>
+  <div class="s-body two">
+    <div class="col-l"><div class="ai-card an" style="--i:1">
+      <div class="ai-badge">AI</div>
+      <p>表格天生就是「键值对 + 行列关系」的结构化数据，大语言模型对它的理解能力远强于对一段散文的理解。把一张乱糟糟的 Excel 或网页表格丢给 <strong>DeepSeek、通义千问、文心一言</strong> 这类国产大模型，它可以立刻帮你整理字段、补全表头、甚至直接生成语义化的 HTML 表格代码。但请记住：<strong>AI 生成的表格未必语义正确</strong>——它经常用一堆 div 冒充表格，导致屏幕阅读器读不出数据关系。</p></div></div>
+    <div class="col-r"><ul class="blist small ai-list"><li class="an " style="--i:2">AI 辅助编码：在 HBuilderX / VSCode 中使用 <strong>通义灵码、文心快码、GitHub Copilot</strong>，输入「生成 7 行 4 列的金牌榜表格」即可秒出骨架。</li><li class="an " style="--i:3">AI 数据清洗：把 Tab 分隔或 CSV 文本交给大模型，让它批量转成 <code>tr</code> / <code>td</code> 结构，比逐行手敲快得多。</li><li class="an " style="--i:4">AI 无障碍审查：让 AI 检查表格是否缺少 <code>caption</code>、<code>thead</code>、<code>th</code>，这正是容易被忽略的语义规范。</li><li class="an " style="--i:5">职业提醒：AI 输出的代码需要人工校核<strong>语义是否规范、数据是否对齐、无障碍是否达标</strong>——这正是本单元要训练的基本功。</li></ul></div>
+  </div>
+</section>
+
+<section class="slide" data-kind="quiz">
+  
+  <header class="s-head">
+    <div class="s-head-left">
+      <div class="kicker an" style="--i:0">随堂检测</div>
+      <h2 class="s-title an" style="--i:1">随堂检测</h2>
+      <p class="s-sub an" style="--i:2">选自教材 6.7 作业选择题，检验你的理解</p>
+    </div>
+  </header>
+  <div class="s-body quiz-body">
+    <div class="quiz-top an" style="--i:0">
+      <span class="quiz-meta">共 <b>5</b> 题　·　先独立作答，再点「查看答案」；误点可「重做」</span>
+      <span class="quiz-acts">
+        <button type="button" class="q-reset-all" id="quizResetAll">全部重做</button>
+        <button type="button" class="q-reveal" id="quizReveal">显示全部答案</button>
+      </span>
+    </div>
+    <ol class="quiz dense"><li class="quiz-item single" class="an " style="--i:1" data-type="single" data-answer="A">
+          <div class="q"><span class="q-no">01</span>
+            <span class="q-tag single">单选</span><span class="q-txt">表示表格跨越行的 HTML 属性是（　　）。</span></div>
+          <div class="opts"><button type="button" class="opt" data-k="A"><i>A</i><span>rowspan</span></button><button type="button" class="opt" data-k="B"><i>B</i><span>colspan</span></button><button type="button" class="opt" data-k="C"><i>C</i><span>rows</span></button><button type="button" class="opt" data-k="D"><i>D</i><span>columns</span></button></div>
+          <div class="q-foot"><button type="button" class="q-check">查看答案</button>
+            <button type="button" class="q-reset" disabled>重做</button>
+            <span class="q-verdict"></span></div>
+          <div class="q-ans"><b>答案</b><span class="ans-key">A</span><span class="ans-tip">rowspan 跨行、colspan 跨列。二者用于控制表格的结构，因此在 HTML5 中被继续保留。</span></div>
+        </li><li class="quiz-item single" class="an " style="--i:2" data-type="single" data-answer="C">
+          <div class="q"><span class="q-no">02</span>
+            <span class="q-tag single">单选</span><span class="q-txt">表示表格行的标签是（　　）。</span></div>
+          <div class="opts"><button type="button" class="opt" data-k="A"><i>A</i><span>table</span></button><button type="button" class="opt" data-k="B"><i>B</i><span>th</span></button><button type="button" class="opt" data-k="C"><i>C</i><span>tr</span></button><button type="button" class="opt" data-k="D"><i>D</i><span>td</span></button></div>
+          <div class="q-foot"><button type="button" class="q-check">查看答案</button>
+            <button type="button" class="q-reset" disabled>重做</button>
+            <span class="q-verdict"></span></div>
+          <div class="q-ans"><b>答案</b><span class="ans-key">C</span><span class="ans-tip">tr = table row，定义表格行；th 是标题单元格，td 是数据单元格。</span></div>
+        </li><li class="quiz-item single" class="an " style="--i:3" data-type="single" data-answer="C">
+          <div class="q"><span class="q-no">03</span>
+            <span class="q-tag single">单选</span><span class="q-txt">要将表格的边框折叠，应使用的样式属性是（　　）。</span></div>
+          <div class="opts"><button type="button" class="opt" data-k="A"><i>A</i><span>border</span></button><button type="button" class="opt" data-k="B"><i>B</i><span>border-style</span></button><button type="button" class="opt" data-k="C"><i>C</i><span>border-collapse</span></button><button type="button" class="opt" data-k="D"><i>D</i><span>border-gap</span></button></div>
+          <div class="q-foot"><button type="button" class="q-check">查看答案</button>
+            <button type="button" class="q-reset" disabled>重做</button>
+            <span class="q-verdict"></span></div>
+          <div class="q-ans"><b>答案</b><span class="ans-key">C</span><span class="ans-tip">border-collapse 取 collapse 时，表格边框线与单元格边框线合并；默认 separate 是分开的。</span></div>
+        </li><li class="quiz-item single" class="an " style="--i:4" data-type="single" data-answer="A">
+          <div class="q"><span class="q-no">04</span>
+            <span class="q-tag single">单选</span><span class="q-txt">在 HTML5 中，下列表格标签属性仍建议使用的是（　　）。</span></div>
+          <div class="opts"><button type="button" class="opt" data-k="A"><i>A</i><span>colspan、rowspan</span></button><button type="button" class="opt" data-k="B"><i>B</i><span>border、bgcolor</span></button><button type="button" class="opt" data-k="C"><i>C</i><span>cellpadding、cellspacing</span></button><button type="button" class="opt" data-k="D"><i>D</i><span>align、valign</span></button></div>
+          <div class="q-foot"><button type="button" class="q-check">查看答案</button>
+            <button type="button" class="q-reset" disabled>重做</button>
+            <span class="q-verdict"></span></div>
+          <div class="q-ans"><b>答案</b><span class="ans-key">A</span><span class="ans-tip">教材原文：除 colspan 和 rowspan 之外，其余属性都不建议使用，美化工作应交给 CSS。</span></div>
+        </li><li class="quiz-item multi" class="an " style="--i:5" data-type="multi" data-answer="ABC">
+          <div class="q"><span class="q-no">05</span>
+            <span class="q-tag multi">多选</span><span class="q-txt">关于表格标签与 CSS 表格样式，下列说法正确的有（　　）。</span></div>
+          <div class="opts"><button type="button" class="opt" data-k="A"><i>A</i><span>th 默认加粗并居中显示，td 默认不加粗、靠左显示</span></button><button type="button" class="opt" data-k="B"><i>B</i><span>caption 定义表格标题，默认在表格中居中显示</span></button><button type="button" class="opt" data-k="C"><i>C</i><span>border-collapse:collapse 会把表格边框线与单元格边框线合并为一条</span></button><button type="button" class="opt" data-k="D"><i>D</i><span>colspan 用于跨行合并单元格，rowspan 用于跨列合并单元格</span></button></div>
+          <div class="q-foot"><button type="button" class="q-check">查看答案</button>
+            <button type="button" class="q-reset" disabled>重做</button>
+            <span class="q-verdict"></span></div>
+          <div class="q-ans"><b>答案</b><span class="ans-key">A、B、C</span><span class="ans-tip"><code>colspan</code> 跨列、<code>rowspan</code> 跨行，D 项说反了；其余三项均与教材一致。</span></div>
+        </li></ol>
+  </div>
+</section>
+
+<section class="slide" data-kind="summary">
+  
+  <header class="s-head">
+    <div class="s-head-left">
+      
+      <h2 class="s-title an" style="--i:1">本课小结</h2>
+      <p class="s-sub an" style="--i:2">抓住这五句话，表格就真正属于你了</p>
+    </div>
+  </header>
+  <div class="s-body"><ul class="blist"><li class="an " style="--i:1"><span class="bl-dot"></span><span>两个作用：<strong>布局</strong>（已被 CSS 取代）与<strong>呈现数据</strong>（已回归初衷）——今天做表格，为的是把数据讲清楚。</span></li><li class="an " style="--i:2"><span class="bl-dot"></span><span>结构化标签：<code>table</code> 定整体、<code>tr</code> 定行、<code>th</code>/<code>td</code> 定单元格；<code>caption</code>、<code>thead</code>、<code>tbody</code>、<code>tfoot</code> 让表格更有语义、更好维护。</span></li><li class="an " style="--i:3"><span class="bl-dot"></span><span><code>th</code> 默认加粗居中、<code>td</code> 默认不加粗居左；<code>colspan</code> 跨列、<code>rowspan</code> 跨行，是 HTML5 唯二保留的结构属性。</span></li><li class="an " style="--i:4"><span class="bl-dot"></span><span>CSS 四件套：<code>border-collapse</code> 折叠边框、<code>border-spacing</code> 控间距、<code>caption-side</code> 定标题位置、<code>table-layout</code> 定列宽算法。</span></li><li class="an " style="--i:5"><span class="bl-dot"></span><span>单元格对齐共 <strong>3×3 = 9 种</strong>：<code>text-align</code> 管水平、<code>vertical-align</code> 管垂直，默认值是「左中」。</span></li></ul></div>
+</section>
+
+<section class="slide" data-kind="homework">
+  
+  <header class="s-head">
+    <div class="s-head-left">
+      
+      <h2 class="s-title an" style="--i:1">课后作业</h2>
+      
+    </div>
+  </header>
+  <div class="s-body"><ul class="blist hw"><li class="an " style="--i:1"><span class="bl-dot"></span><span><strong>选择题：</strong>完成教材 6.7「一、选择题」第 1～3 题，并说明每个选项为何对或错。</span></li><li class="an " style="--i:2"><span class="bl-dot"></span><span><strong>操作题：</strong>中央电视台网站为 2022 年北京冬奥会制作了一个奖牌榜（教材图6-39）。请利用本书所附的相关素材文件完成该奖牌榜的制作，要求使用 <code>border-collapse</code>、斑马纹与悬停高亮。</span></li><li class="an " style="--i:3"><span class="bl-dot"></span><span><strong>拓展题：</strong>把自己班级的课表改写成语义化表格，必须包含 <code>caption</code>、<code>thead</code>、<code>tbody</code>，并说明这两个标签各自的作用。</span></li><li class="an " style="--i:4"><span class="bl-dot"></span><span><strong>预习：</strong>阅读教材 6.4～6.5.1，思考一个问题：表单和表格的用途有什么本质区别？</span></li></ul></div>
+</section>
+
+<section class="slide" data-kind="refs">
+  
+  <header class="s-head">
+    <div class="s-head-left">
+      
+      <h2 class="s-title an" style="--i:1">出处与参考</h2>
+      <p class="s-sub an" style="--i:2">本课件内容依据教材，并核对以下权威技术文档</p>
+    </div>
+  </header>
+  <div class="s-body"><ol class="refs"><li class="an " style="--i:1"><span class="ref-idx">01</span><span class="ref-t">教材《网页制作（HTML5+CSS3）》项目6 表格和表单（6.1～6.3）</span><span class="ref-u">郑哲、傅冬 主编 · 电子工业出版社 · 2025 年 1 月第 1 版</span></li><li class="an " style="--i:2"><span class="ref-idx">02</span><span class="ref-t">MDN Web Docs · table：表格元素</span><span class="ref-u">https://developer.mozilla.org/zh-CN/docs/Web/HTML/Element/table</span></li><li class="an " style="--i:3"><span class="ref-idx">03</span><span class="ref-t">MDN Web Docs · HTML 表格基础</span><span class="ref-u">https://developer.mozilla.org/zh-CN/docs/Learn/HTML/Tables/Basics</span></li><li class="an " style="--i:4"><span class="ref-idx">04</span><span class="ref-t">MDN Web Docs · border-collapse</span><span class="ref-u">https://developer.mozilla.org/zh-CN/docs/Web/CSS/border-collapse</span></li><li class="an " style="--i:5"><span class="ref-idx">05</span><span class="ref-t">MDN Web Docs · table-layout</span><span class="ref-u">https://developer.mozilla.org/zh-CN/docs/Web/CSS/table-layout</span></li><li class="an " style="--i:6"><span class="ref-idx">06</span><span class="ref-t">MDN Web Docs · vertical-align</span><span class="ref-u">https://developer.mozilla.org/zh-CN/docs/Web/CSS/vertical-align</span></li></ol></div>
+</section>
+
+<section class="slide s-end" data-kind="end">
+  <div class="end-inner">
+    <div class="end-mark an" style="--i:0">·</div>
+    <h2 class="end-t an" style="--i:1">第 15 单元 · 结束</h2>
+    <p class="end-s an" style="--i:2">下一单元：走进表单，认识 input 家族的十八般武艺</p>
+    <a class="end-next an" style="--i:3" href="U16%20%E8%A1%A8%E5%8D%95%E4%B8%8E%E5%B8%B8%E7%94%A8%E8%A1%A8%E5%8D%95%E6%A0%87%E7%AD%BE.html"><span class="en-lab">下一讲</span><span class="en-t">U16 表单与常用表单标签</span><span class="en-ar">→</span></a>
+    <a class="end-back an" style="--i:4" href="../../index.html"><span>←</span> 返回总目录</a>
+  </div>
+</section>
+  <div class="legend">← → 翻页　·　C 点击翻页开关　·　O 目录　·　F 全屏　·　P 打印　·　拖动圈选不翻页</div>
+  <div class="hud">
+    <span class="btn" id="btnClick" data-on="1" title="开启 / 关闭「点击鼠标切换页面」（快捷键 C）">点击翻页 开</span>
+    <span class="btn" id="btnNav">目录</span>
+    <span class="btn" id="btnFull">全屏</span>
+    <span class="pageno"><b id="cur">1</b> / 25</span>
+  </div>
+  <div class="flip-toast" id="flipToast"></div>
+  <div class="drawer" id="drawer">
+    <div class="drawer-panel">
+      <div class="drawer-h">本单元目录 <span id="drawerClose">关闭 ✕</span></div>
+      <ul id="drawerList"><li data-go="0"><span class="nv-idx">01</span><span class="nv-t">表格标签与 CSS 表格样式</span></li><li data-go="1"><span class="nv-idx">02</span><span class="nv-t">本单元我们要达成什么</span></li><li data-go="2"><span class="nv-idx">03</span><span class="nv-t">思政课堂</span></li><li data-go="3"><span class="nv-idx">04</span><span class="nv-t">导览</span></li><li data-go="4"><span class="nv-idx">05</span><span class="nv-t">6.1 表格概述</span></li><li data-go="5"><span class="nv-idx">06</span><span class="nv-t">表格的两个作用</span></li><li data-go="6"><span class="nv-idx">07</span><span class="nv-t">表格的发展脉络</span></li><li data-go="7"><span class="nv-idx">08</span><span class="nv-t">6.2 表格标签</span></li><li data-go="8"><span class="nv-idx">09</span><span class="nv-t">表格标签一览</span></li><li data-go="9"><span class="nv-idx">10</span><span class="nv-t">th vs td</span></li><li data-go="10"><span class="nv-idx">11</span><span class="nv-t">三个分区与标题</span></li><li data-go="11"><span class="nv-idx">12</span><span class="nv-t">表格标签属性</span></li><li data-go="12"><span class="nv-idx">13</span><span class="nv-t">任务6-1 金牌榜</span></li><li data-go="13"><span class="nv-idx">14</span><span class="nv-t">金牌榜表格演示</span></li><li data-go="14"><span class="nv-idx">15</span><span class="nv-t">6.3 CSS 表格样式</span></li><li data-go="15"><span class="nv-idx">16</span><span class="nv-t">CSS 表格样式属性</span></li><li data-go="16"><span class="nv-idx">17</span><span class="nv-t">单元格 9 种对齐</span></li><li data-go="17"><span class="nv-idx">18</span><span class="nv-t">任务6-2 导入数据</span></li><li data-go="18"><span class="nv-idx">19</span><span class="nv-t">代码6-3 表格 CSS</span></li><li data-go="19"><span class="nv-idx">20</span><span class="nv-t">AI 前沿</span></li><li data-go="20"><span class="nv-idx">21</span><span class="nv-t">随堂检测</span></li><li data-go="21"><span class="nv-idx">22</span><span class="nv-t">本课小结</span></li><li data-go="22"><span class="nv-idx">23</span><span class="nv-t">课后作业</span></li><li data-go="23"><span class="nv-idx">24</span><span class="nv-t">出处与参考</span></li><li data-go="24"><span class="nv-idx">25</span><span class="nv-t">结束</span></li></ul>
+    </div>
+  </div>
+</div></div>
+<script>
+(function(){
+  var slides = Array.prototype.slice.call(document.querySelectorAll('.slide'));
+  var total = slides.length, cur = 0;
+  var stage = document.getElementById('stage');
+  var bar = document.getElementById('bar'), curEl = document.getElementById('cur');
+  var drawer = document.getElementById('drawer');
+  var mqPortrait = window.matchMedia('(orientation: portrait)');
+  var flow = mqPortrait.matches;
+
+  /* ---- 点击翻页开关（记忆教师偏好，跨课件生效） ---- */
+  var clickOn = true;
+  try{ clickOn = localStorage.getItem('deck_clickflip') !== '0'; }catch(e){}
+  var btnClick = document.getElementById('btnClick');
+  var toastEl = document.getElementById('flipToast'), toastTimer = null;
+  function tip(msg){
+    if(!toastEl) return;
+    toastEl.textContent = msg;
+    toastEl.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function(){ toastEl.classList.remove('show'); }, 1500);
+  }
+  function syncClickBtn(){
+    if(!btnClick) return;
+    if(flow){                                   // 竖屏为滚屏阅读，点击翻页天然不生效
+      btnClick.textContent = '竖屏阅读';
+      btnClick.setAttribute('data-on', '0');
+      btnClick.setAttribute('title', '竖屏为纵向阅读模式，上下滚动即可；旋转为横屏后可用点击翻页');
+      return;
+    }
+    btnClick.textContent = '点击翻页 ' + (clickOn ? '开' : '关');
+    btnClick.setAttribute('data-on', clickOn ? '1' : '0');
+    btnClick.setAttribute('title', clickOn
+      ? '当前：点击鼠标可切换页面。点此关闭（快捷键 C）'
+      : '当前：点击鼠标不翻页，方便圈选讲解。点此开启（快捷键 C）');
+  }
+  function toggleClickFlip(silent){
+    clickOn = !clickOn;
+    try{ localStorage.setItem('deck_clickflip', clickOn ? '1' : '0'); }catch(e){}
+    syncClickBtn();
+    if(!silent) tip(clickOn ? '点击翻页已开启' : '点击翻页已关闭 · 仍可用 ← → 或滑动翻页');
+  }
+  syncClickBtn();
+
+  function hasSelection(){
+    var s = window.getSelection && window.getSelection();
+    return !!(s && String(s.text || s).length > 0);
+  }
+  function setIndex(n){
+    cur = Math.max(0, Math.min(total-1, n));
+    slides.forEach(function(s,i){ s.classList.toggle('is-active', i===cur); });
+    var act = slides[cur];
+    if(act && !flow) act.querySelectorAll('.an').forEach(function(el){ void el.offsetWidth; });
+    bar.style.width = (total>1 ? (cur/(total-1)*100) : 100)+'%';
+    curEl.textContent = cur+1;
+    document.querySelectorAll('#drawerList li').forEach(function(li,i){ li.classList.toggle('cur', i===cur); });
+  }
+  function go(n, instant){
+    n = Math.max(0, Math.min(total-1, n));
+    var same = (n===cur && slides[cur] && slides[cur].classList.contains('is-active'));
+    slides.forEach(function(s,i){
+      s.classList.remove('prev');
+      if(i<n) s.classList.add('prev');
+      if(i===n) s.classList.add('is-active');
+    });
+    setIndex(n);
+    if(flow){
+      var el = slides[n];
+      if(el && el.scrollIntoView) el.scrollIntoView({behavior: instant ? 'auto' : 'smooth', block:'start'});
+    } else if(same){
+      var a = slides[n]; if(a) a.querySelectorAll('.an').forEach(function(el){ void el.offsetWidth; });
+    }
+    try{ history.replaceState(null,'','#'+(n+1)); }catch(e){}
+  }
+
+  /* 键盘 */
+  document.addEventListener('keydown', function(e){
+    var k = e.key;
+    if(k==='ArrowRight'||k==='ArrowDown'||k===' '||k==='PageDown'||k==='Enter'){ e.preventDefault(); go(cur+1); }
+    else if(k==='ArrowLeft'||k==='ArrowUp'||k==='PageUp'){ e.preventDefault(); go(cur-1); }
+    else if(k==='Home'){ go(0); } else if(k==='End'){ go(total-1); }
+    else if(k==='o'||k==='O'){ drawer.classList.toggle('open'); }
+    else if(k==='f'||k==='F'){ toggleFull(); }
+    else if(k==='c'||k==='C'){ toggleClickFlip(); }
+    else if(k==='Escape'){ drawer.classList.remove('open'); }
+    else if(k==='p'||k==='P'){ window.print(); }
+  });
+  function toggleFull(){
+    if(!document.fullscreenElement){ (document.documentElement.requestFullscreen||function(){}).call(document.documentElement); }
+    else { document.exitFullscreen(); }
+  }
+
+  /* 点击翻页：拖动圈选文字、双击选词、点按钮/选项一律不翻页 */
+  var down = null, clickTimer = null;
+  function isInteractive(el){
+    return !!(el.closest('.hud')||el.closest('.drawer')||el.closest('iframe')||el.closest('summary')||
+              el.closest('details')||el.closest('.quiz')||el.closest('a')||el.closest('button')||
+              el.closest('input')||el.closest('select')||el.closest('textarea')||el.closest('label'));
+  }
+  stage.addEventListener('mousedown', function(e){ down = {x:e.clientX, y:e.clientY, t:Date.now()}; });
+  stage.addEventListener('click', function(e){
+    if(flow) return;
+    clearTimeout(clickTimer);
+    if(!clickOn) return;                           // 开关关闭：点击不翻页
+    if(e.detail > 1) return;                       // 双击 / 三击 = 选词，不翻页
+    if(isInteractive(e.target)) return;
+    if(hasSelection()) return;                     // 已有选中内容，不翻页
+    if(down && (Math.abs(e.clientX-down.x)>6 || Math.abs(e.clientY-down.y)>6)) return;  // 拖动圈选
+    if(down && (Date.now()-down.t > 800)) return;  // 长按
+    var r = stage.getBoundingClientRect();
+    var dir = (e.clientX - r.left) > r.width*0.5 ? 1 : -1;
+    clickTimer = setTimeout(function(){
+      if(hasSelection()) return;                   // 圈选期间保持静止
+      go(cur+dir);
+    }, 220);
+  });
+  document.addEventListener('dblclick', function(){ clearTimeout(clickTimer); });
+  document.addEventListener('selectionchange', function(){ if(hasSelection()) clearTimeout(clickTimer); });
+
+  /* 触摸：仅在横向滑动时翻页；竖屏交给页面滚动 */
+  var sx=null, sy=null, st=0;
+  stage.addEventListener('touchstart', function(e){
+    if(e.touches.length>1){ sx=null; return; }
+    sx=e.touches[0].clientX; sy=e.touches[0].clientY; st=Date.now();
+  }, {passive:true});
+  stage.addEventListener('touchend', function(e){
+    if(sx===null) return;
+    var dx=e.changedTouches[0].clientX-sx, dy=e.changedTouches[0].clientY-sy;
+    sx=null;
+    if(flow) return;
+    if(Date.now()-st>900) return;                  // 长按选词
+    if(hasSelection()) return;
+    if(Math.abs(dx)>55 && Math.abs(dy)<Math.abs(dx)*0.75) go(dx<0?cur+1:cur-1);
+  }, {passive:true});
+
+  /* 竖屏：滚动时同步页码与进度 */
+  if('IntersectionObserver' in window){
+    var io = new IntersectionObserver(function(entries){
+      if(!flow) return;
+      var best=null;
+      entries.forEach(function(en){
+        if(en.isIntersecting && (!best || en.intersectionRatio > best.intersectionRatio)) best = en;
+      });
+      if(best){
+        var i = slides.indexOf(best.target);
+        if(i>=0 && i!==cur) setIndex(i);
+      }
+    }, {threshold:[0.2,0.5,0.8]});
+    slides.forEach(function(s){ io.observe(s); });
+  }
+  function onOrient(){
+    flow = mqPortrait.matches;
+    syncClickBtn();
+    clearTimeout(clickTimer);
+  }
+  mqPortrait.addEventListener ? mqPortrait.addEventListener('change', onOrient) : mqPortrait.addListener(onOrient);
+
+  /* 目录 / HUD */
+  if(btnClick) btnClick.addEventListener('click', function(e){ e.stopPropagation(); toggleClickFlip(); });
+  document.getElementById('btnNav').addEventListener('click', function(e){ e.stopPropagation(); drawer.classList.add('open'); });
+  document.getElementById('btnFull').addEventListener('click', function(e){ e.stopPropagation(); toggleFull(); });
+  document.getElementById('drawerClose').addEventListener('click', function(){ drawer.classList.remove('open'); });
+  drawer.addEventListener('click', function(e){ if(e.target===drawer) drawer.classList.remove('open'); });
+  document.querySelectorAll('#drawerList li').forEach(function(li){
+    li.addEventListener('click', function(){ go(parseInt(li.dataset.go,10)); drawer.classList.remove('open'); });
+  });
+
+  /* 随堂检测：点选选项 → 判分 → 显示答案与解析 → 单选/全量重做 */
+  function keysOf(item){
+    return (item.getAttribute('data-answer')||'').toUpperCase().replace(/[^A-Z]/g,'').split('');
+  }
+  function reveal(item){
+    var ans = keysOf(item);
+    item.querySelectorAll('.opt').forEach(function(b){
+      if(ans.indexOf(b.getAttribute('data-k'))>=0) b.classList.add('right');
+    });
+    item.classList.add('revealed');
+  }
+  function resetItem(item){
+    item.classList.remove('revealed','ok','bad');
+    item.querySelectorAll('.opt').forEach(function(b){ b.classList.remove('right','sel'); });
+    var v = item.querySelector('.q-verdict'); if(v) v.textContent='';
+    var rs = item.querySelector('.q-reset'); if(rs) rs.disabled = true;
+  }
+  document.querySelectorAll('.quiz-item').forEach(function(item){
+    var qtype = item.getAttribute('data-type')||'single';
+    var btnReset = item.querySelector('.q-reset');
+    item.querySelectorAll('.opt').forEach(function(btn){
+      btn.addEventListener('click', function(ev){
+        ev.stopPropagation();
+        /* 已揭示答案后再点选项 = 重新作答，自动收起答案 */
+        if(item.classList.contains('revealed')){
+          item.classList.remove('revealed','ok','bad');
+          item.querySelectorAll('.opt').forEach(function(b){ b.classList.remove('right'); });
+          var v0 = item.querySelector('.q-verdict'); if(v0) v0.textContent='';
+        }
+        if(qtype==='single'){
+          item.querySelectorAll('.opt').forEach(function(b){ b.classList.remove('sel'); });
+          btn.classList.add('sel');
+        } else {
+          btn.classList.toggle('sel');
+        }
+        item.classList.remove('ok','bad');
+        var v = item.querySelector('.q-verdict'); if(v) v.textContent='';
+        if(btnReset) btnReset.disabled = false;
+      });
+    });
+    var chk = item.querySelector('.q-check');
+    if(chk) chk.addEventListener('click', function(ev){
+      ev.stopPropagation();
+      var ans = keysOf(item);
+      var sel = Array.prototype.slice.call(item.querySelectorAll('.opt.sel')).map(function(b){ return b.getAttribute('data-k'); });
+      var ok = sel.length>0 && sel.length===ans.length && sel.filter(function(k){ return ans.indexOf(k)>=0; }).length===ans.length;
+      reveal(item);
+      if(btnReset) btnReset.disabled = false;
+      item.classList.remove('ok','bad'); item.classList.add(ok?'ok':'bad');
+      var v = item.querySelector('.q-verdict');
+      if(v) v.textContent = ok ? '✓ 回答正确' : (sel.length ? '✗ 再想一想，正确项已标绿' : '请先选择答案');
+    });
+    if(btnReset) btnReset.addEventListener('click', function(ev){
+      ev.stopPropagation();
+      resetItem(item);
+      tip('本题已重置，可重新作答');
+    });
+  });
+  var btnReveal = document.getElementById('quizReveal');
+  if(btnReveal) btnReveal.addEventListener('click', function(ev){
+    ev.stopPropagation();
+    var on = btnReveal.getAttribute('data-on')==='1';
+    var next = !on;
+    document.querySelectorAll('.quiz-item').forEach(function(item){
+      if(next){
+        reveal(item);
+        var rs = item.querySelector('.q-reset'); if(rs) rs.disabled = false;
+      } else {
+        resetItem(item);
+      }
+    });
+    btnReveal.setAttribute('data-on', next ? '1':'0');
+    btnReveal.textContent = next ? '隐藏答案' : '显示全部答案';
+  });
+  var btnResetAll = document.getElementById('quizResetAll');
+  if(btnResetAll) btnResetAll.addEventListener('click', function(ev){
+    ev.stopPropagation();
+    document.querySelectorAll('.quiz-item').forEach(resetItem);
+    if(btnReveal){ btnReveal.setAttribute('data-on','0'); btnReveal.textContent = '显示全部答案'; }
+    tip('已清空本题全部作答，可重新开始');
+  });
+
+  var h = parseInt((location.hash||'').replace('#',''),10);
+  go(isNaN(h)?0:h-1, true);
+})();
+</script>
+</body>
+</html>

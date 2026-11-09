@@ -1,0 +1,474 @@
+{
+  "id": "U11",
+  "project": "项目4",
+  "project_name": "使用CSS高级选择器美化页面",
+  "unit": "第 11 单元",
+  "title": "Emmet 语法与 CSS 预处理器",
+  "subtitle": "一行缩写生成一棵 DOM 树；一份变量驱动的样式，编译成一整个项目的 CSS",
+  "duration": 40,
+  "cover_tags": [
+    "Emmet",
+    "Zen Coding",
+    "多重性 *",
+    "项目编号 $",
+    "分组 ()",
+    "LESS / SASS / SCSS"
+  ],
+  "ref_book": "电子工业出版社 · 2025 年 1 月第 1 版",
+  "objectives": {
+    "knowledge": [
+      "了解 Emmet 的前身与作用",
+      "掌握 Emmet 基础语法、多重性与项目编号、分组语法",
+      "了解 LESS、SASS、SCSS 的特点与文件扩展名",
+      "知道 CSS 预处理器的适用场景"
+    ],
+    "skill": [
+      "能在编辑器中使用 Emmet 快速生成 HTML 结构",
+      "能阅读并书写常见的 Emmet 缩写",
+      "能区分 Sass 与 SCSS 两种语法风格",
+      "能说出 LESS 与 SCSS 定义变量的符号差异"
+    ],
+    "literacy": [
+      "培养严谨求实的劳动态度",
+      "培养勇于探索、崇尚科学的意志和品德",
+      "培养科技报国的崇高理想"
+    ]
+  },
+  "slides": [
+    {
+      "type": "objectives",
+      "title": "本单元我们要达成什么",
+      "subtitle": "对照教材《项目4》4.4 使用 Emmet 语法、4.5 使用 LESS、SASS 和 SCSS",
+      "objectives": {
+        "knowledge": [
+          "掌握 Emmet 语法",
+          "掌握多重性和项目编号的写法",
+          "掌握 Emmet 分组语法",
+          "了解 LESS、SASS 和 SCSS 三种预编译技术"
+        ],
+        "skill": [
+          "能使用 Emmet 语法",
+          "能按要求编写 Emmet 缩写并完成展开",
+          "能分辨 Sass 与 SCSS 的语法差异",
+          "能说出 CSS 预处理技术的典型应用场景"
+        ],
+        "literacy": [
+          "培养严谨求实的劳动态度",
+          "培养勇于探索、崇尚科学的意志和品德",
+          "培养科技报国的崇高理想"
+        ]
+      }
+    },
+    {
+      "type": "ideology",
+      "title": "工欲善其事，必先利其器",
+      "subtitle": "教材《项目4》思政课堂延伸讨论",
+      "nav": "思政课堂",
+      "text": "经过几代航天人的接续奋斗，我国航天事业创造了以“两弹一星”、载人航天、月球探测为代表的辉煌成就，走出了一条<strong>自力更生、自主创新</strong>的发展道路，积淀了深厚博大的航天精神。继承和发扬航天精神是我们这代人的责任和义务。",
+      "topic": "Emmet 把几十次敲击压缩成一次 Tab。结合航天人「用更少资源办更大事」的创新经历，谈一谈：作为高职学生，你打算如何把「掌握工具、提升效率」落到日常学习中？"
+    },
+    {
+      "type": "outline",
+      "title": "本单元导览",
+      "subtitle": "从「手敲标签」到「缩写生成」，从「写 CSS」到「写生成 CSS 的语言」",
+      "nav": "导览",
+      "items": [
+        "Emmet 是什么：前身 Zen Coding，一套类 CSS 选择器的缩写语法",
+        "基础语法：# . [] {} &gt; + ^",
+        "提速两招：多重性 * 与项目编号 $",
+        "分组 ()：让复杂结构一次成型（任务4-2、任务4-3）",
+        "LESS / SASS / SCSS：给 CSS 加上变量、嵌套与函数"
+      ]
+    },
+    {
+      "type": "section",
+      "no": "4.4",
+      "title": "使用 Emmet 语法",
+      "text": "Emmet 前身叫 Zen Coding，是提高 HTML/CSS 编写速度的便利工具。",
+      "nav": "4.4 Emmet 语法"
+    },
+    {
+      "type": "bullets",
+      "title": "Emmet 能干什么",
+      "subtitle": "使用类似于 CSS 选择器的语法，描述 HTML 文档树结构及属性",
+      "nav": "Emmet 简介",
+      "items": [
+        "前身叫 <strong>Zen Coding</strong>，是提高 HTML / CSS 编写速度的便利工具。",
+        "主流工具均已支持：<strong>Dreamweaver、VSCode、Atom、Sublime、Eclipse、IDEA</strong> 等。",
+        "三个关系符号：<code>&gt;</code> 父子、<code>+</code> 兄弟、<code>^</code> 父级（向上爬一层）。",
+        "课堂提示：不写标签名时<strong>默认生成 div</strong>；多个 <code>.class</code> 连写生成多个类；属性省略值时生成空串。"
+      ]
+    },
+    {
+      "type": "table",
+      "title": "语法4-8 Emmet 的基本使用语法",
+      "subtitle": "id 用 #，class 用 .，属性用 []，文本用 {}",
+      "nav": "基础语法",
+      "head": [
+        "定义语法",
+        "示例"
+      ],
+      "rows": [
+        [
+          "id 属性 id：<code>#</code>",
+          "示例1：<code>#header</code> → <code>&lt;div id=\"header\"&gt;&lt;/div&gt;</code><br>示例2：<code>form#search.wide</code> → <code>&lt;form id=\"search\" class=\"wide\"&gt;&lt;/form&gt;</code>"
+        ],
+        [
+          "类属性 class：<code>.</code>",
+          "示例1：<code>.title</code> → <code>&lt;div class=\"title\"&gt;&lt;/div&gt;</code><br>示例2：<code>p.class1.class2.class3</code> → <code>&lt;p class=\"class1 class2 class3\"&gt;&lt;/p&gt;</code>"
+        ],
+        [
+          "属性值 attribute：<code>[]</code>",
+          "示例1：<code>p[title=\"Hello world\"]</code> → <code>&lt;p title=\"Hello world\"&gt;&lt;/p&gt;</code><br>示例2：<code>td[rowspan=2 colspan=3 title]</code> → <code>&lt;td rowspan=\"2\" colspan=\"3\" title=\"\"&gt;&lt;/td&gt;</code>"
+        ],
+        [
+          "文本 text：<code>{}</code>",
+          "<code>a{click me}</code> → <code>&lt;a href=\"\"&gt;click me&lt;/a&gt;</code>"
+        ],
+        [
+          "子元素 child：<code>&gt;</code>",
+          "<code>nav&gt;ul&gt;li</code> → <code>&lt;nav&gt;&lt;ul&gt;&lt;li&gt;&lt;/li&gt;&lt;/ul&gt;&lt;/nav&gt;</code>"
+        ],
+        [
+          "兄弟元素 sibling：<code>+</code>",
+          "<code>div+p+bq</code> → <code>&lt;div&gt;&lt;/div&gt;&lt;p&gt;&lt;/p&gt;&lt;blockquote&gt;&lt;/blockquote&gt;</code>"
+        ],
+        [
+          "父级 Climb-up：<code>^</code>",
+          "<code>div+div&gt;p&gt;span+em^bq</code> → 第二个 div 内含 p(含 span、em) 与并列出现的 bq"
+        ]
+      ]
+    },
+    {
+      "type": "table",
+      "title": "语法4-9 Emmet 多重性和项目编号语法",
+      "subtitle": "* 负责重复，$ 负责编号，两者合用才真正提速",
+      "nav": "多重性与编号",
+      "head": [
+        "定义语法",
+        "示例"
+      ],
+      "rows": [
+        [
+          "多重性 multiplication：<code>*</code>",
+          "<code>ul&gt;li*5</code> → ul 内生成 5 个 li"
+        ],
+        [
+          "项目编号 item numbering：<code>$</code>",
+          "示例1：<code>ul&gt;li.item$*5</code> → <code>&lt;li class=\"item1\"&gt;</code> … <code>&lt;li class=\"item5\"&gt;</code><br>示例2：<code>h$[title=item$]{Header $}*3</code> → <code>&lt;h1 title=\"item1\"&gt;Header 1&lt;/h1&gt;</code>、<code>&lt;h2 title=\"item2\"&gt;Header 2&lt;/h2&gt;</code>、<code>&lt;h3 title=\"item3\"&gt;Header 3&lt;/h3&gt;</code><br>示例3：<code>ul&gt;li.item$$$*5</code> → <code>&lt;li class=\"item001\"&gt;</code> … <code>&lt;li class=\"item005\"&gt;</code>"
+        ]
+      ]
+    },
+    {
+      "type": "bullets",
+      "title": "$ 的三条使用要点",
+      "subtitle": "教材关键说明 + @ 修饰符",
+      "nav": "$ 的要点",
+      "items": [
+        "<code>$</code> 可以用在 <strong>HTML 标签名、属性值、元素内容</strong>中，见示例2 的 <code>h$[title=item$]{Header $}</code>。",
+        "多个 <code>$</code> 表示数值占位：<code>$$</code> 两位、<code>$$$</code> 三位，不足补零。",
+        "可用 <code>@</code> 指定开始序号：<code>li.item$@3*5</code> 从 3 开始编号。",
+        "用 <code>@-</code> 表示<strong>倒序</strong>：<code>li.item$@-*5</code> 得到 5、4、3、2、1。",
+        "记忆：<code>*</code> 决定「生成几个」，<code>$</code> 决定「怎么编号」。"
+      ]
+    },
+    {
+      "type": "demo",
+      "title": "效果演示｜输入一行缩写，按 Tab 生成一棵 DOM 树",
+      "subtitle": "缩写：ul>li.item$*5 —— > 表示父子，* 表示重复，$ 表示自动编号",
+      "nav": "Emmet 展开演示",
+      "items": [
+        "第 1 步：在编辑器里逐字输入缩写，注意 <code>&gt;</code>、<code>*</code>、<code>$</code> 三个符号的位置。",
+        "第 2 步：按 <strong>Tab</strong> 键执行缩写（部分编辑器为 Enter 键）。",
+        "第 3 步：观察输出——5 个 li 被自动生成，class 依次编号为 item1～item5。",
+        "第 4 步：把 <code>$</code> 换成 <code>$$$</code> 再看一次，编号变成 item001 形式的三位补零。"
+      ],
+      "hint": "课后自己试一式：div.wrap>(header>h1{标题})+ul>li*4>a{link$}^footer>p{页脚}",
+      "html": "<style>*{box-sizing:border-box}body{margin:0;padding:14px;font-family:'PingFang SC',system-ui,sans-serif;background:linear-gradient(160deg,#f2f6ff,#eafafd)}.hd{font-size:11.5px;color:#8b9ab2;margin-bottom:8px}.inp{display:flex;align-items:center;gap:8px;background:#0e1b2e;border-radius:9px;padding:9px 11px;margin-bottom:10px}.mono{font:600 13.5px/1.4 Menlo,monospace;color:#7ee787}.cur{width:7px;height:15px;background:#7ee787;animation:blink .7s steps(1) infinite}@keyframes blink{50%{opacity:0}}@keyframes type{from{width:0}to{width:13ch}}.tw{overflow:hidden;white-space:nowrap;width:13ch;animation:type 1.1s steps(13) .3s both}.tab{margin-left:auto;font:600 10.5px/1 Menlo,monospace;color:#8fa4c8;border:1px solid #33456b;border-radius:5px;padding:5px 8px;opacity:.4;animation:press 6.4s infinite}@keyframes press{0%,22%{opacity:.4;transform:none;box-shadow:none}25%,30%{opacity:1;transform:translateY(2px);box-shadow:0 0 0 2px rgba(126,231,135,.35)}34%,100%{opacity:.4;transform:none;box-shadow:none}}.out{background:#fff;border:1px solid #e6ecf7;border-radius:9px;padding:10px 12px}.ln{font:12.5px/1.85 Menlo,monospace;color:#33456b;white-space:pre;opacity:0;animation:ap 6.4s infinite}@keyframes ap{0%,26%{opacity:0;transform:translateX(-6px)}30%,88%{opacity:1;transform:none}94%,100%{opacity:0}}.l1{animation-delay:1.72s}.l2{animation-delay:1.82s}.l3{animation-delay:1.92s}.l4{animation-delay:2.02s}.l5{animation-delay:2.12s}.l6{animation-delay:2.22s}.l7{animation-delay:2.32s}.k{color:#1d46b8}.a{color:#c2185b}.s{color:#0b6b3a}.ok{margin-top:9px;font-size:11px;color:#0b6b3a;background:#e7f8ef;border:1px solid #b7e6c9;border-radius:7px;padding:6px 9px;opacity:0;animation:ap 6.4s infinite;animation-delay:2.5s}</style><div class='hd'>编辑器输入区 · Emmet 缩写</div><div class='inp'><span class='mono tw'>ul&gt;li.item$*5</span><span class='cur'></span><span class='tab'>Tab</span></div><div class='out'><div class='ln l1'><span class='k'>&lt;ul&gt;</span></div><div class='ln l2'>    <span class='k'>&lt;li</span> <span class='a'>class=</span><span class='s'>\"item1\"</span><span class='k'>&gt;&lt;/li&gt;</span></div><div class='ln l3'>    <span class='k'>&lt;li</span> <span class='a'>class=</span><span class='s'>\"item2\"</span><span class='k'>&gt;&lt;/li&gt;</span></div><div class='ln l4'>    <span class='k'>&lt;li</span> <span class='a'>class=</span><span class='s'>\"item3\"</span><span class='k'>&gt;&lt;/li&gt;</span></div><div class='ln l5'>    <span class='k'>&lt;li</span> <span class='a'>class=</span><span class='s'>\"item4\"</span><span class='k'>&gt;&lt;/li&gt;</span></div><div class='ln l6'>    <span class='k'>&lt;li</span> <span class='a'>class=</span><span class='s'>\"item5\"</span><span class='k'>&gt;&lt;/li&gt;</span></div><div class='ln l7'><span class='k'>&lt;/ul&gt;</span></div></div><div class='ok'>已生成 5 个 li，$ 自动完成 1→5 的编号</div>"
+    },
+    {
+      "type": "task",
+      "title": "任务4-2｜Emmet 语法练习1：多重性和项目编号",
+      "subtitle": "目标：输入 Emmet 语法，按 Tab 键执行并观察效果",
+      "nav": "任务4-2",
+      "goal": "掌握 @- 倒序与 @n 指定起始序号两种写法",
+      "steps": [
+        "练习①倒序：输入 <code>ul&gt;li.item$@-*5</code>，得到 item5、item4、item3、item2、item1。",
+        "练习②指定起始序号：输入 <code>ul&gt;li.item$@3*5</code>，得到 item3、item4、item5、item6、item7。",
+        "对比小结：<code>@</code> 后面跟数字表示<strong>起始值</strong>，跟 <code>-</code> 表示<strong>倒序</strong>。",
+        "常见错误：把 <code>@</code> 写在 <code>*</code> 之后正确的顺序是 <code>$@-*</code>，写错位置展开会失败。"
+      ],
+      "lang": "html",
+      "code": "输入：ul>li.item$@-*5\n输出：\n<ul>\n    <li class=\"item5\"></li>\n    <li class=\"item4\"></li>\n    <li class=\"item3\"></li>\n    <li class=\"item2\"></li>\n    <li class=\"item1\"></li>\n</ul>\n\n输入：ul>li.item$@3*5\n输出：\n<ul>\n    <li class=\"item3\"></li>\n    <li class=\"item4\"></li>\n    <li class=\"item5\"></li>\n    <li class=\"item6\"></li>\n    <li class=\"item7\"></li>\n</ul>"
+    },
+    {
+      "type": "table",
+      "title": "语法4-10 Emmet 分组语法",
+      "subtitle": "分组 grouping：()，把一段结构当作整体参与重复或并列",
+      "nav": "分组语法",
+      "head": [
+        "定义语法",
+        "示例"
+      ],
+      "rows": [
+        [
+          "分组 grouping：<code>()</code>",
+          "输入：<code>div&gt;(header&gt;ul&gt;li*2&gt;a)+footer&gt;p</code><br>输出：<code>&lt;div&gt;</code> 内含 header（内嵌 ul，ul 内 2 个 li，各含 1 个 a）与并列的 footer（内嵌 p）"
+        ]
+      ]
+    },
+    {
+      "type": "task",
+      "title": "任务4-3｜Emmet 语法练习2：分组",
+      "subtitle": "课堂演示请以输入命令为准",
+      "nav": "任务4-3",
+      "goal": "使用分组语法一次生成含多组重复结构的片段",
+      "steps": [
+        "输入命令：<code>(div&gt;dl&gt;(dt+dd)*3)+footer&gt;p</code>，按 Tab 执行。",
+        "理解括号作用：<code>(dt+dd)*3</code> 表示把「一个 dt + 一个 dd」这组结构重复 3 次。",
+        "正确输出：一个 div 内含 dl，dl 中有 3 组 dt、dd，再并列出现一个含 p 的 footer。",
+        "<strong>教材疑误：</strong>教材随后给出的「执行效果」代码块仍是 header/ul/li/a 的结构，与输入命令明显不符，请以输入命令为准。"
+      ],
+      "lang": "html",
+      "code": "输入：(div>dl>(dt+dd)*3)+footer>p\n\n正确输出：\n<div>\n    <dl>\n        <dt></dt><dd></dd>\n        <dt></dt><dd></dd>\n        <dt></dt><dd></dd>\n    </dl>\n</div>\n<footer>\n    <p></p>\n</footer>"
+    },
+    {
+      "type": "bullets",
+      "title": "补充：几条必须记住的快捷语法",
+      "subtitle": "更多内容可查看 Emmet 官网",
+      "nav": "补充快捷语法",
+      "items": [
+        "<code>html:5</code> 或 <code>!</code> → 快速创建 <strong>HTML5 文档框架</strong>。",
+        "<code>link</code> → 快速创建<strong>外部样式链接</strong>，配合上一单元的链接式使用。",
+        "<code>CSS 缩写</code> → 在样式表中输入属性缩写也能补全，例如输入 <code>m10</code> 展开为 margin。",
+        "操作提示：展开后光标通常停在第一个可填内容的空位，<strong>连续 Tab 可在多个空位间跳转</strong>。",
+        "工具差异：Dreamweaver 与 VSCode 触发键可能不同，若 Tab 无效，试试 <code>Ctrl+E</code> 或 Enter。"
+      ]
+    },
+    {
+      "type": "section",
+      "no": "4.5",
+      "title": "使用 LESS、SASS 和 SCSS",
+      "text": "CSS 可通过预处理技术编译生成样式规则——它们是「写 CSS 的高级语言」。",
+      "nav": "4.5 CSS 预处理器"
+    },
+    {
+      "type": "bullets",
+      "title": "为什么需要 CSS 预处理器",
+      "subtitle": "教材类比：CSS 像机器语言，LESS / SASS / SCSS 像高级语言",
+      "nav": "为什么需要预处理",
+      "items": [
+        "作为一种<strong>样式表高级语言</strong>，允许使用<strong>变量、嵌套规则、混合（mixins）、函数</strong>等高阶语法。",
+        "编写完成后，通过命令或图形化工具<strong>编译为 CSS 文件</strong>，再交给浏览器执行。",
+        "适用场景：<strong>需要组织大量样式表文件的项目</strong>，或<strong>需要分享设计的多项目合作</strong>。",
+        "常见 3 种预编译技术：<strong>LESS、SASS 和 SCSS</strong>；CSS 预处理器通常分为 LESS 和 SASS 两大类。"
+      ]
+    },
+    {
+      "type": "table",
+      "title": "SASS 的两种语法实现",
+      "subtitle": "同属 Sass 家族，缩进风格却完全不同",
+      "nav": "Sass 与 SCSS",
+      "head": [
+        "名称",
+        "特点",
+        "文件扩展名"
+      ],
+      "rows": [
+        [
+          "<strong>Sass</strong>（syntactically awesome stylesheets）",
+          "采用<strong>类似 Python 的缩排语法</strong>，用缩进表达层次，省略花括号与分号",
+          "<code>.sass</code>"
+        ],
+        [
+          "<strong>SCSS</strong>（Sassy CSS）",
+          "Sass 发展到 <strong>Sass3</strong> 时大量改良形成的独立版本，兼容原语法，采用<strong>类似 CSS 的花括号缩进</strong>",
+          "<code>.scss</code>"
+        ]
+      ]
+    },
+    {
+      "type": "codebullets",
+      "title": "变量号的差别：LESS 用 @，SCSS 用 $",
+      "subtitle": "教材图4-21 的核心结论",
+      "nav": "变量与运算",
+      "items": [
+        "<strong>SASS</strong> 利用缩进快速编写具有上下文层次的样式代码。",
+        "<strong>SCSS</strong> 使用花括号表示缩进层次，并要求每个样式定义语句以<strong>分号</strong>结尾，整体风格类似 CSS 规则。",
+        "变量定义符号：<strong>LESS 使用 <code>@</code>，SCSS 使用 <code>$</code></strong>。",
+        "两者都可通过引用变量，并使用 <code>*</code> 进行<strong>数学运算</strong>。",
+        "除数学运算、函数引用外，还可以进行<strong>样式的分解和组合</strong>。"
+      ],
+      "lang": "text",
+      "file": "LESS 与 SCSS 对照（教材要点）",
+      "code": "/* LESS */\n@base-width: 100px;\n.box{\n    width: @base-width * 2;\n}\n\n/* SCSS */\n$base-width: 100px;\n.box{\n    width: $base-width * 2;\n}\n\n/* 编译后的 CSS 完全一致 */\n.box{ width: 200px; }"
+    },
+    {
+      "type": "compare",
+      "title": "原生 CSS 还是预处理器？",
+      "subtitle": "先把 CSS 写扎实，再谈工具",
+      "nav": "选型建议",
+      "a": {
+        "title": "原生 CSS 更合适的场合",
+        "items": [
+          "初学阶段：必须先建立「选择器—属性—值」的正确心智模型",
+          "小型页面、一次性活动页",
+          "要求零构建、直接双击打开的交付场景",
+          "现代原生 CSS 已支持<strong>自定义属性（CSS 变量）</strong>，很多需求不必上预处理器"
+        ]
+      },
+      "b": {
+        "title": "上预处理器的信号",
+        "items": [
+          "样式表文件数量多、需要按模块组织",
+          "同一套配色、间距在多项目间复用",
+          "团队多人协作，需要统一的变量与混合约定",
+          "已有构建工具链（如 Vite、webpack）可自动编译"
+        ]
+      }
+    },
+    {
+      "type": "ai",
+      "title": "AI 前沿：从「写缩写」到「说人话就出结构」",
+      "subtitle": "Emmet 是人类的缩写革命，AI 正在开启下一次",
+      "nav": "AI 前沿",
+      "text": "Emmet 的本质是「用一行符号描述 DOM 树」；而今天的大模型可以直接把自然语言翻译成同样的结构——你说「一个三列卡片区」，它就给出 HTML + CSS。工具在变，「<strong>先想清楚结构，再写代码</strong>」这一条没有变。",
+      "items": [
+        "GitHub Copilot、通义灵码、文心快码可根据注释或上下文生成整段 HTML/CSS，效果类似「自然语言版 Emmet」。",
+        "DeepSeek、通义千问等国产大模型可直接回答「这段 Emmet 缩写展开成什么」，适合课前自测与课上核对答案。",
+        "预处理方向：AI 更擅长把设计稿中的<strong>配色、间距抽成变量</strong>，生成 LESS/SCSS 的主题文件。",
+        "提醒：AI 生成的结构常常嵌套冗余；<strong>能读懂 Emmet 的人，才改得动 AI 生成的代码</strong>。"
+      ]
+    },
+    {
+      "type": "quiz",
+      "title": "随堂检测",
+      "subtitle": "选自教材 4.7 作业选择题",
+      "nav": "随堂检测",
+      "items": [
+        {
+          "q": "在默认情况下，Emmet 语法中 .container 生成的 HTML 是（　　）。",
+          "options": [
+            "A. p.container",
+            "B. p#container",
+            "C. div.container",
+            "D. div#container"
+          ],
+          "answer": "C",
+          "tip": "不写标签名时，Emmet 默认生成 div 元素。",
+          "type": "single"
+        },
+        {
+          "q": "关于 Emmet 语法 &lt;p&gt;lorem*10&lt;/p&gt;，描述不正确的是（　　）。",
+          "options": [
+            "A. lorem 用于快速生成占位文字",
+            "B. lorem*10 可以生成 10 个字符",
+            "C. lorem*10 可以生成 10 个单词",
+            "D. lorem*10 可以生成 10 个段落"
+          ],
+          "answer": "B",
+          "tip": "lorem 生成的是英文单词构成的占位文本，*10 表示 10 个单词，不是 10 个字符。",
+          "type": "single"
+        },
+        {
+          "q": "要想生成 div.container 内两组 p>span>a 之后再跟一个 p，应使用的 Emmet 语法是（　　）。",
+          "options": [
+            "A. .container>(p>span>a^p)*2",
+            "B. div.container>(p>span>a^p)*2",
+            "C. div.container>p>span>a^p>span>a",
+            "D. div.container>p>span>a+p>span>a"
+          ],
+          "answer": "B",
+          "tip": "^ 表示回到父级（向上爬一层），() 表示把一组结构作为整体重复。",
+          "type": "single"
+        },
+        {
+          "type": "multi",
+          "q": "关于 Emmet 语法，下列说法中正确的有（　　）。",
+          "options": [
+            "A. Emmet 的前身是 Zen Coding，缩写中不写标签名时默认生成 div",
+            "B. 「>」表示父子、「+」表示兄弟、「^」表示向上回到父级",
+            "C. 「*」控制重复次数，「$」用于自动编号，$$ 表示两位、不足补零",
+            "D. 「@-」表示从指定序号开始编号"
+          ],
+          "answer": "ABC",
+          "tip": "<strong>@n 定起始序号，@- 表示倒序</strong>；两者位置写在 $ 之后、* 之前，如 li.item$@-*5。"
+        },
+        {
+          "type": "multi",
+          "q": "关于 LESS、SASS 与 SCSS，下列说法中正确的有（　　）。",
+          "options": [
+            "A. LESS 使用 @ 定义变量，SCSS 使用 $ 定义变量",
+            "B. Sass 采用类似 Python 的缩排语法，省略花括号与分号",
+            "C. 预处理器代码无需编译，浏览器可以直接解析执行",
+            "D. SCSS 使用花括号表示层次，语句以分号结尾，扩展名为 .scss"
+          ],
+          "answer": "ABD",
+          "tip": "预处理器是「写 CSS 的高级语言」，必须<strong>编译为 CSS 文件</strong>后才能交给浏览器执行。"
+        }
+      ]
+    },
+    {
+      "type": "summary",
+      "title": "本课小结",
+      "nav": "本课小结",
+      "items": [
+        "Emmet 前身是 <strong>Zen Coding</strong>，用类 CSS 选择器的语法描述文档树，主流编辑器均已支持。",
+        "基础符号：<code>#</code> id、<code>.</code> class、<code>[]</code> 属性、<code>{}</code> 文本、<code>&gt;</code> 子、<code>+</code> 兄弟、<code>^</code> 父级。",
+        "提速要点：<code>*</code> 控制重复次数，<code>$</code> 自动编号，<code>@n</code> 定起始、<code>@-</code> 倒序，<code>()</code> 分组。",
+        "常用快捷写法：<code>!</code> 或 <code>html:5</code> 生成 HTML5 框架，<code>link</code> 生成外部样式链接。",
+        "预处理器：<strong>LESS 用 @ 定义变量、SCSS 用 $ 定义变量</strong>；Sass 用缩进、SCSS 用花括号，最终都编译为 CSS。"
+      ]
+    },
+    {
+      "type": "homework",
+      "title": "课后作业",
+      "subtitle": "教材 4.7 作业",
+      "nav": "课后作业",
+      "items": [
+        "<strong>选择题：</strong>完成教材项目4「一、选择题」第 1～5 题，写出每题的排除理由。",
+        "<strong>简述题 1：</strong>写出 Emmet 语法 <code>ul li*3&gt;a[href=\"#\"]{link$$}</code> 对应的 HTML 结构。",
+        "<strong>简述题 2：</strong>请使用一条 Emmet 语法生成如下全部代码：一个 h2，接一个内含 3 个 <code>&lt;li&gt;&lt;a href=\"#\"&gt;&lt;/a&gt;&lt;/li&gt;</code> 的 ul。",
+        "<strong>项目讨论：</strong>近几年来，我国航天员一批批实现了飞天。你能列举这些成功完成航天任务的航天员吗？航天精神对你的学习、生活、工作有哪些启发？"
+      ]
+    },
+    {
+      "type": "refs",
+      "title": "出处与参考",
+      "subtitle": "本课件内容依据教材，并核对以下权威技术文档",
+      "nav": "出处与参考",
+      "items": [
+        {
+          "t": "教材《网页制作（HTML5+CSS3）》项目4 使用CSS高级选择器美化页面（4.4～4.5）",
+          "u": "郑哲、傅冬 主编 · 电子工业出版社 · 2025 年 1 月第 1 版"
+        },
+        {
+          "t": "Emmet 官方文档 · 缩写语法（Abbreviations Syntax）",
+          "u": "https://docs.emmet.io/abbreviations/syntax/"
+        },
+        {
+          "t": "Emmet 官方备忘单（Cheat Sheet）",
+          "u": "https://docs.emmet.io/cheat-sheet/"
+        },
+        {
+          "t": "LESS 官方网站（变量、混合与函数）",
+          "u": "https://lesscss.org/"
+        },
+        {
+          "t": "Sass 官方文档（Sass 与 SCSS 两种语法）",
+          "u": "https://sass-lang.com/documentation/syntax/"
+        },
+        {
+          "t": "MDN Web Docs · 使用 CSS 自定义属性（变量）",
+          "u": "https://developer.mozilla.org/zh-CN/docs/Web/CSS/Using_CSS_custom_properties"
+        }
+      ]
+    },
+    {
+      "type": "end",
+      "title": "第 11 单元 · 结束",
+      "text": "下一单元：走进项目5，认识决定一切布局的盒子模型",
+      "nav": "结束"
+    }
+  ]
+}

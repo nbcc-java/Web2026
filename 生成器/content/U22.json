@@ -1,0 +1,437 @@
+{
+  "id": "U22",
+  "project": "项目8",
+  "project_name": "Flex 布局",
+  "unit": "第 22 单元",
+  "title": "Flex 布局案例：居中、均分、嵌套与轮播图",
+  "subtitle": "从四种经典布局套路，一路做到一个能自动播放的轮播图",
+  "duration": 40,
+  "cover_tags": [
+    "居中布局",
+    "均分列",
+    "组合嵌套",
+    "溢出布局",
+    "轮播图"
+  ],
+  "ref_book": "电子工业出版社 · 2025 年 1 月第 1 版",
+  "objectives": {
+    "knowledge": [
+      "了解 Flex 布局的基本概念",
+      "掌握 Flex 布局的特点",
+      "掌握 Flex 容器的相关属性",
+      "掌握 Flex 子项的使用方法"
+    ],
+    "skill": [
+      "能正确使用 Flex 布局实现主轴元素布局控制",
+      "能正确使用 Flex 布局实现交叉轴元素布局控制",
+      "能应用 Flex 样式属性调整子项样式"
+    ],
+    "literacy": [
+      "培养精益求精的工匠精神",
+      "培养勇于探索、崇尚科学的学习品质",
+      "培养高尚的审美情趣"
+    ]
+  },
+  "slides": [
+    {
+      "type": "objectives",
+      "title": "本单元我们要达成什么",
+      "subtitle": "对照教材《项目8》8.3.2～8.4 的目标",
+      "objectives": {
+        "knowledge": [
+          "掌握常用的 Flex 布局技巧",
+          "掌握 Flex 子项各属性的含义",
+          "理解「溢出布局」的实现思路"
+        ],
+        "skill": [
+          "能用 Flex 实现块级元素居中与不定项居中",
+          "能用 Flex 实现均分列与组合嵌套布局",
+          "能用 Flex 搭建轮播图的结构"
+        ],
+        "literacy": [
+          "培养精益求精的工匠精神",
+          "培养勇于探索、崇尚科学的学习品质",
+          "培养高尚的审美情趣"
+        ]
+      }
+    },
+    {
+      "type": "outline",
+      "title": "本单元导览",
+      "subtitle": "五个任务，从居中一路做到轮播图",
+      "nav": "导览",
+      "items": [
+        "任务 8-1：块级元素居中布局（三种方案大比拼）",
+        "任务 8-2：不定项居中布局（按钮个数不固定怎么办）",
+        "任务 8-3：均分列布局 · 任务 8-4：组合嵌套布局",
+        "8.4 Flex 子项：order / grow / shrink / basis / flex / align-self",
+        "任务 8-5：Flex 布局案例——轮播图的制作"
+      ]
+    },
+    {
+      "type": "section",
+      "no": "8.3.2",
+      "title": "居中布局与常用布局",
+      "text": "真实页面里最难的不是「排出来」，而是「排得好看又稳」。",
+      "nav": "8.3.2 居中布局"
+    },
+    {
+      "type": "task",
+      "title": "任务 8-1｜块级元素居中布局（方案 1：Flex）",
+      "subtitle": "某在线商城发布了一款智能绘图产品，要求图片在容器中水平垂直居中（图 8-13）",
+      "nav": "任务8-1 居中布局",
+      "goal": "用 300px×300px 的容器把一张图片<strong>水平且垂直居中</strong>显示，并掌握三种实现方案。",
+      "steps": [
+        "新建页面，引入素材 <code>./images/AI_01.png</code>。",
+        "容器 <code>div</code> 设置 <code>display:flex</code>，把它变成 Flex 容器。",
+        "用 <code>justify-content:center</code> 控制<strong>主轴（水平）</strong>居中。",
+        "用 <code>align-items:center</code> 控制<strong>交叉轴（垂直）</strong>居中。",
+        "子项 <code>div>img</code> 设置 <code>height:90%</code>，留出呼吸空间。"
+      ],
+      "lang": "css",
+      "code": "/* 代码 8-1：方案 1 —— Flex 布局 */\ndiv{ display:flex; border:1px solid #ccc; background-color:#eee;\n     align-items:center; justify-content:center; width:300px; height:300px; }\ndiv>img{ height:90%; }"
+    },
+    {
+      "type": "code",
+      "title": "任务 8-1｜另外两种居中方案（代码 8-2 / 8-3）",
+      "subtitle": "表格单元格法与「定位 + translate()」法",
+      "nav": "另两种居中方案",
+      "lang": "css",
+      "file": "style.css",
+      "code": "/* 代码 8-2：方案 2 —— 表格单元格 */\ndiv{ display:table-cell; border:1px solid #ccc; background-color:#eee;\n     vertical-align:middle; text-align:center; width:300px; height:300px; }\ndiv>img{ height:90%; }\n\n/* 代码 8-3：方案 3 —— 定位 + translate() */\ndiv{ position:relative; border:1px solid #ccc; background-color:#eee;\n     width:300px; height:300px; }\ndiv>img{ position:absolute; left:50%; top:50%; height:90%;\n         transform:translate(-50%,-50%); }",
+      "caption": "<b>教材类比：</b>方案 2 就像 Word 中的单元格对齐方式（图 8-14）——配合 <code>text-align</code> 实现水平居中，配合 <code>vertical-align</code> 实现垂直居中。<code>translate(-50%,-50%)</code> 的含义是「向左、向上各移动自身宽高的一半」。"
+    },
+    {
+      "type": "compare",
+      "title": "三种居中方案怎么选",
+      "nav": "三方案辨析",
+      "a": {
+        "title": "方案 1 · Flex 布局",
+        "items": [
+          "两句代码搞定：<code>justify-content:center</code> + <code>align-items:center</code>",
+          "<strong>不需要知道子项尺寸</strong>，也不需要脱离文档流",
+          "可同时处理多个子项，扩展性好",
+          "<strong>推荐作为首选方案</strong>（现代浏览器的标准做法）"
+        ]
+      },
+      "b": {
+        "title": "方案 2 / 方案 3",
+        "items": [
+          "方案 2 表格单元格：语义上把容器<strong>变成单元格</strong>，会改变盒子的排版特性",
+          "方案 3 定位 + translate：子项<strong>脱离文档流</strong>，容易影响其他元素",
+          "两者在<strong>老项目、老浏览器</strong>中仍大量存在，必须能读懂",
+          "结论：新项目<strong>优先 Flex</strong>；维护旧代码时要认得另外两种"
+        ]
+      }
+    },
+    {
+      "type": "task",
+      "title": "任务 8-2｜不定项居中布局",
+      "subtitle": "轮播图底部的导航按钮：3 张图 3 个按钮，5 张图 5 个按钮，却始终底部居中（图 8-15）",
+      "nav": "任务8-2 不定项居中",
+      "goal": "让<strong>个数不确定</strong>的一组按钮，始终作为一个整体<strong>水平居中、贴住底部</strong>。",
+      "steps": [
+        "把若干个 <code>li</code> 放进 <code>ul.wrap</code>，让 <code>ul</code> 成为 Flex 容器。",
+        "<code>justify-content:center</code>：让这一组按钮<strong>整体居中</strong>。",
+        "<code>align-items:flex-end</code>：把它们放到<strong>交叉轴的结束位置</strong>（底部）。",
+        "每个 <code>li</code> 用 <code>border-radius:50%</code> 画成圆形，用 <code>margin</code> 控制间距。",
+        "增删 <code>li</code> 的个数，居中效果<strong>依然成立</strong>——这就是「不定项」。"
+      ],
+      "lang": "css",
+      "code": "/* 代码 8-4 */\n.wrap{ width:500px; height:200px; background-color:antiquewhite; border:1px solid #eee;\n       display:flex; justify-content:center; align-items:flex-end; }\n.wrap>li{ justify-content:center; background-color:#999; width:20px; height:20px;\n          line-height:20px; text-align:center; border-radius:50%; color:white;\n          list-style:none; margin:5px 10px; }"
+    },
+    {
+      "type": "task",
+      "title": "任务 8-3｜均分列布局",
+      "subtitle": "城市学院网站：4 列均匀横向分布在主轴空间，每列一个图标 + 一段说明文字（图 8-16）",
+      "nav": "任务8-3 均分列",
+      "goal": "把「图标 + 说明文字」看成一个整体，用 <code>justify-content:space-between</code> 实现<strong>两端对齐的均分</strong>。",
+      "steps": [
+        "容器 <code>.wrap</code>：540px×153px，白底、<code>padding:0 30px</code>、<code>border-radius:6px</code>、<code>margin:0 auto</code>。",
+        "容器加 <code>display:flex</code> + <code>justify-content:space-between</code> + <code>align-items:center</code>。",
+        "子项 <code>.item</code>：91px×120px，内部文字居中。",
+        "<code>.item>img</code> 宽 35px，<code>.item>p</code> 字号 20px。",
+        "<strong>记住：</strong>均分列 = <code>display:flex</code> + <code>space-between</code>，不需要给子项算百分比宽度。"
+      ],
+      "lang": "css",
+      "code": "/* 代码 8-5 */\nbody{ background-color:#dee9fb; }\n.wrap{ width:540px; height:153px; background-color:white; border:1px solid #eee;\n       margin:0 auto; display:flex; justify-content:space-between; align-items:center;\n       padding:0 30px; border-radius:6px; }\n.wrap>.item{ width:91px; height:120px; text-align:center; }\n.item>img{ width:35px; }\n.item>p{ font-size:20px; }"
+    },
+    {
+      "type": "task",
+      "title": "任务 8-4｜组合嵌套布局",
+      "subtitle": "大美新疆首页的导航栏：logo、导航、分享、登录、注册（图 8-17）",
+      "nav": "任务8-4 组合嵌套",
+      "goal": "用「组合思想」把复杂导航栏<strong>拆成两个熟悉的整体</strong>，再用 space-between 分开。",
+      "steps": [
+        "教材方法：<strong>把不熟悉的页面布局转换为熟悉的基本页面布局。</strong>",
+        "左侧「logo + 导航」看成一个整体 <code>.lft</code>；右侧「分享 + 登录注册」看成另一个整体 <code>.rt</code>（图 8-18）。",
+        "外层 <code>.wrap</code> 用 <code>justify-content:space-between</code>，把两个整体推向两端。",
+        "<code>.lft</code>、<code>.rt</code> 内部<strong>再次使用 Flex</strong>——这就是「嵌套」。",
+        "第一项导航用 <code>.nav li:nth-child(1)</code> 高亮为当前页。"
+      ],
+      "lang": "css",
+      "code": "/* 代码 8-6（关键片段） */\n.wrap{ width:1024px; height:60px; background-color:white; border:3px solid #eee;\n       padding:0 60px; margin:0 auto; display:flex;\n       justify-content:space-between; align-items:center; }\n.lft{ display:flex; align-items:center; border:2px solid #ccc; }\n.lft>img{ width:70px; }\n.nav{ margin:0 0 0 30px; padding:0 10px; width:350px; height:60px; line-height:60px;\n      list-style:none; display:flex; justify-content:space-between; align-items:center; }\n.nav li{ width:70px; height:60px; text-align:center; line-height:60px; }\n.nav li:nth-child(1){ background-color:#ff9d00; color:white; }\n.rt{ width:210px; display:flex; border:2px solid #ccc; }\n.share{ display:flex; margin-right:20px; align-items:center; justify-content:space-between; }\n.login{ color:#ff9d00; }"
+    },
+    {
+      "type": "section",
+      "no": "8.4",
+      "title": "Flex 子项",
+      "text": "容器管「整体怎么排」，子项管「我自己占多少、排第几」。",
+      "nav": "8.4 Flex 子项"
+    },
+    {
+      "type": "table",
+      "title": "Flex 子项样式属性（教材表 8-6）",
+      "subtitle": "子项属性写在「子元素」上，控制的是单个子项自身",
+      "nav": "表8-6 子项属性",
+      "head": [
+        "属性名",
+        "描述"
+      ],
+      "rows": [
+        [
+          "order",
+          "定义子项的排列顺序。<strong>数值越小，顺序越靠前</strong>，默认值为 0"
+        ],
+        [
+          "flex-grow",
+          "定义子项的<strong>放大比例</strong>。默认值为 0，表示如果存在剩余空间，则子项不放大"
+        ],
+        [
+          "flex-shrink",
+          "定义子项的<strong>缩小比例</strong>。默认值为 1，表示如果空间不足，则子项将缩小"
+        ],
+        [
+          "flex-basis",
+          "定义在分配剩余空间之前子项在<strong>主轴中的空间大小</strong>。浏览器据此计算主轴是否有剩余空间。默认值为 <code>auto</code>，即子项的本来大小"
+        ],
+        [
+          "flex",
+          "综合样式属性，是 <code>flex-grow</code>、<code>flex-shrink</code> 和 <code>flex-basis</code> 的简写，默认值为 <code>0 1 auto</code>"
+        ],
+        [
+          "align-self",
+          "允许<strong>单个子项</strong>有与其他子项不一样的对齐方式，可覆盖 <code>align-items</code>。默认值为 <code>auto</code>，表示继承父元素的 align-items；如果没有父元素，则等同于 stretch"
+        ]
+      ]
+    },
+    {
+      "type": "codebullets",
+      "title": "子项属性综合示例（代码 8-7）与实验观察",
+      "subtitle": "拖动窗口宽度，观察 grow / shrink / align-self 的实际效果",
+      "nav": "子项示例与观察",
+      "items": [
+        "宽度 <strong>601px</strong>：空间充足。因 <code>align-items</code> 默认 stretch，前两个子项<strong>占满父容器高度</strong>；带 <code>align-self:flex-end</code> 的子项<strong>底部对齐</strong>（图 8-19）。",
+        "宽度 <strong>801px</strong>：多出来的额外空间<strong>完全被 grow=1 的子项占据</strong>，其余两个宽度不变（图 8-20）。",
+        "宽度缩小到 <strong>400px</strong>：<code>flex-shrink:0</code> 的子项<strong>始终保持宽度不变</strong>，其余两个被压缩（图 8-21）。",
+        "<code>align-self</code> 是「个体对抗集体」的钥匙：只让某一个子项与众不同。"
+      ],
+      "lang": "css",
+      "file": "style.css",
+      "code": "/* 代码 8-7 */\n.wrap{ display:flex; border:2px solid #f00; height:50px; margin:50px auto; }\n.item{ width:200px; border:1px solid #000; text-align:center; }\n.gr1 { flex-grow:1; }\n.sk0 { flex-shrink:0; }\n.als { align-self:flex-end; flex-grow:0; }\n.base{ flex-basis:300px; }"
+    },
+    {
+      "type": "bullets",
+      "title": "为什么 Flex 里常用 flex-basis，而不是 width？",
+      "subtitle": "教材启发问答：二者同时出现时，谁说了算？",
+      "nav": "basis 与 width",
+      "items": [
+        "<code>width</code> 通常用来描述<strong>固定宽度</strong>；<code>flex-basis</code> 描述的是<strong>子项在主轴中的空间大小</strong>。",
+        "如果父容器宽度超过所有子项 flex-basis 之和，说明有额外空间，浏览器会按 <code>flex-grow</code> 分配这些空间。",
+        "因此在 Flex 布局中<strong>常使用 flex-basis 而非 width</strong>。",
+        "同时使用会怎样？<code>.item</code> 指定 <code>width:200px</code>、<code>.base</code> 指定 <code>flex-basis:300px</code>，最终显示 <strong>300px</strong>（图 8-22）。",
+        "结论：<strong><code>flex-basis</code> 的优先级高于 <code>width</code></strong>；图中显示 302px，是子项 300px 加上左右各 1px 的边框。"
+      ]
+    },
+    {
+      "type": "task",
+      "title": "任务 8-5｜Flex 布局案例：轮播图的制作",
+      "subtitle": "将 3 张图片显示在指定区域，底部 3 个分页指示器，左右各一个控制器按钮（图 8-23～8-25）",
+      "nav": "任务8-5 轮播图",
+      "goal": "教材整体思路：轮播图由 3 部分构成——<strong>幻灯片容器、分页指示器、控制器按钮</strong>。本任务不要求实现播放效果与按钮触发事件。",
+      "steps": [
+        "先构造<strong>幻灯片容器</strong>结构：外层 <code>.swiper-container</code> 定位参照，内层 <code>.swiper-wrapper</code> 承载 3 个 <code>.swiper-slide</code>（图 8-26）。",
+        "再构造<strong>分页指示器</strong>：3 个行内元素，用 Flex 放在底部中间（图 8-27）。",
+        "最后用 <code>a</code> 标签实现<strong>控制器按钮</strong>，绝对定位到左右两侧（图 8-28）。",
+        "用 <code>flex-wrap</code> 不换行 + <code>flex-shrink:0</code> 让 3 张图<strong>溢出到父容器外</strong>。",
+        "用 <code>@keyframes move-slide</code> 横向平移实现自动播放（动画细节在项目 9 详讲）。"
+      ],
+      "lang": "css",
+      "code": "/* 代码 8-9：溢出布局（重点） */\n.swiper-container{ position:relative; background-color:#FFE4C4; }\n.swiper-wrapper{ display:flex; }\n.swiper-slide{ width:100%; flex-shrink:0; /*不收缩，溢出布局*/ }"
+    },
+    {
+      "type": "code",
+      "title": "轮播图核心代码（代码 8-8）",
+      "subtitle": "结构、分页指示器、控制器按钮与自动播放关键帧",
+      "nav": "代码8-8 轮播图",
+      "lang": "css",
+      "file": "style.css",
+      "code": ".swiper-container{ position:relative; background-color:#FFE4C4; }\n.swiper-wrapper{ display:flex; transition:0.5s; transform:translateX(0px);\n                 animation: move-slide 10s ease-in-out infinite; }\n.swiper-slide{ width:100%; flex-shrink:0; /*不收缩，溢出布局*/ }\n.swiper-slide img{ width:100%; }\n\n.swiper-pagination{ position:absolute; height:28px; width:100%; bottom:40px;\n                    display:flex; justify-content:center; align-items:center; }\n.swiper-pagination-bullet{ width:12px; height:12px; border-radius:50%;\n                           background-color:#c6bcaf; margin:0 4px; }\n.swiper-pagination-bullet-active{ background-color:#fff; }\n\n.swiper-button-prev,.swiper-button-next{ position:absolute; top:0%; height:100%;\n                                         display:flex; align-items:center; }\n.swiper-button-prev{ left:10px; }\n.swiper-button-next{ right:10px; }\n\n@keyframes move-slide {\n  0%,10%,100%{ transform: translateX(0px); }\n  20%,40%   { transform: translateX(-500px); }\n  60%,80%   { transform: translateX(-1000px); }\n}",
+      "caption": "<b>教材说明：</b>对 <code>.swiper-wrapper</code> 使用 Flex 布局后，子元素需要<strong>溢出到父容器外</strong>，靠 <code>width:100%</code> + <code>flex-shrink:0</code> 实现，这种布局形式被称为<strong>「溢出布局」</strong>。"
+    },
+    {
+      "type": "demo",
+      "title": "交互演示｜纯 CSS 自动轮播图",
+      "subtitle": "@keyframes 横向平移 + flex-shrink:0 溢出布局 + 分页指示器随动",
+      "nav": "轮播图演示",
+      "items": [
+        "<code>.swiper-wrapper</code> 用 <strong>Flex 横向排列</strong>3 张幻灯片，每张都设 <code>flex-shrink:0</code>，于是整体宽度<strong>溢出容器</strong>。",
+        "关键帧按 <code>0 → -520px → -1040px</code> 平移，容器 <code>overflow:hidden</code> 只露出当前一张。",
+        "底部 3 个分页指示器用 <code>justify-content:center</code> + <code>align-items:center</code> 定位在底部中间。",
+        "左右控制器按钮用<strong>绝对定位</strong>放在距两侧 10px 处，内部再用 Flex 做垂直居中。"
+      ],
+      "hint": "教材采用 3 张图循环（0 → -500 → -1000），最后一档会平滑回到第 1 张；若不想看到「回滑」，可在末尾再补一张与第 1 张相同的克隆片。",
+      "html": "<style>.d22{margin:0;font-family:'PingFang SC',system-ui,sans-serif;color:#1b2a44}.d22 .sc{position:relative;width:520px;height:210px;margin:0 auto;overflow:hidden;border-radius:12px;background:#FFE4C4;box-shadow:0 20px 44px -22px rgba(20,40,90,.5)}.d22 .sw{display:flex;animation:mv 9s ease-in-out infinite}.d22 .sl{width:520px;height:210px;flex-shrink:0;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#fff}.d22 .sl b{font-size:24px;letter-spacing:.06em}.d22 .sl em{font-style:normal;font-size:13px;opacity:.9;margin-top:6px}.d22 .s1{background:linear-gradient(135deg,#2f6bff,#0fb5c9)}.d22 .s2{background:linear-gradient(135deg,#ff9d00,#ff5e7d)}.d22 .s3{background:linear-gradient(135deg,#67cf22,#12b886)}.d22 .pg{position:absolute;bottom:14px;left:0;width:100%;display:flex;justify-content:center;align-items:center;gap:8px}.d22 .bl{width:12px;height:12px;border-radius:50%;background:#c6bcaf;box-shadow:0 1px 3px rgba(0,0,0,.2)}.d22 .b1{animation:b1 9s linear infinite}.d22 .b2{animation:b2 9s linear infinite}.d22 .b3{animation:b3 9s linear infinite}.d22 .btn{position:absolute;top:0;height:100%;display:flex;align-items:center;padding:0 14px}.d22 .prev{left:0}.d22 .next{right:0}.d22 .arw{width:16px;height:16px;border-left:4px solid #fff;border-bottom:4px solid #fff;filter:drop-shadow(0 1px 2px rgba(0,0,0,.4))}.d22 .prev .arw{transform:rotate(45deg)}.d22 .next .arw{transform:rotate(-135deg)}.d22 .cap{margin:14px auto 0;width:520px;text-align:center;font-size:11.5px;color:#5a6c85;line-height:1.8}.d22 .cap code{background:#eef3ff;border:1px solid #d5e2fb;border-radius:5px;padding:1px 6px;color:#1d46b8}@keyframes mv{0%,9%{transform:translateX(0)}18%,36%{transform:translateX(-520px)}54%,72%{transform:translateX(-1040px)}100%{transform:translateX(0)}}@keyframes b1{0%,12%{background:#fff}16%,100%{background:#c6bcaf}}@keyframes b2{0%,18%{background:#c6bcaf}22%,38%{background:#fff}42%,100%{background:#c6bcaf}}@keyframes b3{0%,54%{background:#c6bcaf}58%,72%{background:#fff}76%,100%{background:#c6bcaf}}</style><div class='d22'><div class='sc'><div class='sw'><div class='sl s1'><b>第一张 · 智能绘图</b><em>translateX(0)</em></div><div class='sl s2'><b>第二张 · AI 助手</b><em>translateX(-520px)</em></div><div class='sl s3'><b>第三张 · 在线课堂</b><em>translateX(-1040px)</em></div></div><div class='pg'><span class='bl b1'></span><span class='bl b2'></span><span class='bl b3'></span></div><div class='btn prev'><span class='arw'></span></div><div class='btn next'><span class='arw'></span></div></div><p class='cap'>溢出布局：<code>width:100%</code> + <code>flex-shrink:0</code>　·　自动播放：<code>animation: move-slide 9s ease-in-out infinite</code></p></div>"
+    },
+    {
+      "type": "bullets",
+      "title": "工程小贴士：调试技巧与图标字体",
+      "subtitle": "教材给出的两个实用技能点",
+      "nav": "调试与图标",
+      "items": [
+        "<strong>自定义调试设备：</strong>开发者工具 → 移动设备查看模式 → 「尺寸」下拉 → 修改 → 添加自定义设备，名称「调试」，尺寸 <strong>500 像素 × 700 像素</strong>。",
+        "之所以取 <strong>500px 宽</strong>，是为了便于计算滑动偏移量：<code>0</code> / <code>-500px</code> / <code>-1000px</code>。",
+        "<strong>Bootstrap Glyphicons 字体图标</strong>（3 步）：① 引入 Bootstrap 的 CSS 样式；② 项目中放入<strong>字体文件夹</strong>与样式；③ 在标签中使用对应类名。",
+        "该字体图标包含 <strong>250 多个</strong> Glyphicon Halflings 图标，左箭头为 <code>glyphicon-chevron-left</code>，右箭头为 <code>glyphicon-chevron-right</code>。"
+      ]
+    },
+    {
+      "type": "ai",
+      "title": "AI 前沿：让 AI 复刻一个真实界面",
+      "subtitle": "从「截图还原布局」看前端岗位的新工作方式",
+      "nav": "AI 前沿",
+      "text": "多模态大模型已经可以<strong>看一张界面截图，直接生成 HTML + CSS</strong>：哪里该用 space-between，哪里该嵌套一个 Flex，AI 往往一次就能猜对。这正是教材所说「把不熟悉的布局转换为熟悉的布局」的自动化版本。但 AI 也有短板——它不知道<strong>哪些列该固定、哪些该伸缩</strong>，这就需要你用 <code>flex-grow</code> / <code>flex-shrink</code> / <code>flex-basis</code> 去校正。",
+      "items": [
+        "实操建议：把教材图 8-35（慕课 App「我的课程」界面）交给通义灵码或 Copilot，让它生成代码，再与自己的手写版本对比。",
+        "对比重点：AI 是否用了 <code>flex:1</code> 简写？是否合理使用了 <code>align-items</code>？溢出与换行是否处理？",
+        "国产工具：DeepSeek、文心快码均支持「上传设计稿 → 生成前端代码」。",
+        "职业提醒：<strong>能读懂并改对 AI 生成的代码</strong>，比「自己一行行敲」更能体现你的专业水准。"
+      ]
+    },
+    {
+      "type": "quiz",
+      "title": "随堂检测",
+      "subtitle": "选自教材 8.6 课后选择题",
+      "nav": "随堂检测",
+      "items": [
+        {
+          "q": "关于下面语句描述正确的是（　　）。<br><code>div:nth-of-type(1){flex-grow:1;} div:nth-of-type(2){flex-grow:3;} div:nth-of-type(3){flex-grow:1;}</code>",
+          "options": [
+            "A. div3 的尺寸是 div1 的 3 倍",
+            "B. div2 的尺寸是 div1 和 div3 的 3 倍",
+            "C. 在扩展布局范围时，div2 获得的空间是 div1 和 div3 的 3 倍",
+            "D. 在收缩布局范围时，div2 获得的空间是 div1 和 div3 的 3 倍"
+          ],
+          "answer": "C",
+          "tip": "flex-grow 决定的是「剩余空间的分配比例」，只在扩展（有剩余空间）时起作用。",
+          "type": "single"
+        },
+        {
+          "q": "在均分列布局中，设置（　　）不是必要操作。",
+          "options": [
+            "A. display:flex;",
+            "B. justify-content:space-between;",
+            "C. align-items:center;",
+            "D. flex-shrink:0;"
+          ],
+          "answer": "D",
+          "tip": "均分列只需容器 Flex + space-between；flex-shrink:0 是溢出布局（轮播图）才需要的。",
+          "type": "single"
+        },
+        {
+          "q": "关于 <code>width:200px</code> 与 <code>flex-basis:300px</code> 同时作用于同一个子项，最终主轴空间为（　　）。",
+          "options": [
+            "A. 200px",
+            "B. 300px",
+            "C. 500px",
+            "D. 由浏览器随机决定"
+          ],
+          "answer": "B",
+          "tip": "flex-basis 的优先级高于 width，最终按 300px 计算（加上边框实际为 302px）。",
+          "type": "single"
+        },
+        {
+          "type": "multi",
+          "q": "关于本单元的几个 Flex 布局技巧，下列说法正确的有（　　）。",
+          "options": [
+            "A. 容器同时写 justify-content:center 与 align-items:center，即可让子项水平垂直居中",
+            "B. 不定项居中可用 justify-content:center 配合 align-items:flex-end，让按钮组整体居中并贴住底部",
+            "C. 均分列布局只需 display:flex 与 justify-content:space-between，无须给子项计算百分比宽度",
+            "D. 组合嵌套布局要求给每个子项都设置绝对定位，否则无法两端对齐"
+          ],
+          "answer": "ABC",
+          "tip": "组合嵌套靠的是<strong>外层 space-between + 内层再 Flex</strong>，与绝对定位无关，故 D 错。"
+        },
+        {
+          "type": "multi",
+          "q": "关于 Flex 子项属性与轮播图的溢出布局，下列说法正确的有（　　）。",
+          "options": [
+            "A. flex-grow 默认值为 0，存在剩余空间时子项默认不放大",
+            "B. flex-basis 与 width 同时作用于同一子项时，flex-basis 的优先级更高",
+            "C. 轮播图中给 .swiper-slide 设置 width:100% 与 flex-shrink:0，是为了让幻灯片收缩以适应容器",
+            "D. align-self 作用于容器整体，可用来替代容器上的 align-items"
+          ],
+          "answer": "AB",
+          "tip": "<code>flex-shrink:0</code> 是<strong>不收缩</strong>、让幻灯片溢出容器；<code>align-self</code> 只作用于<strong>单个子项</strong>，故 C、D 错。"
+        }
+      ]
+    },
+    {
+      "type": "summary",
+      "title": "本课小结",
+      "nav": "本课小结",
+      "items": [
+        "居中三方案：<strong>Flex（首选）</strong>、表格单元格（<code>table-cell</code> + vertical-align）、定位 + <code>translate(-50%,-50%)</code>。",
+        "不定项居中：<code>justify-content:center</code> + <code>align-items:flex-end</code>，子项个数变化也不影响居中。",
+        "均分列用 <code>space-between</code>；复杂导航栏用<strong>组合嵌套</strong>——把不熟悉拆成熟悉的两团。",
+        "子项六大属性：<code>order</code>、<code>flex-grow</code>、<code>flex-shrink</code>、<code>flex-basis</code>、<code>flex</code>、<code>align-self</code>；<code>flex-basis</code> 优先级高于 <code>width</code>。",
+        "轮播图三件套：<strong>溢出布局</strong>（width:100% + flex-shrink:0）、<strong>分页指示器</strong>（Flex 底部居中）、<strong>控制器按钮</strong>（绝对定位 + Flex 垂直居中）。"
+      ]
+    },
+    {
+      "type": "homework",
+      "title": "课后作业",
+      "nav": "课后作业",
+      "items": [
+        "<strong>操作题（教材 8.6）：</strong>以慕课 App 中「我的课程」界面为例（图 8-35），利用所学布局知识实现该界面的布局效果。",
+        "<strong>提高题：</strong>在任务 8-5 的轮播图基础上，把图片改为 5 张，重新计算偏移量并修改 @keyframes。",
+        "<strong>项目讨论（教材 8.6）：</strong>① 举例说明信息技术如何助力教育教学发展？② 网页制作技术在这些发展中有哪些作用与体现？③ 作为新一代技术的应用开拓者，你有什么新想法？",
+        "<strong>预习：</strong>阅读教材项目 9 的 9.1～9.2，思考 transform 能对元素做哪几件事。"
+      ]
+    },
+    {
+      "type": "refs",
+      "title": "出处与参考",
+      "subtitle": "本课件内容依据教材，并核对以下权威技术文档",
+      "nav": "出处与参考",
+      "items": [
+        {
+          "t": "教材《网页制作（HTML5+CSS3）》项目8 Flex 布局（8.3.2～8.4，PDF 268–287）",
+          "u": "郑哲、傅冬 主编 · 电子工业出版社 · 2025 年 1 月第 1 版"
+        },
+        {
+          "t": "MDN Web Docs · 弹性盒布局的典型用例（居中、均分等）",
+          "u": "https://developer.mozilla.org/zh-CN/docs/Web/CSS/CSS_flexible_box_layout/Typical_use_cases_of_flexbox"
+        },
+        {
+          "t": "MDN Web Docs · flex-grow",
+          "u": "https://developer.mozilla.org/zh-CN/docs/Web/CSS/flex-grow"
+        },
+        {
+          "t": "MDN Web Docs · flex-basis",
+          "u": "https://developer.mozilla.org/zh-CN/docs/Web/CSS/flex-basis"
+        },
+        {
+          "t": "W3C · CSS Flexible Box Layout Module Level 1",
+          "u": "https://www.w3.org/TR/css-flexbox-1/"
+        }
+      ]
+    },
+    {
+      "type": "end",
+      "title": "第 22 单元 · 结束",
+      "text": "下一单元：走进 CSS3 变换，让元素动起来",
+      "nav": "结束"
+    }
+  ]
+}

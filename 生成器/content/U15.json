@@ -1,0 +1,522 @@
+{
+  "id": "U15",
+  "project": "项目6",
+  "project_name": "表格和表单",
+  "unit": "第 15 单元",
+  "title": "表格标签与 CSS 表格样式",
+  "subtitle": "从一张金牌榜出发，掌握结构化表格标签与表格样式属性，让数据既清晰又好看",
+  "duration": 40,
+  "cover_tags": [
+    "table / tr / td",
+    "th 与 td",
+    "border-collapse",
+    "colspan / rowspan"
+  ],
+  "ref_book": "电子工业出版社 · 2025 年 1 月第 1 版",
+  "objectives": {
+    "knowledge": [
+      "了解表格的两个作用",
+      "掌握表格标签及语义",
+      "掌握表格数据的导入方法",
+      "掌握 CSS 表格相关样式属性的用法"
+    ],
+    "skill": [
+      "能正确使用表格标签创建表格",
+      "能使用表格样式属性美化表格",
+      "能使用 Emmet 语法快速生成表格结构",
+      "能导入外部数据创建表格"
+    ],
+    "literacy": [
+      "培养以用户为中心的产品质量意识",
+      "培养勇于探索、崇尚科学的意志和品德",
+      "遵守网络规范、网络法规"
+    ]
+  },
+  "slides": [
+    {
+      "type": "objectives",
+      "title": "本单元我们要达成什么",
+      "subtitle": "对照教材《项目6》6.1～6.3 的学习目标 / 技能目标 / 素养目标",
+      "objectives": {
+        "knowledge": [
+          "了解表格的两个作用",
+          "掌握表格标签及语义",
+          "掌握表格数据的导入方法",
+          "掌握 CSS 表格相关样式属性的用法"
+        ],
+        "skill": [
+          "能正确使用表格标签创建表格",
+          "能使用表格样式属性美化表格",
+          "能使用 Emmet 语法快速生成表格结构"
+        ],
+        "literacy": [
+          "培养以用户为中心的产品质量意识",
+          "培养勇于探索、崇尚科学的意志和品德",
+          "遵守网络规范、网络法规"
+        ]
+      }
+    },
+    {
+      "type": "ideology",
+      "title": "北京冬奥精神：把数据讲清楚，也是一种专业",
+      "subtitle": "教材《项目6》思政课堂",
+      "nav": "思政课堂",
+      "text": "2022 年 2 月 4 日至 20 日，北京冬奥会在我国北京市和张家口市联合举行，它是一次全球性的体育盛会。在这次冬奥会上，展现出了<strong>胸怀大局、自信开放、迎难而上、追求卓越、共创未来</strong>的“<strong>北京冬奥精神</strong>”。它激励着我们这代人坚持理想信念，坚定不移地为社会主义伟大事业而奋斗；坚持实事求是，脚踏实地地去创造。我们要把爱国之情、报国之志转化为实际行动，努力拼搏，为祖国争光！",
+      "topic": "奖牌榜、成绩单、统计表都是网页中最常见的数据呈现形式。作为未来的 Web 前端工程师，请结合岗位谈一谈：为什么在做数据展示页面时，「标签语义正确」比「看起来像个表格」更重要？"
+    },
+    {
+      "type": "outline",
+      "title": "本单元导览",
+      "subtitle": "四个问题，带你从「会写表格」走向「会做表格」",
+      "nav": "导览",
+      "items": [
+        "表格在网页中到底有哪两个作用？（布局 / 呈现数据）",
+        "一个完整的表格由哪些标签构成？（table、tr、th、td、caption、thead、tbody、tfoot）",
+        "任务6-1：用 Emmet 语法快速制作金牌榜表格",
+        "有哪些与表格相关的 CSS 样式属性？（border-collapse、border-spacing、caption-side、table-layout）",
+        "任务6-2：导入外部数据创建表格，并用 CSS 完成美化"
+      ]
+    },
+    {
+      "type": "section",
+      "no": "6.1",
+      "title": "表格的两个作用",
+      "text": "表格最初是用来「摆数据」的，中间被借去做布局，如今又回到了原点。",
+      "nav": "6.1 表格概述"
+    },
+    {
+      "type": "cards",
+      "title": "表格在网页制作历史进程中的两个作用",
+      "subtitle": "教材原文：① 实现网页内容的布局　② 呈现相关的数据",
+      "nav": "表格的两个作用",
+      "cols": 3,
+      "items": [
+        {
+          "title": "作用一：实现网页内容的布局",
+          "text": "通过单元格的分割和合并，生成具有 <strong>①～⑦ 七个不同板块</strong>的复杂界面（图6-1）。这是 <strong>2008 年以前</strong>表格的重要用途。"
+        },
+        {
+          "title": "作用二：呈现相关的数据",
+          "text": "以行列形式把数据罗列出来，结构紧凑、清晰直观（图6-2 为汽车详细参数）。<strong>目前表格的主要用途已回归到呈现数据。</strong>"
+        },
+        {
+          "title": "生活中的表格",
+          "text": "财务报表、<strong>课程表</strong>、问卷调查表……表格的结构化特征，使它成为日常工作中最常见的信息组织方式。"
+        }
+      ]
+    },
+    {
+      "type": "bullets",
+      "title": "表格的发展脉络：从布局回到数据",
+      "subtitle": "教材观点：CSS 出现后，使用表格布局网页的方式已逐渐被抛弃",
+      "nav": "表格的发展脉络",
+      "items": [
+        "表格初衷是以<strong>行列形式将数据罗列出来</strong>，结构紧凑、清晰直观，日常生活中被大量使用。",
+        "由于表格可灵活合并单元格，<strong>2008 年以前</strong>表格的一个用途是实现网页内容布局。",
+        "随着前端技术发展，<strong>CSS 出现后</strong>，使用表格布局网页的方式已逐渐被抛弃。",
+        "目前表格的主要用途回归到它的初衷——<strong>呈现数据</strong>。",
+        "本项目的学习目标因此聚焦两件事：与表格相关的<strong>结构化标签</strong>，以及与<strong>美化表格相关的 CSS 样式属性</strong>。"
+      ]
+    },
+    {
+      "type": "section",
+      "no": "6.2",
+      "title": "表格标签",
+      "text": "行、列、单元格，加上三个分区与一个标题——这就是表格的全部骨架。",
+      "nav": "6.2 表格标签"
+    },
+    {
+      "type": "table",
+      "title": "表6-1 表格标签（教材完整还原）",
+      "subtitle": "一个表格通常包括行、列和单元格 3 个部分，也可划分为页眉、主体、页脚 3 个区域",
+      "nav": "表格标签一览",
+      "head": [
+        "标签名",
+        "描述"
+      ],
+      "rows": [
+        [
+          "<code>&lt;table&gt;</code>",
+          "定义表格"
+        ],
+        [
+          "<code>&lt;tr&gt;</code>",
+          "定义表格行（table row）"
+        ],
+        [
+          "<code>&lt;th&gt;</code>",
+          "定义表格字段的标题（table heading）"
+        ],
+        [
+          "<code>&lt;td&gt;</code>",
+          "定义表格的数据（table data）"
+        ],
+        [
+          "<code>&lt;thead&gt;</code>",
+          "定义表格页眉"
+        ],
+        [
+          "<code>&lt;tbody&gt;</code>",
+          "定义表格主体"
+        ],
+        [
+          "<code>&lt;tfoot&gt;</code>",
+          "定义表格页脚"
+        ],
+        [
+          "<code>&lt;caption&gt;</code>",
+          "定义表格标题，默认在表格中居中显示"
+        ]
+      ]
+    },
+    {
+      "type": "compare",
+      "title": "标题单元格与数据单元格，别混用",
+      "subtitle": "教材问答要点：样式上有区别，语义上区别更明显",
+      "nav": "th vs td",
+      "a": {
+        "title": "th · 标题单元格",
+        "items": [
+          "<strong>自带加粗样式</strong>，在默认情况下内容是<strong>居中</strong>的",
+          "语义上用来<strong>存放标题信息</strong>",
+          "教材并未规定它的位置：<strong>既可以出现在第一行，也可以出现在第一列或其他位置</strong>"
+        ]
+      },
+      "b": {
+        "title": "td · 数据单元格",
+        "items": [
+          "默认<strong>不加粗、居左</strong>显示",
+          "语义上用来<strong>承载数据</strong>",
+          "与 <code>th</code> 一样，都是 <code>tr</code> 的子元素；整行单元格数量决定列数"
+        ]
+      }
+    },
+    {
+      "type": "bullets",
+      "title": "表格的三个分区与表格标题",
+      "subtitle": "thead / tbody / tfoot 不能单独使用，需要配合使用",
+      "nav": "三个分区与标题",
+      "items": [
+        "<code>&lt;thead&gt;</code> 是表格的<strong>表头</strong>分组，<code>&lt;tbody&gt;</code> 是<strong>主体内容</strong>分组，<code>&lt;tfoot&gt;</code> 是<strong>页脚（表注）</strong>分组，常用来放汇总数据。",
+        "划分意义一：使浏览器有能力支持独立于表格表头和页脚的<strong>表格正文滚动</strong>。",
+        "划分意义二：长表格打印时，表头和页脚可打印在<strong>包含表格数据的每个页面上</strong>。",
+        "划分意义三：可用 <strong>CSS 对这些区域分别设置样式</strong>，配合项目4 的后代选择器非常好用。",
+        "<code>&lt;caption&gt;</code> 定义表格标题，<strong>默认在表格中居中显示</strong>；其 <code>align</code> 属性可取 left、center、right（默认 center），<code>valign</code> 可取 top、bottom（默认 top）。"
+      ]
+    },
+    {
+      "type": "table",
+      "title": "表格、行与单元格的常用标签属性（教材表6-3～表6-5 合并）",
+      "subtitle": "教材结论：在 HTML5 中，除了 colspan 和 rowspan，其余属性都不建议使用",
+      "nav": "表格标签属性",
+      "head": [
+        "属性名",
+        "作用对象",
+        "描述"
+      ],
+      "rows": [
+        [
+          "<code>border</code>",
+          "table",
+          "定义表格边框线的粗细，默认没有边框线"
+        ],
+        [
+          "<code>width</code> / <code>height</code>",
+          "table、td、th",
+          "定义宽高，百分比相对于父元素（表格）的宽高"
+        ],
+        [
+          "<code>align</code>",
+          "table、tr、td",
+          "定义水平对齐方式，默认靠左对齐"
+        ],
+        [
+          "<code>bgcolor</code>",
+          "table、tr、td",
+          "定义背景颜色，可取十六进制值、RGB 值或预设颜色值"
+        ],
+        [
+          "<code>cellpadding</code>",
+          "table",
+          "定义单元格的<strong>内边距</strong>，即数据与边框线之间的距离"
+        ],
+        [
+          "<code>cellspacing</code>",
+          "table",
+          "定义单元格的<strong>间距</strong>，即单元格与单元格之间的距离"
+        ],
+        [
+          "<code>valign</code>",
+          "tr、td",
+          "定义单元格的垂直对齐方式，默认<strong>垂直居中（middle）</strong>"
+        ],
+        [
+          "<code>colspan</code>",
+          "td、th",
+          "定义单元格可<strong>跨越列的数目</strong>（合并列）"
+        ],
+        [
+          "<code>rowspan</code>",
+          "td、th",
+          "定义单元格可<strong>跨越行的数目</strong>（合并行）"
+        ]
+      ]
+    },
+    {
+      "type": "task",
+      "title": "任务6-1｜使用 Emmet 语法制作金牌榜表格",
+      "subtitle": "目标：制作 2008 年北京奥运会金牌榜表格，效果如图6-4 所示",
+      "nav": "任务6-1 金牌榜",
+      "goal": "将本书所附教学项目源文件中的图片素材放置在对应项目的 images 文件夹中，然后制作 2008 年北京奥运会金牌榜表格。",
+      "steps": [
+        "观察行列数：共 <strong>7 行 4 列</strong>（包含标题行）。",
+        "使用 Emmet 语法快速生成基本结构：<code>table&gt;tr*7&gt;td*4</code>。",
+        "将数据依次填入；<strong>将表格第一行单元格标签由 td 修改为 th</strong>。",
+        "给 <code>table</code> 依次添加 <code>bgcolor</code>、<code>border</code>、<code>align</code>、<code>width</code> 属性查看效果。",
+        "对行添加 <code>align</code>、<code>bgcolor</code> 实现居中和<strong>间隔底纹</strong>。"
+      ],
+      "lang": "html",
+      "code": "<table>\n    <tr>\n        <th>国家/地区</th>\n        <th><i class=\"golden\"></i></th>\n        <th><i class=\"silver\"></i></th>\n        <th><i class=\"copper\"></i></th>\n    </tr>\n    <tr>\n        <td>中国</td>   <td>51</td>  <td>21</td>  <td>28</td>\n    </tr>\n    <tr>\n        <td>美国</td>   <td>36</td>  <td>38</td>  <td>36</td>\n    </tr>\n    <tr>\n        <td>俄罗斯</td> <td>23</td>  <td>21</td>  <td>28</td>\n    </tr>\n    <tr>\n        <td>英国</td>   <td>19</td>  <td>13</td>  <td>15</td>\n    </tr>\n    <tr>\n        <td>德国</td>   <td>16</td>  <td>10</td>  <td>15</td>\n    </tr>\n    <tr>\n        <td>澳大利亚</td> <td>14</td> <td>15</td>  <td>17</td>\n    </tr>\n</table>"
+    },
+    {
+      "type": "demo",
+      "title": "效果演示｜会「呼吸」的金牌榜表格",
+      "subtitle": "把教材里的 7 行 4 列金牌榜，用 CSS 表格样式属性再美化一遍",
+      "nav": "金牌榜表格演示",
+      "items": [
+        "整张表格用 <code>border-collapse:collapse</code> 把<strong>双线边框折叠成一条线</strong>。",
+        "用 <code>tbody tr:nth-child(odd)</code> 实现<strong>斑马纹</strong>，长表格再也不容易看串行。",
+        "用 <code>tbody tr:hover</code> 实现<strong>悬停高亮</strong>并轻微放大，鼠标指哪行看哪行。",
+        "表头用 <code>thead th</code> 单独着色，页脚用 <code>tfoot</code> 放汇总行——这就是分区标签的价值。"
+      ],
+      "hint": "试着把 nth-child(odd) 改成 even，看看斑马纹会不会从第二行开始；再把 hover 的 transform 去掉，体会交互反馈的差异。",
+      "html": "<style>*{box-sizing:border-box}body{margin:0;font-family:'PingFang SC',system-ui,sans-serif;background:linear-gradient(160deg,#eef4ff,#f8fbff);padding:12px 14px}.u15{text-align:center}.u15 .cap{font-size:19px;font-weight:800;color:#12306f;margin:0 0 9px;animation:u15r .6s both}.u15 .cap em{font-style:normal;color:#c8860a}table.u15t{border-collapse:collapse;width:100%;font-size:12px;color:#4a5b73;background:#fff;box-shadow:0 18px 38px -22px rgba(20,40,90,.5);animation:u15r .6s .12s both}table.u15t th,table.u15t td{border:1px solid #dde5f0;padding:6px 4px;text-align:center;vertical-align:middle}table.u15t thead th{background:#2f6bff;color:#fff;border-color:#2f6bff;font-weight:700}table.u15t tbody tr{transition:background .25s,transform .25s}table.u15t tbody tr:nth-child(odd){background:#f5f8ff}table.u15t tbody tr:hover{background:#fff5dc;transform:scale(1.015)}table.u15t td:first-child{text-align:left;padding-left:12px;font-weight:600;color:#23324a}.u15m{display:inline-block;width:14px;height:14px;border-radius:50%;vertical-align:-2px;box-shadow:inset 0 -2px 3px rgba(0,0,0,.2)}.u15m.g{background:radial-gradient(circle at 32% 30%,#ffeaa7,#dfa211)}.u15m.s{background:radial-gradient(circle at 32% 30%,#f4f6f9,#98a5b3)}.u15m.b{background:radial-gradient(circle at 32% 30%,#f3c49b,#ad6733)}.u15t tfoot td{background:#eaf1ff;color:#1d46b8;font-weight:700}.u15tip{margin:9px 0 0;font-size:11.5px;color:#6b7c94;animation:u15r .6s .35s both}@keyframes u15r{from{opacity:0;transform:translateY(12px)}}</style>\n<div class='u15'>\n<p class='cap'>2008 年北京奥运会<em>金牌榜</em></p>\n<table class='u15t'>\n<thead><tr><th>国家/地区</th><th><i class='u15m g'></i></th><th><i class='u15m s'></i></th><th><i class='u15m b'></i></th></tr></thead>\n<tbody>\n<tr><td>中国</td><td>51</td><td>21</td><td>28</td></tr>\n<tr><td>美国</td><td>36</td><td>38</td><td>36</td></tr>\n<tr><td>俄罗斯</td><td>23</td><td>21</td><td>28</td></tr>\n<tr><td>英国</td><td>19</td><td>13</td><td>15</td></tr>\n<tr><td>德国</td><td>16</td><td>10</td><td>15</td></tr>\n<tr><td>澳大利亚</td><td>14</td><td>15</td><td>17</td></tr>\n</tbody>\n<tfoot><tr><td>合计</td><td>159</td><td>118</td><td>139</td></tr></tfoot>\n</table>\n<p class='u15tip'>border-collapse 折叠双线 · nth-child(odd) 斑马纹 · :hover 悬停高亮</p>\n</div>"
+    },
+    {
+      "type": "section",
+      "no": "6.3",
+      "title": "CSS 表格相关样式属性",
+      "text": "把美化工作从「标签属性」搬到「样式属性」，表格才真正好维护。",
+      "nav": "6.3 CSS 表格样式"
+    },
+    {
+      "type": "table",
+      "title": "表6-6 CSS 表格相关样式属性（教材完整还原）",
+      "subtitle": "四个属性，解决「边框、间距、标题位置、列宽算法」四类问题",
+      "nav": "CSS 表格样式属性",
+      "head": [
+        "属性名",
+        "属性值",
+        "描述"
+      ],
+      "rows": [
+        [
+          "<code>border-collapse</code>",
+          "separate<br>｜collapse",
+          "默认值为 <strong>separate</strong>，表格边框线和单元格边框线分开；取 collapse 时二者合并为一条线"
+        ],
+        [
+          "<code>border-spacing</code>",
+          "length",
+          "指定相邻单元格边框线之间的距离，单位为 px、em 等。定义<strong>两个参数值</strong>时，第一个为水平间隔、第二个为垂直间隔"
+        ],
+        [
+          "<code>caption-side</code>",
+          "top<br>｜bottom",
+          "默认值为 <strong>top</strong>，表示表格标题显示在表格上方"
+        ],
+        [
+          "<code>table-layout</code>",
+          "automatic<br>｜fixed",
+          "默认 <strong>automatic</strong> 使用自动表格布局算法，调整表格及单元格宽度以适应内容；取 <strong>fixed</strong> 时需用 width 显式指定表格宽度，否则该关键字不起作用"
+        ]
+      ]
+    },
+    {
+      "type": "codebullets",
+      "title": "单元格的 9 种对齐方式",
+      "subtitle": "教材问答要点：和 Word 中表格的单元格对齐方式一样，共 3×3 = 9 种",
+      "nav": "单元格 9 种对齐",
+      "items": [
+        "对齐方式分为：左上、中上、右上、左中、中中、右中、左底、中底、右底，共 <strong>9 种</strong>。",
+        "水平方向仍使用 <code>text-align</code>：<code>left</code>、<code>center</code>、<code>right</code>。",
+        "垂直方向使用针对表格专门提供的 <code>vertical-align</code>：<code>top</code>、<code>middle</code>、<code>bottom</code>。",
+        "两者配合使用便有 <strong>3×3 = 9 种</strong>；<strong>单元格的默认对齐方式是「左中」</strong>，即 text-align:left、vertical-align:middle。",
+        "<strong>技巧：</strong><code>valign</code> 是标签属性、<code>vertical-align</code> 是样式属性，功能相同——写法上一个用缩写、一个用「<strong>烤肉串</strong>」式全拼，别写混。"
+      ],
+      "lang": "text",
+      "file": "9 宫格对齐",
+      "code": "             text-align:left   center   right\nvertical-align:top     左上      中上     右上\nvertical-align:middle  左中      中中     右中   ← 默认值在「左中」\nvertical-align:bottom  左底      中底     右底\n\n写法：\n  tr td, tr th{ text-align:center; vertical-align:middle; }"
+    },
+    {
+      "type": "task",
+      "title": "任务6-2｜导入数据创建表格",
+      "subtitle": "目标：根据 GoldenMedalRank.txt 与素材精灵图，用 CSS 表格样式属性完成金牌榜",
+      "nav": "任务6-2 导入数据",
+      "goal": "使用 Dreamweaver 的 Import → Tabular Data 功能把 Tab 分隔的文本数据直接变成表格，再用 CSS 完成美化（图6-11）。",
+      "steps": [
+        "将光标放置在 <code>body</code> 标签内部，选择 <strong>File → Import → Tabular Data</strong> 命令。",
+        "① 选择 <strong>GoldenMedalRank.txt</strong> 所在的物理磁盘位置。",
+        "② 指定数据分隔符——该文件中数据使用 <strong>Tab</strong> 进行分隔。",
+        "③ 指定生成的表格大小——这里指定为固定的 <strong>600 Pixels</strong>。",
+        "④ 指定 Cell padding、Cell spacing、Border：<strong>前两者留空表示使用默认值</strong>，Border 输入 <strong>1</strong>。",
+        "单击 OK 完成导入，自动生成表格的 HTML 代码。",
+        "打开 <strong>CSS Designer</strong> 面板，新建样式表文件 <strong>style.css</strong>，存放在 css 文件夹中，并以 <strong>Link</strong> 方式引入。",
+        "测量素材精灵图：金、银、铜牌图标尺寸为 <strong>18px×17px</strong>，获取其背景坐标后写入 CSS。"
+      ]
+    },
+    {
+      "type": "code",
+      "title": "代码6-3｜金牌榜表格的相关 CSS 代码（教材完整还原）",
+      "subtitle": "折叠边框 + 首列着色 + 精灵图图标，三招让表格脱胎换骨",
+      "nav": "代码6-3 表格 CSS",
+      "lang": "css",
+      "file": "css/style.css",
+      "code": "@charset \"UTF-8\";\ntable{\n    border-collapse: collapse;\n    color:#666;\n    font-size: 12px;\n    margin:0 auto;\n    border:1px solid #ccc;\n}\ntr td,tr th{\n    text-align: center;\n    vertical-align: middle;\n}\nth:first-child{\n    background-color: #ccc;\n    color:white;\n}\nth i{\n    background: url(\"../images/all_bg_01.gif\") no-repeat;\n    display: inline-block;\n    width: 18px;\n    height: 17px;\n}\ncaption{\n    font-size: 26px;\n    font-weight: bold;\n}\n.golden{\n    background-position: 0 -79px;\n}\n.silver{\n    background-position:-18px -79px;\n}\n.copper{\n    background-position: -36px -79px;\n}",
+      "caption": "教材讲解要点：<code>th:first-child</code> 用<strong>伪类</strong>指定第一个标题单元格的样式；<code>th i</code> 把精灵图作为背景图片，并将 <code>i</code> 指定为 <strong>18px×17px</strong> 的<strong>行内块</strong>；三条 background-position 语句分别显示金、银、铜牌图标。"
+    },
+    {
+      "type": "ai",
+      "title": "AI 前沿：让 AI 帮你「读懂」并重构一张表格",
+      "subtitle": "表格是结构化数据，也是大模型最擅长处理的内容形态之一",
+      "nav": "AI 前沿",
+      "text": "表格天生就是「键值对 + 行列关系」的结构化数据，大语言模型对它的理解能力远强于对一段散文的理解。把一张乱糟糟的 Excel 或网页表格丢给 <strong>DeepSeek、通义千问、文心一言</strong> 这类国产大模型，它可以立刻帮你整理字段、补全表头、甚至直接生成语义化的 HTML 表格代码。但请记住：<strong>AI 生成的表格未必语义正确</strong>——它经常用一堆 div 冒充表格，导致屏幕阅读器读不出数据关系。",
+      "items": [
+        "AI 辅助编码：在 HBuilderX / VSCode 中使用 <strong>通义灵码、文心快码、GitHub Copilot</strong>，输入「生成 7 行 4 列的金牌榜表格」即可秒出骨架。",
+        "AI 数据清洗：把 Tab 分隔或 CSV 文本交给大模型，让它批量转成 <code>tr</code> / <code>td</code> 结构，比逐行手敲快得多。",
+        "AI 无障碍审查：让 AI 检查表格是否缺少 <code>caption</code>、<code>thead</code>、<code>th</code>，这正是容易被忽略的语义规范。",
+        "职业提醒：AI 输出的代码需要人工校核<strong>语义是否规范、数据是否对齐、无障碍是否达标</strong>——这正是本单元要训练的基本功。"
+      ]
+    },
+    {
+      "type": "quiz",
+      "title": "随堂检测",
+      "subtitle": "选自教材 6.7 作业选择题，检验你的理解",
+      "nav": "随堂检测",
+      "items": [
+        {
+          "q": "表示表格跨越行的 HTML 属性是（　　）。",
+          "options": [
+            "A. rowspan",
+            "B. colspan",
+            "C. rows",
+            "D. columns"
+          ],
+          "answer": "A",
+          "tip": "rowspan 跨行、colspan 跨列。二者用于控制表格的结构，因此在 HTML5 中被继续保留。",
+          "type": "single"
+        },
+        {
+          "q": "表示表格行的标签是（　　）。",
+          "options": [
+            "A. table",
+            "B. th",
+            "C. tr",
+            "D. td"
+          ],
+          "answer": "C",
+          "tip": "tr = table row，定义表格行；th 是标题单元格，td 是数据单元格。",
+          "type": "single"
+        },
+        {
+          "q": "要将表格的边框折叠，应使用的样式属性是（　　）。",
+          "options": [
+            "A. border",
+            "B. border-style",
+            "C. border-collapse",
+            "D. border-gap"
+          ],
+          "answer": "C",
+          "tip": "border-collapse 取 collapse 时，表格边框线与单元格边框线合并；默认 separate 是分开的。",
+          "type": "single"
+        },
+        {
+          "q": "在 HTML5 中，下列表格标签属性仍建议使用的是（　　）。",
+          "options": [
+            "A. colspan、rowspan",
+            "B. border、bgcolor",
+            "C. cellpadding、cellspacing",
+            "D. align、valign"
+          ],
+          "answer": "A",
+          "tip": "教材原文：除 colspan 和 rowspan 之外，其余属性都不建议使用，美化工作应交给 CSS。",
+          "type": "single"
+        },
+        {
+          "q": "关于表格标签与 CSS 表格样式，下列说法正确的有（　　）。",
+          "options": [
+            "A. th 默认加粗并居中显示，td 默认不加粗、靠左显示",
+            "B. caption 定义表格标题，默认在表格中居中显示",
+            "C. border-collapse:collapse 会把表格边框线与单元格边框线合并为一条",
+            "D. colspan 用于跨行合并单元格，rowspan 用于跨列合并单元格"
+          ],
+          "answer": "ABC",
+          "tip": "<code>colspan</code> 跨列、<code>rowspan</code> 跨行，D 项说反了；其余三项均与教材一致。",
+          "type": "multi"
+        }
+      ]
+    },
+    {
+      "type": "summary",
+      "title": "本课小结",
+      "subtitle": "抓住这五句话，表格就真正属于你了",
+      "nav": "本课小结",
+      "items": [
+        "两个作用：<strong>布局</strong>（已被 CSS 取代）与<strong>呈现数据</strong>（已回归初衷）——今天做表格，为的是把数据讲清楚。",
+        "结构化标签：<code>table</code> 定整体、<code>tr</code> 定行、<code>th</code>/<code>td</code> 定单元格；<code>caption</code>、<code>thead</code>、<code>tbody</code>、<code>tfoot</code> 让表格更有语义、更好维护。",
+        "<code>th</code> 默认加粗居中、<code>td</code> 默认不加粗居左；<code>colspan</code> 跨列、<code>rowspan</code> 跨行，是 HTML5 唯二保留的结构属性。",
+        "CSS 四件套：<code>border-collapse</code> 折叠边框、<code>border-spacing</code> 控间距、<code>caption-side</code> 定标题位置、<code>table-layout</code> 定列宽算法。",
+        "单元格对齐共 <strong>3×3 = 9 种</strong>：<code>text-align</code> 管水平、<code>vertical-align</code> 管垂直，默认值是「左中」。"
+      ]
+    },
+    {
+      "type": "homework",
+      "title": "课后作业",
+      "nav": "课后作业",
+      "items": [
+        "<strong>选择题：</strong>完成教材 6.7「一、选择题」第 1～3 题，并说明每个选项为何对或错。",
+        "<strong>操作题：</strong>中央电视台网站为 2022 年北京冬奥会制作了一个奖牌榜（教材图6-39）。请利用本书所附的相关素材文件完成该奖牌榜的制作，要求使用 <code>border-collapse</code>、斑马纹与悬停高亮。",
+        "<strong>拓展题：</strong>把自己班级的课表改写成语义化表格，必须包含 <code>caption</code>、<code>thead</code>、<code>tbody</code>，并说明这两个标签各自的作用。",
+        "<strong>预习：</strong>阅读教材 6.4～6.5.1，思考一个问题：表单和表格的用途有什么本质区别？"
+      ]
+    },
+    {
+      "type": "refs",
+      "title": "出处与参考",
+      "subtitle": "本课件内容依据教材，并核对以下权威技术文档",
+      "nav": "出处与参考",
+      "items": [
+        {
+          "t": "教材《网页制作（HTML5+CSS3）》项目6 表格和表单（6.1～6.3）",
+          "u": "郑哲、傅冬 主编 · 电子工业出版社 · 2025 年 1 月第 1 版"
+        },
+        {
+          "t": "MDN Web Docs · table：表格元素",
+          "u": "https://developer.mozilla.org/zh-CN/docs/Web/HTML/Element/table"
+        },
+        {
+          "t": "MDN Web Docs · HTML 表格基础",
+          "u": "https://developer.mozilla.org/zh-CN/docs/Learn/HTML/Tables/Basics"
+        },
+        {
+          "t": "MDN Web Docs · border-collapse",
+          "u": "https://developer.mozilla.org/zh-CN/docs/Web/CSS/border-collapse"
+        },
+        {
+          "t": "MDN Web Docs · table-layout",
+          "u": "https://developer.mozilla.org/zh-CN/docs/Web/CSS/table-layout"
+        },
+        {
+          "t": "MDN Web Docs · vertical-align",
+          "u": "https://developer.mozilla.org/zh-CN/docs/Web/CSS/vertical-align"
+        }
+      ]
+    },
+    {
+      "type": "end",
+      "title": "第 15 单元 · 结束",
+      "text": "下一单元：走进表单，认识 input 家族的十八般武艺",
+      "nav": "结束"
+    }
+  ]
+}

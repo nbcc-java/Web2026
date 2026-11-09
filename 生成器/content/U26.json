@@ -1,0 +1,606 @@
+{
+  "id": "U26",
+  "project": "项目10",
+  "project_name": "多媒体应用",
+  "unit": "第 26 单元",
+  "title": "多媒体标签与应用：object、embed、video、audio",
+  "subtitle": "从插件时代的 object / embed，走到 HTML5 原生的 video 与 audio",
+  "duration": 40,
+  "cover_tags": [
+    "object / embed",
+    "video / audio",
+    "MIME 类型",
+    "source 兼容写法",
+    "播放器属性"
+  ],
+  "ref_book": "电子工业出版社 · 2025 年 1 月第 1 版",
+  "objectives": {
+    "knowledge": [
+      "掌握 object 标签的语法及使用方法",
+      "掌握 embed 标签的语法及使用方法",
+      "掌握 video 标签的语法及使用方法",
+      "掌握 audio 标签的语法及使用方法"
+    ],
+    "skill": [
+      "能使用 object 标签实现在页面中嵌入 PDF 文档",
+      "能使用 video 标签实现在页面中播放视频",
+      "能使用 audio 标签实现在页面中播放音频"
+    ],
+    "literacy": [
+      "培养民族自信、文化自信，弘扬社会主义文化价值",
+      "讲好中国故事，传播好中国声音"
+    ]
+  },
+  "slides": [
+    {
+      "type": "objectives",
+      "title": "本单元我们要达成什么",
+      "subtitle": "对照教材《项目10》的学习目标 / 技能目标 / 素养目标",
+      "objectives": {
+        "knowledge": [
+          "掌握 object 标签的语法及使用方法",
+          "掌握 embed 标签的语法及使用方法",
+          "掌握 video 标签的语法及使用方法",
+          "掌握 audio 标签的语法及使用方法"
+        ],
+        "skill": [
+          "能使用 object 标签实现在页面中嵌入 PDF 文档",
+          "能使用 video 标签实现在页面中播放视频",
+          "能使用 audio 标签实现在页面中播放音频"
+        ],
+        "literacy": [
+          "培养民族自信、文化自信，弘扬社会主义文化价值",
+          "讲好中国故事，传播好中国声音"
+        ]
+      }
+    },
+    {
+      "type": "ideology",
+      "title": "用 Web 多媒体讲好中国故事",
+      "subtitle": "教材《项目10》思政课堂",
+      "nav": "思政课堂",
+      "text": "基于 Web 的网络多媒体为<strong>红色文化的传承和发扬</strong>提供了全新的平台。通过互联网，人们可以随时随地访问各种红色文化资源，如图片、视频、音频等，从而能更加深入地了解红色历史。此外，网络多媒体通过其<strong>互动性、社交性</strong>等特点，让红色文化更加贴近群众，增强群众对红色文化的认同感和归属感。同时，网络多媒体也为红色文化的传播提供了更加广阔的渠道，让红色文化在全球范围内得到更广泛的传播和推广。因此，基于 Web 的网络多媒体在红色文化传承和发扬中发挥着<strong>越来越重要的作用</strong>。",
+      "topic": "本单元的任务案例正是「红色印记」主题。作为未来的 Web 前端工程师，请结合岗位谈一谈：在通过网络传播中国文化时，你会如何保证内容的真实、庄重与可访问性？"
+    },
+    {
+      "type": "outline",
+      "title": "本单元导览",
+      "subtitle": "两条技术路线、四个标签、三个任务",
+      "nav": "导览",
+      "items": [
+        "网页多媒体从哪来？为什么兼容性问题特别多？（10.1）",
+        "传统路线：<code>object</code> 与 <code>embed</code>——插件时代的遗产",
+        "HTML5 路线：<code>video</code> 与 <code>audio</code>——原生支持、取代前者",
+        "任务 10-1～10-3：嵌入 PDF、嵌入视频、嵌入音频"
+      ]
+    },
+    {
+      "type": "section",
+      "no": "10.1.1–10.1.2",
+      "title": "传统的嵌入方式：object 与 embed",
+      "text": "网页制作从嵌入文字、链接、简单图片，逐渐走向嵌入<strong>视频、音频、PDF、Canvas 动画</strong>等多媒体对象。HTML 提供了 <code>object</code>、<code>embed</code>、<code>video</code>、<code>audio</code> 等标签，<strong>但这些标签在使用时存在兼容性问题，需要额外注意。</strong>",
+      "nav": "传统嵌入方式"
+    },
+    {
+      "type": "codebullets",
+      "title": "object 标签：HTML 嵌入对象元素",
+      "subtitle": "教材原文：表示一个外部资源——图像、嵌套浏览上下文或插件要处理的资源",
+      "nav": "object 标签",
+      "items": [
+        "<code>object</code> 标签表示<strong>一个外部资源</strong>，可将其视为图像、嵌套的浏览上下文，或<strong>插件要处理的资源</strong>。",
+        "涵盖范围：音频、视频、<strong>Java Applets 小程序</strong>、<strong>ActiveX 控件</strong>、<strong>PDF</strong>、<strong>Flash</strong> 等。",
+        "设置初衷是<strong>取代 <code>img</code> 与 <code>applet</code> 标签</strong>，但由于<strong>漏洞及缺乏浏览器支持</strong>，这一初衷并未实现。",
+        "可用于 Windows IE 3.0 及以上版本，或其他支持 ActiveX 控件的浏览器；<strong>主流浏览器用不同代码加载相同对象</strong>，需针对不同浏览器写不同语法。",
+        "下方语法<strong>只对 IE 9 及以下低版本 IE 有效</strong>，对 IE 10/11 与非 IE 浏览器无效。"
+      ],
+      "lang": "html",
+      "file": "index.html",
+      "code": "<!-- 针对 IE 6～9 等低版本 IE 浏览器的语法 -->\n<object classid=\"clsid\" codebase=\"url\" width=\"w-value\" height=\"h-value\">\n  <param name=\"movie\" value=\"file_name\">\n  <param name=\"quality\" value=\"high\">\n  <param name=\"wmode\" value=\"opaque\">\n  …\n</object>"
+    },
+    {
+      "type": "code",
+      "title": "object 的兼容写法：嵌套 object + 条件注释",
+      "subtitle": "针对 IE 10/11 与非 IE 浏览器，需要在 object 标签中再嵌入一个 object 标签",
+      "nav": "object 兼容写法",
+      "lang": "html",
+      "file": "index.html",
+      "code": "<!-- 针对 IE 10/11 浏览器和非 IE 浏览器的语法 -->\n<object classid=\"clsid\" codebase=\"url\" width=\"w_value\" height=\"h_value\">\n  <param name=\"movie\" value=\"file_name\">\n  …\n  <!--[if !IE]>\n  <object type=\"media_type\" data=\"media_fileName\" width=\"w_value\" height=\"h_value\">\n  <![endif]-->\n  <param name=\"quality\" value=\"high\">\n  <param name=\"wmode\" value=\"opaque\">\n  <!--[if !IE]>\n  </object>\n  <![endif]-->\n</object>",
+      "caption": "<b>原理：</b>如果未显示 <code>object</code> 标签，则会执行位于 <code>object</code> 与 <code>/object</code> 之间的代码。<strong>在非 IE 浏览器中会执行条件注释 <code>[if !IE]</code> 内部的语句</strong>，从而实现对非 IE 浏览器的兼容。可借此<strong>嵌套多个 object（每个对应一个浏览器）</strong>。<br><b>常见的编程错误（教材原文）：</b>Firefox 浏览器不支持 <code>object</code> 标签，把上述语法用在 Firefox 中是常见的编程错误。"
+    },
+    {
+      "type": "table",
+      "title": "object 标签属性（教材表 10-1）",
+      "subtitle": "标注「HTML5 不支持」的多为已废弃属性，现代开发请优先使用 data / type / width / height / name",
+      "nav": "表10-1 object属性",
+      "head": [
+        "属性名",
+        "属性值",
+        "描述"
+      ],
+      "rows": [
+        [
+          "align",
+          "top bottom middle left right",
+          "<strong>HTML5 不支持</strong>。根据周围元素指定 object 标签的对齐方式"
+        ],
+        [
+          "archive",
+          "URL",
+          "<strong>HTML5 不支持</strong>。以空格分隔的归档 URL 列表，存档包含与对象相关的资源"
+        ],
+        [
+          "border",
+          "pixels",
+          "<strong>HTML5 不支持</strong>。指定 object 标签周围边框的宽度"
+        ],
+        [
+          "classid",
+          "class_ID",
+          "<strong>HTML5 不支持</strong>。在 Windows 注册表或 URL 中定义类 ID 值"
+        ],
+        [
+          "codebase",
+          "URL",
+          "<strong>HTML5 不支持</strong>。定义在何处查找对象的代码"
+        ],
+        [
+          "codetype",
+          "media_type",
+          "<strong>HTML5 不支持</strong>。classid 属性引用的代码的媒体类型"
+        ],
+        [
+          "data",
+          "URL",
+          "指定<strong>对象要使用的资源</strong>的 URL"
+        ],
+        [
+          "declare",
+          "declare",
+          "<strong>HTML5 不支持</strong>。定义只能声明对象，而不能在需要之前创建或实例化对象"
+        ],
+        [
+          "form",
+          "form_id",
+          "指定对象所属的<strong>一个或多个表单</strong>"
+        ],
+        [
+          "height",
+          "pixels",
+          "指定对象的<strong>高度</strong>"
+        ],
+        [
+          "hspace",
+          "pixels",
+          "<strong>HTML5 不支持</strong>。指定对象左侧和右侧的空白"
+        ],
+        [
+          "name",
+          "name",
+          "指定对象的<strong>名称</strong>"
+        ],
+        [
+          "standby",
+          "text",
+          "<strong>HTML5 不支持</strong>。定义在加载对象时要显示的文本"
+        ],
+        [
+          "type",
+          "media_type",
+          "定义 <strong>data 属性中指定的数据</strong>的媒体类型"
+        ],
+        [
+          "usemap",
+          "#mapname",
+          "指定与对象一起使用的<strong>客户端图像映射</strong>的名称"
+        ],
+        [
+          "vspace",
+          "pixels",
+          "<strong>HTML5 不支持</strong>。指定对象顶部和底部的空白"
+        ],
+        [
+          "width",
+          "pixels",
+          "指定对象的<strong>宽度</strong>"
+        ]
+      ]
+    },
+    {
+      "type": "bullets",
+      "title": "技术史：Flash 的兴与衰",
+      "subtitle": "教材原文，可作课程思政与技术史素材",
+      "nav": "Flash 兴衰",
+      "items": [
+        "Flash 作为嵌入网页的动画和多媒体应用，在网页发展历史中<strong>曾辉煌一时</strong>。",
+        "衰落原因：对浏览器<strong>搜索引擎不友好</strong>，无法实现搜索引擎优化；且<strong>存在安全隐患</strong>。",
+        "<strong>自 2021 年起，Adobe 已停止为 Flash 提供支持。</strong>",
+        "在随后任何版本的 Google Chrome 浏览器中，Flash 内容（包括音频和视频）<strong>都无法再正常显示</strong>。",
+        "目前尚有部分浏览器支持 Flash（如 360 浏览器和 QQ 浏览器），但并不保证以后还支持——<strong>新项目不要再依赖插件。</strong>"
+      ]
+    },
+    {
+      "type": "codebullets",
+      "title": "embed 标签：Netscape 插件路线的嵌入方式",
+      "subtitle": "与 object 一样可嵌入 Flash 动画、音频和视频，但适用浏览器不同",
+      "nav": "embed 标签",
+      "items": [
+        "<code>embed</code> 与 <code>object</code> 一样，可用于在网页中嵌入 <strong>Flash 动画、音频和视频</strong>等多媒体内容。",
+        "<strong>不同之处：</strong><code>embed</code> 用于 <strong>Netscape Navigator 2.0</strong> 及其以后版本的浏览器，或其他支持 Netscape 插件的浏览器，<strong>包括 IE 与 Google Chrome</strong>。",
+        "<strong>Firefox 浏览器目前尚不支持 <code>embed</code> 标签</strong>——这是与 object 恰好相反的一个「坑」。",
+        "<code>src</code> 属性用于指定嵌入对象的文件路径；嵌入对象的格式可以是 <strong>MP3、MP4、SWF</strong> 等。",
+        "<strong>教材注意：</strong>大多数现代浏览器已弃用并取消了对浏览器插件的支持，若希望网站能在普通用户浏览器中运行，<strong>建议尽量不使用 <code>embed</code> 标签</strong>。"
+      ],
+      "lang": "html",
+      "file": "index.html",
+      "code": "<!-- 基本语法 -->\n<embed src=\"file_url\"></embed>\n\n<!-- 示例：指定宽高与 MIME 类型 -->\n<embed src=\"assets/demo.swf\" width=\"400\" height=\"300\" type=\"application/x-shockwave-flash\"></embed>"
+    },
+    {
+      "type": "table",
+      "title": "embed 标签的常用属性（教材表 10-2）",
+      "subtitle": "数量不多，但每个都很实用",
+      "nav": "表10-2 embed属性",
+      "head": [
+        "属性名",
+        "描述"
+      ],
+      "rows": [
+        [
+          "src",
+          "指定<strong>嵌入对象的文件路径</strong>"
+        ],
+        [
+          "width",
+          "以<strong>像素</strong>为单位定义嵌入对象的宽度"
+        ],
+        [
+          "height",
+          "以<strong>像素</strong>为单位定义嵌入对象的高度"
+        ],
+        [
+          "loop",
+          "指定嵌入对象是否<strong>循环播放</strong>"
+        ],
+        [
+          "hidden",
+          "设置<strong>多媒体软件的可视性</strong>，默认值为 false"
+        ],
+        [
+          "type",
+          "定义嵌入对象的 <strong>MIME 类型</strong>"
+        ]
+      ]
+    },
+    {
+      "type": "task",
+      "title": "任务 10-1｜嵌入 PDF",
+      "subtitle": "将教学项目源文件中的 assets/zhang.pdf 显示在页面中（图 10-1），页面标题「红色印记-张人亚党章学堂」",
+      "nav": "任务10-1 嵌入PDF",
+      "goal": "根据 <code>object</code>、<code>embed</code> 的语法，把一份 PDF 文档<strong>直接显示在页面里</strong>。",
+      "steps": [
+        "新建页面，标题写为「<strong>红色印记-张人亚党章学堂</strong>」，呼应本项目的思政主题。",
+        "准备容器 <code>.outer</code>：800px 宽、<code>margin:0 auto</code> 居中、背景 <code>#CCC</code>、文字居中。",
+        "在容器中写入 <code>embed</code> 标签，<code>src</code> 指向 <code>assets/zhang.pdf</code>。",
+        "设置 <code>width=\"95%\"</code>、<code>height=\"600\"</code>，让 PDF 阅读器占满容器。",
+        "预览时注意：<strong>能否显示取决于浏览器是否内置 PDF 阅读器</strong>——这正是插件方案的局限。"
+      ],
+      "lang": "html",
+      "code": "/* 代码 10-1：CSS */\n.outer{ margin:0 auto; background-color:#CCC; width:800px; text-align:center; }\n\n<!-- 代码 10-1：HTML -->\n<div class=\"outer\">\n  <embed src=\"assets/zhang.pdf\" width=\"95%\" height=\"600\"></embed>\n</div>"
+    },
+    {
+      "type": "section",
+      "no": "10.1.3–10.1.4",
+      "title": "HTML5 的多媒体标签",
+      "text": "不再依赖任何插件——浏览器原生就能播。",
+      "nav": "HTML5 多媒体标签"
+    },
+    {
+      "type": "table",
+      "title": "video 标签的常用属性（教材表 10-3）",
+      "subtitle": "在 HTML5 中，通过专用的 video 和 audio 标签分别实现视频、音频嵌入，从而取代 object 和 embed",
+      "nav": "表10-3 video属性",
+      "head": [
+        "属性名",
+        "属性值",
+        "描述"
+      ],
+      "rows": [
+        [
+          "autoplay",
+          "autoplay",
+          "如果出现该属性，则视频<strong>在就绪后马上播放</strong>"
+        ],
+        [
+          "controls",
+          "controls",
+          "如果出现该属性，则向用户<strong>显示控件</strong>，如播放按钮"
+        ],
+        [
+          "height",
+          "pixels",
+          "设置<strong>视频播放器</strong>的高度"
+        ],
+        [
+          "loop",
+          "loop",
+          "如果出现该属性，则当多媒体文件完成播放后<strong>再次开始播放</strong>"
+        ],
+        [
+          "preload",
+          "preload",
+          "如果出现该属性，则视频<strong>在页面加载时进行加载</strong>并预备播放。<strong>如果使用 autoplay，则忽略该属性</strong>"
+        ],
+        [
+          "src",
+          "url",
+          "设置<strong>要播放的视频的 URL</strong>"
+        ],
+        [
+          "width",
+          "pixels",
+          "设置<strong>视频播放器</strong>的宽度"
+        ],
+        [
+          "muted",
+          "muted",
+          "如果出现该属性，则视频的音频输出为<strong>静音</strong>"
+        ],
+        [
+          "poster",
+          "URL",
+          "规定视频<strong>正在下载时显示的图像</strong>，直到用户单击播放按钮"
+        ],
+        [
+          "type",
+          "MIME",
+          "定义嵌入对象的 <strong>MIME 类型</strong>"
+        ]
+      ]
+    },
+    {
+      "type": "table",
+      "title": "video 标签支持的多媒体文件格式（教材表 10-4）",
+      "subtitle": "不同浏览器对编码格式的支持并不一致，做项目时通常要准备多个格式",
+      "nav": "表10-4 视频格式",
+      "head": [
+        "格式",
+        "MIME-type",
+        "扩展名",
+        "描述"
+      ],
+      "rows": [
+        [
+          "Mpeg-4",
+          "video/mp4",
+          ".mp4",
+          "MP4 文件使用 <strong>H264 视频编解码器</strong>和 <strong>AAC 音频编解码器</strong>"
+        ],
+        [
+          "WebM",
+          "video/webm",
+          ".webm",
+          "WebM 文件使用 <strong>VP8 视频编解码器</strong>和 <strong>Vorbis 音频编解码器</strong>"
+        ],
+        [
+          "OGG",
+          "video/ogg",
+          ".ogg",
+          "OGG 文件使用 <strong>Theora 视频编解码器</strong>和 <strong>Vorbis 音频编解码器</strong>"
+        ]
+      ]
+    },
+    {
+      "type": "task",
+      "title": "任务 10-2｜嵌入视频",
+      "subtitle": "将教学项目源文件的 intro.mp4 显示在页面中（图 10-2），页面标题「课程宣传片-视频播放」",
+      "nav": "任务10-2 嵌入视频",
+      "goal": "用一行 <code>video</code> 标签完成视频嵌入，并理解 <code>src</code>、<code>controls</code>、<code>loop</code> 的作用。",
+      "steps": [
+        "新建页面，标题写为「<strong>课程宣传片-视频播放</strong>」。",
+        "在需要的位置写入 <code>video</code> 标签。",
+        "<strong>必须设置引用的视频存放地址</strong>（<code>src</code>），可以是<strong>相对路径</strong>，也可以是<strong>网络路径</strong>。",
+        "加上 <code>controls</code> 才会显示播放控件；加上 <code>loop</code> 才会循环播放。",
+        "用 <code>width=\"80%\"</code> 让播放器随容器自适应宽度。"
+      ],
+      "lang": "html",
+      "code": "<!-- 代码 10-2 -->\n<video src=\"./assets/intro.mp4\" controls loop width=\"80%\"></video>"
+    },
+    {
+      "type": "compare",
+      "title": "video 与 audio：几乎一样，只差一个属性",
+      "subtitle": "教材原文：audio 中不包含 poster 属性，其余属性用法相同",
+      "nav": "video 与 audio",
+      "a": {
+        "title": "video 标签",
+        "items": [
+          "语法：<code>&lt;video src=\"file_url\"&gt;&lt;/video&gt;</code>",
+          "嵌入的<strong>音频格式</strong>包括 MP3、WAV、OGG、WebM 等（音频部分由编解码器决定）",
+          "独有属性：<code>poster</code>（<strong>封面图</strong>）、<code>width</code> / <code>height</code>（播放器尺寸）",
+          "有画面，因此需要<strong>占据一块区域</strong>"
+        ]
+      },
+      "b": {
+        "title": "audio 标签",
+        "items": [
+          "语法：<code>&lt;audio src=\"file_url\" controls&gt;&lt;/audio&gt;</code>",
+          "<code>audio</code> 标签中<strong>至少要包含 src 属性</strong>，它指定了音频文件的路径",
+          "<strong>与 video 的差别：不包含 poster 属性</strong>，其余属性（controls、autoplay、loop、muted、preload）用法相同",
+          "没有画面，通常只显示一条<strong>控件条</strong>"
+        ]
+      }
+    },
+    {
+      "type": "task",
+      "title": "任务 10-3｜嵌入音频",
+      "subtitle": "将教学项目源文件的 intro.mp3 显示在页面中（图 10-3），页面标题「课程宣传音频」",
+      "nav": "任务10-3 嵌入音频",
+      "goal": "掌握用 <code>source</code> 标签提供<strong>多种格式</strong>的兼容性写法，并给出不支持时的提示文字。",
+      "steps": [
+        "准备容器 <code>.outer</code>（800px 居中、背景 <code>#FFE4C4</code>）与标题 <code>h2</code>（红色 + <code>text-shadow</code>）。",
+        "写入 <code>audio</code> 标签，并加上 <code>controls</code>、<code>autoplay</code>、<code>loop</code> 三个属性。",
+        "<strong>不用 src 属性</strong>，而是在标签内部放两个 <code>source</code> 子标签。",
+        "分别给出 <strong>MP3 与 OGG 两种格式</strong>，尽可能确保用户浏览器能正常播放。",
+        "最后写一句「<strong>您的浏览器不支持audio 元素。</strong>」——不支持时用户会看到它。",
+        "<strong>启发问答：为什么不用 <code>audio src=\"…\"</code> 的简单写法？</strong>因为用 <code>source</code> 可提供 MP3 与 OGG 两种格式，尽可能确保浏览器能播放，实现<strong>更加友好的兼容</strong>。",
+        "教材评价：<strong>不仅便于代码的调试和验证，还极大地提升了用户体验，是一种更加推荐的做法。</strong>使用兼容性写法满足不同浏览器的需求，是<strong>良好的编程习惯</strong>的体现。"
+      ],
+      "lang": "html",
+      "code": "/* 代码 10-3：CSS */\n.outer{ margin:0 auto; background-color:#FFE4C4; width:800px; text-align:center; }\nh2{ color:red; text-shadow:3px 4px #c3610863; }\n\n<!-- 代码 10-3：HTML -->\n<div class=\"outer\">\n  <h2>课程宣传音频</h2>\n  <audio controls=\"controls\" autoplay=\"autoplay\" loop=\"loop\">\n    <source src=\"./assets/intro.mp3\" type=\"audio/mpeg\">\n    <source src=\"./assets/intro.ogg\" type=\"audio/ogg\">\n    您的浏览器不支持audio 元素。\n  </audio>\n</div>"
+    },
+    {
+      "type": "demo",
+      "title": "交互演示｜用 CSS 画一个播放器界面（不嵌入任何真实媒体）",
+      "subtitle": "左侧是播放器外观（纯 CSS 绘制），右侧标注 video / audio 常用属性",
+      "nav": "播放器界面演示",
+      "items": [
+        "播放区域：用 CSS 渐变模拟<strong>视频画面</strong>，三角形用<strong>边框</strong>画出来（宽高为 0 + 三边透明）。",
+        "控制条：播放按钮、进度条、时间、音量——都可以用 <code>div</code> + <code>border-radius</code> 拼出来。",
+        "进度条正在动：这是 <code>@keyframes</code> 改变宽度实现的，与真实播放进度无关。",
+        "右侧列出的 <code>controls</code>、<code>autoplay</code>、<code>loop</code>、<code>muted</code>、<code>poster</code>、<code>preload</code> 才是<strong>真正控制播放行为的属性</strong>。"
+      ],
+      "hint": "注意：这些控件都是「画出来的外观」。真实项目中只要给 video 加上 controls 属性，浏览器就会提供一整套可交互的原生控件。",
+      "html": "<style>.d26{margin:0;font-family:'PingFang SC',system-ui,sans-serif;color:#1b2a44}.d26 .stage{display:flex;gap:20px;justify-content:center;align-items:flex-start;padding:6px}.d26 .player{width:396px;border-radius:12px;overflow:hidden;background:#0e1b2e;box-shadow:0 20px 44px -24px rgba(20,40,90,.75)}.d26 .screen{position:relative;height:200px;background:linear-gradient(135deg,#12306f,#2f6bff 45%,#0fb5c9);display:flex;align-items:center;justify-content:center}.d26 .play{width:0;height:0;border-left:26px solid rgba(255,255,255,.95);border-top:16px solid transparent;border-bottom:16px solid transparent;filter:drop-shadow(0 2px 6px rgba(0,0,0,.35))}.d26 .tag{position:absolute;left:12px;top:12px;font-size:11px;color:#fff;background:rgba(0,0,0,.32);border:1px solid rgba(255,255,255,.35);border-radius:999px;padding:3px 10px}.d26 .bar{display:flex;align-items:center;gap:10px;padding:10px 12px;background:#16273f}.d26 .ico{width:0;height:0;border-left:9px solid #fff;border-top:6px solid transparent;border-bottom:6px solid transparent;flex:none}.d26 .track{flex:1;height:6px;border-radius:999px;background:#2b3f5e;position:relative;overflow:hidden}.d26 .track i{position:absolute;left:0;top:0;bottom:0;width:0;border-radius:999px;background:linear-gradient(90deg,#ff9d00,#ff5e7d);animation:prog 6s linear infinite}.d26 .time{font-size:11px;color:#9db8f0;font-family:Menlo,monospace;flex:none}.d26 .vol{width:13px;height:13px;border-radius:3px;background:#9db8f0;flex:none}.d26 .fs{width:13px;height:13px;border:2px solid #9db8f0;border-radius:2px;flex:none}.d26 .doc{width:206px;font-size:11.5px;line-height:1.85;color:#5a6c85}.d26 .doc p{margin:0 0 5px}.d26 .doc b{color:#1d46b8;font-family:Menlo,monospace;font-weight:700}.d26 .doc em{font-style:normal;color:#8a5a00}.d26 .tip{margin-top:12px;text-align:center;font-size:11.5px;color:#5a6c85}.d26 .tip code{background:#eef3ff;border:1px solid #d5e2fb;border-radius:5px;padding:1px 6px;color:#1d46b8}@keyframes prog{0%{width:0}100%{width:100%}}</style><div class='d26'><div class='stage'><div class='player'><div class='screen'><span class='tag'>poster 封面图</span><span class='play'></span></div><div class='bar'><span class='ico'></span><span class='track'><i></i></span><span class='time'>01:23</span><span class='vol'></span><span class='fs'></span></div></div><div class='doc'><p><b>controls</b> 显示播放控件</p><p><b>autoplay</b> 就绪后马上播放</p><p><b>loop</b> 播放结束后重新开始</p><p><b>muted</b> 音频输出静音</p><p><b>poster</b> 下载时显示的图像</p><p><b>preload</b> 页面加载时预加载</p><p><b>src</b> 媒体文件地址</p><p><em>audio 不含 poster 属性</em></p></div></div><p class='tip'>纯 CSS 绘制的外观　·　真实播放行为由 <code>video</code> / <code>audio</code> 的属性决定</p></div>"
+    },
+    {
+      "type": "ai",
+      "title": "AI 前沿：让 AI 帮你处理多媒体兼容与无障碍",
+      "subtitle": "多媒体是「兼容性 + 无障碍」问题最集中的地方，AI 恰好能兜底",
+      "nav": "AI 前沿",
+      "text": "多媒体标签看似简单，却是<strong>最容易出错</strong>的一块：格式要转码、浏览器要兼容、移动端还常常禁止自动播放。借助 AI 工具（DeepSeek、通义千问、文心一言），你可以快速生成<strong>多格式 source 列表、字幕轨道与降级提示</strong>；借助 GitHub Copilot、通义灵码，则能在编辑器里补全整套播放器结构。但<strong>「能不能自动播放」「要不要加字幕」这类产品决策，仍然必须由你来做。</strong>",
+      "items": [
+        "提示词示例：「给这段 video 生成 MP4 + WebM 双格式 source，并加上中文字幕轨道与不支持时的降级提示」。",
+        "无障碍提醒：视频应提供<strong>字幕</strong>与文字稿，音频应提供文字版本——这也是 1+X 考试与真实项目的共同要求。",
+        "移动端经验：多数移动浏览器<strong>禁止带声音的自动播放</strong>，通常要配合 <code>muted</code> 使用。",
+        "职业提醒：AI 生成的代码无法通过你的<strong>真机验证</strong>——在手机上跑一遍，永远是最后一道工序。"
+      ]
+    },
+    {
+      "type": "quiz",
+      "title": "随堂检测",
+      "subtitle": "选自教材 10.3 课后选择题",
+      "nav": "随堂检测",
+      "items": [
+        {
+          "q": "以下不是视频格式的是（　　）。",
+          "options": [
+            "A. MP4",
+            "B. MP3",
+            "C. OGG",
+            "D. WebM"
+          ],
+          "answer": "B",
+          "tip": "MP3 是音频格式；MP4、OGG、WebM 都可作为视频容器格式。",
+          "type": "single"
+        },
+        {
+          "q": "以下不是音频格式的是（　　）。",
+          "options": [
+            "A. MP3",
+            "B. MOV",
+            "C. OGG",
+            "D. WAV"
+          ],
+          "answer": "B",
+          "tip": "MOV 是视频容器格式；音频格式包括 MP3、WAV、OGG、WebM 等。",
+          "type": "single"
+        },
+        {
+          "q": "要嵌入 PDF 应该使用（　　）标签。",
+          "options": [
+            "A. embed",
+            "B. video",
+            "C. audio",
+            "D. 以上均不是"
+          ],
+          "answer": "A",
+          "tip": "教材任务 10-1 使用 embed（也可用 object）嵌入 PDF。",
+          "type": "single"
+        },
+        {
+          "q": "下列关于 <code>video</code> 标签常用属性的说法中，正确的有（　　）。",
+          "options": [
+            "A. 出现 <code>controls</code> 属性时，向用户显示播放控件",
+            "B. <code>poster</code> 规定视频正在下载时显示的封面图像",
+            "C. 使用 <code>autoplay</code> 时，<code>preload</code> 属性仍然优先生效",
+            "D. 出现 <code>muted</code> 属性时，视频的音频输出为静音"
+          ],
+          "answer": "ABD",
+          "tip": "<code>preload</code> 在<strong>使用 autoplay 时会被忽略</strong>，这也是教材表 10-3 特别标注的一点。",
+          "type": "multi"
+        },
+        {
+          "q": "使用（　　）属性可以让视频循环播放。",
+          "options": [
+            "A. poster",
+            "B. preload",
+            "C. loop",
+            "D. muted"
+          ],
+          "answer": "C",
+          "tip": "loop 表示当多媒体文件完成播放后再次开始播放。",
+          "type": "single"
+        }
+      ]
+    },
+    {
+      "type": "summary",
+      "title": "本课小结",
+      "nav": "本课小结",
+      "items": [
+        "发展脉络：从插件时代的 <code>object</code> / <code>embed</code>，走向 HTML5 原生的 <code>video</code> / <code>audio</code>。",
+        "<code>object</code>：表示外部资源，初衷是取代 img 与 applet，但因漏洞与缺乏支持未能实现；<strong>Firefox 不支持</strong>。",
+        "<code>embed</code>：Netscape 插件路线，IE 与 Chrome 可用，<strong>Firefox 不支持</strong>；现代项目<strong>建议尽量不用</strong>。",
+        "<code>video</code> 常用属性：<code>src</code>、<code>controls</code>、<code>autoplay</code>、<code>loop</code>、<code>muted</code>、<code>poster</code>、<code>preload</code>、<code>width</code>、<code>height</code>、<code>type</code>。",
+        "<code>audio</code> 与 <code>video</code> 属性几乎相同，<strong>只是没有 poster</strong>；用 <code>source</code> 提供多格式 + 降级文字，是<strong>更推荐的兼容性写法</strong>。"
+      ]
+    },
+    {
+      "type": "homework",
+      "title": "课后作业",
+      "nav": "课后作业",
+      "items": [
+        "<strong>选择题：</strong>完成教材 10.3「一、选择题」第 1～5 题，并说明每个选项为何对或错。",
+        "<strong>操作题 1（教材 10.3）：</strong>以「中国传统美德」为题，讲述一个经典故事并录制成音频 <code>ctmd.mp3</code>，置于 <code>assets</code> 目录下，通过代码实现音频的<strong>自动播放</strong>。",
+        "<strong>操作题 2（教材 10.3）：</strong>以「大美新疆」为题，将搜集的素材制作成视频，并设计一个宣传页面，要求嵌入<strong>视频、图片和文字</strong>。",
+        "<strong>项目讨论（教材 10.3）：</strong>① 找 1～2 个包含视频、音频的页面，探讨其实现方法；② 谈一谈在通过网络宣传中国文化时，需要注意的问题。"
+      ]
+    },
+    {
+      "type": "refs",
+      "title": "出处与参考",
+      "subtitle": "本课件内容依据教材，并核对以下权威技术文档",
+      "nav": "出处与参考",
+      "items": [
+        {
+          "t": "教材《网页制作（HTML5+CSS3）》项目10 多媒体应用（10.1，PDF 315–323）",
+          "u": "郑哲、傅冬 主编 · 电子工业出版社 · 2025 年 1 月第 1 版"
+        },
+        {
+          "t": "MDN Web Docs · video（视频嵌入元素）",
+          "u": "https://developer.mozilla.org/zh-CN/docs/Web/HTML/Element/video"
+        },
+        {
+          "t": "MDN Web Docs · audio（音频嵌入元素）",
+          "u": "https://developer.mozilla.org/zh-CN/docs/Web/HTML/Element/audio"
+        },
+        {
+          "t": "MDN Web Docs · object（嵌入对象元素）",
+          "u": "https://developer.mozilla.org/zh-CN/docs/Web/HTML/Element/object"
+        },
+        {
+          "t": "MDN Web Docs · embed（嵌入外部内容元素）",
+          "u": "https://developer.mozilla.org/zh-CN/docs/Web/HTML/Element/embed"
+        },
+        {
+          "t": "MDN Web Docs · source（为媒体指定多个来源）",
+          "u": "https://developer.mozilla.org/zh-CN/docs/Web/HTML/Element/source"
+        }
+      ]
+    },
+    {
+      "type": "end",
+      "title": "第 26 单元 · 结束",
+      "text": "课程收官：愿你写出的页面，既正确规范，又赏心悦目",
+      "nav": "结束"
+    }
+  ]
+}

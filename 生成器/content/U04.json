@@ -1,0 +1,625 @@
+{
+  "id": "U04",
+  "project": "项目2",
+  "project_name": "HTML 基础",
+  "unit": "第 4 单元",
+  "title": "语义化标签与常用文本标签",
+  "subtitle": "用有语义的标签描述文档结构，用正确的文本标签组织页面内容",
+  "duration": 40,
+  "cover_tags": [
+    "语义化",
+    "文档结构标签",
+    "div / span",
+    "块状与行内",
+    "字符实体"
+  ],
+  "ref_book": "电子工业出版社 · 2025 年 1 月第 1 版",
+  "objectives": {
+    "knowledge": [
+      "掌握常见文档结构标签的语法和语义",
+      "理解 HTML5 标签语义化的意义",
+      "掌握常用文本标签与字符实体的用法"
+    ],
+    "skill": [
+      "能使用符合语义的 HTML 标签描述文档结构",
+      "能使用 div 标签划分页面区块",
+      "能使用列表、字符实体等组织文本内容"
+    ],
+    "literacy": [
+      "培养精益求精的工匠精神",
+      "培养勇于探索、敢于尝试的创新精神",
+      "树立规范编码与无障碍意识的职业态度"
+    ]
+  },
+  "slides": [
+    {
+      "type": "objectives",
+      "title": "本单元我们要达成什么",
+      "subtitle": "对照教材《项目2》HTML 基础 2.4.1～2.4.3 的学习目标",
+      "objectives": {
+        "knowledge": [
+          "了解 HTML 页面的基本结构",
+          "掌握 HTML 标签的写法",
+          "掌握常见 HTML 标签的语法和语义",
+          "使用 HTML5 中的标签语义化页面"
+        ],
+        "skill": [
+          "能使用符合语义的 HTML 标签描述文档结构",
+          "能使用符合语义的 HTML 标签表达文档内容",
+          "能正确使用链接和锚点",
+          "能使用图片标签引入图片"
+        ],
+        "literacy": [
+          "培养严谨务实的劳动态度",
+          "培养精益求精的工匠精神",
+          "培养勇于探索、敢于尝试的创新精神",
+          "培养网络安全意识，做遵法守规的 Web 前端工程师"
+        ]
+      }
+    },
+    {
+      "type": "ideology",
+      "title": "补齐短板，推动数字经济高质量发展",
+      "subtitle": "教材《项目2》思政课堂",
+      "nav": "思政课堂",
+      "text": "「十四五」以来，我国数字经济发展取得了显著成就，人工智能、大数据、区块链、云计算等新兴数字产业异军突起。移动支付、电子商务、网络购物、视频直播、在线学习、远程会议、个性化定制、智慧物流等新业态新模式竞相发展。同时也要看到：我国数字经济还存在<strong>发展不平衡</strong>的问题，关键核心技术的<strong>自主创新能力不强</strong>，不同行业、区域、群体间的<strong>「数字鸿沟」尚未弥合</strong>，数据资源价值潜力有待释放、数字经济治理体系亟待完善，迫切需要补齐短板，推动<strong>数字经济高质量发展</strong>。",
+      "topic": "语义化标签能让读屏软件「读出」导航、正文与页脚。请结合 Website 无障碍访问的实际场景讨论：多写一个 header、少写一个 div，对一个视障使用者意味着什么？"
+    },
+    {
+      "type": "outline",
+      "title": "本单元导览",
+      "subtitle": "为什么要语义化？内容的组织该怎样落地成代码",
+      "nav": "导览",
+      "items": [
+        "为什么要语义化？b / i 与 strong / em 到底差在哪？",
+        "文档结构标签怎么用？一个常见页面布局该怎样拆分？",
+        "任务2-1：写出课程介绍页的基本代码框架",
+        "常用文本标签、列表与字符实体怎么用才规范？"
+      ]
+    },
+    {
+      "type": "section",
+      "no": "2.4",
+      "title": "认识更多语义化标签",
+      "text": "把「语义、呈现和行为」分开：话由 HTML 说，样子交给 CSS 画。",
+      "nav": "2.4 语义化导入"
+    },
+    {
+      "type": "compare",
+      "title": "b / i（呈现） vs strong / em（语义）",
+      "subtitle": "教材导言：显示效果一样，表达的意思完全不同",
+      "nav": "b/i 与 strong/em",
+      "a": {
+        "title": "传统写法 b、i —— 只说外观",
+        "items": [
+          "<code>b</code> 表示 bold（<strong>加粗</strong>），<code>i</code> 表示 italic（<strong>倾斜</strong>）",
+          "只描述文字<strong>长什么样</strong>，不解释<strong>为什么这样</strong>",
+          "教材：<code>b</code> 与 <code>i</code> <strong>并未被废弃</strong>，常被当作<strong>行内容器</strong>使用（如在内容前加图标）"
+        ]
+      },
+      "b": {
+        "title": "现代写法 strong、em —— 带有语义",
+        "items": [
+          "<code>em</code> 表示 emphasized text，是<strong>强调的局部文字</strong>（显示倾斜）",
+          "<code>strong</code> 表示 strong emphasized text，是<strong>特别强调的重要文字</strong>（显示加粗）",
+          "新规范<strong>建议使用 strong、em 代替 b、i</strong>，以具有<strong>更好的语义</strong>",
+          "<strong>良好习惯：</strong>用 <code>strong</code>、<code>em</code> 强调文字；外观交给 CSS"
+        ]
+      }
+    },
+    {
+      "type": "section",
+      "no": "2.4.1",
+      "title": "文档结构标签",
+      "text": "七个语义标签，把页面的「区块身份」说清楚。",
+      "nav": "2.4.1 文档结构标签"
+    },
+    {
+      "type": "table",
+      "title": "常用的文档结构标签（教材表2-1）",
+      "subtitle": "它们的主要作用是构建页面的基本框架",
+      "nav": "表2-1 文档结构标签",
+      "head": [
+        "序号",
+        "标签名",
+        "语义"
+      ],
+      "rows": [
+        [
+          "1",
+          "<code>&lt;header&gt;</code>",
+          "用于定义文档的<strong>头部区域</strong>"
+        ],
+        [
+          "2",
+          "<code>&lt;nav&gt;</code>",
+          "用于定义页面的<strong>导航区域</strong>"
+        ],
+        [
+          "3",
+          "<code>&lt;section&gt;</code>",
+          "用于对页面内容进行<strong>分块</strong>"
+        ],
+        [
+          "4",
+          "<code>&lt;main&gt;</code>",
+          "用于定义页面的<strong>主体内容</strong>，并且通常是<strong>唯一</strong>的"
+        ],
+        [
+          "5",
+          "<code>&lt;article&gt;</code>",
+          "用于定义页面<strong>独立的内容区域</strong>，常用于显示<strong>正文</strong>"
+        ],
+        [
+          "6",
+          "<code>&lt;aside&gt;</code>",
+          "用于定义页面的<strong>侧边栏区域</strong>"
+        ],
+        [
+          "7",
+          "<code>&lt;footer&gt;</code>",
+          "用于定义页面的<strong>页脚区域</strong>"
+        ]
+      ]
+    },
+    {
+      "type": "demo",
+      "title": "效果演示｜一个常见的页面布局（教材图2-5）",
+      "subtitle": "看图、看标签、看它们之间的位置关系",
+      "nav": "页面布局演示",
+      "items": [
+        "① <code>header</code>：包裹导航区域的<strong>头部区域</strong>，写在 <code>body</code> 内部。",
+        "② <code>nav</code>：<strong>导航菜单</strong>，通常嵌在 <code>header</code> 里。",
+        "③ <code>main</code> + <code>section</code>：中间主体内容的<strong>3 个区块</strong>，外层用唯一的 <code>main</code> 包裹。",
+        "④ <code>aside</code>：<strong>侧边栏区域</strong>；⑤ <code>footer</code>：<strong>页脚区域</strong>。",
+        "<code>aside</code> 与 <code>main</code> <strong>没有包含关系，是兄弟关系</strong>；HTML5 文档结构设计没有唯一答案，只要语义规范、避免滥用。"
+      ],
+      "hint": "想一想：图2-5 里的轮播图区域该用什么标签？（答案：用 <code>div</code> 承载）",
+      "html": "<style>*{box-sizing:border-box}body{margin:0;font-family:'PingFang SC',system-ui,sans-serif;background:#f5f8fd}.wrap{width:660px;padding:6px}.grid{display:grid;grid-template-columns:1fr 150px;gap:8px}.c{border:1px solid #cfdcf2;border-radius:8px;background:#fff;padding:8px 10px;font-size:12px;color:#41506b;opacity:0;transform:scale(.96);animation:pop .5s forwards;text-align:center}.hd{grid-column:1/3;background:#e6edff}.ft{grid-column:1/3;background:#eef3fb}.inner{display:flex;flex-direction:column;gap:5px}.sec{border:1px dashed #c3d3ef;border-radius:6px;padding:4px;background:#f7faff;font-size:11.5px}.k{font-size:11.5px;color:#8892a6}.b{font-family:Menlo,monospace;color:#1d46b8;font-size:11.5px}.a1{animation-delay:.1s}.a3{animation-delay:.4s}.a4{animation-delay:.6s}.a5{animation-delay:.8s}@keyframes pop{to{opacity:1;transform:scale(1)}}.tip{margin-top:8px;font-size:12.5px;color:#c2601a;background:#fff3e7;border-radius:8px;padding:7px 11px;line-height:1.7;opacity:0;animation:pop .5s 1.1s forwards}</style><div class='wrap'><div class='grid'><div class='c hd a1'>① <span class='b'>&lt;header&gt;</span> 头部区域　·　内含 ② <span class='b'>&lt;nav&gt;</span> 导航菜单</div><div class='c a3'><div class='inner'><div class='k'>③ <span class='b'>&lt;main&gt;</span> 主体内容（唯一）</div><div class='sec'><span class='b'>&lt;section&gt;</span> 课程展示区</div><div class='sec'><span class='b'>&lt;section&gt;</span> 活页教材区</div><div class='sec'><span class='b'>&lt;section&gt;</span> 课堂实验区</div></div></div><div class='c a4'>④ <span class='b'>&lt;aside&gt;</span><br>侧边栏区域</div><div class='c ft a5'>⑤ <span class='b'>&lt;footer&gt;</span> 页脚区域</div></div><div class='tip'>教材图2-5 的布局关系：<code>aside</code> 与 <code>main</code> 是<strong>兄弟关系</strong>；没有对应语义标签的区域（如轮播图）用 <code>div</code> 包裹。</div></div>"
+    },
+    {
+      "type": "codebullets",
+      "title": "把布局写成代码（教材代码2-2 / 2-3 / 2-4）",
+      "subtitle": "三段代码拼起来，就是一个完整的文档结构",
+      "nav": "文档结构代码",
+      "items": [
+        "<strong>代码2-2 头部区域：</strong><code>header</code> 里放 <code>nav</code>，两者是嵌套的<strong>父子关系</strong>。",
+        "<strong>代码2-3 主体内容：</strong>外层用唯一的 <code>main</code>，内部按<strong>兄弟关系</strong>并列若干 <code>section</code>。",
+        "<strong>代码2-4 侧边栏和页脚：</strong><code>aside</code> 与 <code>main</code> 并列，<code>footer</code> 收尾。",
+        "<strong>article：</strong>常用于显示<strong>一篇文章的正文</strong>，例如一篇博客或一条新闻的正文。",
+        "<strong>轮播图：</strong>HTML5 <strong>没有提供对应的文档结构标签</strong>，这类无法用现有标签描述的特定区域，统一用 <code>div</code> 包裹。",
+        "教材提醒：<strong>HTML5 的文档结构设计没有唯一答案</strong>，只需要在语义上符合规范，尽量避免标签的滥用。"
+      ],
+      "lang": "html",
+      "file": "文档结构组合代码",
+      "code": "<!-- 代码2-2 头部区域 -->\n<head>\n  <meta charset=\"utf-8\">\n</head>\n<body>\n  <header>\n    <nav>导航菜单</nav>\n  </header>\n  …\n</body>\n\n<!-- 代码2-3 主体内容结构 -->\n<main>\n  <section>区块1</section>\n  <section>区块2</section>\n  <section>区块3</section>\n</main>\n\n<!-- 代码2-4 侧边栏和页脚 -->\n<main>\n  <section>区块1</section>\n  <section>区块2</section>\n  <section>区块3</section>\n</main>\n<aside>侧边栏区域</aside>\n<footer>页脚区域</footer>"
+    },
+    {
+      "type": "compare",
+      "title": "常见编程错误：head 与 header 别搞混",
+      "subtitle": "教材明确的初学错误，几乎人人都犯过一次",
+      "nav": "head vs header",
+      "a": {
+        "title": "head 标签",
+        "items": [
+          "用于<strong>设置 HTML 文档头部描述信息</strong>",
+          "相关内容<strong>不在浏览器视口中显示</strong>",
+          "置于 <code>body</code> 标签<strong>之前</strong>，并与 <code>body</code> <strong>并列</strong>",
+          "内部通常放 <code>meta</code>、<code>title</code>、<code>link</code> 等"
+        ]
+      },
+      "b": {
+        "title": "header 标签",
+        "items": [
+          "定义文档的<strong>头部区域</strong>，是<strong>浏览器可见部分</strong>",
+          "必须放在 <code>body</code> 标签<strong>内部</strong>",
+          "内部常嵌套 <code>nav</code> 导航菜单",
+          "它描述的是<strong>页面内容结构</strong>，不是文档元信息"
+        ]
+      }
+    },
+    {
+      "type": "task",
+      "title": "任务2-1｜使用语义化标签构建 HTML 页面",
+      "subtitle": "目标：使用集成开发工具写出教材图2-5 所示页面的基本代码框架",
+      "nav": "任务2-1 代码框架",
+      "goal": "根据 2.4.1 与 2.4.2 节的标签语义，用语义化标签写出「课程介绍页」的基本代码框架。",
+      "steps": [
+        {
+          "title": "新建文件",
+          "text": "在站点（项目）中新建 HTML5 文档，及时保存为 index.html。"
+        },
+        {
+          "title": "写出骨架",
+          "text": "第一行写 DOCTYPE，随后是 html、head（含 meta 与 title）、body。"
+        },
+        {
+          "title": "头部与导航",
+          "text": "在 body 内先写 header 包裹 nav 导航区域，形成一对父子关系。"
+        },
+        {
+          "title": "轮播图区块",
+          "text": "插入 div 标签承载轮播图——HTML5 中找不到与之对应的文档结构标签。"
+        },
+        {
+          "title": "主体与侧边",
+          "text": "用唯一的 main 包裹 3 个 section（课程展示区、活页教材区、课堂实验区），再并列一个 aside 个人介绍区。"
+        },
+        {
+          "title": "收尾并检查",
+          "text": "添加 footer 页脚区域，保存后预览；注意 aside 与 main 是兄弟关系，不要嵌套错。"
+        }
+      ],
+      "lang": "html",
+      "code": "<!DOCTYPE html>\n<html>\n  <head>\n    <meta charset=\"utf-8\">\n    <title>课程介绍页</title>\n  </head>\n  <body>\n    <header>\n      <nav>导航区域</nav>\n    </header>\n    <div>\n      轮播图\n    </div>\n    <main>\n      <section>课程展示区</section>\n      <section>活页教材区</section>\n      <section>课堂实验区</section>\n    </main>\n    <aside>\n      个人介绍区\n    </aside>\n    <footer>页脚区域</footer>\n  </body>\n</html>"
+    },
+    {
+      "type": "section",
+      "no": "2.4.3",
+      "title": "常用的文本标签",
+      "text": "标题、段落、换行、强调、列表、实体——页面内容就由这些零件组成。",
+      "nav": "2.4.3 常用文本标签"
+    },
+    {
+      "type": "table",
+      "title": "常用的文本标签一览",
+      "subtitle": "重点关注「类型」一列：块状独占一行，行内同占一行",
+      "nav": "常用文本标签",
+      "head": [
+        "标签",
+        "用途",
+        "类型"
+      ],
+      "rows": [
+        [
+          "<code>&lt;h1&gt;</code> ～ <code>&lt;h6&gt;</code>",
+          "6 级<strong>标题标签</strong>，数字越小层级越高、字体越大；<code>h1</code> 通常作为整个页面的大标题",
+          "块状"
+        ],
+        [
+          "<code>&lt;p&gt;</code>",
+          "定义正文<strong>段落</strong>；默认左对齐，行与行之间有一定间隔",
+          "块状"
+        ],
+        [
+          "<code>&lt;br&gt;</code>",
+          "段落内<strong>换行</strong>；输入 Enter 键换行时浏览器只显示一个空白字符",
+          "行内"
+        ],
+        [
+          "<code>&lt;strong&gt;</code> / <code>&lt;em&gt;</code>",
+          "分别表示<strong>特别强调</strong>（加粗）与<strong>强调</strong>（倾斜），取代 <code>b</code> / <code>i</code>",
+          "行内"
+        ],
+        [
+          "<code>&lt;b&gt;</code> / <code>&lt;i&gt;</code>",
+          "加粗 / 倾斜，仅表达外观；常作为<strong>行内容器</strong>使用（如添加图标）",
+          "行内"
+        ],
+        [
+          "<code>&lt;span&gt;</code>",
+          "<strong>装饰性行内标签</strong>，用于局部文本的特殊效果以形成视觉差异，语义上类似 <code>div</code>",
+          "行内"
+        ],
+        [
+          "<code>&lt;div&gt;</code>",
+          "division 的缩写，表示一个<strong>区块或小节</strong>，用于划分无法用现有语义标签描述的特定区域",
+          "块状"
+        ]
+      ]
+    },
+    {
+      "type": "bullets",
+      "title": "块状标签、行内标签与三个易错点",
+      "subtitle": "理解了 display 的差异，排版的一半问题就解决了",
+      "nav": "块状与行内",
+      "items": [
+        "<strong>块状标签（块级元素）：</strong>默认情况下<strong>占据父容器的一整行</strong>，左右不允许其他元素出现；<code>display</code> 属性值为 <code>block</code>。",
+        "<strong>行内标签（行内元素）：</strong><strong>允许其他元素出现在左右并同占一行</strong>；<code>display</code> 属性值为 <code>inline</code>。<code>br</code>、<code>span</code> 都是典型的行内标签。",
+        "<strong>易错一：</strong>在 HTML 段落中按 Enter 键换行，浏览器<strong>仅显示一个空白字符大小</strong>；连按多次也一样——换行请用 <code>&lt;br&gt;</code>。",
+        "<strong>易错二：</strong><code>&lt;br&gt;</code> 符合 HTML5 规范，<code>&lt;br /&gt;</code> 符合 XHTML 规范，两者都能被正确渲染；<strong>新的 HTML5 项目建议直接写成 br</strong>。",
+        "<strong>易错三：</strong>段落对齐可用 <code>align</code> 属性或 <code>text-align</code> 样式；按<strong>内容与样式分离</strong>原则，<strong>推荐使用 CSS</strong>，不要给 <code>p</code> 加 align 属性。"
+      ]
+    },
+    {
+      "type": "codebullets",
+      "title": "三种列表：无序、有序与自定义（语法2-3）",
+      "subtitle": "常用于制作目录、导航菜单与条目列举",
+      "nav": "三种列表",
+      "items": [
+        "无序列表 <code>ul</code> 与有序列表 <code>ol</code> 都包含若干<strong>列表项 <code>li</code>（list item）</strong>。",
+        "<strong>语义区别：</strong>无序列表项<strong>无顺序要求</strong>；有序列表项<strong>对顺序有要求</strong>；自定义列表 <code>dl</code> <strong>多一个标题 <code>dt</code> 与描述 <code>dd</code> 的功能</strong>。",
+        "<strong>type 属性：</strong><code>ol</code> 默认是数字序号，可改为 <strong>A、B、C</strong>；<code>ul</code> 默认符号样式是<strong>黑心实圈 disc</strong>，可改为<strong>空心圆圈 circle 或方块 square</strong>。",
+        "技巧：列表中的<strong>每个列表项都可以嵌套其他列表</strong>，利用这个特性可以实现<strong>多级菜单</strong>的效果。"
+      ],
+      "lang": "html",
+      "file": "语法2-3 三种列表",
+      "code": "<!-- 无序列表 -->\n<ul>\n  <li>香蕉</li>\n  <li>苹果</li>\n  <li>哈密瓜</li>\n</ul>\n\n<!-- 有序列表 -->\n<p>选择你最喜欢的水果</p>\n<ol type=\"A\">\n  <li>香蕉</li>\n  <li>苹果</li>\n  <li>哈密瓜</li>\n</ol>\n\n<!-- 自定义列表 -->\n<dl>\n  <dt>姓名</dt>\n  <dd>张三</dd>\n  <dt>电话</dt>\n  <dd>13324567812</dd>\n</dl>"
+    },
+    {
+      "type": "table",
+      "title": "常用的字符实体（教材表2-2）",
+      "subtitle": "小于号、大于号要参与构成标签，必须用字符实体代替",
+      "nav": "表2-2 字符实体",
+      "head": [
+        "字符",
+        "描述",
+        "数字实体（十进制）",
+        "命名实体"
+      ],
+      "rows": [
+        [
+          "<",
+          "小于号",
+          "<code>&amp;#60;</code>",
+          "<code>&amp;lt;</code>（lt = less than）"
+        ],
+        [
+          ">",
+          "大于号",
+          "<code>&amp;#62;</code>",
+          "<code>&amp;gt;</code>"
+        ],
+        [
+          "&amp;",
+          "和号",
+          "<code>&amp;#38;</code>",
+          "<code>&amp;amp;</code>"
+        ],
+        [
+          "\"",
+          "双引号",
+          "<code>&amp;#34;</code>",
+          "<code>&amp;quot;</code>"
+        ],
+        [
+          "空格",
+          "空格",
+          "<code>&amp;#160;</code>",
+          "<code>&amp;nbsp;</code>"
+        ],
+        [
+          "©",
+          "版权",
+          "<code>&amp;#169;</code>",
+          "<code>&amp;copy;</code>"
+        ],
+        [
+          "®",
+          "注册商标",
+          "<code>&amp;#174;</code>",
+          "<code>&amp;reg;</code>"
+        ],
+        [
+          "¥",
+          "人民币",
+          "<code>&amp;#165;</code>",
+          "<code>&amp;yen;</code>"
+        ],
+        [
+          "× / ÷",
+          "乘号 / 除号",
+          "<code>&amp;#215;</code> / <code>&amp;#247;</code>",
+          "<code>&amp;times;</code> / <code>&amp;divide;</code>"
+        ],
+        [
+          "※",
+          "教材提示",
+          "教材表头标注为「八进制」，实际列出的是<strong>十进制</strong>写法",
+          "语法：<strong>以 &amp; 开始，以 ; 结束</strong>"
+        ]
+      ]
+    },
+    {
+      "type": "table",
+      "title": "其他常用的特殊文本标签（教材表2-3）",
+      "subtitle": "用得不多，但关键时刻能让语义更准确",
+      "nav": "表2-3 特殊文本标签",
+      "head": [
+        "标签",
+        "描述",
+        "示例"
+      ],
+      "rows": [
+        [
+          "<code>&lt;sup&gt;</code> / <code>&lt;sub&gt;</code>",
+          "上标 / 下标",
+          "<code>x&lt;sup&gt;2&lt;/sup&gt;</code> 得到 x²"
+        ],
+        [
+          "<code>&lt;mark&gt;</code>",
+          "高亮标记",
+          "<code>&lt;mark&gt;高亮标记&lt;/mark&gt;</code>"
+        ],
+        [
+          "<code>&lt;ins&gt;</code> / <code>&lt;del&gt;</code>",
+          "插入字（下画线） / 删除字（删除线）",
+          "<code>&lt;del&gt;请删除&lt;/del&gt;</code>"
+        ],
+        [
+          "<code>&lt;abbr&gt;</code>",
+          "缩略词，配合 <code>title</code> 属性给出全称",
+          "<code>&lt;abbr title=\"etcetera\"&gt;etc.&lt;/abbr&gt;</code>"
+        ],
+        [
+          "<code>&lt;q&gt;</code>",
+          "短引用，浏览器自动添加引号",
+          "<code>古人云&lt;q&gt;天将降大任于是人也&lt;/q&gt;</code>"
+        ],
+        [
+          "<code>&lt;blockquote&gt;</code>",
+          "块引用",
+          "<code>&lt;blockquote&gt;这段引自他处&lt;/blockquote&gt;</code>"
+        ],
+        [
+          "<code>&lt;address&gt;</code>",
+          "地址信息",
+          "<code>&lt;address&gt;学府路9 号&lt;/address&gt;</code>"
+        ],
+        [
+          "<code>&lt;code&gt;</code> / <code>&lt;kbd&gt;</code>",
+          "计算机输出 / 计算机输入",
+          "<code>&lt;code&gt;output&lt;/code&gt;</code>"
+        ]
+      ]
+    },
+    {
+      "type": "demo",
+      "title": "效果演示｜文本标签的实际显示效果",
+      "subtitle": "标题层级、行内强调与三种列表，逐一看实际效果",
+      "nav": "文本标签效果",
+      "items": [
+        "左侧：<code>h1</code> 到 <code>h6</code>，<strong>数字越小层级越高、字体越大</strong>，且每行独占一整行。",
+        "中间：<code>p</code> 段落说明 enter 键换行无效，<code>br</code> 才是真正的换行。",
+        "<code>strong</code>、<code>em</code>、<code>mark</code>、<code>del</code>、<code>sup</code>、<code>sub</code> 都是<strong>行内标签</strong>，可以同占一行。",
+        "底部：<code>ul</code>、<code>ol</code>、<code>dl</code> 三种列表的默认样式对照。"
+      ],
+      "hint": "练一练：把 h2 换成 span，看看「块状」与「行内」在页面上的差别。",
+      "html": "<style>*{box-sizing:border-box}body{margin:0;font-family:'PingFang SC',system-ui,sans-serif;background:#f5f8fd}.wrap{width:660px;padding:6px}.card{background:#fff;border:1px solid #e2e8f2;border-radius:12px;padding:12px 14px;box-shadow:0 14px 30px -22px rgba(20,40,90,.45)}.top{display:flex;gap:14px}.col{flex:1}.t{margin:3px 0;color:#0e1b2e;opacity:0;animation:in .45s forwards}.t1{font-size:22px}.t2{font-size:19px;animation-delay:.1s}.t3{font-size:17px;animation-delay:.2s}.t4{font-size:15px;animation-delay:.3s}.t5{font-size:13px;animation-delay:.4s}.t6{font-size:11.5px;animation-delay:.5s}.p{flex:1.1;border-left:1px dashed #d8e2f0;padding-left:12px;font-size:12.5px;color:#41506b;line-height:1.8;opacity:0;animation:in .45s .6s forwards}.ln em{color:#b7791f}.ln strong{color:#177a4a}.ln mark{background:#ffe9a8}.ln del{color:#c0392b}.ln sup{color:#1d46b8}.ln sub{color:#1d46b8}hr{border:0;border-top:1px dashed #d8e2f0;margin:10px 0}.lists{display:flex;gap:12px;font-size:12px;color:#41506b;opacity:0;animation:in .45s .8s forwards}.lists b{display:block;font-size:11.5px;color:#8892a6;font-weight:400;margin-bottom:4px}.lists ul,.lists ol{margin:0;padding-left:18px}.lists dl{margin:0}@keyframes in{from{opacity:0;transform:translateY(8px)}}</style><div class='wrap'><div class='card'><div class='top'><div class='col'><div class='t t1'>h1 一级标题</div><div class='t t2'>h2 二级标题</div><div class='t t3'>h3 三级标题</div><div class='t t4'>h4 四级标题</div><div class='t t5'>h5 五级标题</div><div class='t t6'>h6 六级标题（块状：独占一行）</div></div><div class='p ln'><strong>&lt;p&gt; 段落：</strong>在 HTML 中按 Enter 键换行，<strong>只显示一个空白字符</strong>；<br>换行要使用 <strong>br</strong> 标签。<br><br><strong>strong 加粗</strong>、<em>em 倾斜</em>、<mark>mark 高亮</mark>、<del>del 删除线</del>、x<sup>2</sup>、x<sub>2</sub>。<br><span style='font-size:11.5px;color:#8892a6'>它们都是行内标签，可以同占一行。</span></div></div><hr><div class='lists'><div><b>&lt;ul&gt; 无序列表（disc）</b><ul><li>香蕉</li><li>苹果</li></ul></div><div><b>&lt;ol type=A&gt; 有序列表</b><ol type='A'><li>香蕉</li><li>苹果</li></ol></div><div><b>&lt;dl&gt; 自定义列表</b><dl><dt>姓名</dt><dd>张三</dd><dt>电话</dt><dd>13324567812</dd></dl></div></div></div></div>"
+    },
+    {
+      "type": "ai",
+      "title": "AI 前沿：语义化为什么让机器更懂你的页面",
+      "subtitle": "搜索引擎、读屏软件和大模型，都是靠「读结构」来理解网页的",
+      "nav": "AI 前沿",
+      "text": "机器不是用眼睛「看」页面，而是<strong>解析标签树</strong>。标题是否有层级、导航是否用 <code>nav</code>、正文是否用 <code>article</code>，直接决定搜索引擎爬虫、读屏软件与大语言模型能否抓住重点。<strong>语义写得规范，SEO 排名与 AI 摘要都会更准确。</strong>",
+      "items": [
+        "SEO 优化：合适的 <code>title</code> 与清晰的结构，帮助搜索引擎把网站或文章<strong>合理归类</strong>。",
+        "信息无障碍：<code>nav</code>、<code>main</code>、<code>h1</code>～<code>h6</code> 让读屏软件快速定位内容区块，这是前端工程师的职业底线。",
+        "AI 摘要：让大模型概括长页面时，它会优先抽取 <code>article</code> 正文与标题层级作为线索。",
+        "实操建议：用 DeepSeek、通义千问等国产大模型，把一段「全是 div」的旧代码改写成语义化版本，再对照 MDN 逐条校核。"
+      ]
+    },
+    {
+      "type": "quiz",
+      "title": "随堂检测",
+      "subtitle": "选自教材项目2 课后选择题，检验你的掌握程度",
+      "nav": "随堂检测",
+      "items": [
+        {
+          "q": "在 HTML 标签中，具有「段落」语义的标签是（　　）。",
+          "options": [
+            "A. h1",
+            "B. span",
+            "C. p",
+            "D. div"
+          ],
+          "answer": "C",
+          "tip": "教材 2.6 作业第 1 题。<code>p</code> 是段落标签且为块状标签；<code>h1</code> 是标题，<code>span</code> 是装饰性行内标签，<code>div</code> 是区块。",
+          "type": "single"
+        },
+        {
+          "q": "要想在网页中描述一段代码，应使用的 HTML 标签是（　　）。",
+          "options": [
+            "A. a",
+            "B. b",
+            "C. code",
+            "D. p"
+          ],
+          "answer": "C",
+          "tip": "教材 2.6 作业第 3 题。<code>code</code> 用于表示计算机输出的一段代码。",
+          "type": "single"
+        },
+        {
+          "q": "要想在网页中插入图片，应使用的 HTML 标签是（　　）。",
+          "options": [
+            "A. image",
+            "B. src",
+            "C. img",
+            "D. body"
+          ],
+          "answer": "C",
+          "tip": "教材 2.6 作业第 2 题。<code>img</code> 是插入图片的单标签，<code>src</code> 只是它的属性；图片标签将在后续单元系统学习。",
+          "type": "single"
+        },
+        {
+          "type": "multi",
+          "q": "下列关于文档结构标签的说法中，正确的有（　　）。",
+          "options": [
+            "A. <code>header</code> 定义页面头部区域，必须写在 <code>body</code> 内部",
+            "B. <code>main</code> 定义主体内容，在一个页面中通常是唯一的",
+            "C. <code>aside</code> 定义侧边栏区域，与 <code>main</code> 是兄弟关系",
+            "D. <code>head</code> 与 <code>header</code> 作用相同，写哪个都能在页面中显示头部"
+          ],
+          "answer": "ABC",
+          "tip": "<code>head</code> 描述文档信息、不在视口显示；<code>header</code> 才是可见的头部区域。"
+        },
+        {
+          "type": "multi",
+          "q": "关于常用文本标签与字符实体，下列说法正确的有（　　）。",
+          "options": [
+            "A. <code>h1</code>～<code>h6</code> 数字越小层级越高、字体越大，都属于块状标签",
+            "B. <code>span</code> 是装饰性行内标签，<code>div</code> 用于划分区块，是块状标签",
+            "C. 在段落中按 Enter 键换行，浏览器会显示一个完整的换行效果",
+            "D. 字符实体以 <code>&amp;</code> 开始、以 <code>;</code> 结束，如 <code>&amp;nbsp;</code> 表示空格"
+          ],
+          "answer": "ABD",
+          "tip": "段落中按 Enter 只显示<strong>一个空白字符</strong>，真正的换行要用 <code>br</code>。"
+        }
+      ]
+    },
+    {
+      "type": "summary",
+      "title": "本课小结",
+      "subtitle": "五句话带走上节课的核心能力",
+      "nav": "本课小结",
+      "items": [
+        "语义化思想：HTML5 提供<strong>为页面内容添加语义</strong>的标签，把<strong>语义、呈现和行为</strong>三者分离；呈现效果交给 CSS。",
+        "文档结构标签：<code>header</code>、<code>nav</code>、<code>section</code>、<code>main</code>（唯一）、<code>article</code>、<code>aside</code>、<code>footer</code>，共 7 个。",
+        "易混辨析：<code>head</code> 描述文档信息、不可见、在 body 之前；<code>header</code> 是可见的头部区域、写在 body 内部。",
+        "没有对应语义标签的区域（如<strong>轮播图</strong>）用 <code>div</code>；<code>aside</code> 与 <code>main</code> 是<strong>兄弟关系</strong>，文档结构没有唯一答案。",
+        "文本标签：<code>h1</code>～<code>h6</code>、<code>p</code> 是<strong>块状</strong>；<code>br</code>、<code>span</code>、<code>strong</code>、<code>em</code> 是<strong>行内</strong>；列表有 ul / ol / dl 三种，特殊符号用<strong>字符实体</strong>。"
+      ]
+    },
+    {
+      "type": "homework",
+      "title": "课后作业",
+      "nav": "课后作业",
+      "items": [
+        "<strong>选择题：</strong>完成教材项目2「一、选择题」第 1～3 题，逐题写出选择理由。",
+        "<strong>操作题 1：</strong>重写任务2-1 的课程介绍页框架，要求包含 header(nav)、main(3 个 section)、aside、footer 与 1 个 div 轮播图区域，并把各区域换成你自己的内容。",
+        "<strong>操作题 2：</strong>制作「我的课程清单」页面：用 h1～h6 与 p 组织标题与段落，用 ol、ul、dl 各写一组内容，并至少使用 3 个字符实体。",
+        "<strong>思考题：</strong>在 p 标签中连续敲 5 次 Enter 键，浏览器显示的结果是什么？为什么？",
+        "<strong>预习：</strong>阅读教材 2.4.4，思考「相对路径」和「绝对路径」有什么不同。"
+      ]
+    },
+    {
+      "type": "refs",
+      "title": "出处与参考",
+      "subtitle": "本课件内容依据教材，并核对以下权威技术文档",
+      "nav": "出处与参考",
+      "items": [
+        {
+          "t": "教材《网页制作（HTML5+CSS3）》项目2 HTML 基础（2.4.1～2.4.3）",
+          "u": "郑哲、傅冬 主编 · 电子工业出版社 · 2025 年 1 月第 1 版"
+        },
+        {
+          "t": "MDN Web Docs · HTML 元素参考",
+          "u": "https://developer.mozilla.org/zh-CN/docs/Web/HTML/Element"
+        },
+        {
+          "t": "MDN Web Docs · HTML 文本处理基础",
+          "u": "https://developer.mozilla.org/zh-CN/docs/Learn/HTML/Introduction_to_HTML/HTML_text_fundamentals"
+        },
+        {
+          "t": "MDN Web Docs · div 元素",
+          "u": "https://developer.mozilla.org/zh-CN/docs/Web/HTML/Element/div"
+        },
+        {
+          "t": "MDN Web Docs · ul 元素（列表）",
+          "u": "https://developer.mozilla.org/zh-CN/docs/Web/HTML/Element/ul"
+        },
+        {
+          "t": "MDN Web Docs · 术语表：实体 Entity",
+          "u": "https://developer.mozilla.org/zh-CN/docs/Glossary/Entity"
+        }
+      ]
+    },
+    {
+      "type": "end",
+      "title": "第 4 单元 · 结束",
+      "text": "下一单元：链接与锚点，把一个个页面真正连成「网」",
+      "nav": "结束"
+    }
+  ]
+}

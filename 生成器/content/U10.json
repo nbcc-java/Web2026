@@ -1,0 +1,531 @@
+{
+  "id": "U10",
+  "project": "项目4",
+  "project_name": "使用CSS高级选择器美化页面",
+  "unit": "第 10 单元",
+  "title": "应用样式的三种方式与 CSS 冲突解决",
+  "subtitle": "行内式、内嵌式、链接式各管一段；冲突来了，按优先级、就近、覆盖、!important 四条原则裁决",
+  "duration": 40,
+  "cover_tags": [
+    "行内式",
+    "内嵌式",
+    "链接式",
+    "优先级原则",
+    "就近原则",
+    "!important"
+  ],
+  "ref_book": "电子工业出版社 · 2025 年 1 月第 1 版",
+  "objectives": {
+    "knowledge": [
+      "掌握引入样式的三种方式及其语法",
+      "理解外部样式表在整站项目中的价值",
+      "掌握判断样式优先级的计算方法",
+      "理解就近、覆盖与 !important 三条补充原则"
+    ],
+    "skill": [
+      "能使用行内式、内嵌式、链接式应用样式",
+      "能把内嵌式改造为链接式外部样式表",
+      "能计算选择器的优先级组合值",
+      "能用四条原则分析并解决 CSS 冲突"
+    ],
+    "literacy": [
+      "培养严谨求实的劳动态度",
+      "培养勇于探索、崇尚科学的意志和品德",
+      "培养科技报国的崇高理想"
+    ]
+  },
+  "slides": [
+    {
+      "type": "objectives",
+      "title": "本单元我们要达成什么",
+      "subtitle": "对照教材《项目4》4.2 应用样式的常用方式、4.3 解决 CSS 冲突的问题",
+      "objectives": {
+        "knowledge": [
+          "掌握行内式、内嵌式、链接式的定义语法",
+          "理解三种样式表各自的适用范围",
+          "掌握优先级原则与权重的计算方法",
+          "理解就近原则、覆盖原则、!important 原则"
+        ],
+        "skill": [
+          "能使用三种方式引入样式",
+          "能完成任务4-1：将内嵌式改为链接式",
+          "能计算并比较选择器的优先级",
+          "能排查「样式写了却不生效」的常见问题"
+        ],
+        "literacy": [
+          "培养严谨求实的劳动态度",
+          "培养按规范办事的工程意识",
+          "培养科技报国的崇高理想"
+        ]
+      }
+    },
+    {
+      "type": "ideology",
+      "title": "自主创新：从「跟着做」到「定标准」",
+      "subtitle": "教材《项目4》思政课堂延伸讨论",
+      "nav": "思政课堂",
+      "text": "经过几代航天人的接续奋斗，我国航天事业创造了以“两弹一星”、载人航天、月球探测为代表的辉煌成就，走出了一条<strong>自力更生、自主创新</strong>的发展道路，积淀了深厚博大的航天精神。继承和发扬航天精神是我们这代人的责任和义务。",
+      "topic": "CSS 用「层叠规则」化解样式冲突，团队则靠「编码规范」化解分歧。作为未来的前端工程师，你愿意为自己所在的团队建立哪三条 CSS 书写规范？为什么？"
+    },
+    {
+      "type": "outline",
+      "title": "本单元导览",
+      "subtitle": "先学会把样式引进来，再学会让它们「和平共处」",
+      "nav": "导览",
+      "items": [
+        "行内式：写在标签的 style 属性里，最直白也最局限",
+        "内嵌式：写在 style 标签里，页面内可复用",
+        "链接式：独立成 .css 文件，整站复用的正解（任务4-1）",
+        "优先级原则：A/B/C/D 四级权重，像千位百位十位个位",
+        "就近、覆盖、!important：三条补充裁决原则"
+      ]
+    },
+    {
+      "type": "section",
+      "no": "4.2",
+      "title": "应用样式的常用方式",
+      "text": "共有 3 种方式可以将 CSS 应用到 HTML 中，相应的样式表分别称为行内式、内嵌式和外部样式表。",
+      "nav": "4.2 三种方式"
+    },
+    {
+      "type": "cards",
+      "title": "三种样式表，一眼看清差别",
+      "subtitle": "教材原文：行内式（也称内联式，inline）、内嵌式（embeded）、链接式（external）",
+      "nav": "三种方式概览",
+      "cols": 3,
+      "items": [
+        {
+          "title": "行内式 inline",
+          "text": "样式语句以 <code>style</code> <strong>属性值</strong>的形式写在标签内部，<strong>不需要选择器</strong>，仅对该标签起作用。"
+        },
+        {
+          "title": "内嵌式 embeded",
+          "text": "把样式代码放进 <code>&lt;head&gt;</code> 里的 <code>&lt;style&gt;</code> 标签，实现<strong>同一个页面内</strong>的样式复用，也叫内部样式表。"
+        },
+        {
+          "title": "链接式 external",
+          "text": "用 <code>&lt;link&gt;</code> 引入独立的 .css 文件，实现<strong>多个页面</strong>复用同一套样式，保证整站风格统一。"
+        }
+      ]
+    },
+    {
+      "type": "codebullets",
+      "title": "4.2.1 行内式",
+      "subtitle": "没有选择器，样式规则只对这一个标签生效",
+      "nav": "行内式",
+      "items": [
+        "语法：<code>&lt;标签名 style=\"属性1:属性值1;属性2:属性值2;\"&gt;</code>。",
+        "教材示例：只有「费俊龙」带了 <code>font:italic 18px</code> 与 <code>color:#f6f</code>，其余段落保持默认。",
+        "优点：<strong>直观、优先级最高</strong>，调试时偶尔用来临时验证。",
+        "缺点：样式与结构混写，<strong>无法复用</strong>，改一处要改多处，工程项目中应避免。"
+      ],
+      "lang": "html",
+      "file": "代码4-7 关键片段",
+      "code": "<h2>中国航天员</h2>\n<p>杨利伟</p>\n<p style=\"font:italic 18px ;color :#f6f\">费俊龙</p>\n<p>聂海胜</p>"
+    },
+    {
+      "type": "codebullets",
+      "title": "4.2.2 内嵌式（内部样式表）",
+      "subtitle": "常见编程错误：样式没写进 style 标签、或 style 标签没放进 head 里",
+      "nav": "内嵌式",
+      "items": [
+        "把「费俊龙」的样式抽象成 <code>.highlight</code> 类，三个段落<strong>共用一份声明</strong>——这就是复用。",
+        "位置要求：样式代码必须嵌入 <code>&lt;style&gt;</code> 标签，且 <code>&lt;style&gt;</code> 标签置于 <code>&lt;head&gt;</code> 标签内部。",
+        "技巧：<code>type=\"text/css\"</code> 用于定义文件类型为样式文件；<strong>在 HTML5 中该属性可以省略</strong>，简写为 <code>&lt;style&gt;…&lt;/style&gt;</code>。",
+        "局限：只对<strong>当前这一个页面</strong>有效，第二个页面要用，只能复制粘贴。"
+      ],
+      "lang": "html",
+      "file": "代码4-8 关键片段",
+      "code": "<head>\n<style>\n.highlight{             /* #007-#010 */\n    font:italic 18px ;\n    color :#f6f;\n}\n</style>\n</head>\n<body>\n<h2>中国航天员</h2>\n<p class=\"highlight\">杨利伟</p>\n<p class=\"highlight\">费俊龙</p>\n<p class=\"highlight\">聂海胜</p>\n</body>"
+    },
+    {
+      "type": "task",
+      "title": "任务4-1｜将内嵌式改为链接式",
+      "subtitle": "目标：把 4.2.2 节的内嵌式改造成外部样式表",
+      "nav": "任务4-1 链接式",
+      "goal": "抽出独立的 style.css 并用 link 标签引入，效果与图4-10 保持一致",
+      "steps": [
+        "新建名为 <code>css</code> 的目录，便于管理站点中的样式表文件。",
+        "在 css 目录中创建样式表文件 <code>style.css</code>，把样式代码抽取进去。",
+        "用链接语法把样式表引入 HTML：<code>&lt;link rel=\"stylesheet\" href=\"css/style.css\"&gt;</code>。",
+        "技巧：省略 <code>type</code> 属性是常用简化做法——rel 为 stylesheet 时，浏览器会推测 type 为 text/css。",
+        "路径要点：当前文件到 style.css 的<strong>相对路径</strong>是 <code>css/style.css</code>。",
+        "良好的编程习惯：整站项目<strong>优先使用外部样式表</strong>——提高复用率、提升可维护性，且文件可被浏览器缓存。"
+      ],
+      "lang": "html",
+      "code": "<head>\n    <meta charset=\"utf-8\">\n    <title>链接式</title>\n    <link rel=\"stylesheet\" href=\"css/style.css\">   <!-- #006 -->\n</head>\n<body>\n    <h2>中国航天员</h2>\n    <p class=\"highlight\">杨利伟</p>\n    <p class=\"highlight\">费俊龙</p>\n    <p class=\"highlight\">聂海胜</p>\n</body>"
+    },
+    {
+      "type": "demo",
+      "title": "效果演示｜同一段文字，三种引入方式的叠加结果",
+      "subtitle": "左侧三种来源同时作用于「费俊龙」，右侧是优先级阶梯——谁高谁说话",
+      "nav": "三种方式演示",
+      "items": [
+        "三个来源同时对同一个 <code>&lt;p&gt;</code> 声明了不同的 color 值，冲突就此产生。",
+        "裁决顺序：<strong>行内式 &gt; 内嵌式 ≈ 链接式</strong>，后者之间再看书写顺序。",
+        "右侧阶梯是教材表4-2 的权重模型：<code>style=\"\"</code> 为千位级，直接 1000。",
+        "别忘了最后一条：<code>!important</code> 甚至可以<strong>高过行内式</strong>，请慎用。"
+      ],
+      "hint": "把演示里的 !important 开关打开，看看最终颜色会不会再次翻转。",
+      "html": "<style>*{box-sizing:border-box}body{margin:0;padding:14px;font-family:'PingFang SC',system-ui,sans-serif;background:linear-gradient(160deg,#f2f6ff,#eafafd)}.wrap{display:flex;gap:12px}.left{flex:1.2}.right{flex:1}.card{background:#fff;border:1px solid #e6ecf7;border-radius:10px;padding:10px 12px;margin-bottom:8px;animation:up .6s cubic-bezier(.2,.8,.2,1) both}.card:nth-child(2){animation-delay:.12s}.card:nth-child(3){animation-delay:.24s}@keyframes up{from{opacity:0;transform:translateY(10px)}}.lbl{font-size:10.5px;color:#8b9ab2;margin-bottom:4px}.name{font-size:16px;line-height:1.5}.n1{color:#33456b}.n2{font-style:italic;color:#c2185b}.n3{color:#1d46b8}.final{margin-top:2px;background:#0e1b2e;border-radius:10px;padding:11px 12px;animation:up .6s .36s both}.final .lbl{color:#8fa4c8}.who{font-size:19px;font-style:italic;line-height:1.4;animation:win 2.4s infinite}@keyframes win{0%,55%{color:#ffb300}75%,100%{color:#fff}}.note{font-size:10.5px;color:#f6c177;margin-top:5px}.bar{margin-bottom:9px}.bk{display:flex;justify-content:space-between;font:600 11px/1.6 Menlo,monospace;color:#33456b}.tr{height:8px;border-radius:999px;background:#eef2f9;overflow:hidden}.fl{height:100%;border-radius:999px;width:0}.f1{background:linear-gradient(90deg,#7c4dff,#b388ff);animation:grow1 1.4s .4s forwards}.f2{background:linear-gradient(90deg,#2f6bff,#5aa9ff);animation:grow2 1.4s .5s forwards}.f3{background:linear-gradient(90deg,#2f6bff,#5aa9ff);animation:grow3 1.4s .6s forwards}.f4{background:linear-gradient(90deg,#00bcd4,#4dd0e1);animation:grow4 1.4s .7s forwards}@keyframes grow1{to{width:100%}}@keyframes grow2{to{width:26%}}@keyframes grow3{to{width:12%}}@keyframes grow4{to{width:4%}}.tip{margin-top:6px;font-size:10.5px;color:#c2601a;background:#fff3e7;border-radius:7px;padding:6px 9px;animation:up .6s .5s both}</style><div class='wrap'><div class='left'><div class='card'><div class='lbl'>① 链接式 external · style.css</div><div class='name n3'>费俊龙</div></div><div class='card'><div class='lbl'>② 内嵌式 embeded · style 标签</div><div class='name n2'>费俊龙</div></div><div class='card'><div class='lbl'>③ 行内式 inline · style 属性</div><div class='name n1'>费俊龙</div></div><div class='final'><div class='lbl'>最终生效结果</div><div class='who'>费俊龙</div><div class='note'>行内式权重 1000，胜出（除非某人写了 !important）</div></div></div><div class='right'><div class='bar'><div class='bk'><span>style=\"\"</span><span>1000</span></div><div class='tr'><div class='fl f1'></div></div></div><div class='bar'><div class='bk'><span>#id</span><span>100</span></div><div class='tr'><div class='fl f2'></div></div></div><div class='bar'><div class='bk'><span>.class / 属性 / 伪类</span><span>10</span></div><div class='tr'><div class='fl f3'></div></div></div><div class='bar'><div class='bk'><span>标签 / 伪元素</span><span>1</span></div><div class='tr'><div class='fl f4'></div></div></div><div class='bar'><div class='bk'><span>* 通用选择器</span><span>0</span></div><div class='tr'><div class='fl' style='width:1%'></div></div></div><div class='tip'>结论：三者同时命中同一元素时，行内式优先级最高。</div></div></div>"
+    },
+    {
+      "type": "section",
+      "no": "4.3",
+      "title": "解决 CSS 冲突的问题",
+      "text": "CSS 根据①优先级原则、②就近原则、③覆盖原则、④!important 原则解决 CSS 冲突的问题。",
+      "nav": "4.3 冲突解决"
+    },
+    {
+      "type": "code",
+      "title": "冲突示例：代码4-10",
+      "subtitle": "四条规则同时命中「杨利伟」这一段，浏览器到底听谁的？",
+      "nav": "冲突示例",
+      "lang": "html",
+      "file": "代码4-10 关键片段",
+      "code": "<style>\np{color:red;}               /* #007 */\n.highlight{color:yellow;}   /* #008 */\n#p1{color: blue;}           /* #009 */\np#p1{color:green;}          /* #010 */\n</style>\n\n<h2>中国航天员</h2>\n<p id=\"p1\" class=\"highlight\">杨利伟</p>\n<p class=\"highlight\">费俊龙</p>\n<p class=\"highlight\">聂海胜</p>",
+      "caption": "最终「杨利伟」显示<strong>绿色</strong>。即使把这几条规则的<strong>先后书写顺序打乱</strong>，结果依然不变——因为它们的优先级本就不同。"
+    },
+    {
+      "type": "table",
+      "title": "表4-2 优先级权重表",
+      "subtitle": "A、B、C、D 四个等级，如同十进制的千位、百位、十位、个位",
+      "nav": "优先级权重表",
+      "head": [
+        "选择器",
+        "A（style）",
+        "B（id 的数目）",
+        "C（class 的数目）",
+        "D（标签的数目）",
+        "优先级（组合值）"
+      ],
+      "rows": [
+        [
+          "<code>*</code>",
+          "0",
+          "0",
+          "0",
+          "0",
+          "0"
+        ],
+        [
+          "<code>p</code>",
+          "0",
+          "0",
+          "0",
+          "1",
+          "1"
+        ],
+        [
+          "<code>p a</code>",
+          "0",
+          "0",
+          "0",
+          "2",
+          "2"
+        ],
+        [
+          "<code>p a.color</code>",
+          "0",
+          "0",
+          "1",
+          "2",
+          "12"
+        ],
+        [
+          "<code>p .color .text</code>",
+          "0",
+          "0",
+          "2",
+          "1",
+          "21"
+        ],
+        [
+          "<code>p .color div #news</code>",
+          "0",
+          "1",
+          "1",
+          "2",
+          "112"
+        ],
+        [
+          "<code>style=\"\"</code>",
+          "1",
+          "0",
+          "0",
+          "0",
+          "1000"
+        ]
+      ]
+    },
+    {
+      "type": "table",
+      "title": "表4-3 利用优先级解决冲突",
+      "subtitle": "对应代码4-10 中「杨利伟」这一段的计算结果",
+      "nav": "解决冲突表",
+      "head": [
+        "选择器",
+        "A（style）",
+        "B（id 的数目）",
+        "C（class 的数目）",
+        "D（标签的数目）",
+        "优先级（组合值）"
+      ],
+      "rows": [
+        [
+          "<code>p</code>",
+          "0",
+          "0",
+          "0",
+          "1",
+          "1"
+        ],
+        [
+          "<code>.highlight</code>",
+          "0",
+          "0",
+          "1",
+          "0",
+          "10"
+        ],
+        [
+          "<code>#p1</code>",
+          "0",
+          "1",
+          "0",
+          "0",
+          "100"
+        ],
+        [
+          "<code>p#p1</code>",
+          "0",
+          "1",
+          "0",
+          "1",
+          "<strong>101（最高）</strong>"
+        ]
+      ]
+    },
+    {
+      "type": "bullets",
+      "title": "1. 优先级原则：三条结论",
+      "subtitle": "样式类型权重 + 选择器优先级，两条线索一起看",
+      "nav": "优先级原则",
+      "items": [
+        "冲突发生时，以<strong>优先级高</strong>的样式作为最终显示效果。",
+        "样式类型权重：<strong>行内式（A）＞ 内嵌式 / 链接式</strong>。",
+        "选择器优先级：<strong>id 选择器 ＞ 类/伪类/属性选择器 ＞ 标签/伪元素选择器 ＞ 通用/子元素/相邻兄弟选择器</strong>。",
+        "注：教材把子元素选择器、相邻兄弟选择器并入最低一级；实际比较时，组合器本身不计权重，<strong>只看两侧选择器的 id、class、标签数</strong>。",
+        "快速验算：<code>p .color div #news</code> 含 1 个 id、1 个类、2 个标签 → 112；<code>*</code> 的三类计数均为 0 → 0。"
+      ]
+    },
+    {
+      "type": "codebullets",
+      "title": "2. 就近原则：越靠近内容，优先级越高",
+      "subtitle": "就近原则主要是针对继承关系的",
+      "nav": "就近原则",
+      "items": [
+        "示例里 <code>ul</code>、<code>li</code>、<code>a</code> 三个选择器<strong>优先级完全相同</strong>（都是单个标签，权重 1）。",
+        "<code>li</code> 是 <code>ul</code> 的子元素，<code>a</code> 又是 <code>li</code> 的子元素，层层继承。",
+        "此时靠就近原则裁决：<code>a</code> 距离显示内容<strong>最近</strong>，覆盖父元素的 color。",
+        "最终三个名字显示<strong>蓝色</strong>。"
+      ],
+      "lang": "html",
+      "file": "代码4-11 关键片段",
+      "code": "<style>\na{color:blue;}      /* #007 */\nul{color:green;}    /* #008 */\nli{color:yellow;}   /* #009 */\n</style>\n\n<ul>\n    <li><a href=\"#\">杨利伟</a></li>\n    <li><a href=\"#\">费俊龙</a></li>\n    <li><a href=\"#\">聂海胜</a></li>\n</ul>"
+    },
+    {
+      "type": "codebullets",
+      "title": "3. 覆盖原则：后来者居上",
+      "subtitle": "优先级相同、继承层级也相同时，后面定义的样式覆盖前面的",
+      "nav": "覆盖原则",
+      "items": [
+        "在代码4-11 基础上新增一行 <code>a{color: red;}</code>。",
+        "它与第 007 行的 <code>a{color:blue;}</code> <strong>优先级相同</strong>，都是 1。",
+        "按覆盖原则：<strong>后者覆盖前者</strong>，最终显示红色。",
+        "这条原则也是「CSS 层叠（Cascade）」一词的由来——同权重比先后。"
+      ],
+      "lang": "css",
+      "file": "代码4-12 关键片段",
+      "code": "a{color:blue;}      /* #007 */\nul{color:green;}    /* #008 */\nli{color:yellow;}   /* #009 */\na{color: red;}      /* #010 新增：与 007 同权重，后者胜 */"
+    },
+    {
+      "type": "codebullets",
+      "title": "4. !important 原则：压过一切的最高优先级",
+      "subtitle": "语法：样式规则 !important;",
+      "nav": "!important 原则",
+      "items": [
+        "添加 <code>!important</code> 后，该声明的优先级被设为<strong>最高级</strong>，<strong>甚至高过行内式</strong>。",
+        "教材示例：<code>a{color:blue !important;}</code>，即使 <code>&lt;a&gt;</code> 上写了 <code>style=\"color:yellow;\"</code>，最终仍显示<strong>蓝色</strong>。",
+        "工程建议：<code>!important</code> 会打断正常的层叠推理，让后续维护者难以预判结果，<strong>非必要不使用</strong>。",
+        "替代思路：提高选择器精度、调整书写顺序，或改用 MDN 推荐的<strong>级联层 @layer</strong> 管理优先级。"
+      ],
+      "lang": "html",
+      "file": "代码4-13 关键片段",
+      "code": "<style>\na{color:blue !important;}   /* #007 */\nul{color:green;}            /* #008 */\nli{color:yellow;}           /* #009 */\na{color: red;}              /* #010 */\n</style>\n\n<li><a href=\"#\" style=\"color:yellow;\">杨利伟</a></li>   <!-- #016 行内式也无效 -->"
+    },
+    {
+      "type": "flow",
+      "title": "四条原则的判定顺序",
+      "subtitle": "遇到「样式写了却不生效」，按这个顺序排查",
+      "nav": "判定顺序",
+      "items": [
+        {
+          "title": "① 先看有没有 !important",
+          "text": "带 !important 的声明优先级最高，直接胜出（尽量改写，别依赖它）。"
+        },
+        {
+          "title": "② 再看样式来源",
+          "text": "行内式（1000）高于内嵌式与链接式；作者样式高于浏览器默认样式。"
+        },
+        {
+          "title": "③ 再算选择器权重",
+          "text": "按 A/B/C/D 四级统计 id、class、标签数目，组合值大者胜。"
+        },
+        {
+          "title": "④ 最后看书写顺序",
+          "text": "权重相同、继承层级也相同时，后定义的覆盖先定义的（覆盖原则）。"
+        }
+      ],
+      "note": "就近原则用于「继承链」上的仲裁：同一条继承链上，离内容越近的选择器越优先。"
+    },
+    {
+      "type": "ai",
+      "title": "AI 前沿：让 AI 帮你算出「为什么它不生效」",
+      "subtitle": "层叠与优先级，是最适合交给 AI 排查的一类问题",
+      "nav": "AI 前沿",
+      "text": "「样式写了却不生效」是初学者最高频的问题，而这个错误的成因是可以被机器枚举的：选择器没命中、权重被压过、被后面的规则覆盖、被 !important 打断、属性名拼错……AI 工具能沿着这套清单逐条排查，几秒钟给出定位。",
+      "items": [
+        "排错用法：把 HTML 与 CSS 一起贴给 DeepSeek、通义千问、文心一言，直接问「这条规则为什么不生效」。",
+        "规范用法：GitHub Copilot、通义灵码会在补全时优先生成<strong>低权重、易覆盖</strong>的类选择器，避免 !important 滥用。",
+        "进阶方向：现代 CSS 提供<strong>级联层 @layer</strong>，可为 reset、组件、工具类分层管理优先级，比互相加权重更可控。",
+        "提醒：AI 给出的修改往往「能用但不一定优雅」——你要能判断它是在提权重，还是在真正解决问题。"
+      ]
+    },
+    {
+      "type": "quiz",
+      "title": "随堂检测",
+      "subtitle": "含教材项目4 课后选择题，并补充 2 道自编题",
+      "nav": "随堂检测",
+      "items": [
+        {
+          "q": "（　　）不是 HTML 引入样式的方式。（教材 4.7 选择题第 3 题）",
+          "options": [
+            "A. 行内式",
+            "B. 内嵌式",
+            "C. 链接式",
+            "D. 导入式"
+          ],
+          "answer": "D",
+          "tip": "教材列举的三种方式为行内式、内嵌式、链接式。",
+          "type": "single"
+        },
+        {
+          "q": "在代码 p{color:red} .hl{color:yellow} #p1{color:blue} p#p1{color:green} 中，段落最终显示的颜色是（　　）。",
+          "options": [
+            "A. 红色",
+            "B. 黄色",
+            "C. 蓝色",
+            "D. 绿色"
+          ],
+          "answer": "D",
+          "tip": "p#p1 的组合值为 101，优先级最高。",
+          "type": "single"
+        },
+        {
+          "q": "下列关于 !important 的说法，正确的是（　　）。",
+          "options": [
+            "A. 它的优先级低于行内式",
+            "B. 它可以让声明的优先级高于行内式",
+            "C. 推荐在项目中大量使用以保证生效",
+            "D. 它只能用于颜色属性"
+          ],
+          "answer": "B",
+          "tip": "添加 !important 后优先级被设为最高级，高过行内式；但工程上应慎用。",
+          "type": "single"
+        },
+        {
+          "type": "multi",
+          "q": "关于 HTML 引入样式的三种方式，下列说法中正确的有（　　）。",
+          "options": [
+            "A. 行内式把样式写在标签的 style 属性中，不需要选择器",
+            "B. 内嵌式把样式写在 head 内的 style 标签中，只对当前页面有效",
+            "C. 链接式用 link 标签引入独立的 .css 文件，可被多个页面复用",
+            "D. 行内式便于样式复用，是整站项目推荐的做法"
+          ],
+          "answer": "ABC",
+          "tip": "行内式样式与结构混写、<strong>无法复用</strong>；整站项目应优先使用<strong>外部（链接式）样式表</strong>。"
+        },
+        {
+          "type": "multi",
+          "q": "关于 CSS 冲突的解决，下列说法中正确的有（　　）。",
+          "options": [
+            "A. 优先级由高到低为：行内式 > id > 类 > 标签 > 通用",
+            "B. 优先级相同、继承层级也相同时，后定义的样式覆盖先定义的",
+            "C. 带 !important 的声明，其优先级仍低于行内式",
+            "D. 就近原则主要用于继承链，离内容越近的选择器越优先"
+          ],
+          "answer": "ABD",
+          "tip": "!important 会把声明提到<strong>最高级</strong>，甚至高过行内式；同权重比先后属覆盖原则。"
+        }
+      ]
+    },
+    {
+      "type": "summary",
+      "title": "本课小结",
+      "nav": "本课小结",
+      "items": [
+        "三种引入方式：<strong>行内式</strong>写在 style 属性、<strong>内嵌式</strong>写在 head 的 style 标签、<strong>链接式</strong>用 link 引入外部 css。",
+        "整站项目<strong>优先使用外部样式表</strong>：复用率高、可维护性高、还能被浏览器缓存。",
+        "优先级原则：行内式 1000 ＞ id 100 ＞ class/伪类/属性 10 ＞ 标签/伪元素 1 ＞ 通用 0。",
+        "<strong>就近</strong>仲裁继承链，<strong>覆盖</strong>仲裁同权重先后，<code>!important</code> 兜底但慎用。",
+        "排查口诀：先看 !important → 再看来源 → 再算权重 → 最后看顺序。"
+      ]
+    },
+    {
+      "type": "homework",
+      "title": "课后作业",
+      "nav": "课后作业",
+      "items": [
+        "<strong>操作题：</strong>完成教材任务4-1，把代码4-8 改造成链接式（css/style.css），截图保留改造前后的目录结构。",
+        "<strong>计算题：</strong>自行写出 5 个选择器，按表4-2 的格式逐项填写 A/B/C/D 并算出组合值。",
+        "<strong>思考题：</strong>为什么工程实践中不推荐大量使用 !important？请举出一个它会造成维护困难的场景。",
+        "<strong>预习：</strong>阅读教材 4.4 Emmet 语法，尝试在编辑器里输入 <code>ul&gt;li*5</code> 后按 Tab 键。"
+      ]
+    },
+    {
+      "type": "refs",
+      "title": "出处与参考",
+      "subtitle": "本课件内容依据教材，并核对以下权威技术文档",
+      "nav": "出处与参考",
+      "items": [
+        {
+          "t": "教材《网页制作（HTML5+CSS3）》项目4 使用CSS高级选择器美化页面（4.2～4.3）",
+          "u": "郑哲、傅冬 主编 · 电子工业出版社 · 2025 年 1 月第 1 版"
+        },
+        {
+          "t": "MDN Web Docs · CSS 层叠、优先级与继承",
+          "u": "https://developer.mozilla.org/zh-CN/docs/Learn/CSS/Building_blocks/Cascade_and_inheritance"
+        },
+        {
+          "t": "MDN Web Docs · 优先级（Specificity）",
+          "u": "https://developer.mozilla.org/zh-CN/docs/Web/CSS/Specificity"
+        },
+        {
+          "t": "MDN Web Docs · @layer 级联层（替代 !important 的现代方案）",
+          "u": "https://developer.mozilla.org/zh-CN/docs/Web/CSS/@layer"
+        },
+        {
+          "t": "W3C · CSS Cascading and Inheritance Level 4",
+          "u": "https://www.w3.org/TR/css-cascade-4/"
+        }
+      ]
+    },
+    {
+      "type": "end",
+      "title": "第 10 单元 · 结束",
+      "text": "下一单元：Emmet 语法与 LESS / SASS / SCSS 预处理器",
+      "nav": "结束"
+    }
+  ]
+}

@@ -1,0 +1,398 @@
+{
+  "id": "U25",
+  "project": "项目9",
+  "project_name": "过渡和动画",
+  "unit": "第 25 单元",
+  "title": "动画综合案例：呼吸灯与卡片翻转",
+  "subtitle": "先学会「拆动画」，再学会「优化动画」——两件事都做到，才是工匠",
+  "duration": 40,
+  "cover_tags": [
+    "animation-delay",
+    "迭代优化",
+    "perspective()",
+    "preserve-3d",
+    "循环动画"
+  ],
+  "ref_book": "电子工业出版社 · 2025 年 1 月第 1 版",
+  "objectives": {
+    "knowledge": [
+      "掌握 CSS3 动画语法及其应用",
+      "掌握循环动画的制作技巧",
+      "理解动画的分析方法与优化思路"
+    ],
+    "skill": [
+      "能分析一个动画的构成并还原关键帧",
+      "能用 animation-delay 优化重复的关键帧定义",
+      "能制作具有透视效果的 3D 翻转动画"
+    ],
+    "literacy": [
+      "培养精益求精的工匠精神",
+      "培养勇于探索、崇尚科学的意志和品德",
+      "培养严谨求实的学习态度"
+    ]
+  },
+  "slides": [
+    {
+      "type": "objectives",
+      "title": "本单元我们要达成什么",
+      "subtitle": "对照教材《项目9》9.6 的目标",
+      "objectives": {
+        "knowledge": [
+          "掌握 CSS3 动画语法及其应用",
+          "掌握循环动画的制作技巧"
+        ],
+        "skill": [
+          "能分析动画构成并写出关键帧",
+          "能用 animation-delay 精简重复代码",
+          "能制作 3D 卡片翻转动画"
+        ],
+        "literacy": [
+          "培养精益求精的工匠精神",
+          "培养严谨求实的学习态度"
+        ]
+      }
+    },
+    {
+      "type": "outline",
+      "title": "本单元导览",
+      "subtitle": "两个案例，一条主线：先分析、再实现、再优化",
+      "nav": "导览",
+      "items": [
+        "任务 9-4：呼吸灯动画——从「两个圆圈」的时间影像说起",
+        "代码优化：只留一个 @keyframes，用 animation-delay 错开",
+        "任务 9-5：卡片翻转动画——3D 透视的正确写法",
+        "两种 perspective 写法对比与循环动画技巧"
+      ]
+    },
+    {
+      "type": "section",
+      "no": "9.6",
+      "title": "综合案例",
+      "text": "动画不是「写出来的」，是「分析出来的」。",
+      "nav": "9.6 综合案例"
+    },
+    {
+      "type": "task",
+      "title": "任务 9-4｜制作呼吸灯动画",
+      "subtitle": "由交替的圆圈 1、圆圈 2 构成，实现图 9-18 的动画效果",
+      "nav": "任务9-4 呼吸灯",
+      "goal": "用两个 50px×50px、颜色为 <code>rgba(250,0,0,0.5)</code> 的圆圈，做出<strong>此起彼伏的呼吸感</strong>。",
+      "steps": [
+        "搭结构：一个 <code>.outer</code> 里放两个 <code>.ball</code>（ball1、ball2），均<strong>绝对定位</strong>到 <code>top:0; left:0</code>。",
+        "画圆：50px×50px + <code>border-radius:50%</code> + <code>background-color:rgba(250,0,0,0.5)</code>。",
+        "定关键帧：ball1 从大到小再回大；ball2 与之<strong>完全相反</strong>。",
+        "启用动画：<code>animation: bounce1 2s ease-in-out infinite;</code>（ball2 用 bounce2）。",
+        "教材提醒：制作动画要<strong>先从动画的构造开始分析</strong>，而不是一上来就写代码。"
+      ],
+      "lang": "css",
+      "code": "/* 关键帧规则 */\n@keyframes bounce1{ 0%,100%{ transform:scale(1.0); } 50%{ transform:scale(0); } }\n@keyframes bounce2{ 0%,100%{ transform:scale(0.0); } 50%{ transform:scale(1.0); } }"
+    },
+    {
+      "type": "flow",
+      "title": "分析方法：先在脑子里建立「时间的影像」",
+      "subtitle": "教材教学要点：制作动画时先从动画的构造开始分析",
+      "nav": "动画分析方法",
+      "items": [
+        {
+          "title": "① 拆构造",
+          "text": "这个动画由<strong>几个元素</strong>组成？呼吸灯 = 圆圈 1 + 圆圈 2，两个都是圆，只是「节奏不同」。"
+        },
+        {
+          "title": "② 画单个元素的时间线",
+          "text": "圆圈 1：起点最大（图 9-19）→ 中间缩为 0 → 末尾回到最大。写成 <code>0%,100%{scale(1)} 50%{scale(0)}</code>。"
+        },
+        {
+          "title": "③ 画第二个元素的时间线",
+          "text": "圆圈 2（图 9-20）：与圆圈 1 <strong>完全相反</strong>——起点为 0，中间最大，末尾回到 0。"
+        },
+        {
+          "title": "④ 找出两者的关系",
+          "text": "把两条时间线并排（图 9-21）会发现：<strong>运动规律完全一样，只差一个时间差。</strong>这正是优化的突破口。"
+        }
+      ],
+      "note": "教材结论：观察到「规律一样、只差时间差」之后，就不需要定义两个动画了。"
+    },
+    {
+      "type": "code",
+      "title": "初始实现：两个关键帧（代码 9-7）",
+      "subtitle": "能跑，但 bounce1 与 bounce2 的代码高度重复",
+      "nav": "代码9-7",
+      "lang": "css",
+      "file": "style.css",
+      "code": "/* 代码 9-7 */\n.ball{ width:50px; height:50px; border-radius:50%; position:absolute;\n       top:0; left:0; background-color:rgba(250,0,0,0.5); }\n.ball1{ -webkit-animation:bounce1 2s ease-in-out infinite;\n        -o-animation:bounce1 2s ease-in-out infinite;\n        animation:bounce1 2s ease-in-out infinite; }\n.ball2{ -webkit-animation:bounce2 2s ease-in-out infinite;\n        -o-animation:bounce2 2s ease-in-out infinite;\n        animation:bounce2 2s ease-in-out infinite; }\n.outer{ width:200px; margin:0 auto; position:relative; }",
+      "caption": "<b>兼容性写法：</b>代码中保留了 <code>-webkit-</code>（Safari / Chrome）与 <code>-o-</code>（Opera）前缀，最后一行才是<strong>标准属性</strong>——按「先私有、后标准」的顺序书写，是良好的编程习惯。"
+    },
+    {
+      "type": "code",
+      "title": "代码优化：只留一个动画（代码 9-8）",
+      "subtitle": "用 animation-delay 让第二个圆圈延迟执行，省掉一整套重复的关键帧",
+      "nav": "代码9-8 优化",
+      "lang": "css",
+      "file": "style.css",
+      "code": "/* 代码 9-8 */\n.ball{ width:50px; height:50px; border-radius:50%; position:absolute; top:0; left:0;\n       background-color:rgba(250,0,0,0.5);\n       -webkit-animation:bounce 2s ease-in-out infinite;\n       -o-animation:bounce 2s ease-in-out infinite;\n       animation:bounce 2s ease-in-out infinite; }\n@keyframes bounce{ 0%,100%{ transform:scale(1.0); } 50%{ transform:scale(0); } }\n.ball2{ animation-delay:1s; }\n.outer{ width:200px; margin:0 auto; position:relative; }",
+      "caption": "<b>教材解析：</b>统一定义 bounce 动画后，只需给圆圈 2 加 <code>animation-delay:1s</code>（动画周期为 2s，延迟<strong>半个周期</strong>即可错开），大大减少了代码重复，优化了整体设计。"
+    },
+    {
+      "type": "bullets",
+      "title": "从「能跑」到「好看」：一次典型的迭代优化",
+      "subtitle": "良好的编程习惯（教材原文）",
+      "nav": "迭代与工匠精神",
+      "items": [
+        "<strong>良好的编程习惯（教材原文）：</strong>不断思考如何优化产品，是<strong>互联网迭代思维的体现</strong>，也是<strong>工匠精神</strong>的体现。",
+        "第 1 版：两个关键帧，逻辑直白但重复——先保证「效果对」。",
+        "第 2 版：合并为一个关键帧 + <code>animation-delay</code>——保证「代码干净」。",
+        "<code>animation-delay</code> 也支持<strong>负值</strong>：写 <code>-1s</code> 表示动画「<strong>已经播了 1 秒</strong>」的状态，常用于多个元素错落启动。",
+        "判断标准：<strong>效果一致、代码更少、更易维护</strong>，就是一次成功的迭代。"
+      ]
+    },
+    {
+      "type": "task",
+      "title": "任务 9-5｜制作卡片翻转动画",
+      "subtitle": "一个 60px×60px、颜色 #67cf22 的正方形卡片，实现图 9-22 的翻转效果",
+      "nav": "任务9-5 卡片翻转",
+      "goal": "制作一个<strong>先沿 x 轴翻转、再沿 y 轴翻转</strong>的、<strong>具有透视效果的 3D 动画</strong>。",
+      "steps": [
+        "搭结构：<code>.wrap</code> 里放一个 <code>.spinner</code>，尺寸 60px×60px，背景 <code>#67cf22</code>。",
+        "关键一步：<code>.spinner</code> 必须写 <code>transform-style:preserve-3d</code>，让它在 3D 空间中呈现。",
+        "定义 <code>@keyframes animPlane</code>：<strong>0%</strong> 不旋转 → <strong>50%</strong> 沿 x 轴转 −180 度 → <strong>100%</strong> 再沿 y 轴转 −180 度。",
+        "每一帧都要带上 <code>perspective(120px)</code>——透视距离写在<strong>子元素自身</strong>上。",
+        "启用动画：<code>animation: animPlane 1.0s infinite ease-in-out;</code>"
+      ],
+      "lang": "css",
+      "code": "/* 代码 9-9 */\n@keyframes animPlane {\n  0%   { transform: perspective(120px) rotateX(0deg) rotateY(0); }\n  50%  { transform: perspective(120px) rotateX(-180deg) rotateY(0); }\n  100% { transform: perspective(120px) rotateX(-180deg) rotateY(-180deg); }\n}\n.spinner{\n    width:60px; height:60px; background-color:#67cf22; margin:100px auto;\n    transform-style:preserve-3d;\n    animation: animPlane 1.0s infinite ease-in-out;\n}"
+    },
+    {
+      "type": "compare",
+      "title": "perspective 的两种写法，哪个更简洁",
+      "subtitle": "教材简述题：把任务 9-5 改成「指定父元素」的方式，比较写法区别",
+      "nav": "两种写法对比",
+      "a": {
+        "title": "指定子元素（任务 9-5 原写法）",
+        "items": [
+          "写法：<code>transform: perspective(120px) rotateX(…);</code>——透视函数<strong>跟在 transform 里</strong>",
+          "<strong>每一帧的关键帧里都要重复写一遍</strong> perspective()",
+          "优点：<strong>自包含</strong>，元素搬到哪里都自带透视，适合单个独立元素",
+          "缺点：关键帧一多就<strong>重复冗长</strong>，改透视距离要改每一处"
+        ]
+      },
+      "b": {
+        "title": "指定父元素（改造写法）",
+        "items": [
+          "写法：父元素写 <code>.wrap{ perspective:120px; }</code>，子元素关键帧<strong>只写旋转</strong>",
+          "改造后：<code>0%{transform:rotateX(0)} 50%{transform:rotateX(-180deg)} …</code>",
+          "优点：<strong>关键帧干净</strong>，一个场景共用同一透视距离，改一处即可",
+          "缺点：透视依赖父容器，元素<strong>换父级就要重新设置</strong>",
+          "<strong>课堂结论：</strong>多元素 3D 场景用「指定父元素」更简洁；单个元素的临时特效用「指定子元素」更方便"
+        ]
+      }
+    },
+    {
+      "type": "table",
+      "title": "两个综合案例关键参数对照",
+      "subtitle": "照着这张表就能把两个案例完整还原",
+      "nav": "案例参数对照",
+      "head": [
+        "项目",
+        "任务 9-4 呼吸灯",
+        "任务 9-5 卡片翻转"
+      ],
+      "rows": [
+        [
+          "元素与尺寸",
+          "两个圆圈，各 <strong>50px×50px</strong>，<code>border-radius:50%</code>",
+          "一个正方形卡片，<strong>60px×60px</strong>"
+        ],
+        [
+          "颜色",
+          "<code>rgba(250,0,0,0.5)</code>",
+          "<code>#67cf22</code>"
+        ],
+        [
+          "关键帧",
+          "<code>bounce</code>：<code>0%,100%{scale(1)} 50%{scale(0)}</code>",
+          "<code>animPlane</code>：0% 不转，50% <code>rotateX(-180deg)</code>，100% 再 <code>rotateY(-180deg)</code>"
+        ],
+        [
+          "周期与循环",
+          "<code>2s ease-in-out infinite</code>，第二个延迟 <code>1s</code>",
+          "<code>1.0s infinite ease-in-out</code>"
+        ],
+        [
+          "3D 相关",
+          "无（纯 2D 缩放）",
+          "<code>transform-style:preserve-3d</code> + 每帧 <code>perspective(120px)</code>"
+        ],
+        [
+          "易错点",
+          "忘记 <code>animation-delay</code> 导致两个圆圈<strong>同步</strong>而非交替",
+          "<strong>关键帧里漏写 perspective()</strong>，补间动画就没有 3D 透视效果"
+        ]
+      ]
+    },
+    {
+      "type": "demo",
+      "title": "交互演示｜呼吸灯 + 卡片翻转组合",
+      "subtitle": "左边两颗灯用同一个关键帧 + 1s 延迟交替；右边卡片自带 perspective() 做 3D 翻转",
+      "nav": "综合案例演示",
+      "items": [
+        "左：两个圆圈共用 <code>bounce</code>，<code>.ball2{animation-delay:1s}</code>——<strong>半个周期错开</strong>就成了呼吸感。",
+        "为了看得清，本演示把第二个圆圈的 <code>left</code> 改成 62px（教材中原为 <code>left:0</code>，两圆重叠）。",
+        "右：<code>transform:perspective(120px) rotateX(…) rotateY(…)</code>，<strong>先绕 x 轴、再绕 y 轴</strong>翻转。",
+        "卡片只有<strong>一个绿色面</strong>，所以翻转时看起来像一张纸在空间中翻面——这正是透视效果的体现。"
+      ],
+      "hint": "试着把 perspective(120px) 改成 perspective(400px)，透视感会明显变弱——距离越远，越接近平面。",
+      "html": "<style>.d25{margin:0;font-family:'PingFang SC',system-ui,sans-serif;color:#1b2a44}.d25 .stage{display:flex;align-items:center;justify-content:center;gap:38px;padding:8px 0}.d25 .pnl{text-align:center}.d25 .ttl{margin:0 0 14px;font-size:11.5px;color:#2f6bff;font-weight:700;font-family:Menlo,monospace}.d25 .outer{position:relative;width:112px;height:56px;margin:22px auto}.d25 .ball{position:absolute;top:0;width:50px;height:50px;border-radius:50%;background-color:rgba(250,0,0,.5);animation:bounce 2s ease-in-out infinite}.d25 .ball1{left:0}.d25 .ball2{left:62px;animation-delay:1s}.d25 .wrap{width:150px;height:150px;display:flex;align-items:center;justify-content:center}.d25 .spinner{width:60px;height:60px;background-color:#67cf22;border-radius:6px;transform-style:preserve-3d;animation:animPlane 1s infinite ease-in-out}.d25 .doc{margin-top:14px;text-align:center;font-size:11.5px;color:#5a6c85;line-height:1.9}.d25 .doc code{background:#eef3ff;border:1px solid #d5e2fb;border-radius:5px;padding:1px 6px;color:#1d46b8;font-family:Menlo,monospace;font-size:11px}@keyframes bounce{0%,100%{transform:scale(1)}50%{transform:scale(0)}}@keyframes animPlane{0%{transform:perspective(120px) rotateX(0deg) rotateY(0)}50%{transform:perspective(120px) rotateX(-180deg) rotateY(0)}100%{transform:perspective(120px) rotateX(-180deg) rotateY(-180deg)}}</style><div class='d25'><div class='stage'><div class='pnl'><p class='ttl'>@keyframes bounce + delay</p><div class='outer'><div class='ball ball1'></div><div class='ball ball2'></div></div></div><div class='pnl'><p class='ttl'>@keyframes animPlane</p><div class='wrap'><div class='spinner'></div></div></div></div><p class='doc'>呼吸灯：<code>animation: bounce 2s ease-in-out infinite</code>，第二个 <code>animation-delay:1s</code><br>卡片翻转：<code>transform-style:preserve-3d</code> + <code>perspective(120px)</code></p></div>"
+    },
+    {
+      "type": "bullets",
+      "title": "循环动画与常见错误排查清单",
+      "subtitle": "做不出来的时候，按这个顺序逐条检查",
+      "nav": "排查清单",
+      "items": [
+        "<strong>动画完全不动：</strong>检查 <code>animation-name</code> 是否与 <code>@keyframes</code> 名称<strong>完全一致</strong>（含大小写）。",
+        "<strong>只播一次就停：</strong>没写 <code>infinite</code>——<code>animation-iteration-count</code> 默认值是 1。",
+        "<strong>一闪而过没过程：</strong>没写时长——<code>animation-duration</code> 默认值是 0。",
+        "<strong>3D 没有立体感：</strong>父级漏了 <code>transform-style:preserve-3d</code>，或关键帧里漏了 <code>perspective()</code>。",
+        "<strong>多个元素同步得刺眼：</strong>用 <code>animation-delay</code>（可正可负）让它们<strong>错峰启动</strong>。"
+      ]
+    },
+    {
+      "type": "ai",
+      "title": "AI 前沿：让 AI 帮你做那次「迭代」",
+      "subtitle": "从代码 9-7 到 9-8 的优化，正是 AI 最擅长的重构",
+      "nav": "AI 前沿",
+      "text": "教材里那次从「两个关键帧」到「一个关键帧 + delay」的优化，本质是一次<strong>代码重构</strong>。今天你完全可以把代码 9-7 直接丢给 DeepSeek、通义灵码或 GitHub Copilot，问一句「<strong>这两个动画能合并吗？</strong>」，它通常几秒就能给出 <code>animation-delay</code> 方案。但请注意：<strong>先自己看出「运动规律一样、只差时间差」，你才有资格判断 AI 给的对不对。</strong>",
+      "items": [
+        "提示词示例：「下面两个 @keyframes 逻辑重复，请合并为一个，并用 animation-delay 实现错峰」。",
+        "AI 也擅长生成<strong>缓动曲线</strong>：描述「先快后慢再回弹」，它会给出合适的 cubic-bezier 参数。",
+        "国产工具：文心快码、通义灵码均支持选中代码块后「解释 / 重构 / 优化」三种操作。",
+        "职业提醒：AI 优化后的代码<strong>必须自己再跑一遍</strong>——视觉效果是 AI 唯一无法替你验证的东西。"
+      ]
+    },
+    {
+      "type": "quiz",
+      "title": "随堂检测",
+      "subtitle": "结合教材 9.6 案例自测",
+      "nav": "随堂检测",
+      "items": [
+        {
+          "q": "呼吸灯动画中，两个圆圈的运动规律完全相同，只是存在一个时间差。最简洁的实现方式是（　　）。",
+          "options": [
+            "A. 定义两个 @keyframes，分别绑定",
+            "B. 定义两个 @keyframes，用 animation-duration 区分",
+            "C. 只定义一个 @keyframes，用 animation-delay 错开",
+            "D. 用 transition 代替 animation"
+          ],
+          "answer": "C",
+          "tip": "教材代码 9-8：统一定义 bounce 后，给第二个圆圈加 animation-delay:1s（半个周期）即可。",
+          "type": "single"
+        },
+        {
+          "q": "任务 9-5 的卡片翻转动画中，要产生 3D 透视效果，关键帧里必须包含（　　）。",
+          "options": [
+            "A. translateZ()",
+            "B. perspective()",
+            "C. matrix3d()",
+            "D. backface-visibility"
+          ],
+          "answer": "B",
+          "tip": "教材易错点：只有加上 transform 的 perspective() 函数，补间动画时才会产生 3D 透视效果。",
+          "type": "single"
+        },
+        {
+          "q": "关于 animation-delay 取负值，下列说法正确的是（　　）。",
+          "options": [
+            "A. 语法错误，浏览器会忽略",
+            "B. 表示动画立即从「已经播放了对应时间」的状态开始",
+            "C. 表示动画永远不开始",
+            "D. 等价于 animation-direction: reverse"
+          ],
+          "answer": "B",
+          "tip": "负延迟常用于让一组元素以不同进度同时启动，是错峰动画的常用技巧。",
+          "type": "single"
+        },
+        {
+          "q": "关于呼吸灯动画的代码优化，下列说法中正确的有（　　）。",
+          "options": [
+            "A. 两个圆圈的运动规律完全相同，只是相差一个时间差",
+            "B. 只需定义一个 <code>@keyframes</code>，第二个圆圈用 <code>animation-delay:1s</code> 错开半个周期",
+            "C. <code>animation-delay</code> 只能取正值，负值会被浏览器忽略",
+            "D. 优化后效果一致而代码更少、更易维护，符合迭代优化思想"
+          ],
+          "answer": "ABD",
+          "tip": "<code>animation-delay</code> 支持负值，表示动画已播放了对应时间，常用来让多个元素错峰启动。",
+          "type": "multi"
+        },
+        {
+          "q": "关于任务 9-5 卡片翻转动画与 <code>perspective</code> 的写法，下列说法中正确的有（　　）。",
+          "options": [
+            "A. 关键帧里漏写 <code>perspective()</code>，补间过程就没有 3D 透视效果",
+            "B. 把 <code>perspective</code> 写在父元素上，子元素关键帧只写旋转即可",
+            "C. 元素必须设置 <code>transform-style:preserve-3d</code> 才能在 3D 空间中呈现",
+            "D. <code>perspective</code> 的值越大，透视效果越强烈"
+          ],
+          "answer": "ABC",
+          "tip": "透视距离<strong>越大越接近平面</strong>，透视感越弱；值越小才越夸张。",
+          "type": "multi"
+        }
+      ]
+    },
+    {
+      "type": "summary",
+      "title": "本课小结",
+      "nav": "本课小结",
+      "items": [
+        "做动画先<strong>分析构造</strong>：拆出几个元素、画出各自的时间线，再找它们之间的关系。",
+        "呼吸灯：一个 <code>bounce</code> 关键帧（<code>0%,100%{scale(1)} 50%{scale(0)}</code>）+ <code>animation-delay:1s</code>，比两套关键帧更优雅。",
+        "卡片翻转：<strong>先沿 x 轴、再沿 y 轴</strong>翻转，关键帧中必须带 <code>perspective()</code>，元素本身要 <code>preserve-3d</code>。",
+        "perspective 两种写法：父元素用<strong>属性</strong>（场景共用、关键帧干净），子元素用<strong>函数</strong>（自带透视、便于搬移）。",
+        "排查顺序：名称是否一致 → 是否写了时长 → 是否写了 infinite → 3D 是否漏了 preserve-3d 与 perspective。"
+      ]
+    },
+    {
+      "type": "homework",
+      "title": "课后作业",
+      "nav": "课后作业",
+      "items": [
+        "<strong>操作题 1：</strong>完成教材任务 9-4 与任务 9-5，把呼吸灯改为 3 个圆圈（延迟分别 0s、0.66s、1.33s）观察效果。",
+        "<strong>操作题 2（教材简述题 2）：</strong>把任务 9-5 改成「<strong>指定父元素</strong>」的 perspective 写法，比较两种写法的区别并分析哪种更简洁。",
+        "<strong>项目讨论（教材 9.8）：</strong>迭代思维作为互联网的重要思想之一，在工程实践中具有非常重要的作用。它是产品思维的过程化体现，请结合你的开发实践示例说明你的迭代过程，并描述你的体会和感悟。",
+        "<strong>预习：</strong>阅读教材项目 10 的 10.1，思考一个问题：网页里嵌入视频，到底该用哪个标签？"
+      ]
+    },
+    {
+      "type": "refs",
+      "title": "出处与参考",
+      "subtitle": "本课件内容依据教材，并核对以下权威技术文档",
+      "nav": "出处与参考",
+      "items": [
+        {
+          "t": "教材《网页制作（HTML5+CSS3）》项目9 过渡和动画（9.6，PDF 307–313）",
+          "u": "郑哲、傅冬 主编 · 电子工业出版社 · 2025 年 1 月第 1 版"
+        },
+        {
+          "t": "MDN Web Docs · 使用 CSS 动画（animation 与 @keyframes）",
+          "u": "https://developer.mozilla.org/zh-CN/docs/Web/CSS/CSS_animations"
+        },
+        {
+          "t": "MDN Web Docs · animation-delay",
+          "u": "https://developer.mozilla.org/zh-CN/docs/Web/CSS/animation-delay"
+        },
+        {
+          "t": "MDN Web Docs · animation-iteration-count（循环动画）",
+          "u": "https://developer.mozilla.org/zh-CN/docs/Web/CSS/animation-iteration-count"
+        },
+        {
+          "t": "MDN Web Docs · perspective（透视）",
+          "u": "https://developer.mozilla.org/zh-CN/docs/Web/CSS/perspective"
+        }
+      ]
+    },
+    {
+      "type": "end",
+      "title": "第 25 单元 · 结束",
+      "text": "下一单元：让网页会发声、会放映——多媒体应用",
+      "nav": "结束"
+    }
+  ]
+}

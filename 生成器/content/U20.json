@@ -1,0 +1,397 @@
+{
+  "id": "U20",
+  "project": "项目7",
+  "project_name": "浮动和定位",
+  "unit": "第 20 单元",
+  "title": "布局综合案例",
+  "subtitle": "圣杯、双飞翼、绝对居中与京东秒杀模块，把浮动与定位一次性用透",
+  "duration": 40,
+  "cover_tags": [
+    "圣杯布局",
+    "双飞翼布局",
+    "绝对居中",
+    "京东秒杀"
+  ],
+  "ref_book": "电子工业出版社 · 2025 年 1 月第 1 版",
+  "objectives": {
+    "knowledge": [
+      "熟练应用定位技巧实现网页布局特效",
+      "理解圣杯布局与双飞翼布局的实现思路与差异",
+      "掌握 margin 负值在三列布局中的作用",
+      "掌握单行文本省略号与雪碧图的实战写法"
+    ],
+    "skill": [
+      "能实现左中右三列自适应布局",
+      "能使用绝对定位配合 margin 负值实现居中",
+      "能综合使用浮动、定位完成企业级模块制作"
+    ],
+    "literacy": [
+      "培养正确的审美观念",
+      "培养严谨求实的劳动作风",
+      "培养精益求精的工匠精神"
+    ]
+  },
+  "slides": [
+    {
+      "type": "objectives",
+      "title": "本单元我们要达成什么",
+      "subtitle": "对照教材《项目7》7.3 的学习目标 / 技能目标 / 素养目标",
+      "objectives": {
+        "knowledge": [
+          "熟练应用定位技巧实现网页布局特效",
+          "理解圣杯布局与双飞翼布局的实现思路与差异",
+          "掌握 margin 负值在三列布局中的作用",
+          "掌握单行文本省略号与雪碧图的实战写法"
+        ],
+        "skill": [
+          "能实现左中右三列自适应布局",
+          "能使用绝对定位配合 margin 负值实现居中",
+          "能综合使用浮动、定位完成企业级模块制作"
+        ],
+        "literacy": [
+          "培养正确的审美观念",
+          "培养严谨求实的劳动作风",
+          "培养精益求精的工匠精神"
+        ]
+      }
+    },
+    {
+      "type": "ideology",
+      "title": "把「美」做出来：工匠精神落在每一行 CSS 上",
+      "subtitle": "教材《项目7》思政课堂",
+      "nav": "思政课堂",
+      "text": "以 Web 前端技术为代表的网页应用技术可以帮助乡村地区宣传本地特色和文化，吸引游客前来观光旅游，促进经济发展。同时，网页应用技术还可以为乡村地区提供数字化服务，如<strong>在线教育、医疗</strong>等，提高乡村地区居民的生活质量。未来，随着互联网技术的不断发展，网页应用技术将更加深入地应用于<strong>美丽乡村建设</strong>中，为乡村地区带来更多发展机遇和可能性。",
+      "topic": "素养目标里写着「培养精益求精的工匠精神」。请结合岗位讨论：一个 left 值差 1px、一个省略号没做、一个雪碧图坐标偏了 2px 的模块，为什么在企业验收时会被反复打回？"
+    },
+    {
+      "type": "outline",
+      "title": "本单元导览",
+      "subtitle": "四个经典案例，覆盖三列布局、居中与商业模块",
+      "nav": "导览",
+      "items": [
+        "任务7-8：圣杯布局（左 150 / 右 200 / 中间自适应）",
+        "任务7-9：双飞翼布局——淘宝 UED 的圣杯改进版",
+        "任务7-10：绝对居中布局（弹窗与遮罩）",
+        "任务7-11：京东秒杀模块（浮动 + 雪碧图 + 单行省略号）"
+      ]
+    },
+    {
+      "type": "section",
+      "no": "7.3",
+      "title": "综合案例",
+      "text": "会写属性只是第一步，能把它们组合成可交付的页面才算过关。",
+      "nav": "7.3 综合案例"
+    },
+    {
+      "type": "bullets",
+      "title": "三列布局到底难在哪",
+      "subtitle": "既要左右固定、中间自适应，又要让主要内容优先渲染",
+      "nav": "三列布局的难点",
+      "items": [
+        "需求：<strong>左列固定 150px、右列固定 200px，中间列宽度自适应</strong>（图7-29）。",
+        "难点一：三列都要在一行里，靠<strong>浮动</strong>解决。",
+        "难点二：中间列要自适应填满剩余空间，靠 <strong>width:100%</strong> 加父容器留白解决。",
+        "难点三：中间列往往是页面主要内容，<strong>HTML 结构上要让它排在最前面</strong>以优先渲染——于是不能按顺序 float。",
+        "解法：<strong>margin 负值</strong>把左右两列「拉」回中间列所在的那一行。"
+      ]
+    },
+    {
+      "type": "task",
+      "title": "任务7-8｜圣杯布局",
+      "subtitle": "教材背景：圣杯布局源于一篇文章「In Search of the Holy Grail」，「圣杯」在西方文字中是「渴求之物」的意思",
+      "nav": "任务7-8 圣杯布局",
+      "goal": "实现左列固定 150px、右列固定 200px、中间列宽度自适应的三列布局（图7-29）。",
+      "steps": [
+        "<strong>第 1 步：</strong>HTML 结构上<strong>把 .main 放在最前</strong>——优先渲染中间列，它往往是页面主要部分。",
+        "<strong>第 2 步：</strong>三列全部 <code>float:left</code>，<code>.main</code> 设置 <code>width:100%</code> 自适应填满父容器（图7-30）。",
+        "<strong>第 3 步：</strong>用 <strong>margin 负值</strong>把左右两列拉上来：<code>.left{margin-left:-100%;}</code>、<code>.right{margin-left:-202px;}</code>（图7-31）。<br><strong>易错点：</strong><code>-202px</code> 的原因是<strong>除自身宽度 200px 外，还需加上两侧边线宽度各 1px</strong>。",
+        "<strong>第 4 步：</strong>给 <code>.outer</code> 设置 <code>padding-left:150px; padding-right:200px</code> 腾出位置（图7-32）。",
+        "<strong>第 5 步：</strong>再用<strong>相对定位</strong>把左右列推到位：<code>.left{position:relative; left:-150px;}</code>、<code>.right{position:relative; right:-200px;}</code>（图7-33）。",
+        "<strong>第 6 步：</strong>可将 3 列高度都设为 <code>height:100%</code> 填满满屏，得到更完整的圣杯布局（图7-34）。"
+      ],
+      "lang": "css",
+      "code": "html{ height:100%; }\nbody{ margin:0; /*去除默认外边距*/ height:100%; }\n.outer{ margin:0 auto; /*居中*/ height:100%;\n        padding-left:150px; padding-right:200px; }\n.main{ float:left; width:100%; /*自适应填满父容器的宽度*/\n       height:100%; background-color:#FFE4C4; }\n.left{ float:left; width:150px; height:100%; background-color:#01FFFF;\n       border:1px dashed #518F93; margin-left:-100%;\n       position:relative; left:-150px; }\n.right{ float:left; width:200px; height:100%; background-color:#01FFFF;\n        border:1px dashed #518F93; margin-left:-202px;\n        position:relative; right:-200px; }"
+    },
+    {
+      "type": "demo",
+      "title": "效果演示｜圣杯布局：拖动看中间列如何自适应",
+      "subtitle": "左右两列宽度锁死，中间列随容器宽度自动伸缩——这就是「自适应」",
+      "nav": "圣杯布局演示",
+      "items": [
+        "外层 <code>.outer</code> 用 <code>padding-left:150px; padding-right:200px</code> 为左右列<strong>腾出位置</strong>。",
+        "<code>.main</code> 设置 <code>width:100%</code> 并浮动，<strong>自适应填满中间区域</strong>。",
+        "左右列靠 <code>margin-left</code> 负值被<strong>拉到同一行</strong>，再用相对定位推到各自的留白里。",
+        "下方宽度条循环变化，注意观察：<strong>左右两列始终不变，只有中间列在伸缩</strong>。"
+      ],
+      "hint": "把注意力放在中间列：容器变窄时它先收缩，容器变宽时它先撑开——这就是「左右固定、中间自适应」。",
+      "html": "<style>*{box-sizing:border-box}body{margin:0;font-family:'PingFang SC',system-ui,sans-serif;background:linear-gradient(150deg,#eef4ff,#f7fbff);padding:14px;display:flex;flex-direction:column;align-items:center}.u20{width:100%;max-width:620px;margin:0 auto;animation:u20r .5s both}.u20 .hd{height:26px;line-height:26px;background:#12306f;color:#fff;font-size:11px;text-align:center;border-radius:6px 6px 0 0}.u20 .outer{height:150px;padding-left:80px;padding-right:100px;background:#fff;border:1px solid #dbe3ef;border-top:0;animation:u20w 7s ease-in-out infinite}.u20 .outer>div{height:100%;float:left;font-size:11px;color:#5a6c85;display:flex;align-items:center;justify-content:center;border:1px dashed #518F93}.u20 .main{width:100%;background:#FFE4C4}.u20 .left{width:80px;background:#01FFFF;margin-left:-100%;position:relative;left:-80px}.u20 .right{width:100px;background:#01FFFF;margin-left:-102px;position:relative;right:-100px}.u20 .clr{clear:both}.u20 .ft{height:24px;line-height:24px;background:#eaf1ff;color:#1d46b8;font-size:11px;text-align:center;border:1px solid #dbe3ef;border-top:0;border-radius:0 0 6px 6px}.u20 .bar{margin-top:10px;height:20px;border-radius:10px;background:#e8edf6;overflow:hidden;position:relative;animation:u20b 7s ease-in-out infinite}.u20 .bar::after{content:'';position:absolute;left:0;top:0;bottom:0;width:40%;background:linear-gradient(90deg,#2f6bff,#0fb5c9);border-radius:10px;animation:u20b2 7s ease-in-out infinite}.u20 .tip{margin-top:7px;font-size:11px;color:#7b8ba1;text-align:center;animation:u20r .5s .3s both}@keyframes u20w{0%,100%{max-width:620px}50%{max-width:400px}}@keyframes u20b{0%,100%{width:100%}50%{width:100%}}@keyframes u20b2{0%,100%{width:100%}50%{width:64%}}@keyframes u20r{from{opacity:0;transform:translateY(12px)}}</style>\n<div class='u20'>\n<div class='hd'>header</div>\n<div class='outer'>\n<div class='main'>main（自适应）</div>\n<div class='left'>left<br>150</div>\n<div class='right'>right<br>200</div>\n<div class='clr'></div>\n</div>\n<div class='ft'>footer</div>\n<div class='bar'></div>\n<p class='tip'>容器宽度变化时：left 与 right 宽度不变，只有 main 伸缩</p>\n</div>"
+    },
+    {
+      "type": "task",
+      "title": "任务7-9｜双飞翼布局",
+      "subtitle": "教材背景：双飞翼布局源于淘宝的 UED，将左右两列比喻成小鸟的两个翅膀",
+      "nav": "任务7-9 双飞翼",
+      "goal": "实现左 150px、右 200px、中间自适应的三列效果（图7-35），并理解它与圣杯布局的差异。",
+      "steps": [
+        "<strong>背景：</strong>双飞翼布局源于<strong>淘宝的 UED</strong>，灵感来自页面渲染，将左、右两列的固定列宽比喻成小鸟的两个翅膀，是<strong>对页面的形象表示</strong>。",
+        "<strong>通常认为它是圣杯布局的改进版。</strong>",
+        "<strong>关键差异：</strong>在 <code>main</code> 元素上<strong>再添加一层 div（.main-wrap）</strong>并给它设置 margin 值。",
+        "由于左右两列的 <strong>margin 负值都是相对于 main-wrap 元素</strong>的，main 元素的 margin 值变化不会影响它们，因此<strong>省略了对左右两列设置相对定位的步骤</strong>。",
+        "代价：HTML 结构多了一层 <code>.main-wrap</code> 包裹。"
+      ],
+      "lang": "css",
+      "code": "html,body{ height:100%; margin:0; }\n.main-wrap { float:left; width:100%; background-color:#FFE4C4; height:100%; }\n.left      { float:left; width:150px; margin-left:-100%;\n             background-color:#01FFFF; height:100%; }\n.right     { float:left; width:200px; margin-left:-200px;\n             background-color:#01FFFF; height:100%; }\n.main      { margin:0 200px 0 150px; }"
+    },
+    {
+      "type": "code",
+      "title": "两种布局的 HTML 结构对比",
+      "subtitle": "一个靠父级 padding 腾位，一个靠内层 margin 腾位——差异全在结构上",
+      "nav": "HTML 结构对比",
+      "lang": "html",
+      "file": "结构差异",
+      "code": "<!-- 圣杯布局：main 在前，父容器用 padding 腾位 -->\n<div class=\"outer\">\n  <div class=\"main\">main-content</div>\n  <div class=\"left\">left-column</div>\n  <div class=\"right\">right-column</div>\n</div>\n\n/* .outer{ padding-left:150px; padding-right:200px; } */\n\n<!-- 双飞翼布局：main-wrap 在前，内部再包一层 main -->\n<div class=\"main-wrap\">\n  <div class=\"main\">main-content</div>\n</div>\n<div class=\"left\">left-column</div>\n<div class=\"right\">right-column</div>\n\n/* .main{ margin:0 200px 0 150px; } */",
+      "caption": "教材对比总结：<strong>两种布局原理基本一样，关键在于设置 margin 负值的技巧和元素浮动的相对定位技巧。</strong>双飞翼多一层 <code>main-wrap</code>，换来的是左右两列<strong>不必再写相对定位</strong>。"
+    },
+    {
+      "type": "compare",
+      "title": "圣杯 vs 双飞翼：同源不同路",
+      "subtitle": "教材对比总结：两种布局原理基本一样，关键在于 margin 负值技巧与元素浮动的相对定位技巧",
+      "nav": "圣杯 vs 双飞翼",
+      "a": {
+        "title": "圣杯布局",
+        "items": [
+          "HTML 结构：<code>.main</code> 在前，<code>.left</code>、<code>.right</code> 紧随，<strong>共三层</strong>",
+          "用<strong>父容器的 padding</strong> 腾出左右位置：<code>padding-left:150px; padding-right:200px</code>",
+          "左右列需再用<strong>相对定位</strong>推到位：<code>position:relative; left:-150px</code>",
+          "右边 margin 负值要算边框：<strong>-202px = 200px 宽 + 左右各 1px 边线</strong>"
+        ]
+      },
+      "b": {
+        "title": "双飞翼布局",
+        "items": [
+          "HTML 结构：<code>.main-wrap</code> 内部再包一层 <code>.main</code>，<strong>多一层 div</strong>",
+          "用 <code>.main</code> 自身的 <strong>margin</strong> 腾位置：<code>margin:0 200px 0 150px</code>",
+          "<strong>省略相对定位步骤</strong>——margin 负值相对于 main-wrap，不受 main 影响",
+          "右边 margin 负值直接写 <strong>-200px</strong>，无需叠加边线宽度"
+        ]
+      }
+    },
+    {
+      "type": "task",
+      "title": "任务7-10｜绝对居中布局",
+      "subtitle": "案例图：图7-36 淘宝 App、图7-37 美团 App；假设对话框宽 300px、高 400px",
+      "nav": "任务7-10 绝对居中",
+      "goal": "让元素的中心与父元素的中心重合，模拟弹窗 / 对话框的绝对居中效果。",
+      "steps": [
+        "<strong>关键思路：</strong>让元素水平或垂直居中，就要使<strong>元素的中心与父元素的中心重合</strong>。",
+        "由于<strong>父容器尺寸不固定</strong>（如不同手机尺寸），不能用相对父容器的具体数值定位，<strong>可以考虑使用百分比</strong>。",
+        "<strong>第一步（代码7-17）：</strong>给 <code>.dialog</code> 设置 <code>position:absolute; top:50%; left:50%</code>，并铺一层半透明遮罩 <code>.mask</code>。",
+        "<strong>易错点（重点）：</strong>此时对话框<strong>并没有真正居中</strong>（图7-38），原因是<strong>对话框是相对于左上角进行偏移定位的</strong>（图7-39）。",
+        "<strong>第二步（代码7-18）：</strong>再补上 <code>margin-top:-200px; margin-left:-150px</code>，即 <strong>margin 负值取自身宽高的一半</strong>。",
+        "对话框也会受遮罩影响，可通过 <code>z-index:999</code> 调整两者的层叠顺序（图7-41）。"
+      ],
+      "lang": "css",
+      "file": "代码7-17 / 代码7-18（教材原文）",
+      "code": "html,body{ margin:0; height:100%; }\n.outer{ background-color:#FFE4C4; height:100%; }\ndiv.mask{ position:absolute; left:0; top:0; width:100%; height:100%;\n          opacity:0.3; background-color:#000; }      /* 半透明遮罩 */\n\n/* 第一步：绝对定位 + 百分比（尚未真正居中） */\n.dialog{ width:300px; height:400px; position:absolute; top:50%; left:50%; }\n\n/* 第二步：margin 负值取自身宽高的一半 + z-index 提层 */\n.dialog{ width:300px; height:400px; position:absolute; top:50%; left:50%;\n         margin-top:-200px; margin-left:-150px; z-index:999; }\n.dialog img{ width:100%; }"
+    },
+    {
+      "type": "bullets",
+      "title": "绝对居中的两个关键点",
+      "subtitle": "百分位定「心」，margin 负值回「半」——记住这个组合",
+      "nav": "绝对居中要点",
+      "items": [
+        "<strong>为什么用 50%？</strong>因为父容器尺寸不固定，无法给出具体像素值；<code>top:50%; left:50%</code> 先把<strong>元素左上角</strong>送到父容器中心。",
+        "<strong>为什么还要 margin 负值？</strong>因为偏移是相对于<strong>左上角</strong>进行的，此时元素整体偏向了右下方——需要<strong>往回挪自身宽高的一半</strong>。",
+        "计算公式：<code>margin-top: -(高度/2)</code>、<code>margin-left: -(宽度/2)</code>；本例为 <code>-200px</code> 与 <code>-150px</code>。",
+        "<strong>z-index：</strong>对话框需盖在遮罩之上，给它一个足够大的 <code>z-index</code>（如 999）。",
+        "举一反三：这个「50% + 负一半」的思路，在项目8 的 Flex 布局与新版的 <code>translate(-50%,-50%)</code> 中都会再次遇到。"
+      ]
+    },
+    {
+      "type": "task",
+      "title": "任务7-11｜京东秒杀模块的制作",
+      "subtitle": "目标：使用定位等相关知识完成京东秒杀模块（图7-42）",
+      "nav": "任务7-11 京东秒杀",
+      "goal": "综合使用浮动、定位、雪碧图与单行省略号，还原企业级电商秒杀模块。",
+      "steps": [
+        "① 容器 <code>.container</code> 设置 <code>overflow:hidden</code>——<strong>既触发 BFC 包裹浮动子元素，又裁切溢出</strong>。",
+        "② 每个 <code>.item</code> 设置 <code>float:left; width:190px; height:275px; border:1px solid #eee</code>。",
+        "③ 秒杀块 <code>.ms</code> 用 <code>background-color:#e83632; color:#fff; text-align:center</code> 打底。",
+        "④ 闪电图标 <code>.ms .icon</code> 用<strong>雪碧图定位</strong>：<code>background-image:url('./images/sprite.seckill.png'); background-position:-35px -25px</code>。",
+        "⑤ 倒计时 <code>.ms .clock span</code> 设为 <code>display:inline-block; width:40px; height:40px; line-height:40px; background-color:#2f3430</code>。",
+        "⑥ 商品名 <code>.product-desc</code> 用<strong>单行省略号三件套</strong>：<code>white-space:nowrap; overflow:hidden; text-overflow:ellipsis</code>。",
+        "⑦ 价格块 <code>.price</code> 用红底 + 内部两个 <code>span</code> 分别显示现价与原价。"
+      ],
+      "lang": "css",
+      "code": "*{ margin:0; padding:0; font:12px/1.5 \"微软雅黑\",Tahoma,Arial,Harrington,\"sans-serif\" }\na{ color:#666 }\na:hover{ color:#c81623 }\n.container{ overflow:hidden; }\n.item{ float:left; width:190px; height:275px; border:1px solid #eee; }\n.ms{ background-color:#e83632; color:#fff; text-align:center; }\n.ms .title{ font-size:34px; margin:15px; }\n.ms .subtitle{ font-size:20px; color:rgba(255,255,255,0.5); margin-bottom:10px; }\n.ms .icon{ width:20px; height:33px; display:block;\n           background-image:url(\"./images/sprite.seckill.png\");\n           background-position:-35px -25px; margin:0 auto 20px; }\n.ms .desc{ font-size:16px; margin:10px; }\n.ms .clock span{ display:inline-block; width:40px; height:40px;\n    background-color:#2f3430; font-size:20px; line-height:40px; }\n.product-link{ display:block; height:100%; text-align:center; padding-top:39px; }\n.product-desc{ white-space:nowrap; width:160px; overflow:hidden;\n    text-overflow:ellipsis; margin:0 auto; }\n.price{ width:160px; height:20px; background-color:#e6382f; margin:20px auto; padding:1px; }\n.price span{ width:78px; height:20px; font-size:14px; display:inline-block; }\n.price .price-new{ line-height:20px; color:#fff; }\n.price .price-origin{ color:#b7bcb8; background-color:#fff; }"
+    },
+    {
+      "type": "code",
+      "title": "代码7-19｜京东秒杀模块的 HTML 结构（教材节选）",
+      "subtitle": "一个 .container 包住秒杀块与 4 个商品 item，全部靠浮动排成一行",
+      "nav": "代码7-19 HTML",
+      "lang": "html",
+      "file": "京东秒杀结构",
+      "code": "<div class=\"container\">\n  <div class=\"item ms\">\n    <h2 class=\"title\">京东秒杀</h2>\n    <h3 class=\"subtitle\">FLASH DEALS</h3>\n    <i class=\"icon\"></i>\n    <p class=\"desc\">本场距离结束时间</p>\n    <div class=\"clock\"><span class=\"hour\">23</span><span class=\"minute\">59</span><span class=\"second\">20</span></div>\n  </div>\n  <div class=\"item\">\n    <a href=\"#\" class=\"product-link\">\n      <img src=\"./images/pic01.jpg\">\n      <p class=\"product-desc\">合生元(BIOSTIME)儿童婴幼儿益生菌冲剂…</p>\n      <div class=\"price\"><span class=\"price-new\">138.00</span><span class=\"price-origin\">208.00</span></div>\n    </a>\n  </div>\n  <!-- 共 4 个商品 item：pic01~pic04 -->\n  <!-- 价格分别为 138.00/208.00、1599.00/2899.00、2097.00/4380.00、155.00/176.00 -->\n</div>",
+      "caption": "教材商品文案素材：合生元益生菌、索尼 WH-1000XM2 耳机、艾戈勒手表、合生元益生菌粉（26 袋装）。注意 <code>i</code> 标签在此处充当雪碧图的<strong>局部显示容器</strong>，与项目6 任务6-1 的用法一致。"
+    },
+    {
+      "type": "bullets",
+      "title": "模块里的两个高频实战技巧",
+      "subtitle": "教材模块参数里藏着两个面试常考点：单行省略号与雪碧图",
+      "nav": "省略号与雪碧图",
+      "items": [
+        "<strong>单行文本省略号三件套</strong>：<code>white-space:nowrap</code>（不换行）+ <code>overflow:hidden</code>（溢出隐藏）+ <code>text-overflow:ellipsis</code>（省略号）。",
+        "三个属性<strong>缺一不可</strong>，且必须同时给出<strong>限定的宽度</strong>（本例 <code>width:160px</code>），否则省略号不会出现。",
+        "<strong>雪碧图（精灵图）定位</strong>：用 <code>background-image</code> 引入大图，再用 <code>background-position</code> 的<strong>负值坐标</strong>把需要的那一个小图标「移」到可视区域。",
+        "本例 <code>.ms .icon</code> 的容器尺寸是 <strong>20px×33px</strong>，坐标是 <strong>-35px -25px</strong>——容器尺寸必须与图标尺寸一致，否则会露出相邻图标。",
+        "呼应项目5 的任务5-9：雪碧图把多张小图合并成一张，<strong>减少 HTTP 请求次数</strong>，是经典的性能优化手段。"
+      ]
+    },
+    {
+      "type": "ai",
+      "title": "AI 前沿：从「手写圣杯布局」到「AI 一句话出布局」",
+      "subtitle": "布局方案在演进，但 margin 负值背后的盒子计算能力仍是基本功",
+      "nav": "AI 前沿",
+      "text": "今天的生产环境里，三列布局早已用 Flex 或 Grid 一行搞定。你可以让 <strong>DeepSeek、通义千问、文心一言</strong> 直接输出「左 150 右 200 中间自适应」的 Flex 版本，干净利落。但教材仍安排圣杯与双飞翼，是因为它们训练的是<strong>盒子尺寸的精确计算</strong>：为什么是 -202px 而不是 -200px？padding 与 margin 谁在腾位置？margin 负值把谁拉到了哪一行？<strong>这些算不清，用 Flex 也只会照抄，不会纠错。</strong>",
+      "items": [
+        "AI 生成：让 AI 分别用<strong>圣杯、双飞翼、Flex、Grid</strong> 四种方式实现同一个三列布局，对比着学效率最高。",
+        "AI 辅助编码：<strong>通义灵码、文心快码、GitHub Copilot</strong> 可根据注释补全整套布局 CSS，包括易错的 -202px。",
+        "AI 代码审查：让 AI 检查你的布局是否<strong>清除了浮动、是否触发了 BFC、z-index 是否被父级层叠上下文限制</strong>。",
+        "职业提醒：<strong>1+X 与各类前端认证仍以原生 CSS 布局为考核点</strong>。AI 会写代码，但考试与排错现场，靠的是你脑子里那张盒子图。"
+      ]
+    },
+    {
+      "type": "quiz",
+      "title": "随堂检测",
+      "subtitle": "结合四个案例自编，检验你对综合布局的掌握",
+      "nav": "随堂检测",
+      "items": [
+        {
+          "q": "圣杯布局中，右列的 margin-left 取 -202px 而不是 -200px，原因是（　　）。",
+          "options": [
+            "A. 右列实际宽度是 202px",
+            "B. 除自身宽度 200px 外，还需加上两侧边线宽度各 1px",
+            "C. 为了与左列的 150px 对齐",
+            "D. 教材印刷错误，应为 -200px"
+          ],
+          "answer": "B",
+          "tip": "教材易错点提示：右列设置了 1px 虚线边框，左右各多出 1px，因此负值为 200 + 1 + 1 = 202px。",
+          "type": "single"
+        },
+        {
+          "q": "关于双飞翼布局，下列说法正确的是（　　）。",
+          "options": [
+            "A. 它比圣杯布局少一层 div",
+            "B. 它需要在 main 内部再添加一层 main-wrap 并设置 margin",
+            "C. 它必须给左右两列设置相对定位",
+            "D. 它不能用 margin 负值实现"
+          ],
+          "answer": "B",
+          "tip": "双飞翼在 main-wrap 内部又设置一层 main 并设置其左右 margin，因此省略了左右两列相对定位的步骤；两种布局的精髓都是 margin 负值。",
+          "type": "single"
+        },
+        {
+          "q": "实现「绝对居中布局」时，只写 top:50%; left:50% 会导致（　　）。",
+          "options": [
+            "A. 元素完全居中",
+            "B. 元素偏向右下方，因为偏移是相对于元素左上角进行的",
+            "C. 元素偏向左上方",
+            "D. 元素脱离父容器"
+          ],
+          "answer": "B",
+          "tip": "教材图7-38、图7-39 明确指出：偏移是相对于左上角进行的，还需用 margin 负值取自身宽高的一半往回挪。",
+          "type": "single"
+        },
+        {
+          "q": "要实现单行文本溢出显示省略号，下列写法正确的是（　　）。",
+          "options": [
+            "A. overflow:hidden; text-overflow:ellipsis",
+            "B. white-space:nowrap; overflow:hidden; text-overflow:ellipsis",
+            "C. word-break:break-all; text-overflow:ellipsis",
+            "D. text-overflow:ellipsis 单独使用即可"
+          ],
+          "answer": "B",
+          "tip": "三件套缺一不可：white-space:nowrap 不换行、overflow:hidden 隐藏溢出、text-overflow:ellipsis 显示省略号，且必须限定宽度。",
+          "type": "single"
+        },
+        {
+          "type": "multi",
+          "q": "关于圣杯布局与双飞翼布局，下列说法正确的有（　　）。",
+          "options": [
+            "A. 两者都把中间列放在 HTML 结构的最前面，以保证主要内容优先渲染",
+            "B. 圣杯布局用 .main 的 margin 腾出左右位置，双飞翼布局用父容器的 padding 腾出左右位置",
+            "C. 两者都借助 margin 负值把左右两列拉到中间列所在的那一行",
+            "D. 双飞翼布局在 main 外套了一层 main-wrap，因而省去了给左右两列设置相对定位的步骤"
+          ],
+          "answer": "ACD",
+          "tip": "说反了：圣杯用<strong>父容器 padding</strong> 腾位、双飞翼用 <code>.main</code> 的 margin 腾位，故 B 错。"
+        }
+      ]
+    },
+    {
+      "type": "summary",
+      "title": "本课小结",
+      "subtitle": "五个案例，五种把浮动与定位组合起来的方式",
+      "nav": "本课小结",
+      "items": [
+        "<strong>圣杯布局：</strong>main 在前优先渲染 → 三列全浮动 → <strong>margin 负值</strong>拉回同一行 → 父容器 <code>padding</code> 腾位 → 左右列<strong>相对定位</strong>推到位。",
+        "<strong>双飞翼布局：</strong>在 main-wrap 内再包一层 main 并给它<strong>左右 margin</strong>，因此<strong>省去了相对定位</strong>；它是淘宝 UED 提出的圣杯改进版。",
+        "<strong>两者同源：</strong>精髓都是 <strong>margin 负值</strong>；差异只在 HTML 结构与「谁来腾位置」——圣杯用父级 padding，双飞翼用 main 的 margin。",
+        "<strong>绝对居中：</strong><code>top:50%; left:50%</code> 把左上角送到中心，再用 <strong>margin 负值取自身宽高的一半</strong>拉回；弹窗要盖住遮罩，记得加 <code>z-index</code>。",
+        "<strong>京东秒杀模块：</strong><code>overflow:hidden</code> 一举两得（触发 BFC + 裁切）、浮动排商品、<strong>雪碧图定位</strong>取图标、<strong>单行省略号三件套</strong>截断长标题。"
+      ]
+    },
+    {
+      "type": "homework",
+      "title": "课后作业",
+      "nav": "课后作业",
+      "items": [
+        "<strong>操作题：</strong>依次完成教材任务7-8 至任务7-11，把圣杯布局、双飞翼布局、绝对居中布局与京东秒杀模块全部实现一遍，并截图对比。",
+        "<strong>操作题：</strong>根据图7-44 所示效果，制作一个登录框，并使用定位将其居中显示。",
+        "<strong>思考题：</strong>把圣杯布局的右列边框去掉，margin-left 应该改成多少？请说明理由并上机验证。",
+        "<strong>拓展题：</strong>尝试用 Flex 布局重写京东秒杀模块的商品排列部分，比较它与浮动写法在代码量和可维护性上的差异。",
+        "<strong>项目讨论：</strong>使用所学知识，以<strong>美丽乡村</strong>为主题，帮助你所在的城市设计和规划一个网页。试讨论你的做法、思路及特点！",
+        "<strong>复习：</strong>通读教材 7.4 小结，自行绘制一张「浮动 / 清除浮动 / BFC / 四种定位」的知识脑图，为项目8 的 Flex 布局做准备。"
+      ]
+    },
+    {
+      "type": "refs",
+      "title": "出处与参考",
+      "subtitle": "本课件内容依据教材，并核对以下权威技术文档",
+      "nav": "出处与参考",
+      "items": [
+        {
+          "t": "教材《网页制作（HTML5+CSS3）》项目7 浮动和定位（7.3～7.5）",
+          "u": "郑哲、傅冬 主编 · 电子工业出版社 · 2025 年 1 月第 1 版"
+        },
+        {
+          "t": "MDN Web Docs · float",
+          "u": "https://developer.mozilla.org/zh-CN/docs/Web/CSS/float"
+        },
+        {
+          "t": "MDN Web Docs · position",
+          "u": "https://developer.mozilla.org/zh-CN/docs/Web/CSS/position"
+        },
+        {
+          "t": "MDN Web Docs · text-overflow（单行省略号）",
+          "u": "https://developer.mozilla.org/zh-CN/docs/Web/CSS/text-overflow"
+        },
+        {
+          "t": "MDN Web Docs · background-position（雪碧图定位）",
+          "u": "https://developer.mozilla.org/zh-CN/docs/Web/CSS/background-position"
+        },
+        {
+          "t": "MDN Web Docs · 弹性盒子（Flex 布局，本项目的现代替代方案）",
+          "u": "https://developer.mozilla.org/zh-CN/docs/Learn/CSS/CSS_layout/Flexbox"
+        }
+      ]
+    },
+    {
+      "type": "end",
+      "title": "项目7 · 课程结束",
+      "text": "浮动与定位收官，下一站：项目8 Flex 布局",
+      "nav": "结束"
+    }
+  ]
+}

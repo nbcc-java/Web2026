@@ -1,0 +1,1325 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>标准流、浮动与清除浮动 · 网页制作课件</title>
+<style>
+:root{
+  --bg:#EEF3FB; --bg2:#F7FAFF; --surface:#fff; --ink:#0E1B2E; --muted:#5A6C85;
+  --brand:#2F6BFF; --brand-dk:#1D46B8; --brand2:#0FB5C9; --violet:#7C5CFF; --accent:#FF8A3D;
+  --ok:#12A150; --line:#E1E8F4; --code-bg:#0D1A2B; --code-ink:#DCE7F8;
+  --font:'PingFang SC','Microsoft YaHei','Hiragino Sans GB','Source Han Sans SC',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --mono:'JetBrains Mono','SF Mono',Menlo,Consolas,'Courier New',monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+.slide{user-select:text;-webkit-user-select:text}
+.hud,.legend,.drawer,.kicker,.topbar{user-select:none;-webkit-user-select:none}
+::selection{background:rgba(47,107,255,.22)}
+html,body{height:100%}
+body{background:radial-gradient(1200px 800px at 12% 0%,#e6efff 0%,transparent 55%),
+             radial-gradient(1000px 700px at 100% 100%,#e9fbfd 0%,transparent 50%),var(--bg);
+     font-family:var(--font);color:var(--ink);overflow:hidden;-webkit-font-smoothing:antialiased}
+.wrap{height:100%;display:grid;place-items:center;padding:2.2vh 2.2vh}
+.stage{position:relative;width:100%;height:100%;max-width:calc(100vh * 16 / 9);max-height:calc(100vw * 9 / 16);
+       aspect-ratio:16/9;background:var(--bg2);border-radius:20px;overflow:hidden;
+       box-shadow:0 34px 80px -30px rgba(18,42,92,.42),0 0 0 1px rgba(255,255,255,.7) inset;
+       container-type:size}
+/* 背景装饰 */
+.bgfx{position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:0}
+.blob{position:absolute;border-radius:50%;filter:blur(46px);opacity:.5}
+.b1{width:38cqw;height:38cqw;left:-10cqw;top:-14cqw;background:linear-gradient(135deg,#bcd4ff,#8fb6ff);animation:float1 18s ease-in-out infinite}
+.b2{width:30cqw;height:30cqw;right:-8cqw;top:6cqw;background:linear-gradient(135deg,#b8f0f6,#7fe3ef);animation:float2 22s ease-in-out infinite}
+.b3{width:26cqw;height:26cqw;left:22cqw;bottom:-14cqw;background:linear-gradient(135deg,#d9ccff,#b9a6ff);animation:float3 26s ease-in-out infinite}
+@keyframes float1{50%{transform:translate(4cqw,3cqw) scale(1.06)}}
+@keyframes float2{50%{transform:translate(-4cqw,4cqw) scale(1.08)}}
+@keyframes float3{50%{transform:translate(3cqw,-4cqw) scale(1.05)}}
+.grid-lines{position:absolute;inset:0;background-image:linear-gradient(rgba(47,107,255,.05) 1px,transparent 1px),
+   linear-gradient(90deg,rgba(47,107,255,.05) 1px,transparent 1px);background-size:4cqw 4cqw;opacity:.7}
+
+/* 幻灯片 */
+.slide{position:absolute;inset:0;z-index:2;padding:4.4cqw 5cqw 4cqw;display:flex;flex-direction:column;gap:1.9cqw;
+  opacity:0;visibility:hidden;transform:translateY(1.4cqw) scale(.99);
+  transition:opacity .52s ease,transform .52s cubic-bezier(.2,.7,.2,1),visibility .52s}
+.slide.is-active{opacity:1;visibility:visible;transform:none}
+.slide.prev{transform:translateY(-1.4cqw) scale(.99)}
+.s-head{display:flex;justify-content:space-between;align-items:flex-start;gap:2cqw;flex:0 0 auto}
+.kicker{display:inline-block;font-size:1.16cqw;font-weight:700;letter-spacing:.16em;color:var(--brand);
+  background:linear-gradient(90deg,rgba(47,107,255,.12),rgba(15,181,201,.12));padding:.42cqw 1cqw;border-radius:999px;margin-bottom:.75cqw}
+.s-title{font-size:2.86cqw;font-weight:800;letter-spacing:.01em;line-height:1.2}
+.s-sub{margin-top:.6cqw;font-size:1.32cqw;color:var(--muted);line-height:1.55}
+.s-body{flex:1;min-height:0;display:flex;flex-direction:column;justify-content:center;gap:1.5cqw}
+.s-body.two{flex-direction:row;align-items:stretch;gap:2.2cqw}
+.s-body.two>*{flex:1;min-width:0}
+.s-body.col{justify-content:center}
+.col-l,.col-r{min-width:0;display:flex;flex-direction:column;justify-content:center;gap:1.2cqw}
+
+/* 入场动画 */
+.an{opacity:0}
+.is-active .an{animation:rise .66s cubic-bezier(.2,.75,.2,1) both;animation-delay:calc(var(--i,0)*95ms + 120ms)}
+@keyframes rise{from{opacity:0;transform:translateY(1.5cqw)}to{opacity:1;transform:none}}
+
+/* 封面 */
+.s-cover{flex-direction:row;align-items:center;gap:3cqw;padding:6cqw 6cqw}
+.cover-left{flex:1.15;min-width:0;z-index:2}
+.brandrow{display:flex;align-items:baseline;gap:.9cqw;margin-bottom:2.1cqw}
+.brandmark{font-size:1.7cqw;font-weight:800;color:var(--brand);letter-spacing:.08em}
+.brandsub{font-size:1.1cqw;font-weight:700;color:var(--brand2);letter-spacing:.2em}
+.cover-title{font-size:4.5cqw;font-weight:900;line-height:1.14;letter-spacing:-.01em;
+  background:linear-gradient(120deg,#12306f,#2f6bff 45%,#0fb5c9);-webkit-background-clip:text;background-clip:text;color:transparent}
+.cover-sub{margin-top:1.2cqw;font-size:1.55cqw;color:var(--muted);line-height:1.7;max-width:34cqw}
+.pills{display:flex;flex-wrap:wrap;gap:.7cqw;margin-top:1.9cqw}
+.pill{font-size:1.03cqw;font-weight:700;color:var(--brand-dk);background:rgba(47,107,255,.1);
+  border:1px solid rgba(47,107,255,.2);padding:.4cqw 1cqw;border-radius:999px}
+.pill{opacity:0}
+.is-active .pill{animation:rise .6s both;animation-delay:calc(var(--i)*95ms + 120ms)}
+.cover-meta{margin-top:2.3cqw;display:flex;align-items:center;gap:.9cqw;flex-wrap:wrap;font-size:1.02cqw;color:var(--muted)}
+.cover-meta b{color:var(--brand);font-size:1.2cqw}
+.cover-meta .dot{width:.34cqw;height:.34cqw;border-radius:50%;background:#c3cfe2}
+.cover-art{flex:.85;position:relative;min-width:0;display:grid;place-items:center}
+.orb{position:absolute;border-radius:50%;filter:blur(10px);opacity:.75}
+.o1{width:15cqw;height:15cqw;right:-1cqw;top:2cqw;background:radial-gradient(circle at 30% 30%,#9dc2ff,#4f83ff)}
+.o2{width:8cqw;height:8cqw;right:12cqw;bottom:4cqw;background:radial-gradient(circle at 30% 30%,#a9f0f7,#1fc2d6)}
+.o3{width:5cqw;height:5cqw;right:3cqw;bottom:12cqw;background:radial-gradient(circle at 30% 30%,#d5c7ff,#8a63ff)}
+.orb{animation:orb 9s ease-in-out infinite}
+.o2{animation-duration:11s}.o3{animation-duration:13s}
+@keyframes orb{50%{transform:translateY(-1.6cqw) scale(1.06)}}
+.codewin{position:relative;z-index:2;width:100%;max-width:32cqw;background:var(--code-bg);border-radius:1.2cqw;
+  box-shadow:0 30px 60px -22px rgba(13,26,43,.7);overflow:hidden;transform:rotate(-1.5deg);
+  animation:rise .8s cubic-bezier(.2,.75,.2,1) .35s both}
+.cw-bar{display:flex;gap:.5cqw;padding:.85cqw 1.1cqw;background:rgba(255,255,255,.06)}
+.cw-bar i{width:.72cqw;height:.72cqw;border-radius:50%;background:#ff5f57}
+.cw-bar i:nth-child(2){background:#febc2e}.cw-bar i:nth-child(3){background:#28c840}
+.cw-body{padding:1.3cqw 1.5cqw;font-family:var(--mono);font-size:1.06cqw;line-height:1.85;color:var(--code-ink);white-space:pre;overflow:auto}
+
+/* 章节过渡 */
+.s-section{align-items:center;justify-content:center;text-align:center}
+.sec-inner{display:flex;flex-direction:column;align-items:center}
+.sec-num{font-size:7.6cqw;font-weight:900;line-height:1;
+  background:linear-gradient(120deg,#2f6bff,#0fb5c9);-webkit-background-clip:text;background-clip:text;color:transparent;letter-spacing:-.03em}
+.sec-title{margin-top:1.2cqw;font-size:3.1cqw;font-weight:800}
+.sec-line{width:0;height:.4cqw;border-radius:99px;background:linear-gradient(90deg,var(--brand),var(--brand2));margin:1.4cqw 0}
+.is-active .sec-line{animation:draw .8s ease .5s both}
+@keyframes draw{from{width:0}to{width:11cqw}}
+.sec-sub{font-size:1.4cqw;color:var(--muted);max-width:44cqw;line-height:1.7}
+
+/* 要点列表 */
+.blist{list-style:none;display:flex;flex-direction:column;gap:1.05cqw}
+.blist li{display:flex;gap:.95cqw;align-items:flex-start;font-size:1.42cqw;line-height:1.6;
+  background:var(--surface);border:1px solid var(--line);border-radius:.85cqw;padding:1.05cqw 1.3cqw;
+  box-shadow:0 8px 22px -16px rgba(20,40,90,.5);transition:transform .25s,box-shadow .25s}
+.blist li:hover{transform:translateX(.4cqw);box-shadow:0 12px 26px -16px rgba(47,107,255,.55)}
+.blist.small li{font-size:1.24cqw;padding:.85cqw 1.1cqw}
+.blist.dense{gap:.68cqw}
+.blist.dense li{font-size:1.18cqw;padding:.72cqw 1.1cqw;line-height:1.55}
+.outline.dense{gap:.62cqw}
+.outline.dense li{padding:.72cqw 1.15cqw}
+.outline.dense .ot{font-size:1.16cqw}
+.grid.dense{gap:.95cqw}
+.card.dense{padding:1.1cqw}
+.card.dense .card-t{font-size:1.26cqw;margin-bottom:.4cqw}
+.card.dense .card-d{font-size:1.03cqw;line-height:1.55}
+.bl-dot{flex:0 0 auto;width:.62cqw;height:.62cqw;border-radius:50%;margin-top:.62cqw;
+  background:linear-gradient(135deg,var(--brand),var(--brand2));box-shadow:0 0 0 .28cqw rgba(47,107,255,.12)}
+.blist b,.blist strong{color:var(--brand-dk)}
+.blist code{font-family:var(--mono);font-size:.92em;background:#eef3ff;color:#1d46b8;padding:.1em .42em;border-radius:.35em}
+.hw li{background:linear-gradient(180deg,#fbfcff,#f3f7ff)}
+
+/* 卡片 */
+.grid{display:grid;gap:1.3cqw}
+.grid.cols-2{grid-template-columns:repeat(2,1fr)}
+.grid.cols-3{grid-template-columns:repeat(3,1fr)}
+.grid.cols-4{grid-template-columns:repeat(2,1fr)}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:1.1cqw;padding:1.5cqw;position:relative;overflow:hidden;
+  box-shadow:0 14px 32px -22px rgba(20,40,90,.55);transition:transform .28s,box-shadow .28s,border-color .28s}
+.card:hover{transform:translateY(-.5cqw);box-shadow:0 22px 40px -22px rgba(47,107,255,.5);border-color:rgba(47,107,255,.35)}
+.card::before{content:"";position:absolute;left:0;top:0;height:100%;width:.3cqw;background:linear-gradient(180deg,var(--brand),var(--brand2))}
+.card-ico{font-size:1.75cqw;margin-bottom:.6cqw}
+.card-t{font-size:1.42cqw;font-weight:800;margin-bottom:.55cqw}
+.card-d{font-size:1.14cqw;color:var(--muted);line-height:1.62}
+
+/* 表格 */
+.tbl-wrap{background:var(--surface);border:1px solid var(--line);border-radius:1.1cqw;overflow:hidden;
+  box-shadow:0 16px 36px -26px rgba(20,40,90,.6)}
+.tbl{width:100%;border-collapse:collapse;font-size:1.16cqw}
+.tbl th{background:linear-gradient(180deg,#eef4ff,#e4edff);color:var(--brand-dk);font-weight:800;text-align:left;
+  padding:.95cqw 1.2cqw;border-bottom:1px solid #d8e3f7;font-size:1.12cqw;letter-spacing:.02em}
+.tbl td{padding:.85cqw 1.2cqw;border-bottom:1px solid var(--line);line-height:1.55}
+.tbl tbody tr:last-child td{border-bottom:0}
+.tbl tbody tr:hover{background:#f7faff}
+.tbl code{font-family:var(--mono);font-size:.92em;background:#eef3ff;color:#1d46b8;padding:.08em .4em;border-radius:.35em}
+
+/* 对比 */
+.cmp-wrap{display:grid;grid-template-columns:1fr 1fr;gap:1.8cqw}
+.cmp{border-radius:1.1cqw;padding:1.4cqw;border:1px solid var(--line);background:var(--surface)}
+.cmp-h{font-size:1.4cqw;font-weight:800;margin-bottom:.9cqw;display:flex;align-items:center;gap:.6cqw}
+.cmp-a .cmp-h{color:var(--brand-dk)}
+.cmp-b .cmp-h{color:#b8730f}
+.cmp ul{list-style:none;display:flex;flex-direction:column;gap:.7cqw}
+.cmp li{font-size:1.16cqw;line-height:1.6;color:var(--muted);padding-left:1.3cqw;position:relative}
+.cmp li::before{content:"";position:absolute;left:0;top:.62cqw;width:.5cqw;height:.5cqw;border-radius:2px;background:var(--brand)}
+.cmp-b li::before{background:var(--accent)}
+.cmp-a{background:linear-gradient(180deg,#f6f9ff,#fff)}
+
+/* 步骤 */
+.steps{display:flex;flex-direction:column;gap:1cqw}
+.step{display:flex;gap:1.2cqw;align-items:flex-start;background:var(--surface);border:1px solid var(--line);
+  border-radius:.9cqw;padding:1cqw 1.25cqw}
+.step-n{flex:0 0 auto;width:2.3cqw;height:2.3cqw;border-radius:50%;display:grid;place-items:center;font-weight:800;font-size:1.15cqw;color:#fff;
+  background:linear-gradient(135deg,var(--brand),var(--brand2))}
+.step-t{font-size:1.3cqw;font-weight:800}
+.step-d{font-size:1.12cqw;color:var(--muted);line-height:1.6;margin-top:.25cqw}
+
+/* 流程图 */
+.flow{display:flex;align-items:stretch;justify-content:center;gap:0;flex-wrap:nowrap}
+.fl{flex:1;min-width:0;background:var(--surface);border:1px solid var(--line);border-radius:1cqw;padding:1.3cqw 1cqw;text-align:center;
+  box-shadow:0 12px 28px -22px rgba(20,40,90,.55)}
+.fl-ico{font-size:1.9cqw;margin-bottom:.5cqw}
+.fl-t{font-size:1.24cqw;font-weight:800;margin-bottom:.35cqw;color:var(--brand-dk)}
+.fl-d{font-size:1.02cqw;color:var(--muted);line-height:1.55}
+.fl-arrow{flex:0 0 auto;width:2.2cqw;position:relative;display:grid;place-items:center}
+.fl-arrow::after{content:"";width:1.4cqw;height:.22cqw;background:linear-gradient(90deg,var(--brand),var(--brand2));border-radius:99px;position:relative}
+.fl-arrow::before{content:"";position:absolute;right:.35cqw;width:.6cqw;height:.6cqw;border-top:.2cqw solid var(--brand2);border-right:.2cqw solid var(--brand2);transform:rotate(45deg)}
+.flow-note{margin-top:1.3cqw;font-size:1.1cqw;color:var(--muted);text-align:center;background:rgba(47,107,255,.06);border-radius:.8cqw;padding:.8cqw 1.2cqw}
+
+/* 代码 */
+.codebox{background:var(--code-bg);border-radius:1.1cqw;overflow:hidden;box-shadow:0 26px 54px -26px rgba(13,26,43,.75)}
+.cb-bar{display:flex;align-items:center;gap:.8cqw;padding:.8cqw 1.2cqw;background:rgba(255,255,255,.06);border-bottom:1px solid rgba(255,255,255,.07)}
+.cb-lang{font-family:var(--mono);font-size:.92cqw;font-weight:700;color:#7fd7e4;letter-spacing:.12em}
+.cb-file{font-family:var(--mono);font-size:.92cqw;color:#7f93ad}
+.cb-code{padding:1.25cqw 1.5cqw;font-family:var(--mono);font-size:1.06cqw;line-height:1.78;color:var(--code-ink);white-space:pre;overflow:auto;max-height:100%}
+.cb-code .pn{color:#7f93ad}.cb-code .tg{color:#6fd6ff}.cb-code .at{color:#ffcf7a}.cb-code .st{color:#a5e88a}
+.cb-code .c{color:#6b8099;font-style:italic}.cb-code .sel{color:#ffb3c8}.cb-code .cls{color:#ffd479}
+.cb-code .id{color:#9fe8ff}.cb-code .pc{color:#c8a2ff}.cb-code .prop{color:#8fd3ff}.cb-code .num{color:#f7c774}
+.cb-code .fn{color:#d0b0ff}.cb-code .imp{color:#ff8a8a}.cb-code .at-rules{color:#ff9f6b}
+.caption{margin-top:1cqw;font-size:1.08cqw;color:var(--muted);line-height:1.6}
+.caption b{color:var(--brand-dk)}
+
+/* 任务 */
+.task-goal{background:linear-gradient(180deg,#f4f8ff,#eef4ff);border:1px solid #dbe6fb;border-radius:.9cqw;padding:1.05cqw 1.25cqw;
+  font-size:1.22cqw;line-height:1.62}
+.tg-label{display:inline-block;font-weight:800;color:#fff;background:var(--brand);border-radius:.45cqw;
+  font-size:.98cqw;padding:.16cqw .6cqw;margin-right:.6cqw;vertical-align:.08cqw}
+.task-steps{list-style:none;counter-reset:ts;display:flex;flex-direction:column;gap:.75cqw}
+.task-steps li{counter-increment:ts;position:relative;padding-left:2.3cqw;font-size:1.14cqw;line-height:1.6}
+.task-steps li::before{content:counter(ts);position:absolute;left:0;top:.08cqw;width:1.55cqw;height:1.55cqw;border-radius:50%;
+  background:rgba(47,107,255,.12);color:var(--brand-dk);font-size:.92cqw;font-weight:800;display:grid;place-items:center}
+.task-code{background:var(--code-bg);border-radius:.9cqw;overflow:hidden;box-shadow:0 20px 44px -26px rgba(13,26,43,.7)}
+
+/* 演示 */
+.demo-right{display:flex;flex-direction:column;gap:1cqw;height:100%}
+.demo-frame{flex:1;width:100%;min-height:0;border:1px solid var(--line);border-radius:1cqw;background:#fff;
+  box-shadow:0 22px 46px -26px rgba(20,40,90,.6)}
+.demo-code{background:var(--code-bg);border-radius:.9cqw;overflow:hidden}
+.demo-code summary{cursor:pointer;color:#9fb6d4;font-size:1.02cqw;padding:.7cqw 1.1cqw;font-family:var(--mono);user-select:none}
+.demo-code .cb-code{padding:0 1.2cqw 1.1cqw;font-size:.96cqw}
+.hint{margin-top:1cqw;font-size:1.08cqw;color:var(--muted);background:rgba(255,138,61,.1);border-left:.3cqw solid var(--accent);
+  border-radius:.6cqw;padding:.8cqw 1.1cqw;line-height:1.6}
+.hint b{color:#c2601a}
+
+/* AI */
+.ai-card{background:linear-gradient(160deg,#171a3a,#2b2a5e 55%,#3a2a6a);border-radius:1.1cqw;padding:1.7cqw;color:#e8e6ff;
+  position:relative;overflow:hidden;box-shadow:0 24px 52px -26px rgba(40,30,90,.8)}
+.ai-card::after{content:"";position:absolute;right:-6cqw;top:-6cqw;width:14cqw;height:14cqw;border-radius:50%;
+  background:radial-gradient(circle,rgba(124,92,255,.6),transparent 65%);animation:float1 12s ease-in-out infinite}
+.ai-badge{display:inline-grid;place-items:center;width:2.6cqw;height:2.6cqw;border-radius:.7cqw;font-weight:900;font-size:1.1cqw;
+  background:linear-gradient(135deg,#7c5cff,#0fb5c9);color:#fff;margin-bottom:.9cqw;letter-spacing:.04em}
+.ai-card p{font-size:1.22cqw;line-height:1.72;position:relative;z-index:2}
+.ai-list li{border-color:rgba(124,92,255,.25);background:linear-gradient(180deg,#fbf9ff,#f5f2ff)}
+.ai-list .bl-dot{background:linear-gradient(135deg,#7c5cff,#0fb5c9)}
+
+/* 检测（可交互：点选 → 判分 → 显示解析） */
+.quiz-body{justify-content:flex-start;gap:1.1cqw}
+.quiz-top{display:flex;align-items:center;justify-content:space-between;gap:1.2cqw;flex:0 0 auto}
+.quiz-meta{font-size:1.02cqw;color:var(--muted)}
+.quiz-meta b{color:var(--brand);font-size:1.1cqw}
+.q-reveal{cursor:pointer;font-family:inherit;font-size:.98cqw;font-weight:700;color:var(--brand-dk);
+  background:#eef4ff;border:1px solid #d6e3fb;border-radius:.5cqw;padding:.4cqw .95cqw;transition:.18s}
+.q-reveal:hover{background:#e2ecff;border-color:var(--brand)}
+.quiz-acts{display:flex;align-items:center;gap:.6cqw;flex:0 0 auto}
+.q-reset-all{cursor:pointer;font-family:inherit;font-size:.98cqw;font-weight:700;color:var(--muted);
+  background:#fff;border:1px solid var(--line);border-radius:.5cqw;padding:.4cqw .9cqw;transition:.18s}
+.q-reset-all:hover{color:var(--accent);border-color:#ffd0a8;background:#fff8f2}
+.quiz{list-style:none;display:flex;flex-direction:column;gap:1cqw;overflow:auto;padding-right:.3cqw}
+.quiz.dense{gap:.55cqw}
+.quiz-body:has(.quiz.dense){gap:.7cqw}
+.quiz-item{background:var(--surface);border:1px solid var(--line);border-radius:.9cqw;padding:1cqw 1.2cqw;
+  transition:border-color .2s,box-shadow .2s}
+.quiz-item.ok{border-color:rgba(18,161,80,.45);box-shadow:0 10px 26px -20px rgba(18,161,80,.7)}
+.quiz-item.bad{border-color:rgba(214,83,79,.45);box-shadow:0 10px 26px -20px rgba(214,83,79,.6)}
+.quiz.dense .quiz-item{padding:.6cqw .95cqw}
+.quiz.dense .q{font-size:1.08cqw}
+.quiz.dense .opts{margin-top:.4cqw;gap:.45cqw}
+.quiz.dense .opt{font-size:.94cqw;padding:.22cqw .62cqw}
+.quiz.dense .q-foot{margin-top:.4cqw;min-height:1.15cqw}
+.quiz.dense .q-check{font-size:.88cqw;padding:.16cqw .6cqw}
+.quiz.dense .q-verdict{font-size:.9cqw}
+.quiz.dense .q-ans{margin-top:.4cqw;font-size:.92cqw;padding:.4cqw .7cqw}
+.q{display:flex;gap:.55cqw;align-items:baseline;font-size:1.22cqw;font-weight:700;line-height:1.5}
+.quiz.dense .q{font-size:1.12cqw}
+.q-no{font-family:var(--mono);font-size:.92cqw;font-weight:800;color:var(--brand);flex:0 0 auto}
+.q-tag{flex:0 0 auto;font-size:.8cqw;font-weight:700;color:#fff;background:var(--brand2);
+  border-radius:.32cqw;padding:.08cqw .42cqw;letter-spacing:.04em}
+.q-tag.multi{background:var(--violet)}
+.q-txt{flex:1;min-width:0}
+.opts{display:flex;flex-wrap:wrap;gap:.55cqw;margin-top:.62cqw}
+.opt{cursor:pointer;display:inline-flex;gap:.42cqw;align-items:center;font-family:inherit;text-align:left;
+  font-size:1.02cqw;line-height:1.45;color:#33456b;background:#f5f8ff;border:1px solid #e0e9fb;
+  border-radius:.55cqw;padding:.36cqw .8cqw;transition:background .16s,border-color .16s,box-shadow .16s}
+.quiz.dense .opt{font-size:.96cqw;padding:.28cqw .7cqw}
+.opt:hover{border-color:var(--brand);background:#eef4ff}
+.opt i{font-style:normal;font-family:var(--mono);font-weight:800;font-size:.88em;color:var(--brand)}
+.opt.sel{background:#e6efff;border-color:var(--brand);box-shadow:0 0 0 .16cqw rgba(47,107,255,.16)}
+.opt.right{background:rgba(18,161,80,.1);border-color:#12A150;color:#0b5f2f}
+.opt.right i{color:#0b5f2f}
+.q-foot{display:flex;align-items:center;gap:.8cqw;margin-top:.6cqw;min-height:1.5cqw}
+.q-check{cursor:pointer;font-family:inherit;font-size:.94cqw;font-weight:700;color:var(--brand);
+  background:#fff;border:1px solid #c9daff;border-radius:.45cqw;padding:.26cqw .75cqw;transition:.16s}
+.q-check:hover{background:#eef4ff}
+.q-reset{cursor:pointer;font-family:inherit;font-size:.94cqw;font-weight:700;color:var(--muted);
+  background:#fff;border:1px solid var(--line);border-radius:.45cqw;padding:.26cqw .7cqw;transition:.16s}
+.q-reset:hover{color:var(--accent);border-color:#ffd0a8;background:#fff8f2}
+.q-reset:disabled{opacity:.38;cursor:default}
+.q-reset:disabled:hover{color:var(--muted);border-color:var(--line);background:#fff}
+.quiz.dense .q-reset{font-size:.88cqw;padding:.16cqw .55cqw}
+.q-verdict{font-size:.96cqw;font-weight:700}
+.quiz-item.ok .q-verdict{color:var(--ok)}
+.quiz-item.bad .q-verdict{color:#d9534f}
+.q-ans{display:none;margin-top:.6cqw;font-size:.98cqw;line-height:1.6;color:#0f7a3d;
+  background:rgba(18,161,80,.08);border-radius:.5cqw;padding:.5cqw .8cqw}
+.quiz-item.revealed .q-ans{display:block;animation:rise .3s both}
+.q-ans b{color:#0b5f2f;margin-right:.45cqw}
+.ans-key{font-family:var(--mono);font-weight:800;margin-right:.6cqw}
+.ans-tip{color:var(--muted)}
+
+/* 目标 */
+.objs{display:grid;grid-template-columns:repeat(3,1fr);gap:1.4cqw}
+.obj{border-radius:1.1cqw;padding:1.4cqw;border:1px solid var(--line);background:var(--surface)}
+.obj-h{font-size:1.3cqw;font-weight:800;margin-bottom:.85cqw;display:flex;align-items:center;gap:.55cqw}
+.obj-h::before{content:"";width:.55cqw;height:1.35cqw;border-radius:99px}
+.obj ul{list-style:none;display:flex;flex-direction:column;gap:.62cqw}
+.obj li{font-size:1.1cqw;line-height:1.58;color:var(--muted);padding-left:1.15cqw;position:relative}
+.obj li::before{content:"";position:absolute;left:0;top:.6cqw;width:.42cqw;height:.42cqw;border-radius:50%;background:#9db4d6}
+.obj-1 .obj-h::before{background:var(--brand)}.obj-2 .obj-h::before{background:var(--brand2)}.obj-3 .obj-h::before{background:var(--accent)}
+.obj-1 .obj-h{color:var(--brand-dk)}.obj-2 .obj-h{color:#0a7b87}.obj-3 .obj-h{color:#b8730f}
+
+/* 思政 */
+.s-ideo .s-body{justify-content:center}
+.ideo-wrap{display:flex;flex-direction:column;gap:1.3cqw}
+.ideo-quote{position:relative;background:linear-gradient(180deg,#fff8f0,#fffbf6);border:1px solid #ffe3c8;border-left:.42cqw solid var(--accent);
+  border-radius:.95cqw;padding:1.6cqw 1.8cqw 1.6cqw 2.2cqw;font-size:1.3cqw;line-height:1.85;color:#4a3a28}
+.ideo-quote strong{color:#a3510a}
+.ideo-topic{font-size:1.16cqw;color:var(--muted);background:rgba(47,107,255,.06);border-radius:.8cqw;padding:.9cqw 1.2cqw;line-height:1.6}
+.it-label{display:inline-block;font-weight:800;color:#fff;background:var(--brand);border-radius:.45cqw;font-size:.96cqw;padding:.16cqw .6cqw;margin-right:.6cqw}
+
+/* 大纲 */
+.outline{list-style:none;display:flex;flex-direction:column;gap:.95cqw;counter-reset:none}
+.outline li{display:flex;align-items:center;gap:1.2cqw;background:var(--surface);border:1px solid var(--line);border-radius:.9cqw;padding:1.05cqw 1.35cqw;
+  box-shadow:0 10px 26px -22px rgba(20,40,90,.55)}
+.oi{font-family:var(--mono);font-size:1.1cqw;font-weight:800;color:var(--brand);background:rgba(47,107,255,.1);border-radius:.5cqw;padding:.28cqw .7cqw}
+.ot{font-size:1.34cqw;font-weight:700}
+
+/* 参考 */
+.refs{list-style:none;display:flex;flex-direction:column;gap:.85cqw}
+.refs li{display:flex;align-items:baseline;gap:.9cqw;background:var(--surface);border:1px solid var(--line);border-radius:.8cqw;padding:.9cqw 1.15cqw}
+.ref-idx{font-family:var(--mono);font-size:1cqw;font-weight:800;color:var(--brand)}
+.ref-t{font-size:1.16cqw;font-weight:600}
+.ref-u{font-family:var(--mono);font-size:.92cqw;color:var(--muted);word-break:break-all}
+
+/* 结束 */
+.s-end{align-items:center;justify-content:center;text-align:center;background:linear-gradient(140deg,#12203b,#1d3a78 55%,#0e6f88);}
+.s-end .end-t{color:#fff}
+.end-mark{font-size:2.4cqw;color:#7fd7e4;margin-bottom:.6cqw}
+.end-t{font-size:3.4cqw;font-weight:900;letter-spacing:.02em}
+.end-s{margin-top:1.2cqw;font-size:1.35cqw;color:#a9c4e8}
+/* 结束页导航：下一讲 / 返回总目录 */
+.end-inner{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.9cqw;max-width:74%}
+.end-next{margin-top:2.6cqw;display:inline-flex;align-items:center;gap:1cqw;text-decoration:none;
+  background:rgba(255,255,255,.09);border:1px solid rgba(140,200,235,.42);border-radius:.9cqw;
+  padding:1cqw 1.5cqw;transition:.22s;backdrop-filter:blur(6px);max-width:100%}
+.end-next:hover{background:rgba(255,255,255,.16);border-color:#7fd7e4;transform:translateY(-2px);
+  box-shadow:0 18px 40px -26px rgba(0,0,0,.9)}
+.en-lab{flex:0 0 auto;font-size:.92cqw;font-weight:800;letter-spacing:.06em;color:#0c2036;
+  background:linear-gradient(135deg,#7fd7e4,#4fc3d9);border-radius:.4cqw;padding:.2cqw .62cqw}
+.en-t{color:#eaf4ff;font-size:1.18cqw;font-weight:700;line-height:1.5}
+.en-ar{color:#7fd7e4;font-size:1.3cqw;font-weight:800}
+.end-next.is-final{cursor:default;box-shadow:none}
+.end-next.is-final:hover{transform:none;background:rgba(255,255,255,.09);border-color:rgba(140,200,235,.42);box-shadow:none}
+.end-back{margin-top:.5cqw;display:inline-flex;align-items:center;gap:.35cqw;text-decoration:none;
+  font-size:1.02cqw;color:#9fbde0;border-bottom:1px dashed rgba(159,189,224,.45);padding-bottom:.12cqw;transition:.2s}
+.end-back:hover{color:#fff;border-bottom-color:#7fd7e4}
+
+/* 进度 & HUD */
+.topbar{position:absolute;left:0;top:0;height:.42cqw;width:100%;background:rgba(47,107,255,.1);z-index:6}
+.topbar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--brand),var(--brand2),var(--violet));
+  transition:width .45s cubic-bezier(.2,.7,.2,1)}
+.hud{position:absolute;right:2.2cqw;bottom:1.5cqw;z-index:6;display:flex;align-items:center;gap:1cqw;
+  font-size:1cqw;color:var(--muted);font-family:var(--mono)}
+.hud .btn{cursor:pointer;background:rgba(255,255,255,.82);border:1px solid var(--line);border-radius:.55cqw;padding:.32cqw .7cqw;
+  transition:.2s}
+.hud .btn:hover{border-color:var(--brand);color:var(--brand)}
+.hud .btn[data-on="0"]{color:#a8b6cc;background:rgba(255,255,255,.5);border-style:dashed}
+.hud .btn[data-on="0"]:hover{color:var(--accent);border-color:#ffd0a8;border-style:solid;background:#fff8f2}
+.hud .btn[data-on="1"]{color:#0a7b87;border-color:#bfe6ea;background:rgba(15,181,201,.09)}
+.hud .btn[data-on="1"]:hover{border-color:var(--brand2);background:rgba(15,181,201,.16)}
+.pageno b{color:var(--ink)}
+.legend{position:absolute;left:2.2cqw;bottom:1.5cqw;z-index:6;font-size:.96cqw;color:#9aabc4;font-family:var(--mono)}
+.flip-toast{position:absolute;left:50%;bottom:9%;z-index:9;transform:translate(-50%,10px);
+  background:rgba(16,29,50,.9);color:#fff;font-family:var(--mono);font-size:1.02cqw;letter-spacing:.02em;
+  padding:.62cqw 1.25cqw;border-radius:999px;opacity:0;pointer-events:none;white-space:nowrap;
+  transition:opacity .22s,transform .22s;box-shadow:0 18px 40px -22px rgba(0,0,0,.8)}
+.flip-toast.show{opacity:1;transform:translate(-50%,0)}
+/* 导航抽屉 */
+.drawer{position:absolute;inset:0;z-index:8;background:rgba(12,22,40,.55);backdrop-filter:blur(6px);display:none;padding:4cqw}
+.drawer.open{display:block}
+.drawer-panel{background:var(--surface);border-radius:1.2cqw;height:100%;padding:2cqw;overflow:auto;box-shadow:0 40px 80px -30px rgba(0,0,0,.5)}
+.drawer-h{font-size:1.5cqw;font-weight:800;margin-bottom:1.2cqw;display:flex;justify-content:space-between}
+.drawer-h span{cursor:pointer;color:var(--muted);font-weight:600;font-size:1.1cqw}
+.drawer ul{list-style:none;display:grid;grid-template-columns:1fr 1fr;gap:.55cqw}
+.drawer li{display:flex;gap:.7cqw;align-items:center;padding:.6cqw .8cqw;border-radius:.6cqw;cursor:pointer;border:1px solid transparent}
+.drawer li:hover{background:#f2f6ff;border-color:#dbe6fb}
+.drawer li.cur{background:#eaf1ff;border-color:#c9daff}
+.nv-idx{font-family:var(--mono);font-size:.92cqw;color:var(--brand);font-weight:800}
+.nv-t{font-size:1.06cqw;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+/* ───────── 屏幕自适应 ─────────
+   1) 16:9 / 16:10 笔记本与投影：等比缩放（默认）
+   2) 4:3 老投影 / 上下更紧：压缩留白与圆角
+   3) 超宽屏：仍按高度定宽，不拉伸变形
+   4) 竖屏（手机、平板竖握）：改为纵向流式阅读，单列重排
+   5) 系统开启「减弱动效」时关闭所有动画
+*/
+@media (max-aspect-ratio: 4/3) and (orientation: landscape){
+  .wrap{padding:1.2vh}
+  .stage{border-radius:14px}
+  .slide{padding:3.4cqw 4.2cqw 3.2cqw;gap:1.5cqw}
+  .s-title{font-size:2.62cqw}
+  .blist{gap:.85cqw}
+  .blist li{font-size:1.32cqw;padding:.9cqw 1.15cqw}
+  .legend{display:none}
+}
+@media (min-aspect-ratio: 21/9){
+  .stage{max-width:calc(100vh * 16 / 9);max-height:calc(100vw * 9 / 16)}
+}
+@media (prefers-reduced-motion: reduce){
+  .an{opacity:1!important;animation:none!important}
+  .blob,.orb,.codewin{animation:none!important}
+  .slide{transition:none}
+}
+/* —— 竖屏：纵向流式阅读 —— */
+@media (orientation: portrait){
+  html,body{height:auto;overflow-x:hidden;overflow-y:auto}
+  html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+  body{overflow:visible;background:var(--bg)}
+  .wrap{display:block;height:auto;padding:0}
+  .stage{width:100%;height:auto;max-width:none;max-height:none;aspect-ratio:auto;border-radius:0;
+    overflow:visible;box-shadow:none;container-type:inline-size;background:transparent}
+  .bgfx{display:none}
+  .slide{position:relative;inset:auto;opacity:1!important;visibility:visible!important;transform:none!important;
+    padding:8vw 6vw 9vw;gap:5vw;min-height:auto;background:var(--bg2);border-bottom:1px solid var(--line)}
+  .slide.prev{transform:none!important}
+  .an{opacity:1!important;animation:none!important;transform:none!important}
+  .s-head{flex-direction:column;gap:0}
+  .kicker{font-size:2.6vw;padding:1vw 2.6vw;margin-bottom:2.2vw;letter-spacing:.1em}
+  .s-title{font-size:6.4vw;line-height:1.3}
+  .s-sub{margin-top:2vw;font-size:3.4vw}
+  .s-body{gap:4vw;justify-content:flex-start}
+  .s-body.two{flex-direction:column;gap:4.4vw}
+  .col-l,.col-r{gap:3.4vw}
+  /* 封面 */
+  .s-cover{flex-direction:column;align-items:flex-start;gap:5vw;padding:12vw 6vw 10vw}
+  .cover-art{display:none}
+  .brandrow{margin-bottom:4vw;gap:2vw}
+  .brandmark{font-size:4.4vw}.brandsub{font-size:3vw}
+  .cover-title{font-size:9.6vw;line-height:1.22}
+  .cover-sub{font-size:3.8vw;max-width:none;margin-top:2.6vw}
+  .pills{gap:2vw;margin-top:4vw}
+  .pill{font-size:2.8vw;padding:1.2vw 2.8vw}
+  .cover-meta{font-size:2.9vw;gap:2vw;margin-top:4vw}
+  .cover-meta b{font-size:3.4vw}
+  /* 章节页 */
+  .sec-num{font-size:17vw}
+  .sec-title{font-size:7.2vw;margin-top:3vw}
+  .sec-sub{font-size:3.6vw;max-width:none;margin-top:3vw}
+  .is-active .sec-line{animation:none;width:26vw}
+  .sec-line{margin:4vw 0}
+  /* 列表 / 卡片 */
+  .blist{gap:2.6vw}
+  .blist li{font-size:3.7vw;padding:2.8vw 3.4vw;border-radius:2.4vw;gap:2.4vw;line-height:1.62}
+  .blist.small li{font-size:3.4vw;padding:2.4vw 3vw}
+  .blist.dense li{font-size:3.3vw;padding:2.2vw 3vw}
+  .bl-dot{width:1.8vw;height:1.8vw;margin-top:1.8vw;box-shadow:0 0 0 .8vw rgba(47,107,255,.12)}
+  .outline{gap:2.4vw}
+  .outline li{padding:2.8vw 3.4vw;border-radius:2.2vw;gap:3vw}
+  .oi{font-size:2.8vw;padding:.8vw 2vw}
+  .ot{font-size:3.9vw}
+  .grid{gap:3vw}
+  .grid.cols-2,.grid.cols-3,.grid.cols-4{grid-template-columns:1fr}
+  .card{padding:4.2vw;border-radius:2.6vw}
+  .card-t{font-size:4.1vw;margin-bottom:1.6vw}
+  .card-d{font-size:3.3vw}
+  .card-ico{font-size:5.6vw;margin-bottom:1.6vw}
+  .card::before{width:.8vw}
+  /* 表格 */
+  .tbl-wrap{overflow-x:auto;border-radius:2.4vw;-webkit-overflow-scrolling:touch}
+  .tbl{font-size:3.1vw;min-width:110vw}
+  .tbl th{font-size:3vw;padding:2.4vw 2.8vw;white-space:nowrap}
+  .tbl td{padding:2.2vw 2.8vw}
+  /* 对比 */
+  .cmp-wrap{grid-template-columns:1fr;gap:3.4vw}
+  .cmp{padding:3.6vw;border-radius:2.4vw}
+  .cmp-h{font-size:3.8vw;margin-bottom:2.4vw}
+  .cmp ul{gap:2vw}
+  .cmp li{font-size:3.2vw;padding-left:3.6vw}
+  .cmp li::before{width:1.4vw;height:1.4vw;top:1.7vw}
+  /* 步骤 / 流程 */
+  .steps{gap:2.6vw}
+  .step{padding:3vw 3.4vw;border-radius:2.2vw;gap:3vw}
+  .step-n{width:7.4vw;height:7.4vw;font-size:3.2vw}
+  .step-t{font-size:3.7vw}
+  .step-d{font-size:3.2vw;margin-top:.8vw}
+  .flow{flex-direction:column;gap:1.6vw}
+  .fl{padding:3.6vw;border-radius:2.4vw}
+  .fl-ico{font-size:6.4vw}
+  .fl-t{font-size:3.9vw}
+  .fl-d{font-size:3.1vw}
+  .fl-arrow{width:100%;height:6vw;transform:rotate(90deg)}
+  .flow-note{font-size:3.1vw;padding:2.4vw 3vw;border-radius:2vw;margin-top:2.6vw}
+  /* 代码 */
+  .codebox,.task-code{border-radius:2.4vw}
+  .cb-bar{padding:2.2vw 3vw;gap:2.4vw}
+  .cb-lang,.cb-file{font-size:2.7vw}
+  .cb-code{font-size:3.1vw;line-height:1.62;padding:3vw 3.4vw}
+  .caption{font-size:3vw;margin-top:2.4vw}
+  .demo-code summary{font-size:2.9vw;padding:2.2vw 3vw}
+  .demo-code .cb-code{font-size:2.9vw}
+  /* 任务 / 演示 */
+  .task-goal{font-size:3.4vw;padding:3.2vw;border-radius:2.2vw}
+  .tg-label{font-size:2.6vw;padding:.5vw 1.8vw;margin-right:1.6vw;border-radius:1.2vw}
+  .task-steps{gap:2.4vw}
+  .task-steps li{font-size:3.3vw;padding-left:6.4vw}
+  .task-steps li::before{width:4.6vw;height:4.6vw;font-size:2.8vw}
+  .demo-right{height:auto;gap:2.6vw}
+  .demo-frame{height:66vw;min-height:190px;border-radius:2.4vw}
+  .hint{font-size:3.1vw;padding:2.6vw 3vw;border-radius:2vw;margin-top:2.6vw}
+  /* AI */
+  .ai-card{padding:4.4vw;border-radius:2.6vw}
+  .ai-card p{font-size:3.5vw}
+  .ai-badge{width:8.4vw;height:8.4vw;font-size:3.2vw;border-radius:2vw;margin-bottom:2.4vw}
+  /* 检测（!important：压过横屏 dense 的 cqw 规则，否则竖屏字号塌缩） */
+  .quiz-body{gap:3.4vw}
+  .quiz-top{flex-direction:column;align-items:flex-start;gap:2.4vw}
+  .quiz-meta{font-size:3vw}
+  .quiz-meta b{font-size:3.4vw}
+  .quiz-acts{gap:2vw}
+  .q-reveal,.q-reset-all{font-size:3vw;padding:1.6vw 3.4vw;border-radius:2vw}
+  .quiz{gap:3vw;overflow:visible}
+  .quiz.dense{gap:2.6vw}
+  .quiz-item,.quiz.dense .quiz-item{padding:3.4vw 3.6vw;border-radius:2.4vw}
+  .quiz.dense .q{font-size:3.6vw;gap:1.6vw;line-height:1.55}
+  .q-no{font-size:2.9vw}
+  .q-tag{font-size:2.4vw;padding:.3vw 1.4vw;border-radius:1.2vw}
+  .opts,.quiz.dense .opts{gap:1.8vw;margin-top:2.2vw}
+  .opt,.quiz.dense .opt{font-size:3.2vw;padding:1.4vw 2.8vw;border-radius:2vw;gap:1.4vw}
+  .q-foot,.quiz.dense .q-foot{margin-top:2vw;gap:2.4vw;min-height:0}
+  .q-check,.quiz.dense .q-check{font-size:2.9vw;padding:1.2vw 2.8vw;border-radius:1.6vw}
+  .q-reset,.quiz.dense .q-reset{font-size:2.9vw;padding:1.2vw 2.6vw;border-radius:1.6vw}
+  .q-verdict,.quiz.dense .q-verdict{font-size:2.9vw}
+  .q-ans,.quiz.dense .q-ans{font-size:3vw;padding:2.2vw 3vw;border-radius:1.8vw;margin-top:2vw}
+  /* 目标 / 思政 */
+  .objs{grid-template-columns:1fr;gap:3vw}
+  .obj{padding:4vw;border-radius:2.4vw}
+  .obj-h{font-size:3.9vw;margin-bottom:2.4vw}
+  .obj-h::before{width:1.4vw;height:4vw}
+  .obj ul{gap:2vw}
+  .obj li{font-size:3.2vw;padding-left:3.4vw}
+  .obj li::before{width:1.2vw;height:1.2vw;top:1.6vw}
+  .ideo-wrap{gap:3.4vw}
+  .ideo-quote{font-size:3.6vw;padding:4vw 4.4vw;border-radius:2.4vw;line-height:1.8}
+  .ideo-topic{font-size:3.2vw;padding:2.8vw 3.2vw;border-radius:2.2vw}
+  .it-label{font-size:2.6vw;padding:.5vw 1.6vw;border-radius:1.2vw;margin-right:1.4vw}
+  /* 参考 / 结束 */
+  .refs{gap:2.2vw}
+  .refs li{padding:2.8vw 3.2vw;border-radius:2vw;gap:2.4vw}
+  .ref-idx{font-size:2.8vw}
+  .ref-t{font-size:3.3vw}
+  .ref-u{font-size:2.7vw}
+  .s-end{align-items:center;justify-content:center;min-height:60vh}
+  .end-t{font-size:8.4vw}
+  .end-s{font-size:3.6vw;margin-top:3vw}
+  .end-mark{font-size:6vw}
+  .end-inner{max-width:none;width:100%;gap:2vw}
+  .end-next{margin-top:5vw;gap:2.2vw;padding:3vw 3.6vw;border-radius:2.4vw;flex-wrap:wrap;justify-content:center}
+  .en-lab{font-size:2.6vw;padding:.8vw 2vw;border-radius:1.2vw}
+  .en-t{font-size:3.4vw}
+  .en-ar{font-size:3.6vw}
+  .end-back{font-size:3vw;margin-top:2.6vw}
+  /* HUD / 目录：固定悬浮 */
+  .topbar{position:fixed;height:1.2vw;z-index:20}
+  .hud{position:fixed;right:3vw;bottom:calc(3vw + env(safe-area-inset-bottom));z-index:20;
+    background:rgba(255,255,255,.94);border:1px solid var(--line);border-radius:999px;
+    padding:2.2vw 3.4vw;gap:3vw;font-size:3vw;box-shadow:0 10px 30px -12px rgba(16,34,74,.35)}
+  .hud .btn{font-size:2.9vw;padding:1vw 2.4vw;border-radius:1.6vw}
+  .flip-toast{position:fixed;bottom:calc(16vw + env(safe-area-inset-bottom));z-index:21;
+    font-size:3vw;padding:2.2vw 4vw;max-width:84vw;white-space:normal;text-align:center;line-height:1.5}
+  .legend{display:none}
+  .drawer{position:fixed;padding:4vw}
+  .drawer-panel{padding:5vw;border-radius:3vw}
+  .drawer-h{font-size:4.2vw;margin-bottom:3vw}
+  .drawer-h span{font-size:3.2vw}
+  .drawer ul{grid-template-columns:1fr;gap:1.6vw}
+  .drawer li{padding:2.4vw 3vw;border-radius:2vw;gap:2.4vw}
+  .nv-idx{font-size:2.8vw}
+  .nv-t{font-size:3.2vw;white-space:normal}
+}
+/* 打印 */
+@media print{
+  body{overflow:visible}
+  .wrap{padding:0;display:block}
+  .stage{width:100%;max-width:none;height:auto;aspect-ratio:auto;border-radius:0;box-shadow:none}
+  .slide{position:relative;opacity:1!important;visibility:visible!important;transform:none!important;
+    page-break-after:always;height:100vh;width:100%}
+  .an{opacity:1!important;animation:none!important}
+  .topbar,.hud,.legend,.drawer{display:none!important}
+}
+</style>
+</head>
+<body>
+<div class="wrap"><div class="stage" id="stage">
+  <div class="bgfx"><div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div><div class="grid-lines"></div></div>
+  <div class="topbar"><i id="bar"></i></div>
+
+<section class="slide s-cover is-active" data-kind="cover">
+  <div class="cover-left">
+    <div class="brandrow an" style="--i:0">
+      <span class="brandmark">网页制作</span>
+      <span class="brandsub">HTML5 + CSS3</span>
+    </div>
+    <div class="kicker an" style="--i:1">项目7 · 第 18 单元</div>
+    <h1 class="cover-title an" style="--i:2">标准流、浮动与清除浮动</h1>
+    <p class="cover-sub an" style="--i:3">看懂盒子默认怎么排、浮动又打破了什么，再用 clear 与 BFC 把高度塌陷补回来</p>
+    <div class="pills"><span class="pill" style="--i:3">标准流</span><span class="pill" style="--i:4">float</span><span class="pill" style="--i:5">clear</span><span class="pill" style="--i:6">BFC</span></div>
+    <div class="cover-meta an" style="--i:8">
+      <span class="m-item"><b>40</b> 分钟</span>
+      <span class="dot"></span>
+      <span class="m-item">教材《网页制作（HTML5+CSS3）》项目7</span>
+      <span class="dot"></span>
+      <span class="m-item">电子工业出版社 · 2025 年 1 月第 1 版</span>
+    </div>
+  </div>
+  <div class="cover-art" aria-hidden="true">
+    <div class="orb o1"></div><div class="orb o2"></div><div class="orb o3"></div>
+    <div class="codewin">
+      <div class="cw-bar"><i></i><i></i><i></i></div>
+      <pre class="cw-body"><span class="pn">&lt;!</span><span class="tg">DOCTYPE</span> <span class="at">html</span><span class="pn">&gt;</span>
+<span class="pn">&lt;</span><span class="tg">html</span> <span class="at">lang</span>=<span class="st">"zh-CN"</span><span class="pn">&gt;</span>
+  <span class="pn">&lt;</span><span class="tg">head</span><span class="pn">&gt;</span> <span class="pn">&lt;</span><span class="tg">meta</span> <span class="at">charset</span>=<span class="st">"UTF-8"</span><span class="pn">&gt;</span> <span class="pn">&lt;/</span><span class="tg">head</span><span class="pn">&gt;</span>
+  <span class="pn">&lt;</span><span class="tg">body</span><span class="pn">&gt;</span>
+    <span class="pn">&lt;</span><span class="tg">h1</span><span class="pn">&gt;</span>Hello, Web<span class="pn">&lt;/</span><span class="tg">h1</span><span class="pn">&gt;</span>
+  <span class="pn">&lt;/</span><span class="tg">body</span><span class="pn">&gt;</span>
+<span class="pn">&lt;/</span><span class="tg">html</span><span class="pn">&gt;</span></pre>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-kind="objectives">
+  
+  <header class="s-head">
+    <div class="s-head-left">
+      
+      <h2 class="s-title an" style="--i:1">本单元我们要达成什么</h2>
+      <p class="s-sub an" style="--i:2">对照教材《项目7》7.1 的学习目标 / 技能目标 / 素养目标</p>
+    </div>
+  </header>
+  <div class="s-body"><div class="objs"><div class="obj obj-1" class="an " style="--i:1">
+          <div class="obj-h">知识目标</div><ul><li>了解网页布局排版的概念</li><li>掌握标准流排版的相关概念</li><li>掌握浮动排版的相关概念与特性</li><li>使用 BFC 解决高度塌陷的问题</li></ul></div><div class="obj obj-2" class="an " style="--i:2">
+          <div class="obj-h">技能目标</div><ul><li>能使用浮动实现横向排列与图文环绕</li><li>能使用 clear 属性清除浮动</li><li>能使用 BFC 解决父容器高度塌陷</li></ul></div><div class="obj obj-3" class="an " style="--i:3">
+          <div class="obj-h">素养目标</div><ul><li>培养正确的审美观念</li><li>培养严谨求实的劳动作风</li><li>培养精益求精的工匠精神</li></ul></div></div></div>
+</section>
+
+<section class="slide s-ideo" data-kind="ideology">
+  
+  <header class="s-head">
+    <div class="s-head-left">
+      
+      <h2 class="s-title an" style="--i:1">用网页技术，为美丽乡村打开一扇窗</h2>
+      <p class="s-sub an" style="--i:2">教材《项目7》思政课堂</p>
+    </div>
+  </header>
+  <div class="s-body"><div class="ideo-wrap">
+    <div class="ideo-quote an" style="--i:1">以 Web 前端技术为代表的网页应用技术可以帮助乡村地区宣传本地特色和文化，吸引游客前来观光旅游，促进经济发展。同时，网页应用技术还可以为乡村地区提供数字化服务，如<strong>在线教育、医疗</strong>等，提高乡村地区居民的生活质量。未来，随着互联网技术的不断发展，网页应用技术将更加深入地应用于<strong>美丽乡村建设</strong>中，为乡村地区带来更多发展机遇和可能性。</div>
+    <div class="ideo-topic an" style="--i:2"><span class="it-label">课堂讨论</span>布局是网页的「骨架」。请结合岗位谈一谈：在为乡村地区做宣传页面时，一套清晰、稳定、能适配不同屏幕的布局方案，对当地百姓意味着什么？</div>
+  </div></div>
+</section>
+
+<section class="slide" data-kind="outline">
+  
+  <header class="s-head">
+    <div class="s-head-left">
+      
+      <h2 class="s-title an" style="--i:1">本单元导览</h2>
+      <p class="s-sub an" style="--i:2">一条主线：标准流 → 打破它 → 修补它</p>
+    </div>
+  </header>
+  <div class="s-body"><ol class="outline"><li class="an " style="--i:1"><span class="oi">01</span><span class="ot">盒子默认是怎么排的？（标准流 / 文档流 / 普通流）</span></li><li class="an " style="--i:2"><span class="oi">02</span><span class="ot">浮动做了什么？三个任务看清它的三条特性</span></li><li class="an " style="--i:3"><span class="oi">03</span><span class="ot">浮动留下的烂摊子：父容器高度塌陷</span></li><li class="an " style="--i:4"><span class="oi">04</span><span class="ot">怎么收拾？clear 清除浮动 与 BFC 两条路线</span></li></ol></div>
+</section>
+
+<section class="slide s-section" data-kind="section">
+  <div class="sec-inner">
+    <div class="sec-num an" style="--i:0">7.1.1</div>
+    <h2 class="sec-title an" style="--i:1">标准流</h2>
+    <div class="sec-line an" style="--i:2"></div>
+    <p class="sec-sub an" style="--i:3">一切布局的起点：盒子按默认方式排，谁都别抢谁的位置。</p>
+  </div>
+</section>
+
+<section class="slide" data-kind="bullets">
+  
+  <header class="s-head">
+    <div class="s-head-left">
+      <div class="kicker an" style="--i:0">知识要点</div>
+      <h2 class="s-title an" style="--i:1">标准流：像河流一样向下流淌的默认排版</h2>
+      <p class="s-sub an" style="--i:2">教材原文：标准流亦称文档流、普通流，是元素的默认排版方式</p>
+    </div>
+  </header>
+  <div class="s-body"><ul class="blist dense"><li class="an " style="--i:1"><span class="bl-dot"></span><span>网页布局要解决的问题：<strong>一个网页如何排列分布这些盒子</strong>，从而达到美观的排版。</span></li><li class="an " style="--i:2"><span class="bl-dot"></span><span>CSS2 提供 3 种盒子排版模型：<strong>标准流排版、浮动排版、定位排版</strong>；CSS3 又新增了 <strong>Flex 排版、网格排版</strong> 等。</span></li><li class="an " style="--i:3"><span class="bl-dot"></span><span>定义：元素在排版布局过程中，会默认按照<strong>自左而右、自上而下</strong>的方式流式排列；当前面的内容位置发生变化时，后面的内容位置也会随之发生变化。</span></li><li class="an " style="--i:4"><span class="bl-dot"></span><span>具体表现：多个元素根据定义顺序形成盒子序列，<strong>同级块级盒子自上而下</strong>排列，<strong>同级行内元素自左而右</strong>排列；对于子元素亦是如此。</span></li><li class="an " style="--i:5"><span class="bl-dot"></span><span>整个页面犹如河流一样不断分支，并向同一个方向流动，<strong>故而称其为「标准流」</strong>。</span></li><li class="an " style="--i:6"><span class="bl-dot"></span><span><strong>关键结论：</strong>浮动排版和定位排版，<strong>都是通过更改元素的默认排版方式实现的</strong>。</span></li></ul></div>
+</section>
+
+<section class="slide s-section" data-kind="section">
+  <div class="sec-inner">
+    <div class="sec-num an" style="--i:0">7.1.2</div>
+    <h2 class="sec-title an" style="--i:1">浮动排版</h2>
+    <div class="sec-line an" style="--i:2"></div>
+    <p class="sec-sub an" style="--i:3">浮动靠 CSS2 的 float 属性实现，它让盒子「浮」起来，也带走了父容器的高度。</p>
+  </div>
+</section>
+
+<section class="slide" data-kind="table">
+  
+  <header class="s-head">
+    <div class="s-head-left">
+      <div class="kicker an" style="--i:0">对照表</div>
+      <h2 class="s-title an" style="--i:1">表7-1 float 属性值（教材完整还原）</h2>
+      <p class="s-sub an" style="--i:2">当 float 值为 left 或 right 时，元素变成浮动元素，同时脱离标准流</p>
+    </div>
+  </header>
+  <div class="s-body"><div class="tbl-wrap">
+    <table class="tbl"><thead><tr><th>属性值</th><th>描述</th></tr></thead><tbody><tr class="an " style="--i:1"><td><code>none</code></td><td>默认值，不浮动，按照标准流排列元素</td></tr><tr class="an " style="--i:2"><td><code>left</code></td><td>向左浮动，元素浮动在父元素的左侧</td></tr><tr class="an " style="--i:3"><td><code>right</code></td><td>向右浮动，元素浮动在父元素的右侧</td></tr><tr class="an " style="--i:4"><td><code>inherit</code></td><td>继承父元素的 float 属性值</td></tr></tbody></table>
+  </div></div>
+</section>
+
+<section class="slide" data-kind="task">
+  
+  <header class="s-head">
+    <div class="s-head-left">
+      <div class="kicker an" style="--i:0">任务驱动</div>
+      <h2 class="s-title an" style="--i:1">任务7-1｜浮动特性1：脱离标准流</h2>
+      <p class="s-sub an" style="--i:2">目标：使用 float 属性将「框1」盒子向右浮动，比较浮动前、后的效果（图7-2、图7-3）</p>
+    </div>
+  </header>
+  <div class="s-body two">
+    <div class="col-l">
+      <div class="task-goal an" style="--i:1"><span class="tg-label">任务目标</span>观察浮动前后盒子的位置变化，理解「浮动元素不在标准流中，标准流中的块框表现得就像浮动框不存在一样」。</div>
+      <ol class="task-steps"><li class="an " style="--i:2">准备一个带虚线边框的父容器 <code>.outer</code>，内部放三个 50px×50px 的 <code>.box</code>。</li><li class="an " style="--i:3">浮动前：div 作为块级元素<strong>占据父容器的一整行</strong>，三个框自上而下排列。</li><li class="an " style="--i:4">给「框1」加上 <code>.box1{ float:right; }</code>，它向右移动，<strong>直到外边框碰到父容器的边框为止</strong>。</li><li class="an " style="--i:5">依次给「框2」「框3」也加上 <code>.box1</code>：三个框<strong>向右排列成一行</strong>。</li><li class="an " style="--i:6">由于子元素全部脱离标准流，<strong>父容器最终塌陷成了一条线</strong>（图7-4、图7-5）。</li></ol>
+    </div>
+    <div class="col-r"><div class="task-code" class="an " style="--i:7">
+          <pre class="cb-code"><span class="sel"><span class="cls">.outer</span></span><span class="pn">{</span> <span class="prop">border</span>:<span class="num">1px</span> dashed <span class="num">#<span class="num">969696</span></span><span class="pn">;</span><span class="pn">}</span><span class="sel">
+<span class="cls">.box</span></span><span class="pn">{</span>
+    <span class="prop">background-color</span>:<span class="num">#FAFAF1</span><span class="pn">;</span>
+    <span class="prop">border</span>:<span class="num">1px</span> dashed <span class="num">#<span class="num">373734</span></span><span class="pn">;</span>
+    <span class="prop">width</span>:<span class="num">50px</span><span class="pn">;</span> <span class="prop">height</span>:<span class="num">50px</span><span class="pn">;</span> <span class="prop">margin</span>:<span class="num">10px</span><span class="pn">;</span><span class="pn">}</span><span class="sel">
+<span class="cls">.box1</span></span><span class="pn">{</span> <span class="prop">float</span>:right<span class="pn">;</span><span class="pn">}</span></pre></div></div>
+  </div>
+</section>
+
+<section class="slide" data-kind="bullets">
+  
+  <header class="s-head">
+    <div class="s-head-left">
+      <div class="kicker an" style="--i:0">知识要点</div>
+      <h2 class="s-title an" style="--i:1">浮动的四大特性（教材归纳，务必照讲）</h2>
+      <p class="s-sub an" style="--i:2">这四条，是理解后续所有浮动布局的地基</p>
+    </div>
+  </header>
+  <div class="s-body"><ul class="blist dense"><li class="an " style="--i:1"><span class="bl-dot"></span><span><strong>① 浮动可以让块级元素显示在同一行中。</strong></span></li><li class="an " style="--i:2"><span class="bl-dot"></span><span><strong>② 当浮动元素向指定方向移动时，直到它碰到父容器的边框或另一个浮动框为止。</strong></span></li><li class="an " style="--i:3"><span class="bl-dot"></span><span><strong>③ 浮动元素会脱离原来的标准流，且不占据原来标准流中的位置和空间。</strong></span></li><li class="an " style="--i:4"><span class="bl-dot"></span><span><strong>④ 子元素全部浮动后，如果父容器中没有其他内容撑开高度，则会发生高度塌陷。</strong></span></li><li class="an " style="--i:5"><span class="bl-dot"></span><span>补充：浮动框向左/右移动，<strong>直到它的外边缘碰到父容器（包含框）的边框或另一个浮动框的边框</strong>为止。</span></li></ul></div>
+</section>
+
+<section class="slide" data-kind="task">
+  
+  <header class="s-head">
+    <div class="s-head-left">
+      <div class="kicker an" style="--i:0">任务驱动</div>
+      <h2 class="s-title an" style="--i:1">任务7-2｜浮动特性2：图文环绕（浮动的本质）</h2>
+      <p class="s-sub an" style="--i:2">目标：验证浮动元素浮于标准流之上/之下，并利用浮动实现图文环绕效果</p>
+    </div>
+  </header>
+  <div class="s-body two">
+    <div class="col-l">
+      <div class="task-goal an" style="--i:1"><span class="tg-label">任务目标</span>用新疆简介素材，把图片向左浮动，观察文字如何绕开图片重新排列。</div>
+      <ol class="task-steps"><li class="an " style="--i:2">实验：把 <code>.box1</code> 改成 <code>float:left</code> 后，「框1」似乎把顶替上来的「框2」遮挡了（图7-6）。</li><li class="an " style="--i:3">用开发者工具选中「框2」可见：它<strong>隐藏在「框1」之下</strong>，但「框2」中的<strong>文字仍在原来的位置上</strong>（第二行），并与「框3」重叠（图7-7）。</li><li class="an " style="--i:4"><strong>核心原理——元素立体两层模型：</strong>HTML 元素在构造时由两层构成，<strong>底层是元素层，其上方是内容层</strong>（文字、图片、视频等）。</li><li class="an " style="--i:5">设置浮动后，该元素<strong>脱离标准流、提升层级</strong>，「浮」到内容层；后面的元素上移占据浮动元素原有的元素层位置。</li><li class="an " style="--i:6">此时标准流元素的<strong>内容层被挤出来，形成环绕效果</strong>（图7-9）——这正是有些书把浮动称为<strong>「提升半个层级」</strong>的原因。</li><li class="an " style="--i:7"><strong>图文环绕是浮动的本质。</strong></li></ol>
+    </div>
+    <div class="col-r"><div class="task-code" class="an " style="--i:8">
+          <pre class="cb-code"><span class="sel"><span class="cls">.outer</span></span><span class="pn">{</span> <span class="prop">width</span>:<span class="num">500px</span><span class="pn">;</span> <span class="prop">background-color</span>:<span class="num">#F8F4E7</span><span class="pn">;</span> <span class="prop">color</span>:<span class="num">#<span class="num">666</span></span><span class="pn">;</span> <span class="prop">padding</span>:<span class="num">5px</span> <span class="num">10px</span><span class="pn">;</span><span class="pn">}</span>
+.outer&gt<span class="pn">;</span><span class="sel">img</span><span class="pn">{</span> <span class="prop">width</span>:<span class="num">250px</span><span class="pn">;</span> <span class="prop">float</span>:left<span class="pn">;</span> <span class="prop">padding</span>:<span class="num">5px</span><span class="pn">;</span><span class="pn">}</span>
+.outer&gt<span class="pn">;</span><span class="sel">p</span><span class="pn">{</span> <span class="prop">text-indent</span>:<span class="num">2em</span><span class="pn">;</span><span class="pn">}</span>
+.outer&gt<span class="pn">;</span><span class="sel">p<span class="cls">.intro</span><span class="pc">::first-letter</span></span><span class="pn">{</span> <span class="prop">font-size</span>:<span class="num">2em</span><span class="pn">;</span><span class="pn">}</span></pre></div></div>
+  </div>
+</section>
+
+<section class="slide" data-kind="task">
+  
+  <header class="s-head">
+    <div class="s-head-left">
+      <div class="kicker an" style="--i:0">任务驱动</div>
+      <h2 class="s-title an" style="--i:1">任务7-3｜浮动特性3：浮动对行内元素的影响</h2>
+      <p class="s-sub an" style="--i:2">目标：把研究对象从 div 换成 span，观察浮动对行内元素的特性</p>
+    </div>
+  </header>
+  <div class="s-body two">
+    <div class="col-l">
+      <div class="task-goal an" style="--i:1"><span class="tg-label">任务目标</span>验证「浮动会使行内元素具有块级元素的特征」这一结论。</div>
+      <ol class="task-steps"><li class="an " style="--i:2">准备两个 <code>span</code>，并设置 <code>width:50px; height:50px</code>。</li><li class="an " style="--i:3"><strong>浮动前：</strong><code>width</code>、<code>height</code> 对行内元素<strong>不起作用</strong>，宽高由文字内容决定（图7-11）。</li><li class="an " style="--i:4">给「行内2」加上 <code>.fl{ float:left; }</code>：它<strong>突然变大，width / height 起作用了</strong>（图7-12）。</li><li class="an " style="--i:5">同时，排在后面的「行内2」向左浮动后被排到左边，<strong>原本在前面的「行内1」被挤到了右边</strong>。</li><li class="an " style="--i:6"><strong>结论一：</strong>浮动会使行内元素具有块级元素的特征，又称「<strong>块级格式化上下文</strong>」。</li><li class="an " style="--i:7"><strong>结论二：</strong>行内元素在立体空间中与文字同属<strong>内容层</strong>，会受到浮动影响被挤出原有位置。</li></ol>
+    </div>
+    <div class="col-r"><div class="task-code" class="an " style="--i:8">
+          <pre class="cb-code"><span class="sel"><span class="cls">.outer</span></span><span class="pn">{</span> <span class="prop">border</span>:<span class="num">1px</span> dashed <span class="num">#<span class="num">969696</span></span><span class="pn">;</span><span class="pn">}</span><span class="sel">
+<span class="cls">.outer</span> span</span><span class="pn">{</span> <span class="prop">border</span>:<span class="num">1px</span> dashed <span class="num">#<span class="num">373734</span></span><span class="pn">;</span> <span class="prop">background-color</span>:<span class="num">#FAFAF1</span><span class="pn">;</span>
+    <span class="prop">width</span>:<span class="num">50px</span><span class="pn">;</span> <span class="prop">height</span>:<span class="num">50px</span><span class="pn">;</span><span class="pn">}</span><span class="sel">
+<span class="cls">.fl</span></span><span class="pn">{</span> <span class="prop">float</span>:left<span class="pn">;</span><span class="pn">}</span></pre></div></div>
+  </div>
+</section>
+
+<section class="slide" data-kind="demo">
+  
+  <header class="s-head">
+    <div class="s-head-left">
+      <div class="kicker an" style="--i:0">效果演示</div>
+      <h2 class="s-title an" style="--i:1">效果演示｜浮动的三个特性，动起来看</h2>
+      <p class="s-sub an" style="--i:2">① 脱离标准流　② 图文环绕　③ 行内元素块级化，三格同步演示</p>
+    </div>
+  </header>
+  <div class="s-body two demo">
+    <div class="col-l"><ul class="blist small"><li class="an " style="--i:1"><span class="bl-dot"></span><span><strong>第一格：</strong>「框1」向右浮出，后面两个框依次上移占位，父容器虚线框随之<strong>塌陷</strong>。</span></li><li class="an " style="--i:2"><span class="bl-dot"></span><span><strong>第二格：</strong>图片浮到左侧内容层，文字绕开它重新排布——这就是浮动的本质。</span></li><li class="an " style="--i:3"><span class="bl-dot"></span><span><strong>第三格：</strong>行内元素 <code>span</code> 一旦浮动，<code>width</code>、<code>height</code> 立刻生效，摇身变成块级。</span></li><li class="an " style="--i:4"><span class="bl-dot"></span><span>三格循环播放，注意观察「元素层」与「内容层」的错位关系。</span></li></ul>
+      <div class="hint an" style="--i:5"><b>动手试试：</b>重点看第一格：父容器的虚线框为什么会「塌成一条线」？这就是下一节要解决的 height collapse（高度塌陷）。</div>
+    </div>
+    <div class="col-r"><iframe class="demo-frame" title="效果预览" srcdoc="&lt;style&gt;*{box-sizing:border-box}body{margin:0;font-family:&#x27;PingFang SC&#x27;,system-ui,sans-serif;background:linear-gradient(150deg,#eef4ff,#f7fbff);padding:12px}.u18{display:flex;gap:10px}.u18 .cell{flex:1;background:#fff;border:1px solid #e2e8f2;border-radius:12px;padding:9px 10px;box-shadow:0 14px 30px -20px rgba(20,40,90,.45);animation:u18r .5s both}.u18 .cell:nth-child(2){animation-delay:.12s}.u18 .cell:nth-child(3){animation-delay:.24s}.u18 h4{margin:0 0 7px;font-size:11.5px;color:#1d46b8;border-left:3px solid #2f6bff;padding-left:6px}.u18 .note{font-size:10.5px;color:#8c9bb1;margin:7px 0 0;line-height:1.6}.u18 .outer{position:relative;border:1px dashed #969696;height:112px;overflow:hidden;background:#fcfcfa;transition:height .8s ease}.u18 .b{position:absolute;width:40px;height:26px;line-height:26px;text-align:center;font-size:10.5px;color:#5a6c85;background:#FAFAF1;border:1px dashed #373734}.u18 .b1{left:5px;top:5px;animation:u18f1 7s infinite}.u18 .b2{left:5px;top:35px;animation:u18f2 7s infinite}.u18 .b3{left:5px;top:65px;animation:u18f3 7s infinite}@keyframes u18f1{0%,12%{left:5px;top:5px}28%,100%{left:auto;right:5px;top:5px}}@keyframes u18f2{0%,12%{top:35px}28%,100%{top:5px}}@keyframes u18f3{0%,12%{top:65px}28%,100%{top:35px}}.u18 .outer.b{height:112px;animation:u18collapse 7s infinite}@keyframes u18collapse{0%,30%{height:112px}45%,100%{height:2px}}.u18 .wrap{position:relative;height:112px;overflow:hidden;background:#F8F4E7;padding:5px 6px}.u18 .pic{position:absolute;left:5px;top:5px;width:52px;height:44px;border-radius:5px;background:linear-gradient(135deg,#7fd1c1,#2f9e8f);animation:u18img 7s infinite}.u18 .pic::after{content:&#x27;&#x27;;position:absolute;inset:0;background:radial-gradient(circle at 30% 25%,rgba(255,255,255,.7),transparent 55%)}@keyframes u18img{0%,12%{transform:translateY(0);opacity:.75}28%,100%{transform:translateY(0);opacity:1}}.u18 .line{height:6px;border-radius:3px;background:#e3e7ee;margin-bottom:7px}.u18 .line.a{width:96%;margin-left:0;animation:u18la 7s infinite}.u18 .line.b2{width:96%;animation:u18la 7s infinite}.u18 .line.c{width:72%;margin-left:0;animation:u18lc 7s infinite}.u18 .line.d{width:60%;margin-left:0;animation:u18lc 7s infinite}@keyframes u18la{0%,12%{margin-left:0}28%,100%{margin-left:62px}}@keyframes u18lc{0%,12%{margin-left:0;width:96%}28%,100%{margin-left:0;width:96%}}.u18 .inl{height:34px;border:1px dashed #969696;background:#fcfcfa;padding:4px;line-height:26px}.u18 .inl span{display:inline-block;font-size:10.5px;color:#5a6c85;background:#FAFAF1;border:1px dashed #373734;vertical-align:middle}.u18 .inl .s1{width:38px;height:20px;line-height:20px;text-align:center}.u18 .inl .s2{width:38px;height:20px;line-height:20px;text-align:center;animation:u18inl 7s infinite}@keyframes u18inl{0%,12%{width:38px;height:20px;float:none;background:#FAFAF1}28%,100%{width:52px;height:26px;float:left;background:#dbe8ff;border-color:#2f6bff;color:#1d46b8}}@keyframes u18r{from{opacity:0;transform:translateY(12px)}}&lt;/style&gt;
+&lt;div class=&#x27;u18&#x27;&gt;
+&lt;div class=&#x27;cell&#x27;&gt;
+&lt;h4&gt;① 脱离标准流&lt;/h4&gt;
+&lt;div class=&#x27;outer b&#x27;&gt;&lt;div class=&#x27;b b1&#x27;&gt;框1&lt;/div&gt;&lt;div class=&#x27;b b2&#x27;&gt;框2&lt;/div&gt;&lt;div class=&#x27;b b3&#x27;&gt;框3&lt;/div&gt;&lt;/div&gt;
+&lt;p class=&#x27;note&#x27;&gt;float:right 后框1 浮到右侧，&lt;br&gt;后两个框上移，父容器塌陷&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&#x27;cell&#x27;&gt;
+&lt;h4&gt;② 图文环绕&lt;/h4&gt;
+&lt;div class=&#x27;wrap&#x27;&gt;&lt;div class=&#x27;pic&#x27;&gt;&lt;/div&gt;&lt;div class=&#x27;line a&#x27;&gt;&lt;/div&gt;&lt;div class=&#x27;line b2&#x27;&gt;&lt;/div&gt;&lt;div class=&#x27;line c&#x27;&gt;&lt;/div&gt;&lt;div class=&#x27;line d&#x27;&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;p class=&#x27;note&#x27;&gt;图片浮到内容层，&lt;br&gt;文字被挤出形成环绕&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&#x27;cell&#x27;&gt;
+&lt;h4&gt;③ 行内块级化&lt;/h4&gt;
+&lt;div class=&#x27;inl&#x27;&gt;&lt;span class=&#x27;s1&#x27;&gt;行内1&lt;/span&gt;&lt;span class=&#x27;s2&#x27;&gt;行内2&lt;/span&gt;&lt;/div&gt;
+&lt;p class=&#x27;note&#x27;&gt;浮动前宽高失效；&lt;br&gt;浮动后 width / height 生效&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;"></iframe></div>
+  </div>
+</section>
+
+<section class="slide s-section" data-kind="section">
+  <div class="sec-inner">
+    <div class="sec-num an" style="--i:0">7.1.3</div>
+    <h2 class="sec-title an" style="--i:1">清除浮动</h2>
+    <div class="sec-line an" style="--i:2"></div>
+    <p class="sec-sub an" style="--i:3">父容器失去高度的现象，被形象地称为「高度塌陷」——用 clear 把它撑回来。</p>
+  </div>
+</section>
+
+<section class="slide" data-kind="table">
+  
+  <header class="s-head">
+    <div class="s-head-left">
+      <div class="kicker an" style="--i:0">对照表</div>
+      <h2 class="s-title an" style="--i:1">表7-2 clear 属性值（教材完整还原）</h2>
+      <p class="s-sub an" style="--i:2">清除浮动使用 clear 属性；对右浮动用 right，对左浮动用 left，两侧都有时用 both</p>
+    </div>
+  </header>
+  <div class="s-body"><div class="tbl-wrap">
+    <table class="tbl"><thead><tr><th>属性值</th><th>描述</th></tr></thead><tbody><tr class="an " style="--i:1"><td><code>left</code></td><td>元素<strong>左侧</strong>不允许有浮动元素</td></tr><tr class="an " style="--i:2"><td><code>right</code></td><td>元素<strong>右侧</strong>不允许有浮动元素</td></tr><tr class="an " style="--i:3"><td><code>both</code></td><td>元素<strong>两侧</strong>不允许有浮动元素</td></tr><tr class="an " style="--i:4"><td><code>none</code></td><td>默认值，元素两侧<strong>允许</strong>有浮动元素</td></tr><tr class="an " style="--i:5"><td><code>inherit</code></td><td>继承父元素的 clear 属性值</td></tr></tbody></table>
+  </div></div>
+</section>
+
+<section class="slide" data-kind="task">
+  
+  <header class="s-head">
+    <div class="s-head-left">
+      <div class="kicker an" style="--i:0">任务驱动</div>
+      <h2 class="s-title an" style="--i:1">任务7-4｜使用清除浮动解决父容器高度塌陷</h2>
+      <p class="s-sub an" style="--i:2">目标：用清除浮动的样式属性和规则，解决父容器高度塌陷的问题（图7-16、图7-17）</p>
+    </div>
+  </header>
+  <div class="s-body two">
+    <div class="col-l">
+      <div class="task-goal an" style="--i:1"><span class="tg-label">任务目标</span>在浮动元素之后添加一个承担清除浮动工作的元素，让父容器重新被撑开。</div>
+      <ol class="task-steps"><li class="an " style="--i:2">先记住<strong>清除浮动的三个前提条件和要点</strong>（教材原文）：① 具有 clear 属性的元素<strong>必须是块级元素</strong>。</li><li class="an " style="--i:3">② 具有 clear 属性的元素必须与浮动元素是<strong>同级元素（兄弟关系）</strong>。</li><li class="an " style="--i:4">③ 设置 clear 属性的目的是<strong>清除标准流元素上方的浮动元素对自身的影响</strong>。</li><li class="an " style="--i:5"><strong>方案一（加空 div）：</strong>在浮动元素之后添加 <code>&lt;div class='clr'&gt;&lt;/div&gt;</code>，样式为 <code>.clr{ clear:right; }</code>——能达成目的，但在 HTML 中<strong>添加了不具有语义功能的空 div</strong>。</li><li class="an " style="--i:6"><strong>方案二（推荐，::after 伪元素）：</strong>给父容器加一个类，用伪元素在内容末尾插入一个清除浮动的块级盒子。</li><li class="an " style="--i:7"><strong>易错点（教材原话）：</strong>因为 <code>::after</code> 伪元素<strong>默认是行内元素</strong>，根据前提条件，<strong>必须将其 display 设置为 block</strong>；同时需要满足<strong>添加的内容为空</strong>，可通过 <code>content:""</code> 实现。</li></ol>
+    </div>
+    <div class="col-r"><div class="task-code" class="an " style="--i:8">
+          <pre class="cb-code"><span class="sel"><span class="c">/* 代码7-6 方案二：使用 ::after 伪元素（推荐） */</span>
+<span class="cls">.clr</span><span class="pc">::after</span></span><span class="pn">{</span>
+    <span class="prop">content</span>:&quot<span class="pn">;</span>&quot<span class="pn">;</span><span class="pn">;</span>
+    <span class="prop">display</span>:block<span class="pn">;</span>
+    <span class="prop">clear</span>:right<span class="pn">;</span><span class="pn">}</span>
+
+<span class="c">/* 举一反三：清除其他方向或两侧浮动，
+   只需修改 clear 的属性值即可 */</span>
+
+<span class="c">/* 配合的 HTML */</span>
+<span class="c">/* &lt;div class=&quot;outer clr&quot;&gt; */</span>
+<span class="c">/*   &lt;div class=&quot;box box1&quot;&gt;框1&lt;/div&gt; */</span>
+<span class="c">/*   &lt;div class=&quot;box box1&quot;&gt;框2&lt;/div&gt; */</span>
+<span class="c">/*   &lt;div class=&quot;box box1&quot;&gt;框3&lt;/div&gt; */</span>
+<span class="c">/* &lt;/div&gt; */</span></pre></div></div>
+  </div>
+</section>
+
+<section class="slide s-section" data-kind="section">
+  <div class="sec-inner">
+    <div class="sec-num an" style="--i:0">7.1.4</div>
+    <h2 class="sec-title an" style="--i:1">使用 BFC 解决高度塌陷</h2>
+    <div class="sec-line an" style="--i:2"></div>
+    <p class="sec-sub an" style="--i:3">如果说 clear 是「事后补救」，BFC 就是「提前围一堵墙」。</p>
+  </div>
+</section>
+
+<section class="slide" data-kind="bullets">
+  
+  <header class="s-head">
+    <div class="s-head-left">
+      <div class="kicker an" style="--i:0">知识要点</div>
+      <h2 class="s-title an" style="--i:1">BFC：给浮动元素围一堵「围墙」</h2>
+      <p class="s-sub an" style="--i:2">教材比喻：「如同围墙，围墙内的东西出不去，围墙外的东西进不来。」</p>
+    </div>
+  </header>
+  <div class="s-body"><ul class="blist"><li class="an " style="--i:1"><span class="bl-dot"></span><span><strong>BFC（Block Formatting Context，块级格式上下文）：</strong>使用浮动的元素将生成 BFC，它为元素提供了一个<strong>独立的布局环境</strong>。</span></li><li class="an " style="--i:2"><span class="bl-dot"></span><span>该环境中的内容<strong>不会影响外部的布局</strong>，外部的布局<strong>同样也不会影响该环境中的内容</strong>。</span></li><li class="an " style="--i:3"><span class="bl-dot"></span><span>解决高度塌陷的<strong>第二个思路</strong>：给父容器加上一堵围墙（BFC），<strong>围墙能包含浮动元素，使之无法脱离父容器区域</strong>，从而达到清除浮动的效果。</span></li><li class="an " style="--i:4"><span class="bl-dot"></span><span>教材补充：目前看到的 3 种触发 BFC 的方式之外，<strong>还可以通过绝对定位等其他方式触发 BFC</strong>。</span></li></ul></div>
+</section>
+
+<section class="slide" data-kind="task">
+  
+  <header class="s-head">
+    <div class="s-head-left">
+      <div class="kicker an" style="--i:0">任务驱动</div>
+      <h2 class="s-title an" style="--i:1">任务7-5｜触发 BFC 的 3 种常用方式</h2>
+      <p class="s-sub an" style="--i:2">目标：用 inline-block、父元素浮动、overflow 三种方式触发 BFC，解决高度塌陷</p>
+    </div>
+  </header>
+  <div class="s-body two">
+    <div class="col-l">
+      <div class="task-goal an" style="--i:1"><span class="tg-label">任务目标</span>比较三种触发方式的原理与副作用，学会「根据具体情况选择合适的方法」。</div>
+      <ol class="task-steps"><li class="an " style="--i:2"><strong>方式1：设置 <code>display:inline-block</code></strong>——触发 BFC 后，每个行内块元素都具有<strong>「包裹性」</strong>，当其中存在浮动元素时，能包裹住内部的浮动元素（图7-18）。</li><li class="an " style="--i:3"><strong>方式2：设置父元素浮动</strong>——父元素具有 BFC，可以包裹住浮动的子元素。</li><li class="an " style="--i:4"><strong>注意事项（教材原文）：</strong>给父元素设置浮动属性后，<strong>同样也会影响自身和其他元素</strong>。所以每种方法都有其自身的特点和优缺点，<strong>需要根据具体情况来选择</strong>（图7-19）。</li><li class="an " style="--i:5"><strong>方式3：设置 <code>overflow</code> 属性值（最常用）</strong>——<strong>当把父元素的 overflow 设置为除默认值之外的值时，就会触发该元素的 BFC</strong>，故可设为 <code>scroll</code>、<code>hidden</code> 或 <code>auto</code>（图7-20）。</li><li class="an " style="--i:6"><code>overflow</code> 取值速记：<code>visible</code> 默认不裁剪、<code>hidden</code> 溢出隐藏、<code>scroll</code> 始终显示滚动条、<code>auto</code> 由浏览器决定是否显示滚动条、<code>inherit</code> 继承父元素。</li></ol>
+    </div>
+    <div class="col-r"><div class="task-code" class="an " style="--i:7">
+          <pre class="cb-code"><span class="sel"><span class="c">/* 方式1：inline-block 触发 BFC */</span>
+<span class="cls">.outer</span></span><span class="pn">{</span> <span class="prop">border</span>:<span class="num">1px</span> dashed <span class="num">#<span class="num">969696</span></span><span class="pn">;</span> <span class="prop">display</span>:inline-block<span class="pn">;</span><span class="pn">}</span><span class="sel">
+
+<span class="c">/* 方式2：父元素浮动触发 BFC */</span>
+<span class="cls">.outer</span></span><span class="pn">{</span> <span class="prop">border</span>:<span class="num">1px</span> dashed <span class="num">#<span class="num">969696</span></span><span class="pn">;</span> <span class="prop">float</span>:left<span class="pn">;</span><span class="pn">}</span><span class="sel">
+
+<span class="c">/* 方式3：overflow 触发 BFC（最常用） */</span>
+<span class="cls">.outer</span></span><span class="pn">{</span> <span class="prop">border</span>:<span class="num">1px</span> dashed <span class="num">#<span class="num">969696</span></span><span class="pn">;</span> <span class="prop">overflow</span>:hidden<span class="pn">;</span><span class="pn">}</span><span class="sel">
+
+<span class="c">/* 三种方式的 .box / .fr / .fl 均相同 */</span>
+<span class="cls">.box</span></span><span class="pn">{</span> <span class="prop">background-color</span>:<span class="num">#FAFAF1</span><span class="pn">;</span> <span class="prop">border</span>:<span class="num">1px</span> dashed <span class="num">#<span class="num">373734</span></span><span class="pn">;</span>
+      <span class="prop">width</span>:<span class="num">50px</span><span class="pn">;</span> <span class="prop">height</span>:<span class="num">50px</span><span class="pn">;</span> <span class="prop">margin</span>:<span class="num">10px</span><span class="pn">;</span><span class="pn">}</span><span class="sel">
+<span class="cls">.fr</span></span><span class="pn">{</span> <span class="prop">float</span>:right<span class="pn">;</span><span class="pn">}</span><span class="sel">
+<span class="cls">.fl</span></span><span class="pn">{</span> <span class="prop">float</span>:left<span class="pn">;</span><span class="pn">}</span></pre></div></div>
+  </div>
+</section>
+
+<section class="slide s-ai" data-kind="ai">
+  
+  <header class="s-head">
+    <div class="s-head-left">
+      <div class="kicker an" style="--i:0">AI 前沿</div>
+      <h2 class="s-title an" style="--i:1">AI 前沿：让 AI 诊断「高度塌陷」这类布局疑难杂症</h2>
+      <p class="s-sub an" style="--i:2">布局 Bug 看不见摸不着，却是 AI 辅助调试最能发挥价值的场景</p>
+    </div>
+  </header>
+  <div class="s-body two">
+    <div class="col-l"><div class="ai-card an" style="--i:1">
+      <div class="ai-badge">AI</div>
+      <p>浮动带来的高度塌陷、外边距合并、元素错位，都属于「现象清楚、原因隐蔽」的问题。把现象描述清楚，交给 <strong>DeepSeek、通义千问、文心一言</strong> 这类大模型，它往往能一次命中根因并给出 clear、BFC、Flex 等多种解法。但要注意：AI 常会直接推荐 <strong>Flex / Grid</strong> 方案——这在生产中没错，但<strong>考试要求与教材体系要求你必须懂 float 与 BFC 的原理</strong>。</p></div></div>
+    <div class="col-r"><ul class="blist small ai-list"><li class="an " style="--i:2">AI 排错：把「父容器高度变成 0」的现象描述给 <strong>通义灵码、文心快码、GitHub Copilot</strong>，让它列出所有可能的成因与对应解法。</li><li class="an " style="--i:3">AI 讲解：让 AI 用「围墙」之外的比喻再解释一遍 BFC，换个角度常常一下就通了。</li><li class="an " style="--i:4">AI 重构：让 AI 把一段浮动布局改写成等效的 Flex 布局，并对比两种写法的差异。</li><li class="an " style="--i:5">职业提醒：<strong>先懂原理，再用 AI 提速</strong>。说不清「为什么要清除浮动」的人，也判断不了 AI 给的方案对不对。</li></ul></div>
+  </div>
+</section>
+
+<section class="slide" data-kind="quiz">
+  
+  <header class="s-head">
+    <div class="s-head-left">
+      <div class="kicker an" style="--i:0">随堂检测</div>
+      <h2 class="s-title an" style="--i:1">随堂检测</h2>
+      <p class="s-sub an" style="--i:2">选自教材 7.5 作业选择题，检验你的理解</p>
+    </div>
+  </header>
+  <div class="s-body quiz-body">
+    <div class="quiz-top an" style="--i:0">
+      <span class="quiz-meta">共 <b>5</b> 题　·　先独立作答，再点「查看答案」；误点可「重做」</span>
+      <span class="quiz-acts">
+        <button type="button" class="q-reset-all" id="quizResetAll">全部重做</button>
+        <button type="button" class="q-reveal" id="quizReveal">显示全部答案</button>
+      </span>
+    </div>
+    <ol class="quiz dense"><li class="quiz-item single" class="an " style="--i:1" data-type="single" data-answer="B">
+          <div class="q"><span class="q-no">01</span>
+            <span class="q-tag single">单选</span><span class="q-txt">浮动最初的用途是（　　）。</span></div>
+          <div class="opts"><button type="button" class="opt" data-k="A"><i>A</i><span>制作导航</span></button><button type="button" class="opt" data-k="B"><i>B</i><span>实现图文混排</span></button><button type="button" class="opt" data-k="C"><i>C</i><span>解决父容器高度坍塌的问题</span></button><button type="button" class="opt" data-k="D"><i>D</i><span>影响行内元素的尺寸</span></button></div>
+          <div class="q-foot"><button type="button" class="q-check">查看答案</button>
+            <button type="button" class="q-reset" disabled>重做</button>
+            <span class="q-verdict"></span></div>
+          <div class="q-ans"><b>答案</b><span class="ans-key">B</span><span class="ans-tip">浮动的本质是图文环绕；教材任务7-2 明确指出「图文环绕是浮动的本质」。</span></div>
+        </li><li class="quiz-item single" class="an " style="--i:2" data-type="single" data-answer="C">
+          <div class="q"><span class="q-no">02</span>
+            <span class="q-tag single">单选</span><span class="q-txt">关于浮动，说法错误的是（　　）。</span></div>
+          <div class="opts"><button type="button" class="opt" data-k="A"><i>A</i><span>浮动元素会脱离原来的标准流</span></button><button type="button" class="opt" data-k="B"><i>B</i><span>不论是块级元素还是行内元素，只要是浮动元素都可以指定其宽度、高度</span></button><button type="button" class="opt" data-k="C"><i>C</i><span>不论是块级元素还是行内元素，只要是非静态元素都可以指定其宽度、高度</span></button><button type="button" class="opt" data-k="D"><i>D</i><span>通过对浮动元素设置 overflow 属性值可以触发 BFC</span></button></div>
+          <div class="q-foot"><button type="button" class="q-check">查看答案</button>
+            <button type="button" class="q-reset" disabled>重做</button>
+            <span class="q-verdict"></span></div>
+          <div class="q-ans"><b>答案</b><span class="ans-key">C</span><span class="ans-tip">能否指定宽高取决于是否浮动/是否为块级，「非静态元素」并非判定标准；相对定位的行内元素依然不能指定宽高。</span></div>
+        </li><li class="quiz-item single" class="an " style="--i:3" data-type="single" data-answer="D">
+          <div class="q"><span class="q-no">03</span>
+            <span class="q-tag single">单选</span><span class="q-txt">要清除浮动，使用 clear 属性的元素必须满足的前提不包括（　　）。</span></div>
+          <div class="opts"><button type="button" class="opt" data-k="A"><i>A</i><span>必须是块级元素</span></button><button type="button" class="opt" data-k="B"><i>B</i><span>必须与浮动元素是同级元素（兄弟关系）</span></button><button type="button" class="opt" data-k="C"><i>C</i><span>必须位于浮动元素之后</span></button><button type="button" class="opt" data-k="D"><i>D</i><span>必须设置 overflow 属性</span></button></div>
+          <div class="q-foot"><button type="button" class="q-check">查看答案</button>
+            <button type="button" class="q-reset" disabled>重做</button>
+            <span class="q-verdict"></span></div>
+          <div class="q-ans"><b>答案</b><span class="ans-key">D</span><span class="ans-tip">教材给出三个前提：块级元素、与浮动元素同级、目的是清除上方浮动元素对自身的影响；overflow 是触发 BFC 的另一条路线。</span></div>
+        </li><li class="quiz-item single" class="an " style="--i:4" data-type="single" data-answer="D">
+          <div class="q"><span class="q-no">04</span>
+            <span class="q-tag single">单选</span><span class="q-txt">下列做法中，不能触发 BFC 的是（　　）。</span></div>
+          <div class="opts"><button type="button" class="opt" data-k="A"><i>A</i><span>给父元素设置 display:inline-block</span></button><button type="button" class="opt" data-k="B"><i>B</i><span>给父元素设置 float:left</span></button><button type="button" class="opt" data-k="C"><i>C</i><span>给父元素设置 overflow:hidden</span></button><button type="button" class="opt" data-k="D"><i>D</i><span>给父元素设置 overflow:visible</span></button></div>
+          <div class="q-foot"><button type="button" class="q-check">查看答案</button>
+            <button type="button" class="q-reset" disabled>重做</button>
+            <span class="q-verdict"></span></div>
+          <div class="q-ans"><b>答案</b><span class="ans-key">D</span><span class="ans-tip">教材原文：当把父元素的 overflow 设置为除默认值（visible）之外的值时才会触发 BFC。</span></div>
+        </li><li class="quiz-item multi" class="an " style="--i:5" data-type="multi" data-answer="ABC">
+          <div class="q"><span class="q-no">05</span>
+            <span class="q-tag multi">多选</span><span class="q-txt">下列关于浮动与清除浮动的说法中，正确的有（　　）。</span></div>
+          <div class="opts"><button type="button" class="opt" data-k="A"><i>A</i><span>元素设置 float:left 后脱离标准流，不再占据原来在标准流中的位置和空间</span></button><button type="button" class="opt" data-k="B"><i>B</i><span>浮动元素向指定方向移动时，直到外边缘碰到父容器的边框或另一个浮动框为止</span></button><button type="button" class="opt" data-k="C"><i>C</i><span>子元素全部浮动且父容器没有其他内容撑开高度时，父容器会发生高度塌陷</span></button><button type="button" class="opt" data-k="D"><i>D</i><span>具有 clear 属性的元素可以是行内元素，只要写在浮动元素之后即可</span></button></div>
+          <div class="q-foot"><button type="button" class="q-check">查看答案</button>
+            <button type="button" class="q-reset" disabled>重做</button>
+            <span class="q-verdict"></span></div>
+          <div class="q-ans"><b>答案</b><span class="ans-key">A、B、C</span><span class="ans-tip">教材给出清除浮动的三个前提：具有 clear 属性的元素<strong>必须是块级元素</strong>、必须是浮动元素的兄弟、目的是清除上方浮动的影响，故 D 错。</span></div>
+        </li></ol>
+  </div>
+</section>
+
+<section class="slide" data-kind="summary">
+  
+  <header class="s-head">
+    <div class="s-head-left">
+      
+      <h2 class="s-title an" style="--i:1">本课小结</h2>
+      <p class="s-sub an" style="--i:2">五句话，把「标准流—浮动—修补」这条线串起来</p>
+    </div>
+  </header>
+  <div class="s-body"><ul class="blist"><li class="an " style="--i:1"><span class="bl-dot"></span><span><strong>标准流</strong>是元素的默认排版方式：自左而右、自上而下，块级自上而下、行内自左而右；<strong>浮动与定位都是更改默认排版方式实现的</strong>。</span></li><li class="an " style="--i:2"><span class="bl-dot"></span><span><code>float</code> 取 <code>left</code>/<code>right</code> 时元素<strong>脱离标准流</strong>；四大特性：同行显示、碰到边框或浮动框为止、不占原空间、<strong>子元素全浮动导致高度塌陷</strong>。</span></li><li class="an " style="--i:3"><span class="bl-dot"></span><span><strong>元素立体两层模型</strong>：底层是元素层、上方是内容层；浮动元素浮到内容层，后面元素上移占元素层，其<strong>内容层被挤出形成环绕</strong>——所以浮动被叫做「提升半个层级」。</span></li><li class="an " style="--i:4"><span class="bl-dot"></span><span><strong>清除浮动</strong>用 <code>clear</code>；三个前提：必须是块级元素、必须是浮动元素的兄弟、目的是清除上方浮动的影响；<strong><code>::after</code> 伪元素方案须设 <code>display:block</code> 且 <code>content:""</code></strong>。</span></li><li class="an " style="--i:5"><span class="bl-dot"></span><span><strong>BFC</strong> 是独立布局环境，像一堵围墙；三种常用触发方式：<code>display:inline-block</code>、父元素浮动、<code>overflow</code> 取非 visible 值。</span></li></ul></div>
+</section>
+
+<section class="slide" data-kind="homework">
+  
+  <header class="s-head">
+    <div class="s-head-left">
+      
+      <h2 class="s-title an" style="--i:1">课后作业</h2>
+      
+    </div>
+  </header>
+  <div class="s-body"><ul class="blist hw"><li class="an " style="--i:1"><span class="bl-dot"></span><span><strong>选择题：</strong>完成教材 7.5「一、选择题」第 3～4 题，并说明每个选项为何对或错。</span></li><li class="an " style="--i:2"><span class="bl-dot"></span><span><strong>操作题：</strong>依次完成教材任务7-1 至任务7-5，把每个任务的效果截图整理成一份对比笔记，重点记录「浮动前 / 浮动后 / 清除后」三张图。</span></li><li class="an " style="--i:3"><span class="bl-dot"></span><span><strong>思考题：</strong>分别用「加空 div」「::after 伪元素」「overflow:hidden」三种方式解决同一个高度塌陷问题，比较它们的优缺点与适用场景。</span></li><li class="an " style="--i:4"><span class="bl-dot"></span><span><strong>项目讨论：</strong>使用所学知识，以<strong>美丽乡村</strong>为主题，帮助你所在的城市设计和规划一个网页。试讨论你的做法、思路及特点！</span></li><li class="an " style="--i:5"><span class="bl-dot"></span><span><strong>预习：</strong>阅读教材 7.2.1～7.2.3，思考：定位与浮动有什么不同？「已定位元素」又指什么？</span></li></ul></div>
+</section>
+
+<section class="slide" data-kind="refs">
+  
+  <header class="s-head">
+    <div class="s-head-left">
+      
+      <h2 class="s-title an" style="--i:1">出处与参考</h2>
+      <p class="s-sub an" style="--i:2">本课件内容依据教材，并核对以下权威技术文档</p>
+    </div>
+  </header>
+  <div class="s-body"><ol class="refs"><li class="an " style="--i:1"><span class="ref-idx">01</span><span class="ref-t">教材《网页制作（HTML5+CSS3）》项目7 浮动和定位（7.1）</span><span class="ref-u">郑哲、傅冬 主编 · 电子工业出版社 · 2025 年 1 月第 1 版</span></li><li class="an " style="--i:2"><span class="ref-idx">02</span><span class="ref-t">MDN Web Docs · float</span><span class="ref-u">https://developer.mozilla.org/zh-CN/docs/Web/CSS/float</span></li><li class="an " style="--i:3"><span class="ref-idx">03</span><span class="ref-t">MDN Web Docs · clear</span><span class="ref-u">https://developer.mozilla.org/zh-CN/docs/Web/CSS/clear</span></li><li class="an " style="--i:4"><span class="ref-idx">04</span><span class="ref-t">MDN Web Docs · 块格式化上下文（BFC）</span><span class="ref-u">https://developer.mozilla.org/zh-CN/docs/Web/CSS/CSS_display/Block_formatting_context</span></li><li class="an " style="--i:5"><span class="ref-idx">05</span><span class="ref-t">MDN Web Docs · overflow</span><span class="ref-u">https://developer.mozilla.org/zh-CN/docs/Web/CSS/overflow</span></li><li class="an " style="--i:6"><span class="ref-idx">06</span><span class="ref-t">MDN Web Docs · 定位（理解标准流与脱离文档流）</span><span class="ref-u">https://developer.mozilla.org/zh-CN/docs/Learn/CSS/CSS_layout/Positioning</span></li></ol></div>
+</section>
+
+<section class="slide s-end" data-kind="end">
+  <div class="end-inner">
+    <div class="end-mark an" style="--i:0">·</div>
+    <h2 class="end-t an" style="--i:1">第 18 单元 · 结束</h2>
+    <p class="end-s an" style="--i:2">下一单元：走进定位，让盒子在纵深方向叠加起来</p>
+    <a class="end-next an" style="--i:3" href="U19%20%E5%AE%9A%E4%BD%8D%EF%BC%9A%E9%9D%99%E6%80%81%E3%80%81%E5%9B%BA%E5%AE%9A%E3%80%81%E7%BB%9D%E5%AF%B9%E4%B8%8E%E7%9B%B8%E5%AF%B9.html"><span class="en-lab">下一讲</span><span class="en-t">U19 定位：静态、固定、绝对与相对</span><span class="en-ar">→</span></a>
+    <a class="end-back an" style="--i:4" href="../../index.html"><span>←</span> 返回总目录</a>
+  </div>
+</section>
+  <div class="legend">← → 翻页　·　C 点击翻页开关　·　O 目录　·　F 全屏　·　P 打印　·　拖动圈选不翻页</div>
+  <div class="hud">
+    <span class="btn" id="btnClick" data-on="1" title="开启 / 关闭「点击鼠标切换页面」（快捷键 C）">点击翻页 开</span>
+    <span class="btn" id="btnNav">目录</span>
+    <span class="btn" id="btnFull">全屏</span>
+    <span class="pageno"><b id="cur">1</b> / 25</span>
+  </div>
+  <div class="flip-toast" id="flipToast"></div>
+  <div class="drawer" id="drawer">
+    <div class="drawer-panel">
+      <div class="drawer-h">本单元目录 <span id="drawerClose">关闭 ✕</span></div>
+      <ul id="drawerList"><li data-go="0"><span class="nv-idx">01</span><span class="nv-t">标准流、浮动与清除浮动</span></li><li data-go="1"><span class="nv-idx">02</span><span class="nv-t">本单元我们要达成什么</span></li><li data-go="2"><span class="nv-idx">03</span><span class="nv-t">思政课堂</span></li><li data-go="3"><span class="nv-idx">04</span><span class="nv-t">导览</span></li><li data-go="4"><span class="nv-idx">05</span><span class="nv-t">7.1.1 标准流</span></li><li data-go="5"><span class="nv-idx">06</span><span class="nv-t">标准流要点</span></li><li data-go="6"><span class="nv-idx">07</span><span class="nv-t">7.1.2 浮动排版</span></li><li data-go="7"><span class="nv-idx">08</span><span class="nv-t">float 属性值</span></li><li data-go="8"><span class="nv-idx">09</span><span class="nv-t">任务7-1 脱离标准流</span></li><li data-go="9"><span class="nv-idx">10</span><span class="nv-t">浮动四大特性</span></li><li data-go="10"><span class="nv-idx">11</span><span class="nv-t">任务7-2 图文环绕</span></li><li data-go="11"><span class="nv-idx">12</span><span class="nv-t">任务7-3 行内元素</span></li><li data-go="12"><span class="nv-idx">13</span><span class="nv-t">浮动三特性演示</span></li><li data-go="13"><span class="nv-idx">14</span><span class="nv-t">7.1.3 清除浮动</span></li><li data-go="14"><span class="nv-idx">15</span><span class="nv-t">clear 属性值</span></li><li data-go="15"><span class="nv-idx">16</span><span class="nv-t">任务7-4 解决塌陷</span></li><li data-go="16"><span class="nv-idx">17</span><span class="nv-t">7.1.4 BFC</span></li><li data-go="17"><span class="nv-idx">18</span><span class="nv-t">BFC 概念</span></li><li data-go="18"><span class="nv-idx">19</span><span class="nv-t">任务7-5 触发 BFC</span></li><li data-go="19"><span class="nv-idx">20</span><span class="nv-t">AI 前沿</span></li><li data-go="20"><span class="nv-idx">21</span><span class="nv-t">随堂检测</span></li><li data-go="21"><span class="nv-idx">22</span><span class="nv-t">本课小结</span></li><li data-go="22"><span class="nv-idx">23</span><span class="nv-t">课后作业</span></li><li data-go="23"><span class="nv-idx">24</span><span class="nv-t">出处与参考</span></li><li data-go="24"><span class="nv-idx">25</span><span class="nv-t">结束</span></li></ul>
+    </div>
+  </div>
+</div></div>
+<script>
+(function(){
+  var slides = Array.prototype.slice.call(document.querySelectorAll('.slide'));
+  var total = slides.length, cur = 0;
+  var stage = document.getElementById('stage');
+  var bar = document.getElementById('bar'), curEl = document.getElementById('cur');
+  var drawer = document.getElementById('drawer');
+  var mqPortrait = window.matchMedia('(orientation: portrait)');
+  var flow = mqPortrait.matches;
+
+  /* ---- 点击翻页开关（记忆教师偏好，跨课件生效） ---- */
+  var clickOn = true;
+  try{ clickOn = localStorage.getItem('deck_clickflip') !== '0'; }catch(e){}
+  var btnClick = document.getElementById('btnClick');
+  var toastEl = document.getElementById('flipToast'), toastTimer = null;
+  function tip(msg){
+    if(!toastEl) return;
+    toastEl.textContent = msg;
+    toastEl.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function(){ toastEl.classList.remove('show'); }, 1500);
+  }
+  function syncClickBtn(){
+    if(!btnClick) return;
+    if(flow){                                   // 竖屏为滚屏阅读，点击翻页天然不生效
+      btnClick.textContent = '竖屏阅读';
+      btnClick.setAttribute('data-on', '0');
+      btnClick.setAttribute('title', '竖屏为纵向阅读模式，上下滚动即可；旋转为横屏后可用点击翻页');
+      return;
+    }
+    btnClick.textContent = '点击翻页 ' + (clickOn ? '开' : '关');
+    btnClick.setAttribute('data-on', clickOn ? '1' : '0');
+    btnClick.setAttribute('title', clickOn
+      ? '当前：点击鼠标可切换页面。点此关闭（快捷键 C）'
+      : '当前：点击鼠标不翻页，方便圈选讲解。点此开启（快捷键 C）');
+  }
+  function toggleClickFlip(silent){
+    clickOn = !clickOn;
+    try{ localStorage.setItem('deck_clickflip', clickOn ? '1' : '0'); }catch(e){}
+    syncClickBtn();
+    if(!silent) tip(clickOn ? '点击翻页已开启' : '点击翻页已关闭 · 仍可用 ← → 或滑动翻页');
+  }
+  syncClickBtn();
+
+  function hasSelection(){
+    var s = window.getSelection && window.getSelection();
+    return !!(s && String(s.text || s).length > 0);
+  }
+  function setIndex(n){
+    cur = Math.max(0, Math.min(total-1, n));
+    slides.forEach(function(s,i){ s.classList.toggle('is-active', i===cur); });
+    var act = slides[cur];
+    if(act && !flow) act.querySelectorAll('.an').forEach(function(el){ void el.offsetWidth; });
+    bar.style.width = (total>1 ? (cur/(total-1)*100) : 100)+'%';
+    curEl.textContent = cur+1;
+    document.querySelectorAll('#drawerList li').forEach(function(li,i){ li.classList.toggle('cur', i===cur); });
+  }
+  function go(n, instant){
+    n = Math.max(0, Math.min(total-1, n));
+    var same = (n===cur && slides[cur] && slides[cur].classList.contains('is-active'));
+    slides.forEach(function(s,i){
+      s.classList.remove('prev');
+      if(i<n) s.classList.add('prev');
+      if(i===n) s.classList.add('is-active');
+    });
+    setIndex(n);
+    if(flow){
+      var el = slides[n];
+      if(el && el.scrollIntoView) el.scrollIntoView({behavior: instant ? 'auto' : 'smooth', block:'start'});
+    } else if(same){
+      var a = slides[n]; if(a) a.querySelectorAll('.an').forEach(function(el){ void el.offsetWidth; });
+    }
+    try{ history.replaceState(null,'','#'+(n+1)); }catch(e){}
+  }
+
+  /* 键盘 */
+  document.addEventListener('keydown', function(e){
+    var k = e.key;
+    if(k==='ArrowRight'||k==='ArrowDown'||k===' '||k==='PageDown'||k==='Enter'){ e.preventDefault(); go(cur+1); }
+    else if(k==='ArrowLeft'||k==='ArrowUp'||k==='PageUp'){ e.preventDefault(); go(cur-1); }
+    else if(k==='Home'){ go(0); } else if(k==='End'){ go(total-1); }
+    else if(k==='o'||k==='O'){ drawer.classList.toggle('open'); }
+    else if(k==='f'||k==='F'){ toggleFull(); }
+    else if(k==='c'||k==='C'){ toggleClickFlip(); }
+    else if(k==='Escape'){ drawer.classList.remove('open'); }
+    else if(k==='p'||k==='P'){ window.print(); }
+  });
+  function toggleFull(){
+    if(!document.fullscreenElement){ (document.documentElement.requestFullscreen||function(){}).call(document.documentElement); }
+    else { document.exitFullscreen(); }
+  }
+
+  /* 点击翻页：拖动圈选文字、双击选词、点按钮/选项一律不翻页 */
+  var down = null, clickTimer = null;
+  function isInteractive(el){
+    return !!(el.closest('.hud')||el.closest('.drawer')||el.closest('iframe')||el.closest('summary')||
+              el.closest('details')||el.closest('.quiz')||el.closest('a')||el.closest('button')||
+              el.closest('input')||el.closest('select')||el.closest('textarea')||el.closest('label'));
+  }
+  stage.addEventListener('mousedown', function(e){ down = {x:e.clientX, y:e.clientY, t:Date.now()}; });
+  stage.addEventListener('click', function(e){
+    if(flow) return;
+    clearTimeout(clickTimer);
+    if(!clickOn) return;                           // 开关关闭：点击不翻页
+    if(e.detail > 1) return;                       // 双击 / 三击 = 选词，不翻页
+    if(isInteractive(e.target)) return;
+    if(hasSelection()) return;                     // 已有选中内容，不翻页
+    if(down && (Math.abs(e.clientX-down.x)>6 || Math.abs(e.clientY-down.y)>6)) return;  // 拖动圈选
+    if(down && (Date.now()-down.t > 800)) return;  // 长按
+    var r = stage.getBoundingClientRect();
+    var dir = (e.clientX - r.left) > r.width*0.5 ? 1 : -1;
+    clickTimer = setTimeout(function(){
+      if(hasSelection()) return;                   // 圈选期间保持静止
+      go(cur+dir);
+    }, 220);
+  });
+  document.addEventListener('dblclick', function(){ clearTimeout(clickTimer); });
+  document.addEventListener('selectionchange', function(){ if(hasSelection()) clearTimeout(clickTimer); });
+
+  /* 触摸：仅在横向滑动时翻页；竖屏交给页面滚动 */
+  var sx=null, sy=null, st=0;
+  stage.addEventListener('touchstart', function(e){
+    if(e.touches.length>1){ sx=null; return; }
+    sx=e.touches[0].clientX; sy=e.touches[0].clientY; st=Date.now();
+  }, {passive:true});
+  stage.addEventListener('touchend', function(e){
+    if(sx===null) return;
+    var dx=e.changedTouches[0].clientX-sx, dy=e.changedTouches[0].clientY-sy;
+    sx=null;
+    if(flow) return;
+    if(Date.now()-st>900) return;                  // 长按选词
+    if(hasSelection()) return;
+    if(Math.abs(dx)>55 && Math.abs(dy)<Math.abs(dx)*0.75) go(dx<0?cur+1:cur-1);
+  }, {passive:true});
+
+  /* 竖屏：滚动时同步页码与进度 */
+  if('IntersectionObserver' in window){
+    var io = new IntersectionObserver(function(entries){
+      if(!flow) return;
+      var best=null;
+      entries.forEach(function(en){
+        if(en.isIntersecting && (!best || en.intersectionRatio > best.intersectionRatio)) best = en;
+      });
+      if(best){
+        var i = slides.indexOf(best.target);
+        if(i>=0 && i!==cur) setIndex(i);
+      }
+    }, {threshold:[0.2,0.5,0.8]});
+    slides.forEach(function(s){ io.observe(s); });
+  }
+  function onOrient(){
+    flow = mqPortrait.matches;
+    syncClickBtn();
+    clearTimeout(clickTimer);
+  }
+  mqPortrait.addEventListener ? mqPortrait.addEventListener('change', onOrient) : mqPortrait.addListener(onOrient);
+
+  /* 目录 / HUD */
+  if(btnClick) btnClick.addEventListener('click', function(e){ e.stopPropagation(); toggleClickFlip(); });
+  document.getElementById('btnNav').addEventListener('click', function(e){ e.stopPropagation(); drawer.classList.add('open'); });
+  document.getElementById('btnFull').addEventListener('click', function(e){ e.stopPropagation(); toggleFull(); });
+  document.getElementById('drawerClose').addEventListener('click', function(){ drawer.classList.remove('open'); });
+  drawer.addEventListener('click', function(e){ if(e.target===drawer) drawer.classList.remove('open'); });
+  document.querySelectorAll('#drawerList li').forEach(function(li){
+    li.addEventListener('click', function(){ go(parseInt(li.dataset.go,10)); drawer.classList.remove('open'); });
+  });
+
+  /* 随堂检测：点选选项 → 判分 → 显示答案与解析 → 单选/全量重做 */
+  function keysOf(item){
+    return (item.getAttribute('data-answer')||'').toUpperCase().replace(/[^A-Z]/g,'').split('');
+  }
+  function reveal(item){
+    var ans = keysOf(item);
+    item.querySelectorAll('.opt').forEach(function(b){
+      if(ans.indexOf(b.getAttribute('data-k'))>=0) b.classList.add('right');
+    });
+    item.classList.add('revealed');
+  }
+  function resetItem(item){
+    item.classList.remove('revealed','ok','bad');
+    item.querySelectorAll('.opt').forEach(function(b){ b.classList.remove('right','sel'); });
+    var v = item.querySelector('.q-verdict'); if(v) v.textContent='';
+    var rs = item.querySelector('.q-reset'); if(rs) rs.disabled = true;
+  }
+  document.querySelectorAll('.quiz-item').forEach(function(item){
+    var qtype = item.getAttribute('data-type')||'single';
+    var btnReset = item.querySelector('.q-reset');
+    item.querySelectorAll('.opt').forEach(function(btn){
+      btn.addEventListener('click', function(ev){
+        ev.stopPropagation();
+        /* 已揭示答案后再点选项 = 重新作答，自动收起答案 */
+        if(item.classList.contains('revealed')){
+          item.classList.remove('revealed','ok','bad');
+          item.querySelectorAll('.opt').forEach(function(b){ b.classList.remove('right'); });
+          var v0 = item.querySelector('.q-verdict'); if(v0) v0.textContent='';
+        }
+        if(qtype==='single'){
+          item.querySelectorAll('.opt').forEach(function(b){ b.classList.remove('sel'); });
+          btn.classList.add('sel');
+        } else {
+          btn.classList.toggle('sel');
+        }
+        item.classList.remove('ok','bad');
+        var v = item.querySelector('.q-verdict'); if(v) v.textContent='';
+        if(btnReset) btnReset.disabled = false;
+      });
+    });
+    var chk = item.querySelector('.q-check');
+    if(chk) chk.addEventListener('click', function(ev){
+      ev.stopPropagation();
+      var ans = keysOf(item);
+      var sel = Array.prototype.slice.call(item.querySelectorAll('.opt.sel')).map(function(b){ return b.getAttribute('data-k'); });
+      var ok = sel.length>0 && sel.length===ans.length && sel.filter(function(k){ return ans.indexOf(k)>=0; }).length===ans.length;
+      reveal(item);
+      if(btnReset) btnReset.disabled = false;
+      item.classList.remove('ok','bad'); item.classList.add(ok?'ok':'bad');
+      var v = item.querySelector('.q-verdict');
+      if(v) v.textContent = ok ? '✓ 回答正确' : (sel.length ? '✗ 再想一想，正确项已标绿' : '请先选择答案');
+    });
+    if(btnReset) btnReset.addEventListener('click', function(ev){
+      ev.stopPropagation();
+      resetItem(item);
+      tip('本题已重置，可重新作答');
+    });
+  });
+  var btnReveal = document.getElementById('quizReveal');
+  if(btnReveal) btnReveal.addEventListener('click', function(ev){
+    ev.stopPropagation();
+    var on = btnReveal.getAttribute('data-on')==='1';
+    var next = !on;
+    document.querySelectorAll('.quiz-item').forEach(function(item){
+      if(next){
+        reveal(item);
+        var rs = item.querySelector('.q-reset'); if(rs) rs.disabled = false;
+      } else {
+        resetItem(item);
+      }
+    });
+    btnReveal.setAttribute('data-on', next ? '1':'0');
+    btnReveal.textContent = next ? '隐藏答案' : '显示全部答案';
+  });
+  var btnResetAll = document.getElementById('quizResetAll');
+  if(btnResetAll) btnResetAll.addEventListener('click', function(ev){
+    ev.stopPropagation();
+    document.querySelectorAll('.quiz-item').forEach(resetItem);
+    if(btnReveal){ btnReveal.setAttribute('data-on','0'); btnReveal.textContent = '显示全部答案'; }
+    tip('已清空本题全部作答，可重新开始');
+  });
+
+  var h = parseInt((location.hash||'').replace('#',''),10);
+  go(isNaN(h)?0:h-1, true);
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,524 @@
+{
+  "id": "U21",
+  "project": "项目8",
+  "project_name": "Flex 布局",
+  "unit": "第 21 单元",
+  "title": "Flex 布局简介、术语与容器属性",
+  "subtitle": "先认清「主轴 / 交叉轴」这两条轴，再拿下容器的 6 个属性",
+  "duration": 40,
+  "cover_tags": [
+    "flexible box",
+    "主轴 / 交叉轴",
+    "justify-content",
+    "align-items",
+    "align-content"
+  ],
+  "ref_book": "电子工业出版社 · 2025 年 1 月第 1 版",
+  "objectives": {
+    "knowledge": [
+      "了解 Flex 布局的基本概念",
+      "掌握 Flex 布局的特点",
+      "掌握 Flex 容器的相关属性",
+      "掌握常用的 Flex 布局技巧",
+      "掌握 Flex 子项的使用方法"
+    ],
+    "skill": [
+      "能正确使用 Flex 布局实现主轴元素布局控制",
+      "能正确使用 Flex 布局实现交叉轴元素布局控制",
+      "能应用 Flex 样式属性调整子项样式"
+    ],
+    "literacy": [
+      "培养精益求精的工匠精神",
+      "培养勇于探索、崇尚科学的学习品质",
+      "培养高尚的审美情趣"
+    ]
+  },
+  "slides": [
+    {
+      "type": "objectives",
+      "title": "本单元我们要达成什么",
+      "subtitle": "对照教材《项目8》的学习目标 / 技能目标 / 素养目标",
+      "objectives": {
+        "knowledge": [
+          "了解 Flex 布局的基本概念",
+          "掌握 Flex 布局的特点",
+          "掌握 Flex 容器的相关属性",
+          "掌握常用的 Flex 布局技巧"
+        ],
+        "skill": [
+          "能正确使用 Flex 布局实现主轴元素布局控制",
+          "能正确使用 Flex 布局实现交叉轴元素布局控制",
+          "能应用 Flex 样式属性调整子项样式"
+        ],
+        "literacy": [
+          "培养精益求精的工匠精神",
+          "培养勇于探索、崇尚科学的学习品质",
+          "培养高尚的审美情趣"
+        ]
+      }
+    },
+    {
+      "type": "ideology",
+      "title": "网页应用技术：AI 走向用户的最后一公里",
+      "subtitle": "教材《项目8》思政课堂",
+      "nav": "思政课堂",
+      "text": "网页应用技术是当今数字化时代的重要组成部分，它与 ChatGPT、AIGC 等技术的结合，为各行业带来了巨大的变革。ChatGPT 和 AIGC 等技术通过自然语言处理和机器学习算法实现了更加智能化的交互体验，而<strong>网页应用技术则为这些技术提供了展示和应用的平台</strong>，使得它们能够更好地服务于各领域。随着技术的不断发展，网页应用技术将与 ChatGPT、AIGC 等技术更加紧密地结合，为各行业带来更加智能、高效的应用体验。",
+      "topic": "再强大的 AI 能力，最终也要通过一个页面呈现给用户。作为未来的 Web 前端工程师，请结合岗位谈一谈：一个「布局混乱、适配糟糕」的页面，会怎样毁掉一个好产品？"
+    },
+    {
+      "type": "outline",
+      "title": "本单元导览",
+      "subtitle": "四个问题，把 Flex 的地基打牢",
+      "nav": "导览",
+      "items": [
+        "Flex 是什么？它「弹性」在哪里？（8.1）",
+        "容器、子项、主轴、交叉轴——四个术语必须说清（8.2）",
+        "怎样启用 Flex？有哪些「坑」要避开？（8.3）",
+        "容器 6 大属性：方向、换行、主轴对齐、交叉轴对齐（8.3.1）"
+      ]
+    },
+    {
+      "type": "section",
+      "no": "8.1",
+      "title": "Flex 布局简介",
+      "text": "布局方式很多，为什么现代前端首选 Flex？先搞清楚它到底「弹」在哪里。",
+      "nav": "8.1 Flex 布局简介"
+    },
+    {
+      "type": "bullets",
+      "title": "Flex 是什么：一种一维的弹性布局",
+      "subtitle": "教材原文：Flex 是 flexible box 的缩写，意为「弹性布局」",
+      "nav": "什么是 Flex",
+      "items": [
+        "Flex 是 <code>flexible box</code> 的缩写，意为<strong>弹性布局</strong>，是一种对元素进行<strong>按行或按列</strong>布局的常用布局手法。",
+        "常被理解为一种<strong>一维布局</strong>手法——一次只在一条轴（行或列）上安排元素，而不是同时控制行列。",
+        "子项可以用 <code>grow</code> 抓取填充<strong>额外的容器空间</strong>；也可以用 <code>shrink</code> 在容器收缩时得到<strong>合适的收缩效果</strong>。",
+        "教材结论：<strong>能伸能缩、按需分配，这正是弹性布局的要义。</strong>",
+        "与浮动、定位相比：Flex 是<strong>为布局而生</strong>的，不脱离文档流，也不需要清除浮动。"
+      ]
+    },
+    {
+      "type": "section",
+      "no": "8.2",
+      "title": "Flex 布局的相关术语",
+      "text": "术语不清，属性就永远记不住。这一页请务必跟着图走一遍。",
+      "nav": "8.2 相关术语"
+    },
+    {
+      "type": "cards",
+      "title": "四个术语：容器、子项、主轴、交叉轴",
+      "subtitle": "教材图 8-3，术语务必讲清",
+      "nav": "四个术语",
+      "cols": 2,
+      "items": [
+        {
+          "title": "Flex 容器 / Flex 子项",
+          "text": "采用 Flex 布局的元素叫<strong>Flex 容器</strong>（flex container），简称<strong>容器</strong>；它的<strong>所有子元素</strong>称为 <strong>Flex 子项</strong>（flex item），简称<strong>子项</strong>。"
+        },
+        {
+          "title": "主轴 main axis",
+          "text": "默认情况下子项沿主轴<strong>横向</strong>排列，左侧为<strong>主轴起点 main start</strong>，右侧为<strong>主轴结束点 main end</strong>。"
+        },
+        {
+          "title": "交叉轴 cross axis",
+          "text": "与主轴<strong>正交</strong>的那条轴。默认<strong>起点 cross start 在上、终点 cross end 在下</strong>；主轴一变方向，交叉轴随之改变。"
+        },
+        {
+          "title": "main size / cross size",
+          "text": "<strong>main size</strong>：每个子项占据<strong>主轴</strong>空间的尺寸；<strong>cross size</strong>：占据<strong>交叉轴</strong>空间的尺寸。注意是「尺寸」而非固定的「宽高」。"
+        }
+      ]
+    },
+    {
+      "type": "demo",
+      "title": "交互演示｜主轴与交叉轴到底长什么样",
+      "subtitle": "左边是 row（主轴水平），右边是 column（主轴垂直）——注意交叉轴是如何跟着变的",
+      "nav": "主轴/交叉轴演示",
+      "items": [
+        "<strong>容器</strong>就是写了 <code>display:flex</code> 的那个元素，它的直接子元素才是<strong>子项</strong>（孙元素不算）。",
+        "默认 <code>flex-direction:row</code>：主轴水平自左向右，此时<strong>交叉轴竖直</strong>。",
+        "改成 <code>column</code>：主轴变为竖直，<strong>交叉轴随之变成水平</strong>。",
+        "所有对齐属性（justify-content / align-items）都是<strong>相对轴</strong>而言的，轴变了，效果也跟着变。"
+      ],
+      "hint": "想一想：如果想让 3 个子项在竖直方向上「居中」，应该改主轴方向还是改 align-items？",
+      "html": "<style>.d21{margin:0;font-family:'PingFang SC',system-ui,sans-serif;color:#1b2a44}.d21 .stage{display:flex;gap:34px;justify-content:center;align-items:flex-start;padding:6px 6px}.d21 .col{width:270px}.d21 .ttl{margin:0 0 8px;text-align:center;font-size:12.5px;font-weight:700;color:#2f6bff}.d21 .ctn{position:relative;display:flex;gap:8px;padding:12px;height:112px;background:#eef3ff;border:2px dashed #9db8f0;border-radius:12px}.d21 .ctn.c2{flex-direction:column;width:140px;height:172px;margin:0 auto}.d21 .it{display:flex;align-items:center;justify-content:center;min-width:56px;height:40px;border-radius:8px;background:linear-gradient(135deg,#2f6bff,#0fb5c9);color:#fff;font-size:12.5px;font-weight:700}.d21 .c2 .it{min-width:0;height:44px}.d21 .dot{position:absolute;width:18px;height:18px;border-radius:50%;background:#fff;border:3px solid #ff9d00;box-sizing:border-box}.d21 .ax{position:relative;margin-top:14px;height:20px;border-radius:6px;background:linear-gradient(90deg,#ff9d00,#ffd98a)}.d21 .ax .dot{top:1px;animation:axrun 2.6s linear infinite}.d21 .ax em{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-style:normal;font-size:11px;color:#8a5a00;letter-spacing:.04em}.d21 .vax{position:absolute;right:-36px;top:0;width:20px;height:100%;border-radius:6px;background:linear-gradient(180deg,#67cf22,#ccf0a6)}.d21 .vax .dot{left:1px;border-color:#4ea814;animation:vaxrun 2.6s linear infinite}.d21 .vax em{position:absolute;top:6px;left:26px;white-space:nowrap;font-style:normal;font-size:11px;color:#3f7a12}.d21 .tag{margin-top:16px;text-align:center;font-size:11.5px;color:#5a6c85;line-height:1.8}.d21 .tag code{background:#eef3ff;border:1px solid #d5e2fb;border-radius:5px;padding:1px 6px;color:#1d46b8}@keyframes axrun{0%{left:-2px}100%{left:calc(100% - 16px)}}@keyframes vaxrun{0%{top:-2px}100%{top:calc(100% - 16px)}}</style><div class='d21'><div class='stage'><div class='col'><p class='ttl'>flex-direction: row（主轴水平）</p><div class='ctn'><div class='it'>子项1</div><div class='it'>子项2</div><div class='it'>子项3</div><div class='vax'><span class='dot'></span><em>交叉轴</em></div></div><div class='ax'><span class='dot'></span><em>main start → main end（主轴）</em></div></div><div class='col'><p class='ttl'>flex-direction: column（主轴垂直）</p><div class='ctn c2'><div class='it'>1</div><div class='it'>2</div><div class='it'>3</div><div class='vax'><span class='dot'></span><em>交叉轴</em></div></div><div class='ax'><span class='dot'></span><em>主轴改变，交叉轴随之改变</em></div></div></div><p class='tag'>容器 = <code>display:flex</code> 的元素　·　它的直接子元素 = Flex 子项<br>main size 是子项占据主轴空间的尺寸，cross size 是占据交叉轴空间的尺寸</p></div>"
+    },
+    {
+      "type": "section",
+      "no": "8.3",
+      "title": "Flex 容器",
+      "text": "一句话启用 Flex，但有三个属性会当场「失效」——这是必考的易错点。",
+      "nav": "8.3 Flex 容器"
+    },
+    {
+      "type": "code",
+      "title": "启用 Flex 布局：display:flex 与 inline-flex",
+      "subtitle": "教材给出的「良好的编程习惯」：为 WebKit 内核浏览器加前缀",
+      "nav": "启用 Flex 布局",
+      "lang": "css",
+      "file": "style.css",
+      "code": "/* 块级元素使用 Flex 布局 */\n.box{ display:flex; }\n\n/* 行内元素使用 Flex 布局 */\n.box{ display:inline-flex; }\n\n/* 良好的编程习惯：兼顾 WebKit 内核浏览器 */\n.box{\n    display:-webkit-flex;  /* Safari */\n    display:flex;\n}",
+      "caption": "<b>易错点（教材原文）：</b>当设置了 Flex 布局之后，子元素的 <code>float</code>、<code>clear</code>、<code>vertical-align</code> 等样式属性<strong>将失效</strong>。也就是说，Flex 与浮动布局<strong>不要混用</strong>。"
+    },
+    {
+      "type": "table",
+      "title": "Flex 容器常见的 6 个属性（教材表 8-1）",
+      "subtitle": "容器属性写在「父元素」上，控制的是子项整体的排列方式",
+      "nav": "表8-1 容器6属性",
+      "head": [
+        "属性名",
+        "描述"
+      ],
+      "rows": [
+        [
+          "flex-direction",
+          "调整布局方向（指定<strong>主轴</strong>的方向）"
+        ],
+        [
+          "flex-wrap",
+          "控制是否换行"
+        ],
+        [
+          "flex-flow",
+          "综合样式属性，是 <code>flex-direction</code> 属性和 <code>flex-wrap</code> 属性的组合"
+        ],
+        [
+          "justify-content",
+          "定义<strong>主轴</strong>对齐方式"
+        ],
+        [
+          "align-items",
+          "定义<strong>交叉轴</strong>对齐方式"
+        ],
+        [
+          "align-content",
+          "定义<strong>多根轴线</strong>的对齐方式，如果只有一根轴线，则该属性不起作用"
+        ]
+      ]
+    },
+    {
+      "type": "table",
+      "title": "flex-wrap：空间不够时，换行还是压缩？（教材表 8-2）",
+      "subtitle": "实验条件：6 个 50px×50px 子项。容器宽度不足时，默认行为是「压缩」而不是「换行」",
+      "nav": "表8-2 flex-wrap",
+      "head": [
+        "属性值",
+        "描述"
+      ],
+      "rows": [
+        [
+          "nowrap",
+          "<strong>默认值</strong>，不换行。容器装不下时<strong>弹性地缩小</strong>子项的水平尺寸（教材图 8-5）"
+        ],
+        [
+          "wrap",
+          "换行，当子项在父容器中宽度不足时<strong>自动换行</strong>，保持原有尺寸（图 8-6）"
+        ],
+        [
+          "wrap-reverse",
+          "<strong>逆向换行</strong>，换行方向与轴方向相反，即<strong>自下而上</strong>（图 8-7）"
+        ]
+      ]
+    },
+    {
+      "type": "codebullets",
+      "title": "flex-direction 与 flex-flow：方向与换行的写法",
+      "subtitle": "语法 8-1 与语法 8-2；flex-flow 默认值为 row nowrap",
+      "nav": "方向与换行",
+      "items": [
+        "<code>row</code>：<strong>默认值</strong>，主轴水平<strong>自左向右</strong>；<code>row-reverse</code> 自右向左。",
+        "<code>column</code>：主轴垂直<strong>自上而下</strong>；<code>column-reverse</code> 自下而上。加了 <code>-reverse</code> 就产生<strong>逆向</strong>布局（图 8-4）。",
+        "<code>flex-flow</code> 是 <code>flex-direction</code> 与 <code>flex-wrap</code> 的<strong>组合简写</strong>：<code>flex-flow: [flex-direction] || [flex-wrap]</code>。",
+        "两个值之间用<strong>空格</strong>分隔、<strong>顺序可交换</strong>；只写一个时，另一个取默认值。",
+        "默认值 <code>row nowrap</code> 意味着<strong>横向排列且永不换行</strong>——这正是初学时「子项被压扁」的根本原因。"
+      ],
+      "lang": "css",
+      "file": "style.css",
+      "code": "/* 语法 8-1：指定主轴方向，默认值 row */\n.box{ flex-direction: row | row-reverse | column | column-reverse; }\n\n/* 语法 8-2：方向与换行的简写 */\nflex-flow: [flex-direction] || [flex-wrap];\n\n/* 示例：纵向排列 + 逆向换行 */\n.wrap{ flex-flow: column wrap-reverse; }\n\n/* 等价于 */\n.wrap{\n    flex-direction: column;\n    flex-wrap: wrap-reverse;\n}"
+    },
+    {
+      "type": "table",
+      "title": "justify-content：主轴上的对齐（教材表 8-3）",
+      "subtitle": "教材表中后两项写作 flex-around / flex-between，属排版笔误；标准写法为 space-around / space-between",
+      "nav": "表8-3 justify-content",
+      "head": [
+        "属性值",
+        "描述"
+      ],
+      "rows": [
+        [
+          "flex-start",
+          "子项在主轴上对齐<strong>起点</strong>（main-start）"
+        ],
+        [
+          "flex-end",
+          "子项在主轴上对齐<strong>结束点</strong>（main-end）"
+        ],
+        [
+          "center",
+          "子项沿主轴朝容器的<strong>中心</strong>对齐"
+        ],
+        [
+          "space-around",
+          "子项在主轴上平均分布，首、尾两项与父容器两侧也留间隔（记为 A），子项之间的间隔（记为 B）<strong>通常是 A 的两倍</strong>"
+        ],
+        [
+          "space-between",
+          "子项在主轴上平均分布，<strong>首、尾两项紧贴父容器</strong>，中间的间隔均分"
+        ]
+      ]
+    },
+    {
+      "type": "demo",
+      "title": "交互演示｜同一组卡片，看 5 种主轴对齐与 4 种交叉轴对齐",
+      "subtitle": "左侧循环切换 justify-content，右侧循环切换 align-items，注意观察子项位置的变化",
+      "nav": "对齐切换演示",
+      "items": [
+        "<code>justify-content</code> 管<strong>主轴</strong>：默认 row 时就是水平方向的对齐。",
+        "下方标签会同步显示<strong>当前生效的属性值</strong>，每种停留约 2.5 秒。",
+        "<code>align-items</code> 管<strong>交叉轴</strong>：默认 row 时就是垂直方向的对齐。",
+        "注意最后一档 <code>stretch</code>：子项<strong>没有设置高度</strong>时才会被拉伸到占满容器高度。"
+      ],
+      "hint": "把 align-items:stretch 的那一档盯住：如果给子项写死了 height，stretch 就完全失效了。",
+      "html": "<style>.d21b{margin:0;font-family:'PingFang SC',system-ui,sans-serif;color:#1b2a44}.d21b .row{display:flex;gap:22px;justify-content:center}.d21b .pnl{width:296px}.d21b h4{margin:0 0 7px;font-size:12.5px;font-weight:700;color:#2f6bff;text-align:center}.d21b .ctn{display:flex;gap:8px;padding:8px;height:118px;background:#eef3ff;border:2px dashed #9db8f0;border-radius:12px;margin-bottom:8px}.d21b .it{display:flex;align-items:center;justify-content:center;padding:6px 13px;min-width:40px;background:linear-gradient(135deg,#2f6bff,#0fb5c9);color:#fff;border-radius:8px;font-size:12px;font-weight:700}.d21b .jc{animation:jcycle 12.5s linear infinite}.d21b .ac{animation:acycle 10s linear infinite}.d21b .ac .it{height:auto}.d21b .win{height:24px;overflow:hidden;border-radius:7px;background:#fff8ec;border:1px solid #ffe0b2}.d21b .lst{animation:jlift 12.5s linear infinite}.d21b .lst2{animation:alift 10s linear infinite}.d21b u{display:block;height:24px;line-height:24px;text-decoration:none;text-align:center;font-size:12px;color:#b45309;font-family:Menlo,monospace}.d21b .tip{margin-top:14px;text-align:center;font-size:11.5px;color:#5a6c85;line-height:1.8}.d21b .tip code{background:#eef3ff;border:1px solid #d5e2fb;border-radius:5px;padding:1px 6px;color:#1d46b8}@keyframes jcycle{0%,19.4%{justify-content:flex-start}20%,39.4%{justify-content:center}40%,59.4%{justify-content:flex-end}60%,79.4%{justify-content:space-between}80%,99.4%{justify-content:space-around}}@keyframes acycle{0%,24.4%{align-items:flex-start}25%,49.4%{align-items:center}50%,74.4%{align-items:flex-end}75%,99.4%{align-items:stretch}}@keyframes jlift{0%,19.4%{transform:translateY(0)}20%,39.4%{transform:translateY(-24px)}40%,59.4%{transform:translateY(-48px)}60%,79.4%{transform:translateY(-72px)}80%,99.4%{transform:translateY(-96px)}}@keyframes alift{0%,24.4%{transform:translateY(0)}25%,49.4%{transform:translateY(-24px)}50%,74.4%{transform:translateY(-48px)}75%,99.4%{transform:translateY(-72px)}}</style><div class='d21b'><div class='row'><div class='pnl'><h4>justify-content（主轴）</h4><div class='ctn jc'><div class='it'>1</div><div class='it'>2</div><div class='it'>3</div></div><div class='win'><div class='lst'><u>flex-start</u><u>center</u><u>flex-end</u><u>space-between</u><u>space-around</u></div></div></div><div class='pnl'><h4>align-items（交叉轴）</h4><div class='ctn ac'><div class='it'>1</div><div class='it'>2</div><div class='it'>3</div></div><div class='win'><div class='lst2'><u>flex-start</u><u>center</u><u>flex-end</u><u>stretch</u></div></div></div></div><p class='tip'>提示：容器要<strong>先换行</strong>（<code>flex-wrap:wrap</code>）产生多根轴线，<code>align-content</code> 才会起作用</p></div>"
+    },
+    {
+      "type": "table",
+      "title": "align-items：交叉轴上的对齐（教材表 8-4）",
+      "subtitle": "语法 8-4：align-items: flex-start | flex-end | center | baseline | stretch",
+      "nav": "表8-4 align-items",
+      "head": [
+        "属性值",
+        "描述"
+      ],
+      "rows": [
+        [
+          "flex-start",
+          "与<strong>交叉轴的起点</strong>对齐"
+        ],
+        [
+          "flex-end",
+          "与<strong>交叉轴的终点</strong>对齐"
+        ],
+        [
+          "center",
+          "与<strong>交叉轴的中心</strong>对齐（垂直居中的常用写法）"
+        ],
+        [
+          "baseline",
+          "与子项的<strong>文字基线</strong>对齐"
+        ],
+        [
+          "stretch",
+          "<strong>默认值</strong>。如果子项未设置高度或设置为 <code>auto</code>，则<strong>占满整个父容器的高度</strong>（图 8-9）"
+        ]
+      ]
+    },
+    {
+      "type": "table",
+      "title": "align-content：多根轴线的对齐（教材表 8-5）",
+      "subtitle": "语法 8-5；只有一根轴线时该属性不起作用，必须配合 flex-wrap 使用",
+      "nav": "表8-5 align-content",
+      "head": [
+        "属性值",
+        "描述"
+      ],
+      "rows": [
+        [
+          "flex-start",
+          "多轴子项与<strong>交叉轴的起点</strong>对齐"
+        ],
+        [
+          "flex-end",
+          "多轴子项与<strong>交叉轴的终点</strong>对齐"
+        ],
+        [
+          "center",
+          "多轴子项与<strong>交叉轴的中点</strong>对齐"
+        ],
+        [
+          "space-between",
+          "多轴子项与<strong>交叉轴的两端</strong>对齐，轴线之间的间隔平均分布"
+        ],
+        [
+          "space-around",
+          "多轴子项在交叉轴上平均分布，首尾与容器间隔为 A，轴线之间为 B，<strong>B 通常是 A 的两倍</strong>"
+        ],
+        [
+          "space-evenly",
+          "多轴之间的间隔<strong>全部相等</strong>（即全部分配）"
+        ],
+        [
+          "stretch",
+          "<strong>默认值</strong>，轴线<strong>占满整个交叉轴</strong>"
+        ]
+      ]
+    },
+    {
+      "type": "compare",
+      "title": "align-items 与 align-content：到底该用哪一个",
+      "subtitle": "教材启发式问答 + 常见的编程错误",
+      "nav": "两者辨析",
+      "a": {
+        "title": "align-items（针对单行）",
+        "items": [
+          "针对<strong>每一根交叉轴</strong>进行设置，作用对象是「行内的子项」",
+          "例如 5 个子项构成两行：<code>align-items:flex-start</code> 是让<strong>每一行</strong>的元素都对齐到<strong>该行交叉轴空间</strong>的起始位置",
+          "两行会先<strong>平均分配</strong>交叉轴空间，再各自对齐（图 8-12）",
+          "单行时它就能生效，是日常用得最多的一个"
+        ]
+      },
+      "b": {
+        "title": "align-content（针对多轴整体）",
+        "items": [
+          "针对<strong>多轴的内容</strong>进行整体设置，作用对象是「整组轴线」",
+          "<code>align-content:flex-start</code> 是把<strong>多轴整体</strong>对齐到交叉轴空间的起始位置",
+          "<strong>必须配合 flex-wrap 换行</strong>，产生多轴内容才会起作用",
+          "<strong>常见的编程错误（教材原文）：</strong>仅使用 align-content 而不配合 flex-wrap，往往达不到预期效果"
+        ]
+      }
+    },
+    {
+      "type": "ai",
+      "title": "AI 前沿：让 AI 写布局，但先自己画出两条轴",
+      "subtitle": "AI 能秒出代码，但「轴的方向」必须由你来定义",
+      "nav": "AI 前沿",
+      "text": "Flex 布局是<strong>最适合 AI 生成</strong>的 CSS 之一：你只要说「三个卡片横向均分、垂直居中」，GitHub Copilot、通义灵码、文心快码就能给出 <code>display:flex; justify-content:space-between; align-items:center;</code>。但 AI 并不理解你的设计意图，它需要你先说清<strong>主轴方向、是否换行、谁吃掉剩余空间</strong>——这些恰恰是本单元的核心知识。",
+      "items": [
+        "提示词示例：「一个 540px 宽的容器，4 个 91px 子项，横向两端对齐、垂直居中」——需求越具体，代码越准。",
+        "AI 常见错误：忘记写 <code>flex-wrap:wrap</code>（小屏挤成一团）、把 <code>align-items</code> 与 <code>align-content</code> 混用。",
+        "国产工具：DeepSeek、通义千问、文心一言等均可用自然语言生成并解释 Flex 代码，适合当「随堂助教」。",
+        "职业提醒：把 AI 生成的代码<strong>逐行读懂并验证</strong>，才是 1+X 考试与真实岗位上真正值钱的能力。"
+      ]
+    },
+    {
+      "type": "quiz",
+      "title": "随堂检测",
+      "subtitle": "选自教材 8.6 课后选择题",
+      "nav": "随堂检测",
+      "items": [
+        {
+          "q": "（　　）不是 flex-direction 属性值。",
+          "options": [
+            "A. row",
+            "B. row-reverse",
+            "C. column",
+            "D. both"
+          ],
+          "answer": "D",
+          "tip": "flex-direction 的 4 个取值是 row、row-reverse、column、column-reverse，没有 both。",
+          "type": "single"
+        },
+        {
+          "q": "要实现 Flex 布局元素自动换行，应该添加（　　）属性。",
+          "options": [
+            "A. flex-direction",
+            "B. flex",
+            "C. flex-wrap",
+            "D. flex-grow"
+          ],
+          "answer": "C",
+          "tip": "flex-wrap 控制是否换行；flex-grow 是子项的放大比例属性。",
+          "type": "single"
+        },
+        {
+          "q": "关于 Flex 布局，说法错误的是（　　）。",
+          "options": [
+            "A. Flex 布局也叫弹性布局，可以在扩展、收缩页面时自动调整布局",
+            "B. 使用 flex-direction:row 可以快速实现横向导航布局效果",
+            "C. 在默认情况下，flex-direction 属性值是 column",
+            "D. Flex 布局是主要用于单行（列）的布局"
+          ],
+          "answer": "C",
+          "tip": "flex-direction 的默认值是 row（横向），不是 column。",
+          "type": "single"
+        },
+        {
+          "type": "multi",
+          "q": "关于 Flex 布局的术语与容器属性，下列说法正确的有（　　）。",
+          "options": [
+            "A. 设置了 display:flex 的元素称为 Flex 容器，只有它的直接子元素才是 Flex 子项",
+            "B. flex-direction 用于指定主轴方向，其默认值为 row",
+            "C. justify-content 定义的是交叉轴上的对齐方式，align-items 定义主轴上的对齐方式",
+            "D. align-content 定义多根轴线的对齐方式，只有一根轴线时该属性不起作用"
+          ],
+          "answer": "ABD",
+          "tip": "说反了：<code>justify-content</code> 管<strong>主轴</strong>、<code>align-items</code> 管<strong>交叉轴</strong>，故 C 错。"
+        },
+        {
+          "type": "multi",
+          "q": "关于 Flex 布局的使用，下列说法正确的有（　　）。",
+          "options": [
+            "A. 容器启用 Flex 布局后，子元素的 float、clear、vertical-align 等样式属性将失效",
+            "B. flex-wrap 默认值为 nowrap，容器装不下时子项会被弹性压缩而不换行",
+            "C. align-items 默认值为 stretch，子项未设置高度时会被拉伸占满容器高度",
+            "D. flex-flow 是 flex-grow 与 flex-shrink 两个属性的组合简写"
+          ],
+          "answer": "ABC",
+          "tip": "<code>flex-flow</code> 是 <code>flex-direction</code> 与 <code>flex-wrap</code> 的简写，默认值 <code>row nowrap</code>，故 D 错。"
+        }
+      ]
+    },
+    {
+      "type": "summary",
+      "title": "本课小结",
+      "nav": "本课小结",
+      "items": [
+        "Flex = <strong>flexible box</strong>，一种<strong>一维</strong>的弹性布局：用 <code>grow</code> 抓取额外空间、用 <code>shrink</code> 合理收缩，这是弹性的要义。",
+        "术语四件套：<strong>容器</strong>（写了 display:flex 的元素）、<strong>子项</strong>（其直接子元素）、<strong>主轴</strong>（子项排列方向）、<strong>交叉轴</strong>（与主轴正交）。",
+        "启用方式：<code>display:flex</code>（块级）/ <code>inline-flex</code>（行内）；一旦启用，子元素的 <strong>float、clear、vertical-align 全部失效</strong>。",
+        "主轴对齐用 <code>justify-content</code>，交叉轴对齐用 <code>align-items</code>，多轴整体用 <code>align-content</code>（<strong>必须配 flex-wrap</strong>）。",
+        "默认值要记牢：<code>flex-direction:row</code>、<code>flex-wrap:nowrap</code>、<code>flex-flow:row nowrap</code>、<code>align-items:stretch</code>。"
+      ]
+    },
+    {
+      "type": "homework",
+      "title": "课后作业",
+      "nav": "课后作业",
+      "items": [
+        "<strong>选择题：</strong>完成教材 8.6「一、选择题」第 1～5 题，并说明每个选项为何对或错。",
+        "<strong>上机题：</strong>写一个 300px×200px 的容器，放 3 个不设高度的子项，分别验证 align-items 的 5 个取值并截图对比。",
+        "<strong>纠错题：</strong>同桌互相写一段「只用 align-content 却看不到效果」的代码，找出原因并改正。",
+        "<strong>预习：</strong>阅读教材 8.3.2 与 8.4，思考「轮播图为什么要用 flex-shrink:0」。"
+      ]
+    },
+    {
+      "type": "refs",
+      "title": "出处与参考",
+      "subtitle": "本课件内容依据教材，并核对以下权威技术文档",
+      "nav": "出处与参考",
+      "items": [
+        {
+          "t": "教材《网页制作（HTML5+CSS3）》项目8 Flex 布局（8.1～8.3.1，PDF 260–267）",
+          "u": "郑哲、傅冬 主编 · 电子工业出版社 · 2025 年 1 月第 1 版"
+        },
+        {
+          "t": "MDN Web Docs · CSS 弹性盒子布局",
+          "u": "https://developer.mozilla.org/zh-CN/docs/Web/CSS/CSS_flexible_box_layout"
+        },
+        {
+          "t": "MDN Web Docs · Flexbox 的基本概念（主轴、交叉轴术语）",
+          "u": "https://developer.mozilla.org/zh-CN/docs/Web/CSS/CSS_flexible_box_layout/Basic_concepts_of_flexbox"
+        },
+        {
+          "t": "MDN Web Docs · justify-content",
+          "u": "https://developer.mozilla.org/zh-CN/docs/Web/CSS/justify-content"
+        },
+        {
+          "t": "MDN Web Docs · align-items",
+          "u": "https://developer.mozilla.org/zh-CN/docs/Web/CSS/align-items"
+        },
+        {
+          "t": "W3C · CSS Flexible Box Layout Module Level 1",
+          "u": "https://www.w3.org/TR/css-flexbox-1/"
+        }
+      ]
+    },
+    {
+      "type": "end",
+      "title": "第 21 单元 · 结束",
+      "text": "下一单元：用 Flex 做居中、均分、嵌套与轮播图",
+      "nav": "结束"
+    }
+  ]
+}

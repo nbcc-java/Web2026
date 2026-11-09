@@ -1,0 +1,498 @@
+{
+  "id": "U06",
+  "project": "项目3",
+  "project_name": "使用CSS基本选择器美化页面",
+  "unit": "第 6 单元",
+  "title": "CSS 简介、基本语法与标签 / id / 类选择器",
+  "subtitle": "从「层叠样式表」的概念出发，掌握一条样式规则的写法，再用三种基本选择器精准命中目标元素",
+  "duration": 40,
+  "cover_tags": [
+    "层叠样式表",
+    "样式规则",
+    "标签选择器",
+    "id 选择器",
+    "类选择器"
+  ],
+  "ref_book": "电子工业出版社 · 2025 年 1 月第 1 版",
+  "objectives": {
+    "knowledge": [
+      "了解 CSS 的基本概念",
+      "了解 CSS 的发展历程",
+      "掌握 CSS 的基本语法",
+      "掌握标签选择器、id 选择器和类选择器的用法"
+    ],
+    "skill": [
+      "能使用标签选择器设定样式",
+      "能使用 id 选择器为唯一元素设定样式",
+      "能使用类选择器复用样式",
+      "能正确书写预设颜色值、RGB 值与十六进制值"
+    ],
+    "literacy": [
+      "培养有始有终、精益求精的工匠精神",
+      "培养极致思维、用户思维的互联网思维模式",
+      "具备情趣高尚的审美意识"
+    ]
+  },
+  "slides": [
+    {
+      "type": "objectives",
+      "title": "本单元我们要达成什么",
+      "subtitle": "对照教材《项目3》3.1～3.3.3 的学习目标",
+      "nav": "学习目标",
+      "objectives": {
+        "knowledge": [
+          "了解 CSS 的基本概念",
+          "了解 CSS 的发展历程",
+          "掌握 CSS 的基本语法",
+          "掌握标签选择器、id 选择器和类选择器的用法"
+        ],
+        "skill": [
+          "能使用标签选择器设定样式",
+          "能使用 id 选择器为唯一元素设定样式",
+          "能使用类选择器复用样式",
+          "能正确书写预设颜色值、RGB 值与十六进制值"
+        ],
+        "literacy": [
+          "培养有始有终、精益求精的工匠精神",
+          "培养极致思维、用户思维的互联网思维模式",
+          "具备情趣高尚的审美意识"
+        ]
+      }
+    },
+    {
+      "type": "ideology",
+      "title": "工匠精神：把「增品种、提品质、创品牌」写进代码里",
+      "subtitle": "教材《项目3》思政课堂",
+      "nav": "思政课堂",
+      "text": "<strong>工匠精神（craftsman's spirit）</strong>是一种职业精神，它是<strong>职业道德、职业能力、职业品质</strong>的体现，是从业者的一种<strong>职业价值取向和行为表现</strong>。2016 年，《政府工作报告》提出：鼓励企业开展<strong>个性化定制、柔性化生产</strong>，培育<strong>精益求精的工匠精神</strong>，<strong>增品种、提品质、创品牌</strong>。「工匠精神」一词迅速流行开来，成为制造业的热词；随后，除了制造业，<strong>各行各业都提倡工匠精神</strong>。",
+      "topic": "一段 CSS 往往要反复打磨，才能既简洁又不产生样式冲突。作为未来的 Web 前端工程师，请结合岗位谈一谈：你如何理解「代码里的工匠精神」？"
+    },
+    {
+      "type": "outline",
+      "title": "本单元导览",
+      "subtitle": "五个问题，带你走进 CSS 的大门",
+      "nav": "导览",
+      "items": [
+        "CSS 是什么？它从哪里来，又为什么取代了那些表现标签？",
+        "一条 CSS 样式规则由哪几部分组成？（选择器 + 样式声明）",
+        "标签选择器：一次命中页面中所有同名标签（任务3-1）",
+        "id 选择器与类选择器：为「唯一」和「一组」元素设定样式（任务3-2）",
+        "为什么 id 选择器写在标签选择器前后交换，第 1 个标题依然显示为蓝色？"
+      ]
+    },
+    {
+      "type": "section",
+      "no": "3.1",
+      "title": "CSS 简介",
+      "text": "一门只做一件事的语言：告诉浏览器，这些内容究竟该怎么显示。",
+      "nav": "3.1 CSS 简介"
+    },
+    {
+      "type": "cards",
+      "title": "认识 CSS：它是什么，又为什么会出现",
+      "subtitle": "教材 3.1：CSS 全称 cascading style sheet，中文译为层叠样式表",
+      "nav": "认识 CSS",
+      "cols": 3,
+      "items": [
+        {
+          "title": "CSS 是什么",
+          "text": "一门为<strong>结构化文档</strong>（如 HTML 或 XML 文档）<strong>添加样式、实现美化效果</strong>的计算机语言，<strong>文件扩展名为 .css</strong>。"
+        },
+        {
+          "title": "核心分工",
+          "text": "<strong>HTML 定义了网页中要显示哪些内容，CSS 定义了这些内容如何显示</strong>。内容与样式分离，大大提高了开发的协同性和代码复用性。"
+        },
+        {
+          "title": "为什么要有 CSS",
+          "text": "早期靠 <code>&lt;font&gt;</code>、<code>&lt;b&gt;</code> 等标签和显示属性做表现，甚至用 <code>&lt;table&gt;</code> 布局，导致<strong>显示与内容混杂、无法阅读、难以维护</strong>；W3C 因此在 Web 标准中引入了 CSS 规范。"
+        }
+      ]
+    },
+    {
+      "type": "bullets",
+      "title": "CSS 的四大优点（教材 3.1.3）",
+      "subtitle": "理解了这四个优点，就理解了为什么要「样式分离」",
+      "nav": "CSS 的优点",
+      "items": [
+        "① <strong>实现格式和结构分离</strong>：CSS 和 HTML 各司其职、分工合作，有利于格式的复用及网页的修改与维护。",
+        "② <strong>精确控制页面布局</strong>：扩展了 HTML 的功能，能对<strong>布局、字体、颜色、背景</strong>等图文效果实现更加精确的控制。",
+        "③ <strong>体积更小、加载更快</strong>：可在同一网页中<strong>重用样式信息</strong>，也减少了表格布局标签、表现标签和格式属性的使用次数。",
+        "④ <strong>多个网页同时更新</strong>：站点上的多个网页<strong>指向同一个 CSS 文件</strong>，更新该文件即可实现多页同时更新。"
+      ]
+    },
+    {
+      "type": "table",
+      "title": "CSS 的发展历程（教材 3.1.2）",
+      "subtitle": "注意第 5、6 阶段：CSS3 走向模块化，至今仍有部分标准未最终定稿",
+      "nav": "发展历程",
+      "head": [
+        "序号",
+        "时间",
+        "事件"
+      ],
+      "rows": [
+        [
+          "1",
+          "1994 年",
+          "CSS 被提出，并在 <strong>1995 年</strong>获得了浏览器的支持"
+        ],
+        [
+          "2",
+          "1996 年 12 月",
+          "W3C 发布了 <strong>CSS1.0</strong> 规范"
+        ],
+        [
+          "3",
+          "1998 年 5 月",
+          "W3C 发布了 <strong>CSS2.0</strong> 规范"
+        ],
+        [
+          "4",
+          "2004 年 2 月",
+          "W3C 发布了 <strong>CSS2.1</strong> 规范"
+        ],
+        [
+          "5",
+          "2001 年 5 月",
+          "W3C 开始进行 <strong>CSS3</strong> 标准的制定"
+        ],
+        [
+          "6",
+          "——",
+          "<strong>CSS3 的开发朝着模块化发展</strong>，以前的规范被分解为一些小的模块，并加入了许多新的模块；自 2001 年以来不断有 CSS3 模块的标准发布"
+        ]
+      ]
+    },
+    {
+      "type": "section",
+      "no": "3.2",
+      "title": "CSS 的基本语法",
+      "text": "一条样式规则 = 选择器 + 样式声明。写对这条规则，CSS 就入门了一半。",
+      "nav": "3.2 基本语法"
+    },
+    {
+      "type": "codebullets",
+      "title": "一条 CSS 样式规则的结构（教材图3-1）",
+      "subtitle": "完整含义：将当前文档中所有 h1 标签的前景色（文本颜色）设置为红色",
+      "nav": "样式规则结构",
+      "items": [
+        "① <strong>选择器（selector）</strong>：由它<strong>决定样式应用的对象</strong>。",
+        "② <strong>样式声明（declaration）</strong>：被包裹在<strong>一对大括号</strong>中，可以由<strong>多条样式声明语句</strong>构成。",
+        "③ <strong>每条样式声明语句</strong>：<strong>属性和值使用冒号分隔</strong>，语句<strong>以分号结尾</strong>，即 <code>属性名:属性值;</code>。",
+        "<strong>易错点：</strong>这里的属性<strong>必须是 W3C 规定的样式属性</strong>，值<strong>必须是规范中定义的常用取值</strong>，误用会导致不可预期的结果。",
+        "选择器分类：按构成可分为<strong>基本选择器</strong>和<strong>复合选择器</strong>；本项目先学基本选择器。"
+      ],
+      "lang": "css",
+      "file": "图3-1 示例",
+      "code": "h1 {\n  color: red;      /* 属性名:属性值; */\n}\n\n/* 选择器 */  /* 样式声明 */  /* 声明语句 */"
+    },
+    {
+      "type": "section",
+      "no": "3.3",
+      "title": "基本选择器",
+      "text": "基本选择器是指结构单一的选择器，主要包括标签选择器、id 选择器、类选择器、伪类选择器和伪元素选择器。",
+      "nav": "3.3 基本选择器"
+    },
+    {
+      "type": "codebullets",
+      "title": "3.3.1 标签选择器",
+      "subtitle": "利用 HTML 固有标签进行选择，样式作用于页面中所有该标签出现的地方",
+      "nav": "标签选择器",
+      "items": [
+        "标签选择器也被称为<strong>元素选择器（element selectors）</strong>。",
+        "示例含义：一级标题 <code>&lt;h1&gt;</code>、二级标题 <code>&lt;h2&gt;</code> 的文本颜色设为<strong>紫色</strong>。",
+        "在 CSS 中，使用 <code>color</code> 属性指定文本颜色；<code>purple</code>、<code>black</code>、<code>white</code>、<code>red</code> 等都是 CSS 的<strong>预设颜色值</strong>。",
+        "读法提示：语法中的「<strong>|</strong>」表示属性值<strong>可取其中一种形式</strong>，可以理解成「或者」。",
+        "常用颜色用<strong>预设颜色值</strong>；个性化颜色则用<strong>十六进制值或 RGB 值</strong>精准描述。"
+      ],
+      "lang": "css",
+      "file": "语法3-1",
+      "code": "h1 {color: purple;}\nh2 {color: purple;}\n\n/* 定义语法 */\ncolor:预设颜色值 |RGB 值 |十六进制值 | inherit;\n/* 示例 */\ncolor:red;\ncolor:rgb(255,0,0);\ncolor:#ff0000;"
+    },
+    {
+      "type": "table",
+      "title": "表3-1 color 属性值（教材表）",
+      "subtitle": "写法不同，但都表示「把文本颜色设为红色」",
+      "nav": "表3-1 颜色值",
+      "head": [
+        "属性值",
+        "描述"
+      ],
+      "rows": [
+        [
+          "预设颜色值",
+          "使用 CSS 预设的颜色的<strong>英文单词</strong>表示颜色，如 red 表示红色，white 表示白色"
+        ],
+        [
+          "RGB 值",
+          "使用 RGB 的<strong>十进制值</strong>表示颜色，如红色对应 <code>rgb(255,0,0)</code>"
+        ],
+        [
+          "十六进制值",
+          "使用「<strong>#</strong>」和一组<strong>十六进制值</strong>表示颜色，如红色对应 <code>#ff0000</code>"
+        ],
+        [
+          "inherit",
+          "<strong>继承父元素的颜色</strong>"
+        ]
+      ]
+    },
+    {
+      "type": "bullets",
+      "title": "RGB 值与十六进制值的写法要点",
+      "subtitle": "教材标注的两个「常见的编程错误」就在这里",
+      "nav": "RGB 与十六进制",
+      "items": [
+        "<strong>RGB 值</strong>：<code>rgb(num,num,num)</code>，括号内被逗号分成 3 部分，分别对应 <strong>r 红、g 绿、b 蓝</strong>，每部分是 <strong>0～255 的整数</strong>；可用 Photoshop 拾色器拾取。",
+        "<strong>十六进制值</strong>：是 RGB 值表示法的<strong>变形</strong>。两位十六进制恰好表示 256 种颜色，3 个通道共需 <strong>6 位</strong>，并加「<strong>#</strong>」作为标识符，格式是「<strong>#＋6 位数字或字母</strong>」（0～9 与 A～F）。",
+        "<strong>简化表示法</strong>：把<strong>相同的两位十六进制值用一位</strong>简化——<code>#ff0000</code> 可简写为 <code>#f00</code>，<code>#336699</code> 可简写为 <code>#369</code>。",
+        "<strong>反例</strong>：<code>#ffbb23</code> 中的 <code>23</code> 无法用 1 位表示，<strong>不能使用简化表示法</strong>。",
+        "<strong>常见的编程错误</strong>：书写十六进制值时<strong>遗漏「#」标识符</strong>；此外大小写虽均可，但在项目中<strong>保持一致的风格</strong>才是好习惯。"
+      ]
+    },
+    {
+      "type": "demo",
+      "title": "任务3-1｜使用标签选择器",
+      "subtitle": "4 个 h1，4 种写法，同一种红——体会「标签选择器命中所有同名标签」",
+      "nav": "任务3-1 演示",
+      "items": [
+        "创建 4 个 <code>&lt;h1&gt;</code> 标签，内容为「第x 个标题」，通过<strong>内部样式</strong>把文本颜色设为红色。",
+        "第 1 个用<strong>预设颜色值</strong> <code>red</code>；第 2 个用 <strong>RGB 值</strong> <code>rgb(255,0,0)</code>。",
+        "第 3 个用<strong>十六进制值</strong> <code>#ff0000</code>；第 4 个用<strong>十六进制的简化形式</strong> <code>#f00</code>。",
+        "四种写法<strong>效果完全相同</strong>，扫描线示意的就是选择器 <code>h1</code> 的<strong>命中范围</strong>。"
+      ],
+      "hint": "试着只保留一行 h1 样式、把选择器改成 h2 或 p，观察命中范围如何变化。",
+      "lang": "html",
+      "file": "代码3-1",
+      "code": "<!DOCTYPE html>\n<html>\n<head>\n<meta charset=\"UTF-8\">\n<title>使用标签选择器</title>\n<style type=\"text/css\">\n    h1{\n        /* color:red; */\n        /* color:rgb(255,0,0); */\n        color:#ff0000;\n        /* color:#f00; */\n    }\n</style>\n</head>\n\n<body>\n    <h1>第1 个标题</h1>\n    <h1>第2 个标题</h1>\n    <h1>第3 个标题</h1>\n    <h1>第4 个标题</h1>\n</body>\n</html>",
+      "html": "<style>*{box-sizing:border-box}body{margin:0;font-family:'PingFang SC',system-ui,sans-serif}.wrap{width:660px;background:#fff;border:1px solid #e5ecf7;border-radius:14px;overflow:hidden;box-shadow:0 20px 44px -22px rgba(20,40,90,.45)}.hd{display:flex;align-items:center;gap:8px;background:#f6f9ff;border-bottom:1px solid #e5ecf7;padding:9px 16px;font-size:12.5px;color:#5a6c85}.hd b{font-family:Menlo,monospace;color:#1d46b8;font-size:12.5px}.bd{padding:12px 16px 16px;position:relative}.row{position:relative;display:flex;align-items:center;gap:14px;padding:8px 12px;border-radius:9px;height:42px}.row i{flex:0 0 186px;font:12px/1.5 Menlo,monospace;font-style:normal;color:#6b7c95;background:#f1f5fb;border:1px solid #e2e8f2;border-radius:6px;padding:4px 6px;text-align:center}.row h1{margin:0;font-size:19px;font-weight:700}.r1 h1{color:red}.r2 h1{color:rgb(255,0,0)}.r3 h1{color:#ff0000}.r4 h1{color:#f00}.scan{position:absolute;left:10px;right:10px;height:42px;border-radius:9px;background:linear-gradient(90deg,rgba(47,107,255,.16),rgba(47,107,255,.02));border-left:3px solid #2f6bff;opacity:0;animation:scan 6s infinite}.scan span{position:absolute;right:8px;top:11px;font-size:11px;color:#1d46b8;background:#fff;border:1px solid #c9daff;border-radius:999px;padding:2px 8px}@keyframes scan{0%{top:12px;opacity:0}5%{top:12px;opacity:1}22%{top:12px}24%{top:54px}42%{top:54px}44%{top:96px}62%{top:96px}64%{top:138px}82%{top:138px;opacity:1}90%{top:138px;opacity:0}100%{top:138px;opacity:0}}.ft{margin-top:10px;text-align:center;font-size:11.5px;color:#8b9ab1}</style><div class='wrap'><div class='hd'>任务3-1 <b>h1 { color: … }</b> —— 4 种写法，同一种红</div><div class='bd'><div class='scan'><span>选择器命中</span></div><div class='row r1'><i>color:red;</i><h1>第1 个标题</h1></div><div class='row r2'><i>color:rgb(255,0,0);</i><h1>第2 个标题</h1></div><div class='row r3'><i>color:#ff0000;</i><h1>第3 个标题</h1></div><div class='row r4'><i>color:#f00;</i><h1>第4 个标题</h1></div><div class='ft'>预设颜色值 · RGB 值 · 十六进制值 · 十六进制简化形式</div></div></div>"
+    },
+    {
+      "type": "codebullets",
+      "title": "3.3.2 id 选择器",
+      "subtitle": "为「唯一」的那个元素单独设定样式，分两步完成",
+      "nav": "id 选择器",
+      "items": [
+        "应用场景：为网页中<strong>某些唯一的元素</strong>应用特定样式——给导航区域一个固定的大小，给页面顶部区域一个特定的背景颜色。",
+        "第 1 步：为该元素<strong>添加 id 属性</strong>，并赋予<strong>唯一的值</strong>，如 <code>&lt;h1 id=\"hd1\"&gt;第1 个标题&lt;/h1&gt;</code>。",
+        "第 2 步：使用 <code>#id 名称</code> 形式的 id 选择器<strong>选中该元素</strong>并设置样式。",
+        "<strong>技巧：</strong>时刻保持<strong>复用思想</strong>，使用<strong>最小冲突原则</strong>应用 CSS 样式，是提升 CSS 应用能力的关键。",
+        "<strong>反例：</strong>给 4 个标题各定义一个 id 分别控制，虽然可行，却<strong>无谓地增加了复杂性，并不优雅</strong>。"
+      ],
+      "lang": "css",
+      "file": "语法3-2",
+      "code": "/* 定义语法 */\n#id 选择器{\n  属性1:属性值1;\n  属性2:属性值2;\n  …\n}\n/* 示例 */\n#hd1{\n  color:blue;\n}"
+    },
+    {
+      "type": "demo",
+      "title": "代码3-2｜id 选择器与「样式冲突」实验",
+      "subtitle": "同一元素被两种选择器命中：第 1 个标题为蓝色，其余为红色",
+      "nav": "代码3-2 演示",
+      "items": [
+        "007～012 行对同一个 <code>&lt;h1&gt;</code> 使用了<strong>两种不同的选择器</strong>：标签选择器设为红色，id 选择器设为蓝色。",
+        "运行效果（图3-3）：第 1 个标题文本为<strong>蓝色</strong>，其余标题为<strong>红色</strong>。",
+        "<strong>样式冲突实验：</strong>把 id 选择器与标签选择器的代码<strong>交换顺序</strong>，按「就近原则」你可能以为最后一次设定会生效（变红），但<strong>第 1 个标题仍为蓝色</strong>。",
+        "结论：这就是典型的<strong>样式冲突问题</strong>，将在项目最后（优先级）详细讨论；时刻保持<strong>复用思想</strong>与<strong>最小冲突原则</strong>是关键。"
+      ],
+      "hint": "把 #hd1 改成 .hd1、把 h1 上的 id 换成 class，观察结果会发生什么变化。",
+      "lang": "html",
+      "file": "代码3-2",
+      "code": "<!DOCTYPE html>\n<html>\n<head>\n<meta charset=\"utf-8\">\n<title>id 选择器</title>\n<style type=\"text/css\">\n    h1{\n        color:#ff0000;\n    }\n    #hd1{\n        color:blue;\n    }\n</style>\n</head>\n\n<body>\n    <h1 id=\"hd1\">第1 个标题</h1>\n    <h1>第2 个标题</h1>\n    <h1>第3 个标题</h1>\n    <h1>第4 个标题</h1>\n</body>\n</html>",
+      "html": "<style>*{box-sizing:border-box}body{margin:0;font-family:'PingFang SC',system-ui,sans-serif}.wrap{width:660px;background:#fff;border:1px solid #e5ecf7;border-radius:14px;overflow:hidden;box-shadow:0 20px 44px -22px rgba(20,40,90,.45)}.hd{display:flex;align-items:center;gap:8px;background:#f6f9ff;border-bottom:1px solid #e5ecf7;padding:9px 16px;font-size:12.5px;color:#5a6c85}.hd b{font-family:Menlo,monospace;color:#1d46b8}.bd{padding:12px 16px 14px}.row{display:flex;align-items:center;gap:14px;padding:8px 12px;border-radius:9px;height:42px}.row i{flex:0 0 150px;font:12px Menlo,monospace;font-style:normal;color:#6b7c95;background:#f1f5fb;border:1px solid #e2e8f2;border-radius:6px;padding:4px 6px;text-align:center}.row h1{margin:0;font-size:19px;font-weight:700;color:#ff0000}.row.b h1{color:blue}.row.b{background:#eaf1ff;border:1px solid #c9daff;animation:hit 2.8s infinite}.row.b em{margin-left:auto;font-style:normal;font-size:11px;color:#1d46b8;background:#fff;border:1px solid #c9daff;border-radius:999px;padding:2px 8px}@keyframes hit{0%,100%{box-shadow:0 0 0 0 rgba(47,107,255,0)}50%{box-shadow:0 0 0 4px rgba(47,107,255,.14)}}.ft{margin-top:10px;text-align:center;font-size:11.5px;color:#8b9ab1}</style><div class='wrap'><div class='hd'>代码3-2 <b>h1{color:#ff0000}</b> ＋ <b>#hd1{color:blue}</b> —— 交换顺序仍是蓝色</div><div class='bd'><div class='row b'><i>id=\"hd1\"</i><h1>第1 个标题</h1><em>#hd1 命中</em></div><div class='row'><i>标签 h1</i><h1>第2 个标题</h1></div><div class='row'><i>标签 h1</i><h1>第3 个标题</h1></div><div class='row'><i>标签 h1</i><h1>第4 个标题</h1></div><div class='ft'>标签选择器命中「所有」 · id 选择器命中「唯一」 · 冲突时 id 胜出</div></div></div>"
+    },
+    {
+      "type": "compare",
+      "title": "3.3.3 类选择器 vs id 选择器",
+      "subtitle": "id 解决「某一个」，类解决「某一组」——别再混用",
+      "nav": "类选择器 vs id",
+      "a": {
+        "title": "id 选择器 #id",
+        "items": [
+          "写法：<code>#id 名称</code>，以「#」为标识",
+          "用于为<strong>某个特定元素</strong>设定样式",
+          "同一页面中，元素的 <code>id</code> 属性值<strong>必须唯一</strong>",
+          "一个元素<strong>只能有一个</strong> id 值"
+        ]
+      },
+      "b": {
+        "title": "类选择器 .class",
+        "items": [
+          "写法：<code>.类名</code>，以英文句点「.」为标识",
+          "用于为<strong>某些元素</strong>设定样式，<strong>可跨标签类型</strong>共用",
+          "<strong>没有唯一性限制</strong>，可重复使用，利于代码复用",
+          "一个元素<strong>可以拥有多个类</strong>，多个类名用<strong>空格</strong>分隔",
+          "<strong>类名区分大小写</strong>，且<strong>第一个字符不能使用数字</strong>"
+        ]
+      }
+    },
+    {
+      "type": "task",
+      "title": "任务3-2｜使用多个类选择器",
+      "subtitle": "目标：新增 .big 类（字体放大为 3em），并给校训同时应用 remark 与 big",
+      "nav": "任务3-2",
+      "goal": "在代码3-3 的基础上添加名为 big 的类样式，作用是将指定元素的<strong>字体放大为标准字体的 3 倍（3em）</strong>，并为校训内容「尚德 明责 笃学 强能」添加 .big 类样式。",
+      "steps": [
+        {
+          "title": "定义 .remark 类",
+          "text": "在内部样式表中写 <code>.remark { color: red; }</code>，并把该类应用到两个 <code>&lt;h1&gt;</code> 与校训所在的 <code>&lt;span&gt;</code> 上。"
+        },
+        {
+          "title": "定义 .big 类",
+          "text": "追加 <code>.big { font-size: 3em; }</code>，用 <code>font-size</code> 属性控制字体大小。"
+        },
+        {
+          "title": "多类并用",
+          "text": "把校训的标签写成 <code>&lt;span class=\"remark big\"&gt;</code>——<strong>多个类名之间用空格分隔</strong>。"
+        },
+        {
+          "title": "观察效果",
+          "text": "校训同时获得<strong>红色</strong>与<strong>3 倍字号</strong>两种效果，体会「多个类组合复用」带来的灵活性。"
+        }
+      ],
+      "lang": "html",
+      "code": "<!DOCTYPE html>\n<html>\n<head>\n<meta charset=\"UTF-8\">\n<title>类选择器的示例2</title>\n<style type=\"text/css\">\n.remark {\n    color: red;\n}\n.big{\n  font-size: 3em;\n}\n</style>\n</head>\n\n<body>\n<h1 class=\"remark\">有始有终，精益求精</h1>\n<h1 class=\"remark\">网页制作（HTML5+CSS3)</h1>\n<p>宁波城市职业技术学院校训 <span class=\"remark big\">尚德 明责 笃学 强能</span></p>\n</body>\n</html>"
+    },
+    {
+      "type": "ai",
+      "title": "AI 前沿：AI 是怎么「看懂」DOM 并挑中选择器的",
+      "subtitle": "你给出的结构越清晰，AI 生成的选择器就越准",
+      "nav": "AI 前沿",
+      "text": "大语言模型生成 CSS 时，先要<strong>解析你给出的 HTML 文档树（DOM）</strong>，再判断该用标签、id 还是类去命中目标。语义化标签、规范的类名，就是给 AI 的「提示词」——结构越清晰，它给出的选择器越准确，也越不容易产生样式冲突。",
+      "items": [
+        "GitHub Copilot、通义灵码、文心快码可根据光标处的 HTML 结构，自动补全配套的选择器与样式声明。",
+        "直接向 DeepSeek、通义千问提问：「下面这段 HTML，如何只把第 1 个标题设为蓝色？」——它会给出 id 选择器方案及完整代码。",
+        "AI 还常被用于 <strong>CSS 代码审查</strong>：找出冗余选择器、可复用的样式以及潜在的样式冲突。",
+        "职业提醒：AI 给出的选择器<strong>未必是最优雅的</strong>。能否复用现有样式、是否遵循最小冲突原则，仍然要由你来判断。"
+      ]
+    },
+    {
+      "type": "quiz",
+      "title": "随堂检测",
+      "subtitle": "选自教材 3.5 作业「一、选择题」",
+      "nav": "随堂检测",
+      "items": [
+        {
+          "q": "下列选项中，优先级最高的样式是（　　）。",
+          "options": [
+            "A. id",
+            "B. 类",
+            "C. 标签",
+            "D. 通用*"
+          ],
+          "answer": "A",
+          "tip": "优先级由高到低大致为：id 选择器 → 类选择器 → 标签选择器 → 通用选择器。",
+          "type": "single"
+        },
+        {
+          "q": "关于 CSS 类，说法错误的是（　　）。",
+          "options": [
+            "A. 通过 CSS 类可以实现代码的复用",
+            "B. CSS 类必须应用在同一个标签上",
+            "C. CSS 类可以应用在不同的标签上",
+            "D. 一个元素可以同时拥有多个 CSS 类"
+          ],
+          "answer": "B",
+          "tip": "同一个类可以应用在不同标签类型的元素上；任务3-2 中 .remark 就同时用在了 h1 与 span 上。",
+          "type": "single"
+        },
+        {
+          "q": "关于 CSS 选择器，说法错误的是（　　）。",
+          "options": [
+            "A. id 选择器在同一个页面中必须唯一",
+            "B. 类选择器在页面中的使用率比 id 选择器的高",
+            "C. 如果 id 选择器和类选择器都能实现同样的样式效果，则应优先选择 id 选择器",
+            "D. 在不同的页面中，可以使用相同的 id"
+          ],
+          "answer": "C",
+          "tip": "教材强调复用思想与最小冲突原则：能复用时应优先使用类选择器，而非优先使用 id 选择器。",
+          "type": "single"
+        },
+        {
+          "type": "multi",
+          "q": "关于一条 CSS 样式规则，下列说法中正确的有（　　）。",
+          "options": [
+            "A. 选择器决定该样式规则应用的对象",
+            "B. 样式声明被包裹在一对大括号中，可以由多条声明语句构成",
+            "C. 每条声明语句的属性与值之间用分号分隔",
+            "D. 每条声明语句以分号结尾"
+          ],
+          "answer": "ABD",
+          "tip": "属性与值之间用<strong>冒号</strong>分隔，语句才以分号结尾；写成「属性;值」是常见错误。"
+        },
+        {
+          "type": "multi",
+          "q": "关于类选择器与 id 选择器，下列说法中正确的有（　　）。",
+          "options": [
+            "A. 类选择器以英文句点「.」为标识，同一个类可以应用在不同标签类型的元素上",
+            "B. 同一页面中，不同的元素可以使用相同的 id 值",
+            "C. 一个元素可以同时拥有多个类，多个类名之间用空格分隔",
+            "D. 类名区分大小写，且第一个字符不能使用数字"
+          ],
+          "answer": "ACD",
+          "tip": "id 在同一页面中<strong>必须唯一</strong>；类可跨标签复用、可多类并用，命名区分大小写且不能以数字开头。"
+        }
+      ]
+    },
+    {
+      "type": "summary",
+      "title": "本课小结",
+      "nav": "本课小结",
+      "items": [
+        "CSS = <strong>cascading style sheet（层叠样式表）</strong>：<strong>HTML 管内容，CSS 管显示</strong>，内容与样式分离带来了复用、提速与全站统一更新。",
+        "基本语法：一条样式规则由<strong>选择器</strong>与<strong>样式声明</strong>构成，声明写在<strong>一对大括号</strong>内，每条语句<strong>属性与值用冒号分隔、以分号结尾</strong>。",
+        "标签选择器：<code>h1{…}</code>，作用于<strong>页面中所有该标签</strong>；颜色可用预设值、RGB 值、十六进制值（<code>#</code>＋6 位，两两相同可简化）。",
+        "id 选择器：<code>#hd1{…}</code>，为<strong>唯一元素</strong>设定样式，<strong>交换书写顺序也不影响结果</strong>——这就是样式冲突。",
+        "类选择器：<code>.remark{…}</code>，为<strong>一组元素</strong>复用样式，可跨标签、可多类并用（空格分隔），<strong>类名区分大小写且不能以数字开头</strong>。"
+      ]
+    },
+    {
+      "type": "homework",
+      "title": "课后作业",
+      "nav": "课后作业",
+      "items": [
+        "<strong>选择题：</strong>完成教材 3.5 作业第 3～5 题，并写出每个选项对或错的理由。",
+        "<strong>操作题：</strong>新建页面，用<strong>标签选择器</strong>统一段落颜色、用 <strong>id 选择器</strong>突出唯一标题、用<strong>类选择器</strong>为多段文字复用同一组样式，截图并提交 HTML 源码。",
+        "<strong>思考题：</strong>把 id 选择器与标签选择器交换顺序后，为什么第 1 个标题依然是蓝色？请写出你的猜想，下节课验证。",
+        "<strong>预习：</strong>阅读教材 3.3.4，列出 <code>font-size</code> 支持哪几类取值，并思考 px、em、rem 有何不同。"
+      ]
+    },
+    {
+      "type": "refs",
+      "title": "出处与参考",
+      "subtitle": "本课件内容依据教材，并核对以下权威技术文档",
+      "nav": "出处与参考",
+      "items": [
+        {
+          "t": "教材《网页制作（HTML5+CSS3）》项目3 使用CSS基本选择器美化页面（3.1～3.3.3）",
+          "u": "郑哲、傅冬 主编 · 电子工业出版社 · 2025 年 1 月第 1 版"
+        },
+        {
+          "t": "MDN Web Docs · CSS 基础语法（选择器与声明）",
+          "u": "https://developer.mozilla.org/zh-CN/docs/Web/CSS/Syntax"
+        },
+        {
+          "t": "MDN Web Docs · 类型（标签）选择器",
+          "u": "https://developer.mozilla.org/zh-CN/docs/Web/CSS/Type_selectors"
+        },
+        {
+          "t": "MDN Web Docs · ID 选择器",
+          "u": "https://developer.mozilla.org/zh-CN/docs/Web/CSS/ID_selectors"
+        },
+        {
+          "t": "MDN Web Docs · 类选择器",
+          "u": "https://developer.mozilla.org/zh-CN/docs/Web/CSS/Class_selectors"
+        },
+        {
+          "t": "MDN Web Docs · 优先级（样式冲突如何解决）",
+          "u": "https://developer.mozilla.org/zh-CN/docs/Web/CSS/Specificity"
+        }
+      ]
+    },
+    {
+      "type": "end",
+      "title": "第 6 单元 · 结束",
+      "text": "下一单元：字体属性与文本排版，让文字真正「好看」起来",
+      "nav": "结束"
+    }
+  ]
+}

@@ -1,0 +1,546 @@
+{
+  "id": "U13",
+  "project": "项目5",
+  "project_name": "盒子模型",
+  "unit": "第 13 单元",
+  "title": "边框与外边距",
+  "subtitle": "用 0 宽高的盒子变出指示三角形，用科学的间距摆脱「看着差不多」的排版",
+  "duration": 40,
+  "cover_tags": [
+    "border-style",
+    "border-width",
+    "border-color",
+    "气泡对话框",
+    "外边距合并"
+  ],
+  "ref_book": "电子工业出版社 · 2025 年 1 月第 1 版",
+  "objectives": {
+    "knowledge": [
+      "掌握边框的常用样式定义语法",
+      "掌握边框风格的应用方法",
+      "理解和掌握外边距特性",
+      "知道外边距合并的前提条件与计算规则"
+    ],
+    "skill": [
+      "能使用边框及其相关样式属性",
+      "能使用 border 综合样式简化书写",
+      "能使用 margin 及其相关样式属性",
+      "能识别并避免相邻、父子元素的外边距合并"
+    ],
+    "literacy": [
+      "培养高尚的审美情操",
+      "培养严谨求实的学习态度",
+      "培养勇于探索、崇尚科学的劳动意识"
+    ]
+  },
+  "slides": [
+    {
+      "type": "objectives",
+      "title": "本单元我们要达成什么",
+      "subtitle": "对照教材《项目5》5.2 边框、5.3 外边距",
+      "objectives": {
+        "knowledge": [
+          "掌握边框的常用样式定义语法",
+          "掌握边框风格的应用方法",
+          "理解和掌握外边距特性",
+          "理解相邻元素与父子元素的外边距合并"
+        ],
+        "skill": [
+          "能使用边框及其相关样式属性",
+          "能用边框制作三角形与气泡对话框",
+          "能使用外边距及其相关样式属性",
+          "能用 border / padding 阻止不期望的合并"
+        ],
+        "literacy": [
+          "培养高尚的审美情操",
+          "培养严谨求实的学习态度",
+          "培养勇于探索、崇尚科学的劳动意识"
+        ]
+      }
+    },
+    {
+      "type": "ideology",
+      "title": "看得见的界面，看不见的规范",
+      "subtitle": "教材《项目5》思政课堂延伸讨论",
+      "nav": "思政课堂",
+      "text": "在数字化生活场景中，网页制作的影响十分深远。作为信息传递的重要载体，网页让各类资讯、服务触手可及，满足了人们多元化的需求。它不仅提供了丰富的视听效果，还通过<strong>个性化设计</strong>提升了用户体验。<strong>支付宝、Keep、京东、淘宝</strong>等各式应用影响着人们生活的方方面面，丰富了人们的数字化生活，为人们带来了诸多便利。",
+      "topic": "同一张界面，间距统一与否，观感天差地别。作为未来的前端工程师，谈一谈：为什么「留白的规范」也是一种产品品质，而不是可有可无的细节？"
+    },
+    {
+      "type": "outline",
+      "title": "本单元导览",
+      "subtitle": "上半场玩转边框，下半场搞定间距",
+      "nav": "导览",
+      "items": [
+        "边框三要素：风格、宽度、颜色（10 种风格一次看清）",
+        "任务5-4：边框的神秘之旅——三角形与气泡对话框",
+        "外边距属性与取值：margin 可以为负",
+        "外边距合并：相邻元素、父子元素的「正正取大 / 正负相加 / 负负最负值」"
+      ]
+    },
+    {
+      "type": "section",
+      "no": "5.2",
+      "title": "边框",
+      "text": "边框主要包含风格（style）、宽度（width）和颜色（color）3 个主要元素。",
+      "nav": "5.2 边框"
+    },
+    {
+      "type": "table",
+      "title": "表5-3 边框风格样式的相关属性",
+      "subtitle": "技巧：某个特定方向的边框风格，按 border-方向-style 的格式设置",
+      "nav": "边框风格属性",
+      "head": [
+        "属性名",
+        "描述"
+      ],
+      "rows": [
+        [
+          "<code>border-style</code>",
+          "综合样式属性，同时设置 4 个方向的边框风格，<strong>符合值复制原则</strong>"
+        ],
+        [
+          "<code>border-top-style</code>",
+          "设置上边框的风格"
+        ],
+        [
+          "<code>border-right-style</code>",
+          "设置右边框的风格"
+        ],
+        [
+          "<code>border-bottom-style</code>",
+          "设置下边框的风格"
+        ],
+        [
+          "<code>border-left-style</code>",
+          "设置左边框的风格"
+        ]
+      ]
+    },
+    {
+      "type": "table",
+      "title": "表5-4 边框的风格值及其应用效果",
+      "subtitle": "课堂提问：border-style:dashed solid 是什么意思？（答案：上下虚线、左右实线）",
+      "nav": "边框风格取值",
+      "head": [
+        "风格值",
+        "描述"
+      ],
+      "rows": [
+        [
+          "<code>none</code>",
+          "无边框，<strong>默认值</strong>"
+        ],
+        [
+          "<code>dashed</code>",
+          "虚线"
+        ],
+        [
+          "<code>solid</code>",
+          "实线"
+        ],
+        [
+          "<code>dotted</code>",
+          "点状"
+        ],
+        [
+          "<code>double</code>",
+          "双实线"
+        ],
+        [
+          "<code>groove</code>",
+          "凹槽"
+        ],
+        [
+          "<code>ridge</code>",
+          "脊状"
+        ],
+        [
+          "<code>inset</code>",
+          "边框内嵌一个立体边框"
+        ],
+        [
+          "<code>outset</code>",
+          "边框外嵌一个立体边框"
+        ],
+        [
+          "<code>inherit</code>",
+          "继承父元素的边框风格"
+        ]
+      ]
+    },
+    {
+      "type": "task",
+      "title": "任务5-3｜编写并查看边框风格",
+      "subtitle": "目标：查看不同风格值在页面中的实际呈现效果（图5-7）",
+      "nav": "任务5-3",
+      "goal": "用一套公共样式 + 7 个风格类，横向对比 8 种边框",
+      "steps": [
+        "定义公共样式 <code>.box</code>：固定尺寸 100×50、padding、margin、<code>border:3px solid #ccc</code>。",
+        "关键一步：给 <code>.box</code> 加 <code>float:left</code>，让 8 个盒子并排一行，便于横向比较。",
+        "再定义 <code>.box1～.box7</code>，分别只改 <code>border-style</code>，看差异一目了然。",
+        "HTML 中通过 <code>class=\"box box3\"</code> 叠加使用公共样式与风格类——这就是<strong>类的组合复用</strong>。",
+        "观察重点：<code>groove</code>、<code>ridge</code>、<code>inset</code>、<code>outset</code> 的立体效果依赖边框颜色，浅色下可能不明显。"
+      ],
+      "lang": "html",
+      "file": "代码5-3 关键片段",
+      "code": "<style>\n.box{                       /* #007-#014 公共样式 */\n    width: 100px;\n    height: 50px;\n    padding:5px;\n    margin:10px 20px;\n    border:3px solid #ccc;\n    float:left;             /* #013 浮动并排，便于比较 */\n}\n.box1{border-style: dashed;}    /* #015-#017 */\n.box2{border-style: dotted;}    /* #018-#020 */\n.box3{border-style: double;}    /* #021-#023 */\n.box4{border-style: groove;}    /* #024-#026 */\n.box5{border-style: ridge;}     /* #027-#029 */\n.box6{border-style: inset;}     /* #030-#032 */\n.box7{border-style: outset;}    /* #033-#035 */\n</style>\n\n<div class=\"box\">实线</div>\n<div class=\"box box1\">虚线</div>\n<div class=\"box box2\">点状</div>\n..."
+    },
+    {
+      "type": "table",
+      "title": "表5-6 边框的宽度值",
+      "subtitle": "易错点：预设值的具体取值由浏览器厂商决定，不同浏览器可能不一样",
+      "nav": "边框宽度",
+      "head": [
+        "宽度值",
+        "描述"
+      ],
+      "rows": [
+        [
+          "<code>length</code>",
+          "具体数值，单位可以是 px 或 em"
+        ],
+        [
+          "<code>thin</code>",
+          "预设值，表示细边框"
+        ],
+        [
+          "<code>medium</code>",
+          "预设值，表示中等边框（<strong>默认值</strong>）"
+        ],
+        [
+          "<code>thick</code>",
+          "预设值，表示粗边框"
+        ],
+        [
+          "<code>inherit</code>",
+          "继承父元素的边框宽度"
+        ]
+      ]
+    },
+    {
+      "type": "bullets",
+      "title": "宽度与颜色：两个必须记住的细节",
+      "subtitle": "表5-5、表5-7、表5-8 的要点提炼",
+      "nav": "宽度与颜色",
+      "items": [
+        "宽度属性：<code>border-width</code> 综合设置 4 个方向，<code>border-top-width</code> 等设置单方向，<strong>均符合值复制原则</strong>。",
+        "易错点：thin、medium、thick 的具体像素<strong>由浏览器厂商决定</strong>，有的对应 2/3/5px，有的对应 1/2/3px；要求精确时请直接写 px。",
+        "颜色属性：<code>border-color</code> 与 4 个 <code>border-方向-color</code>，取值可用<strong>英文预设单词、十六进制值或 RGB 值</strong>。",
+        "综合属性：<code>border</code> 可一次性设置 4 个方向的<strong>风格、宽度、颜色</strong>；单方向可用 <code>border-top</code>、<code>border-right</code> 等。",
+        "注意：只有设置了 <code>border-style</code>（非 none），宽度与颜色才会显示出来——这是最常见的「边框不见了」原因。",
+        "综合属性可把 3 条语句合并成 1 条：<code>border-style:solid;</code>、<code>border-width:1px;</code>、<code>border-color:red;</code> 等价于 <code>border:1px solid red;</code>；单方向简写如 <code>border-bottom:2px dashed #ccc;</code>（部门装饰线的常用写法）。"
+      ]
+    },
+    {
+      "type": "task",
+      "title": "任务5-4｜边框的神秘之旅：做出微信气泡对话框",
+      "subtitle": "课堂导语：很难想象那些指示三角形跟咱们今天学的边框有什么关系，下面一起来变个魔术",
+      "nav": "任务5-4 气泡对话框",
+      "goal": "使用盒子模型的边框样式制作类似微信聊天的气泡对话框效果",
+      "steps": [
+        "<strong>步骤1 加粗边框：</strong>给 div 设 <code>width:100px;height:20px;border:48px solid blue;</code>——还看不出三角形痕迹。",
+        "<strong>步骤2 缩小宽高：</strong>改为 <code>width:0;height:0;border:48px solid;border-color:red yellow green blue;</code>——四个三角形出现了。",
+        "<strong>步骤3 加透明色：</strong><code>border-color:transparent transparent transparent blue;</code>——只留下指向右侧的蓝三角。",
+        "原理：当盒子没有大小（宽高均为 0）时，四条边框的交界处自然形成<strong>斜切的三角形</strong>；<code>transparent</code> 表示透明。",
+        "<strong>步骤4 搭结构：</strong>一个 <code>.bubble</code> 容器里放 <code>.arrow</code>（三角）与 <code>.msg</code>（正文），容器 <code>position:relative</code>、箭头 <code>position:absolute</code>。",
+        "<strong>步骤5 算位置：</strong>垂直居中公式 <code>top = height/2 - border-width</code>，本例为 50/2 − 12 = <strong>13px</strong>；<code>left:100%</code> 把箭头推到气泡右边缘。"
+      ],
+      "lang": "html",
+      "file": "代码5-8 关键片段",
+      "code": "<style>\n.arrow{                     /* #007-#015 */\n    width: 0px;\n    height: 0px;\n    border:12px solid;\n    border-color: transparent transparent transparent blue;\n    position: absolute;\n    left: 100%;\n    top:13px;               /* 50/2 - 12 = 13px */\n}\n.bubble{                    /* #016-#022 */\n    width: 100px;\n    height: 50px;\n    background-color: blue;\n    position: relative;\n    border-radius: 5px;\n}\n.msg{                       /* #023-#026 */\n    color:white;\n    padding:10px 5px;\n}\n</style>\n\n<div class=\"bubble\">\n    <div class=\"arrow\"></div>\n    <div class=\"msg\">Hi,您好</div>\n</div>"
+    },
+    {
+      "type": "section",
+      "no": "5.3",
+      "title": "外边距",
+      "text": "与 padding 不同，margin 用于控制盒子与其他盒子之间的距离。",
+      "nav": "5.3 外边距"
+    },
+    {
+      "type": "table",
+      "title": "表5-9 外边距属性",
+      "subtitle": "教材表头原写作「属性值」，实为属性名",
+      "nav": "外边距属性",
+      "head": [
+        "属性名",
+        "描述"
+      ],
+      "rows": [
+        [
+          "<code>margin</code>",
+          "综合样式属性，同时设置 4 个方向的外边距"
+        ],
+        [
+          "<code>margin-top</code>",
+          "设置上外边距"
+        ],
+        [
+          "<code>margin-right</code>",
+          "设置右外边距"
+        ],
+        [
+          "<code>margin-bottom</code>",
+          "设置下外边距"
+        ],
+        [
+          "<code>margin-left</code>",
+          "设置左外边距"
+        ]
+      ]
+    },
+    {
+      "type": "table",
+      "title": "表5-10 外边距属性的 4 个值",
+      "subtitle": "易错点：padding 不可以取负值，而 margin 可以取负值",
+      "nav": "外边距取值",
+      "head": [
+        "属性值",
+        "描述"
+      ],
+      "rows": [
+        [
+          "<code>auto</code>",
+          "浏览器计算外边距（块级元素水平居中的常用写法）"
+        ],
+        [
+          "<code>length</code>",
+          "以 px、em、cm 等为单位的数值，<strong>可以取正值、负值</strong>，默认为 0"
+        ],
+        [
+          "<code>%</code>",
+          "基于<strong>父元素的宽度</strong>来计算外边距"
+        ],
+        [
+          "<code>inherit</code>",
+          "继承父元素的外边距"
+        ]
+      ]
+    },
+    {
+      "type": "compare",
+      "title": "外边距合并的两种情况",
+      "subtitle": "垂直外边距会将两个外边距合并起来，形成同一个外边距",
+      "nav": "两种合并",
+      "a": {
+        "title": "① 相邻元素外边距合并",
+        "items": [
+          "上面元素的<strong>下外边距</strong>与下面元素的<strong>上外边距</strong>合并",
+          "前提：相邻元素为<strong>块级元素</strong>，<strong>不包括浮动和绝对定位元素</strong>",
+          "只发生在与当前<strong>标准流方向相垂直</strong>的方向上（默认标准流水平，故合并发生在垂直方向）",
+          "示例：下边距 10px 与上边距 5px 合并后为 10px",
+          "计算规则：<strong>正正取大值、正负相加值、负负最负值</strong>；合并后的和一旦为负，相邻元素即发生重叠"
+        ]
+      },
+      "b": {
+        "title": "② 父子元素外边距合并",
+        "items": [
+          "父元素 margin-top 10px + 子元素 margin-top 20px，<strong>不会得到 30px</strong>",
+          "按计算规则合并后为 <strong>20px</strong>，用户实际看到的就是 20px",
+          "多个子元素时：<strong>第一个子元素的 margin-top</strong> 与<strong>最后一个子元素的 margin-bottom</strong> 参与合并",
+          "父子若有 margin-bottom，同样会发生合并"
+        ]
+      }
+    },
+    {
+      "type": "task",
+      "title": "任务5-5｜相邻元素外边距合并",
+      "subtitle": "目标：构造实例并查看外边距合并的效果（图5-18）",
+      "nav": "任务5-5",
+      "goal": "用三组对照：正正、正负、负负，验证三条计算规则",
+      "steps": [
+        "公共样式 <code>.box</code>：宽 300px、高 30px、文字居中、<code>border:1px solid #ccc</code>，让盒子边界可见。",
+        "用 <code>section</code> 容器加 <code>float:left</code> 与 <code>margin-right:50px</code>，把三组并列排放。",
+        "第 1 组：<code>margin-bottom:10px</code> 与 <code>margin-top:5px</code> → 合并为 <strong>10px</strong>。",
+        "第 2 组：<code>margin-bottom:-10px</code> 与 <code>margin-top:10px</code> → 相加为 0，<strong>无缝相接</strong>。",
+        "第 3 组：<code>margin-bottom:-10px</code> 与 <code>margin-top:-5px</code> → 取最负值，<strong>发生重叠</strong>。",
+        "<strong>教材疑误：</strong>代码中 <code>.box4</code> 写作 <code>margin-top:5px</code>，而 HTML 文本标签写作 10px，后文按 10px 计算；讲课统一按 <strong>10px</strong> 处理，「正负相加恰为 0」的结论才成立。"
+      ],
+      "lang": "css",
+      "file": "代码5-9 关键声明",
+      "code": ".box{                       /* #007-#012 公共样式 */\n    width: 300px;\n    height: 30px;\n    text-align: center;\n    border:1px solid #ccc;\n}\nsection{                    /* #013-#016 三组并排 */\n    float:left;\n    margin-right:50px;\n}\n.box1{margin-bottom:10px;}      /* #017 正 */\n.box2{margin-top:5px;}          /* #018 正 → 合并取大值 10px */\n.box3{margin-bottom: -10px;}    /* #019 负 */\n.box4{margin-top:10px; }        /* #020 正 → 相加为 0，无缝相接 */\n.box5{margin-bottom: -10px;}    /* #021 负 */\n.box6{margin-top:-5px; }        /* #022 负 → 取最负值，重叠 */"
+    },
+    {
+      "type": "demo",
+      "title": "效果演示｜相邻元素外边距合并的前后对比",
+      "subtitle": "三组对照依次「收紧」：如果相加 vs 实际渲染结果",
+      "nav": "外边距合并演示",
+      "items": [
+        "<strong>正正组：</strong>两值相加应为 15px，实际渲染按「取大值」只留 10px 间隙。",
+        "<strong>正负组：</strong>−10px 与 10px 相加为 0，两个盒子<strong>无缝相接</strong>，连边框都贴在一起。",
+        "<strong>负负组：</strong>两个负值取最负者，下面的盒子<strong>向上发生重叠</strong>。",
+        "记住口诀：<strong>正正取大值、正负相加值、负负最负值</strong>。"
+      ],
+      "hint": "给父容器加一行 overflow:hidden 或 border，观察父子元素 margin-top 合并是否被阻止。",
+      "html": "<style>*{box-sizing:border-box}body{margin:0;padding:12px;font-family:'PingFang SC',system-ui,sans-serif;background:linear-gradient(160deg,#f2f6ff,#eafafd)}.wrap{display:flex;gap:10px}.col{flex:1;background:#fff;border:1px solid #e6ecf7;border-radius:10px;padding:9px 10px;min-height:270px}.cap{font:600 10.5px/1.5 Menlo,monospace;color:#0e1b2e;margin-bottom:6px}.sub{font-size:10px;color:#8b9ab2;margin-bottom:8px}.bx{background:#eaf1ff;border:1px solid #c9daff;border-radius:6px;color:#1d46b8;font:11px/1.4 'PingFang SC';padding:7px 6px;text-align:center;position:relative}.bx2{background:#fff3e7;border-color:#ffd8a8;color:#c2601a}.gA{height:0;animation:gA 6.6s infinite}@keyframes gA{0%,14%{height:15px}28%,86%{height:10px}96%,100%{height:15px}}.gB{height:0;animation:gB 6.6s infinite}@keyframes gB{0%,30%{height:0px}42%,86%{height:0px}96%,100%{height:0px}}.mC{margin-top:0;animation:mC 6.6s infinite}@keyframes mC{0%,48%{margin-top:14px}60%,86%{margin-top:-13px}96%,100%{margin-top:14px}}.tg{position:relative;height:16px;margin:5px 0 0}.tb{position:absolute;left:0;top:0;font:600 10.5px/16px Menlo,monospace;color:#c2185b;opacity:0}.ta{position:absolute;left:0;top:0;font:600 10.5px/16px Menlo,monospace;color:#0b6b3a;opacity:0}.b1{animation:b1 6.6s infinite}.a1{animation:a1 6.6s infinite}@keyframes b1{0%,14%{opacity:1}24%,100%{opacity:0}}@keyframes a1{0%,24%{opacity:0}32%,86%{opacity:1}94%,100%{opacity:0}}.b2{animation:b2 6.6s infinite}.a2{animation:a2 6.6s infinite}@keyframes b2{0%,30%{opacity:1}40%,100%{opacity:0}}@keyframes a2{0%,38%{opacity:0}46%,86%{opacity:1}94%,100%{opacity:0}}.b3{animation:b3 6.6s infinite}.a3{animation:a3 6.6s infinite}@keyframes b3{0%,48%{opacity:1}58%,100%{opacity:0}}@keyframes a3{0%,56%{opacity:0}64%,86%{opacity:1}94%,100%{opacity:0}}.foot{margin-top:10px;font-size:10.5px;color:#33456b;background:#0e1b2e;border-radius:8px;padding:7px 10px;font-family:Menlo,monospace}.k{color:#ffb300}</style><div class='wrap'><div class='col'><div class='cap'>① 正正组</div><div class='sub'>margin-bottom:10px ／ margin-top:5px</div><div class='bx'>div1  margin-bottom:10px</div><div class='gA'></div><div class='bx bx2'>div2  margin-top:5px</div><div class='tg'><span class='tb b1'>相加值 15px</span><span class='ta a1'>合并后 10px</span></div></div><div class='col'><div class='cap'>② 正负组</div><div class='sub'>margin-bottom:-10px ／ margin-top:10px</div><div class='bx'>div1  margin-bottom:-10px</div><div class='gB'></div><div class='bx bx2'>div2  margin-top:10px</div><div class='tg'><span class='tb b2'>相加值 0px</span><span class='ta a2'>无缝相接</span></div></div><div class='col'><div class='cap'>③ 负负组</div><div class='sub'>margin-bottom:-10px ／ margin-top:-5px</div><div class='bx'>div1  margin-bottom:-10px</div><div class='bx bx2 mC'>div2  margin-top:-5px</div><div class='tg'><span class='tb b3'>相加值 -15px</span><span class='ta a3'>取最负值·重叠</span></div></div></div><div class='foot'>margin 合并计算规则：<span class='k'>正正取大值</span> · <span class='k'>正负相加值</span> · <span class='k'>负负最负值</span></div>"
+    },
+    {
+      "type": "task",
+      "title": "任务5-6｜父子元素外边距合并",
+      "subtitle": "目标：构造父子元素外边距合并的实例并观察效果（图5-21）",
+      "nav": "任务5-6",
+      "goal": "验证父子元素的 margin-top 不会简单相加，而是发生合并",
+      "steps": [
+        "结构：外层 <code>.outer</code>（虚线框）→ 中层 <code>.father</code> → 内层 <code>.son</code>（实线框）。",
+        "父元素指定 <code>margin-top:20px</code>，子元素也指定 <code>margin-top:20px</code>。",
+        "浏览器<strong>不会生成 10+20 或 20+20 的结果</strong>，而是发生合并，最终呈现 <strong>20px</strong>。",
+        "把外层的虚线边框去掉试一试，你会发现连最外层都被「顶」下来了。",
+        "结论同样适用于 <code>margin-bottom</code>：父子元素的外边距同样会合并。"
+      ],
+      "lang": "html",
+      "file": "代码5-10 关键片段",
+      "code": "<style>\n.box{                       /* #007-#009 */\n    height: 100px;\n}\n.father{                    /* #010-#012 */\n    margin-top: 20px;\n}\n.son{                       /* #013-#016 */\n    margin-top: 20px;\n    border:2px solid #333;\n}\n.outer{                     /* #017-#019 便于观察 */\n    border:2px dashed #666;\n}\n</style>\n\n<div class=\"outer\">\n    <div class=\"father\">\n        <div class=\"son box\"></div>\n    </div>\n</div>"
+    },
+    {
+      "type": "bullets",
+      "title": "如何阻止不期望的合并",
+      "subtitle": "只要破坏其中一项条件，即可阻止合并发生",
+      "nav": "阻止合并",
+      "items": [
+        "<strong>margin-top 合并的条件：</strong>父元素没有内容或内容在子元素之后，<strong>且没有内边距或边框</strong>。",
+        "<strong>margin-bottom 合并的条件：</strong>父元素没有内容或内容在子元素之前，<strong>且没有内边距或边框</strong>。",
+        "阻止 margin-top 合并：给父元素加 <code>border-top</code>、加 <code>padding-top</code>，或在父子之间插入<strong>行内元素</strong>。",
+        "阻止 margin-bottom 合并：加 <code>border-bottom</code>、加 <code>padding-bottom</code>、插入行内元素，或设置 <code>height</code> / <code>min-height</code> / <code>max-height</code>。",
+        "现代做法：用 <strong>flex / grid 布局</strong> 建立格式化上下文，很多合并问题会自然消失。"
+      ]
+    },
+    {
+      "type": "ai",
+      "title": "AI 前沿：让 AI 解释「为什么这里多了 20px」",
+      "subtitle": "外边距合并是最典型的「看得见现象、找不到原因」问题",
+      "nav": "AI 前沿",
+      "text": "浏览器渲染没错，是<strong>你的心智模型和规范不一致</strong>——这类问题特别适合交给 AI：把父子/相邻元素的结构与 margin 值贴进去，让它按 CSS 规范逐条推演。更进一步地，Copilot、通义灵码会在你写布局时主动建议改用 flex + gap，从源头避开合并。",
+      "items": [
+        "提问模板：「这两个相邻块级元素的垂直间距为什么不是两者之和？」——大模型能准确复述外边距合并规则。",
+        "重构建议：GitHub Copilot、文心快码常建议用 <code>display:flex</code> + <code>gap</code> 取代一串 margin，间距更可控、无合并副作用。",
+        "规范出处：MDN 设有 Mastering margin collapsing 专页，是核对 AI 答案是否正确的权威依据。",
+        "提醒：AI 有时会把「取较大值」说成「取和」，遇到结论不一致时，<strong>以 MDN / W3C 规范为准</strong>。"
+      ]
+    },
+    {
+      "type": "quiz",
+      "title": "随堂检测",
+      "subtitle": "选自教材 5.6 作业选择题，并补充自编题",
+      "nav": "随堂检测",
+      "items": [
+        {
+          "q": "要实现某部门通知页面中框选部分的「部门装饰线」，可以使用的样式属性是（　　）。（教材 5.6 第 1 题）",
+          "options": [
+            "A. border-top",
+            "B. border-right",
+            "C. border-bottom",
+            "D. border-left"
+          ],
+          "answer": "C",
+          "tip": "标题下方的装饰线一般使用 border-bottom 实现。",
+          "type": "single"
+        },
+        {
+          "q": "关于边框样式属性，说法正确的是（　　）。（教材 5.6 第 2 题）",
+          "options": [
+            "A. border 有 4 个方向，不能单独对某个特定方向的边框风格进行指定",
+            "B. border-style-right 可以用来对右边框的风格进行指定",
+            "C. 在 border 简写样式中，颜色、风格和宽度 3 个值的定义顺序可以颠倒",
+            "D. 在使用 border-color 时，只能使用十六进制值"
+          ],
+          "answer": "C",
+          "tip": "单方向边框风格的正确写法是 border-right-style；border-color 可用预设单词、十六进制或 RGB 值。",
+          "type": "single"
+        },
+        {
+          "q": "父子元素的 margin-top 分别为 10px 与 20px，浏览器中实际呈现的上外边距是（　　）。",
+          "options": [
+            "A. 10px",
+            "B. 20px",
+            "C. 30px",
+            "D. 0px"
+          ],
+          "answer": "B",
+          "tip": "父子元素发生 margin-top 合并，正正取大值，结果为 20px。",
+          "type": "single"
+        },
+        {
+          "q": "关于边框的写法与显示，下列说法正确的有（　　）。",
+          "options": [
+            "A. border 简写中风格、宽度、颜色三个值的书写顺序可以颠倒",
+            "B. 只设置 border-width 而不设置 border-style 时，边框不会显示",
+            "C. 单独设置右方向边框风格，应写成 border-right-style",
+            "D. 宽度预设值 thin、medium、thick 在不同浏览器中的像素值完全相同"
+          ],
+          "answer": "ABC",
+          "tip": "边框必须先有非 none 的风格才会显示；单方向格式为 <code>border-方向-style</code>；<strong>thin/medium/thick 的具体像素由浏览器厂商决定</strong>。",
+          "type": "multi"
+        },
+        {
+          "q": "关于外边距与外边距合并，下列说法正确的有（　　）。",
+          "options": [
+            "A. 相邻块级元素的上下外边距相遇时会发生合并，且只发生在垂直方向",
+            "B. 两个正外边距合并时取较大值，而不是两者相加",
+            "C. 父子元素 margin-top 分别为 10px 与 20px 时，合并结果为 30px",
+            "D. 浮动元素、绝对定位元素同样会与相邻元素发生外边距合并"
+          ],
+          "answer": "AB",
+          "tip": "父子元素的 margin-top 合并后取大值，结果为 20px；合并只发生在标准流的块级元素之间，<strong>浮动与绝对定位元素不参与</strong>。",
+          "type": "multi"
+        }
+      ]
+    },
+    {
+      "type": "summary",
+      "title": "本课小结",
+      "nav": "本课小结",
+      "items": [
+        "边框三要素：<strong>风格 style、宽度 width、颜色 color</strong>；必须先有风格（非 none），边框才会显示。",
+        "风格值共 10 种：<code>none</code>、<code>dashed</code>、<code>solid</code>、<code>dotted</code>、<code>double</code>、<code>groove</code>、<code>ridge</code>、<code>inset</code>、<code>outset</code>、<code>inherit</code>。",
+        "宽高归零 + 加粗边框 = 三角形；<code>transparent</code> 保留需要的那一角，即可做出<strong>气泡对话框</strong>。",
+        "margin 可正可负，<strong>padding 不能为负</strong>；<code>margin:0 auto</code> 可实现块级元素水平居中。",
+        "外边距合并：<strong>正正取大值、正负相加值、负负最负值</strong>；用 border / padding / 高度 / flex 可阻止合并。"
+      ]
+    },
+    {
+      "type": "homework",
+      "title": "课后作业",
+      "nav": "课后作业",
+      "items": [
+        "<strong>操作题：</strong>复现教材任务5-3～5-6 四个示例，分别截图并标注关键属性值。",
+        "<strong>拓展题：</strong>把任务5-4 的三角箭头改成指向<strong>上方</strong>（提示：只改 border-color 中保留哪一条边），并尝试用 :after 伪类实现同样的效果。",
+        "<strong>思考题：</strong>列举三种可以阻止父子元素 margin-top 合并的做法，并说明它们各自的代价（例如多出的像素或额外元素）。",
+        "<strong>预习：</strong>阅读教材 5.4 背景，思考 background-image 与 img 标签在使用上的区别。"
+      ]
+    },
+    {
+      "type": "refs",
+      "title": "出处与参考",
+      "subtitle": "本课件内容依据教材，并核对以下权威技术文档",
+      "nav": "出处与参考",
+      "items": [
+        {
+          "t": "教材《网页制作（HTML5+CSS3）》项目5 盒子模型（5.2 边框、5.3 外边距）",
+          "u": "郑哲、傅冬 主编 · 电子工业出版社 · 2025 年 1 月第 1 版"
+        },
+        {
+          "t": "MDN Web Docs · border 属性",
+          "u": "https://developer.mozilla.org/zh-CN/docs/Web/CSS/border"
+        },
+        {
+          "t": "MDN Web Docs · border-style / border-width",
+          "u": "https://developer.mozilla.org/zh-CN/docs/Web/CSS/border-style"
+        },
+        {
+          "t": "MDN Web Docs · 外边距合并（Mastering margin collapsing）",
+          "u": "https://developer.mozilla.org/zh-CN/docs/Web/CSS/CSS_box_model/Mastering_margin_collapsing"
+        },
+        {
+          "t": "MDN Web Docs · margin 属性",
+          "u": "https://developer.mozilla.org/zh-CN/docs/Web/CSS/margin"
+        }
+      ]
+    },
+    {
+      "type": "end",
+      "title": "第 13 单元 · 结束",
+      "text": "下一单元：背景颜色、背景图片、渐变与精灵图",
+      "nav": "结束"
+    }
+  ]
+}

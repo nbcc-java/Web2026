@@ -1,0 +1,1308 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>变换：2D 变换与 3D 变换 · 网页制作课件</title>
+<style>
+:root{
+  --bg:#EEF3FB; --bg2:#F7FAFF; --surface:#fff; --ink:#0E1B2E; --muted:#5A6C85;
+  --brand:#2F6BFF; --brand-dk:#1D46B8; --brand2:#0FB5C9; --violet:#7C5CFF; --accent:#FF8A3D;
+  --ok:#12A150; --line:#E1E8F4; --code-bg:#0D1A2B; --code-ink:#DCE7F8;
+  --font:'PingFang SC','Microsoft YaHei','Hiragino Sans GB','Source Han Sans SC',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --mono:'JetBrains Mono','SF Mono',Menlo,Consolas,'Courier New',monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+.slide{user-select:text;-webkit-user-select:text}
+.hud,.legend,.drawer,.kicker,.topbar{user-select:none;-webkit-user-select:none}
+::selection{background:rgba(47,107,255,.22)}
+html,body{height:100%}
+body{background:radial-gradient(1200px 800px at 12% 0%,#e6efff 0%,transparent 55%),
+             radial-gradient(1000px 700px at 100% 100%,#e9fbfd 0%,transparent 50%),var(--bg);
+     font-family:var(--font);color:var(--ink);overflow:hidden;-webkit-font-smoothing:antialiased}
+.wrap{height:100%;display:grid;place-items:center;padding:2.2vh 2.2vh}
+.stage{position:relative;width:100%;height:100%;max-width:calc(100vh * 16 / 9);max-height:calc(100vw * 9 / 16);
+       aspect-ratio:16/9;background:var(--bg2);border-radius:20px;overflow:hidden;
+       box-shadow:0 34px 80px -30px rgba(18,42,92,.42),0 0 0 1px rgba(255,255,255,.7) inset;
+       container-type:size}
+/* 背景装饰 */
+.bgfx{position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:0}
+.blob{position:absolute;border-radius:50%;filter:blur(46px);opacity:.5}
+.b1{width:38cqw;height:38cqw;left:-10cqw;top:-14cqw;background:linear-gradient(135deg,#bcd4ff,#8fb6ff);animation:float1 18s ease-in-out infinite}
+.b2{width:30cqw;height:30cqw;right:-8cqw;top:6cqw;background:linear-gradient(135deg,#b8f0f6,#7fe3ef);animation:float2 22s ease-in-out infinite}
+.b3{width:26cqw;height:26cqw;left:22cqw;bottom:-14cqw;background:linear-gradient(135deg,#d9ccff,#b9a6ff);animation:float3 26s ease-in-out infinite}
+@keyframes float1{50%{transform:translate(4cqw,3cqw) scale(1.06)}}
+@keyframes float2{50%{transform:translate(-4cqw,4cqw) scale(1.08)}}
+@keyframes float3{50%{transform:translate(3cqw,-4cqw) scale(1.05)}}
+.grid-lines{position:absolute;inset:0;background-image:linear-gradient(rgba(47,107,255,.05) 1px,transparent 1px),
+   linear-gradient(90deg,rgba(47,107,255,.05) 1px,transparent 1px);background-size:4cqw 4cqw;opacity:.7}
+
+/* 幻灯片 */
+.slide{position:absolute;inset:0;z-index:2;padding:4.4cqw 5cqw 4cqw;display:flex;flex-direction:column;gap:1.9cqw;
+  opacity:0;visibility:hidden;transform:translateY(1.4cqw) scale(.99);
+  transition:opacity .52s ease,transform .52s cubic-bezier(.2,.7,.2,1),visibility .52s}
+.slide.is-active{opacity:1;visibility:visible;transform:none}
+.slide.prev{transform:translateY(-1.4cqw) scale(.99)}
+.s-head{display:flex;justify-content:space-between;align-items:flex-start;gap:2cqw;flex:0 0 auto}
+.kicker{display:inline-block;font-size:1.16cqw;font-weight:700;letter-spacing:.16em;color:var(--brand);
+  background:linear-gradient(90deg,rgba(47,107,255,.12),rgba(15,181,201,.12));padding:.42cqw 1cqw;border-radius:999px;margin-bottom:.75cqw}
+.s-title{font-size:2.86cqw;font-weight:800;letter-spacing:.01em;line-height:1.2}
+.s-sub{margin-top:.6cqw;font-size:1.32cqw;color:var(--muted);line-height:1.55}
+.s-body{flex:1;min-height:0;display:flex;flex-direction:column;justify-content:center;gap:1.5cqw}
+.s-body.two{flex-direction:row;align-items:stretch;gap:2.2cqw}
+.s-body.two>*{flex:1;min-width:0}
+.s-body.col{justify-content:center}
+.col-l,.col-r{min-width:0;display:flex;flex-direction:column;justify-content:center;gap:1.2cqw}
+
+/* 入场动画 */
+.an{opacity:0}
+.is-active .an{animation:rise .66s cubic-bezier(.2,.75,.2,1) both;animation-delay:calc(var(--i,0)*95ms + 120ms)}
+@keyframes rise{from{opacity:0;transform:translateY(1.5cqw)}to{opacity:1;transform:none}}
+
+/* 封面 */
+.s-cover{flex-direction:row;align-items:center;gap:3cqw;padding:6cqw 6cqw}
+.cover-left{flex:1.15;min-width:0;z-index:2}
+.brandrow{display:flex;align-items:baseline;gap:.9cqw;margin-bottom:2.1cqw}
+.brandmark{font-size:1.7cqw;font-weight:800;color:var(--brand);letter-spacing:.08em}
+.brandsub{font-size:1.1cqw;font-weight:700;color:var(--brand2);letter-spacing:.2em}
+.cover-title{font-size:4.5cqw;font-weight:900;line-height:1.14;letter-spacing:-.01em;
+  background:linear-gradient(120deg,#12306f,#2f6bff 45%,#0fb5c9);-webkit-background-clip:text;background-clip:text;color:transparent}
+.cover-sub{margin-top:1.2cqw;font-size:1.55cqw;color:var(--muted);line-height:1.7;max-width:34cqw}
+.pills{display:flex;flex-wrap:wrap;gap:.7cqw;margin-top:1.9cqw}
+.pill{font-size:1.03cqw;font-weight:700;color:var(--brand-dk);background:rgba(47,107,255,.1);
+  border:1px solid rgba(47,107,255,.2);padding:.4cqw 1cqw;border-radius:999px}
+.pill{opacity:0}
+.is-active .pill{animation:rise .6s both;animation-delay:calc(var(--i)*95ms + 120ms)}
+.cover-meta{margin-top:2.3cqw;display:flex;align-items:center;gap:.9cqw;flex-wrap:wrap;font-size:1.02cqw;color:var(--muted)}
+.cover-meta b{color:var(--brand);font-size:1.2cqw}
+.cover-meta .dot{width:.34cqw;height:.34cqw;border-radius:50%;background:#c3cfe2}
+.cover-art{flex:.85;position:relative;min-width:0;display:grid;place-items:center}
+.orb{position:absolute;border-radius:50%;filter:blur(10px);opacity:.75}
+.o1{width:15cqw;height:15cqw;right:-1cqw;top:2cqw;background:radial-gradient(circle at 30% 30%,#9dc2ff,#4f83ff)}
+.o2{width:8cqw;height:8cqw;right:12cqw;bottom:4cqw;background:radial-gradient(circle at 30% 30%,#a9f0f7,#1fc2d6)}
+.o3{width:5cqw;height:5cqw;right:3cqw;bottom:12cqw;background:radial-gradient(circle at 30% 30%,#d5c7ff,#8a63ff)}
+.orb{animation:orb 9s ease-in-out infinite}
+.o2{animation-duration:11s}.o3{animation-duration:13s}
+@keyframes orb{50%{transform:translateY(-1.6cqw) scale(1.06)}}
+.codewin{position:relative;z-index:2;width:100%;max-width:32cqw;background:var(--code-bg);border-radius:1.2cqw;
+  box-shadow:0 30px 60px -22px rgba(13,26,43,.7);overflow:hidden;transform:rotate(-1.5deg);
+  animation:rise .8s cubic-bezier(.2,.75,.2,1) .35s both}
+.cw-bar{display:flex;gap:.5cqw;padding:.85cqw 1.1cqw;background:rgba(255,255,255,.06)}
+.cw-bar i{width:.72cqw;height:.72cqw;border-radius:50%;background:#ff5f57}
+.cw-bar i:nth-child(2){background:#febc2e}.cw-bar i:nth-child(3){background:#28c840}
+.cw-body{padding:1.3cqw 1.5cqw;font-family:var(--mono);font-size:1.06cqw;line-height:1.85;color:var(--code-ink);white-space:pre;overflow:auto}
+
+/* 章节过渡 */
+.s-section{align-items:center;justify-content:center;text-align:center}
+.sec-inner{display:flex;flex-direction:column;align-items:center}
+.sec-num{font-size:7.6cqw;font-weight:900;line-height:1;
+  background:linear-gradient(120deg,#2f6bff,#0fb5c9);-webkit-background-clip:text;background-clip:text;color:transparent;letter-spacing:-.03em}
+.sec-title{margin-top:1.2cqw;font-size:3.1cqw;font-weight:800}
+.sec-line{width:0;height:.4cqw;border-radius:99px;background:linear-gradient(90deg,var(--brand),var(--brand2));margin:1.4cqw 0}
+.is-active .sec-line{animation:draw .8s ease .5s both}
+@keyframes draw{from{width:0}to{width:11cqw}}
+.sec-sub{font-size:1.4cqw;color:var(--muted);max-width:44cqw;line-height:1.7}
+
+/* 要点列表 */
+.blist{list-style:none;display:flex;flex-direction:column;gap:1.05cqw}
+.blist li{display:flex;gap:.95cqw;align-items:flex-start;font-size:1.42cqw;line-height:1.6;
+  background:var(--surface);border:1px solid var(--line);border-radius:.85cqw;padding:1.05cqw 1.3cqw;
+  box-shadow:0 8px 22px -16px rgba(20,40,90,.5);transition:transform .25s,box-shadow .25s}
+.blist li:hover{transform:translateX(.4cqw);box-shadow:0 12px 26px -16px rgba(47,107,255,.55)}
+.blist.small li{font-size:1.24cqw;padding:.85cqw 1.1cqw}
+.blist.dense{gap:.68cqw}
+.blist.dense li{font-size:1.18cqw;padding:.72cqw 1.1cqw;line-height:1.55}
+.outline.dense{gap:.62cqw}
+.outline.dense li{padding:.72cqw 1.15cqw}
+.outline.dense .ot{font-size:1.16cqw}
+.grid.dense{gap:.95cqw}
+.card.dense{padding:1.1cqw}
+.card.dense .card-t{font-size:1.26cqw;margin-bottom:.4cqw}
+.card.dense .card-d{font-size:1.03cqw;line-height:1.55}
+.bl-dot{flex:0 0 auto;width:.62cqw;height:.62cqw;border-radius:50%;margin-top:.62cqw;
+  background:linear-gradient(135deg,var(--brand),var(--brand2));box-shadow:0 0 0 .28cqw rgba(47,107,255,.12)}
+.blist b,.blist strong{color:var(--brand-dk)}
+.blist code{font-family:var(--mono);font-size:.92em;background:#eef3ff;color:#1d46b8;padding:.1em .42em;border-radius:.35em}
+.hw li{background:linear-gradient(180deg,#fbfcff,#f3f7ff)}
+
+/* 卡片 */
+.grid{display:grid;gap:1.3cqw}
+.grid.cols-2{grid-template-columns:repeat(2,1fr)}
+.grid.cols-3{grid-template-columns:repeat(3,1fr)}
+.grid.cols-4{grid-template-columns:repeat(2,1fr)}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:1.1cqw;padding:1.5cqw;position:relative;overflow:hidden;
+  box-shadow:0 14px 32px -22px rgba(20,40,90,.55);transition:transform .28s,box-shadow .28s,border-color .28s}
+.card:hover{transform:translateY(-.5cqw);box-shadow:0 22px 40px -22px rgba(47,107,255,.5);border-color:rgba(47,107,255,.35)}
+.card::before{content:"";position:absolute;left:0;top:0;height:100%;width:.3cqw;background:linear-gradient(180deg,var(--brand),var(--brand2))}
+.card-ico{font-size:1.75cqw;margin-bottom:.6cqw}
+.card-t{font-size:1.42cqw;font-weight:800;margin-bottom:.55cqw}
+.card-d{font-size:1.14cqw;color:var(--muted);line-height:1.62}
+
+/* 表格 */
+.tbl-wrap{background:var(--surface);border:1px solid var(--line);border-radius:1.1cqw;overflow:hidden;
+  box-shadow:0 16px 36px -26px rgba(20,40,90,.6)}
+.tbl{width:100%;border-collapse:collapse;font-size:1.16cqw}
+.tbl th{background:linear-gradient(180deg,#eef4ff,#e4edff);color:var(--brand-dk);font-weight:800;text-align:left;
+  padding:.95cqw 1.2cqw;border-bottom:1px solid #d8e3f7;font-size:1.12cqw;letter-spacing:.02em}
+.tbl td{padding:.85cqw 1.2cqw;border-bottom:1px solid var(--line);line-height:1.55}
+.tbl tbody tr:last-child td{border-bottom:0}
+.tbl tbody tr:hover{background:#f7faff}
+.tbl code{font-family:var(--mono);font-size:.92em;background:#eef3ff;color:#1d46b8;padding:.08em .4em;border-radius:.35em}
+
+/* 对比 */
+.cmp-wrap{display:grid;grid-template-columns:1fr 1fr;gap:1.8cqw}
+.cmp{border-radius:1.1cqw;padding:1.4cqw;border:1px solid var(--line);background:var(--surface)}
+.cmp-h{font-size:1.4cqw;font-weight:800;margin-bottom:.9cqw;display:flex;align-items:center;gap:.6cqw}
+.cmp-a .cmp-h{color:var(--brand-dk)}
+.cmp-b .cmp-h{color:#b8730f}
+.cmp ul{list-style:none;display:flex;flex-direction:column;gap:.7cqw}
+.cmp li{font-size:1.16cqw;line-height:1.6;color:var(--muted);padding-left:1.3cqw;position:relative}
+.cmp li::before{content:"";position:absolute;left:0;top:.62cqw;width:.5cqw;height:.5cqw;border-radius:2px;background:var(--brand)}
+.cmp-b li::before{background:var(--accent)}
+.cmp-a{background:linear-gradient(180deg,#f6f9ff,#fff)}
+
+/* 步骤 */
+.steps{display:flex;flex-direction:column;gap:1cqw}
+.step{display:flex;gap:1.2cqw;align-items:flex-start;background:var(--surface);border:1px solid var(--line);
+  border-radius:.9cqw;padding:1cqw 1.25cqw}
+.step-n{flex:0 0 auto;width:2.3cqw;height:2.3cqw;border-radius:50%;display:grid;place-items:center;font-weight:800;font-size:1.15cqw;color:#fff;
+  background:linear-gradient(135deg,var(--brand),var(--brand2))}
+.step-t{font-size:1.3cqw;font-weight:800}
+.step-d{font-size:1.12cqw;color:var(--muted);line-height:1.6;margin-top:.25cqw}
+
+/* 流程图 */
+.flow{display:flex;align-items:stretch;justify-content:center;gap:0;flex-wrap:nowrap}
+.fl{flex:1;min-width:0;background:var(--surface);border:1px solid var(--line);border-radius:1cqw;padding:1.3cqw 1cqw;text-align:center;
+  box-shadow:0 12px 28px -22px rgba(20,40,90,.55)}
+.fl-ico{font-size:1.9cqw;margin-bottom:.5cqw}
+.fl-t{font-size:1.24cqw;font-weight:800;margin-bottom:.35cqw;color:var(--brand-dk)}
+.fl-d{font-size:1.02cqw;color:var(--muted);line-height:1.55}
+.fl-arrow{flex:0 0 auto;width:2.2cqw;position:relative;display:grid;place-items:center}
+.fl-arrow::after{content:"";width:1.4cqw;height:.22cqw;background:linear-gradient(90deg,var(--brand),var(--brand2));border-radius:99px;position:relative}
+.fl-arrow::before{content:"";position:absolute;right:.35cqw;width:.6cqw;height:.6cqw;border-top:.2cqw solid var(--brand2);border-right:.2cqw solid var(--brand2);transform:rotate(45deg)}
+.flow-note{margin-top:1.3cqw;font-size:1.1cqw;color:var(--muted);text-align:center;background:rgba(47,107,255,.06);border-radius:.8cqw;padding:.8cqw 1.2cqw}
+
+/* 代码 */
+.codebox{background:var(--code-bg);border-radius:1.1cqw;overflow:hidden;box-shadow:0 26px 54px -26px rgba(13,26,43,.75)}
+.cb-bar{display:flex;align-items:center;gap:.8cqw;padding:.8cqw 1.2cqw;background:rgba(255,255,255,.06);border-bottom:1px solid rgba(255,255,255,.07)}
+.cb-lang{font-family:var(--mono);font-size:.92cqw;font-weight:700;color:#7fd7e4;letter-spacing:.12em}
+.cb-file{font-family:var(--mono);font-size:.92cqw;color:#7f93ad}
+.cb-code{padding:1.25cqw 1.5cqw;font-family:var(--mono);font-size:1.06cqw;line-height:1.78;color:var(--code-ink);white-space:pre;overflow:auto;max-height:100%}
+.cb-code .pn{color:#7f93ad}.cb-code .tg{color:#6fd6ff}.cb-code .at{color:#ffcf7a}.cb-code .st{color:#a5e88a}
+.cb-code .c{color:#6b8099;font-style:italic}.cb-code .sel{color:#ffb3c8}.cb-code .cls{color:#ffd479}
+.cb-code .id{color:#9fe8ff}.cb-code .pc{color:#c8a2ff}.cb-code .prop{color:#8fd3ff}.cb-code .num{color:#f7c774}
+.cb-code .fn{color:#d0b0ff}.cb-code .imp{color:#ff8a8a}.cb-code .at-rules{color:#ff9f6b}
+.caption{margin-top:1cqw;font-size:1.08cqw;color:var(--muted);line-height:1.6}
+.caption b{color:var(--brand-dk)}
+
+/* 任务 */
+.task-goal{background:linear-gradient(180deg,#f4f8ff,#eef4ff);border:1px solid #dbe6fb;border-radius:.9cqw;padding:1.05cqw 1.25cqw;
+  font-size:1.22cqw;line-height:1.62}
+.tg-label{display:inline-block;font-weight:800;color:#fff;background:var(--brand);border-radius:.45cqw;
+  font-size:.98cqw;padding:.16cqw .6cqw;margin-right:.6cqw;vertical-align:.08cqw}
+.task-steps{list-style:none;counter-reset:ts;display:flex;flex-direction:column;gap:.75cqw}
+.task-steps li{counter-increment:ts;position:relative;padding-left:2.3cqw;font-size:1.14cqw;line-height:1.6}
+.task-steps li::before{content:counter(ts);position:absolute;left:0;top:.08cqw;width:1.55cqw;height:1.55cqw;border-radius:50%;
+  background:rgba(47,107,255,.12);color:var(--brand-dk);font-size:.92cqw;font-weight:800;display:grid;place-items:center}
+.task-code{background:var(--code-bg);border-radius:.9cqw;overflow:hidden;box-shadow:0 20px 44px -26px rgba(13,26,43,.7)}
+
+/* 演示 */
+.demo-right{display:flex;flex-direction:column;gap:1cqw;height:100%}
+.demo-frame{flex:1;width:100%;min-height:0;border:1px solid var(--line);border-radius:1cqw;background:#fff;
+  box-shadow:0 22px 46px -26px rgba(20,40,90,.6)}
+.demo-code{background:var(--code-bg);border-radius:.9cqw;overflow:hidden}
+.demo-code summary{cursor:pointer;color:#9fb6d4;font-size:1.02cqw;padding:.7cqw 1.1cqw;font-family:var(--mono);user-select:none}
+.demo-code .cb-code{padding:0 1.2cqw 1.1cqw;font-size:.96cqw}
+.hint{margin-top:1cqw;font-size:1.08cqw;color:var(--muted);background:rgba(255,138,61,.1);border-left:.3cqw solid var(--accent);
+  border-radius:.6cqw;padding:.8cqw 1.1cqw;line-height:1.6}
+.hint b{color:#c2601a}
+
+/* AI */
+.ai-card{background:linear-gradient(160deg,#171a3a,#2b2a5e 55%,#3a2a6a);border-radius:1.1cqw;padding:1.7cqw;color:#e8e6ff;
+  position:relative;overflow:hidden;box-shadow:0 24px 52px -26px rgba(40,30,90,.8)}
+.ai-card::after{content:"";position:absolute;right:-6cqw;top:-6cqw;width:14cqw;height:14cqw;border-radius:50%;
+  background:radial-gradient(circle,rgba(124,92,255,.6),transparent 65%);animation:float1 12s ease-in-out infinite}
+.ai-badge{display:inline-grid;place-items:center;width:2.6cqw;height:2.6cqw;border-radius:.7cqw;font-weight:900;font-size:1.1cqw;
+  background:linear-gradient(135deg,#7c5cff,#0fb5c9);color:#fff;margin-bottom:.9cqw;letter-spacing:.04em}
+.ai-card p{font-size:1.22cqw;line-height:1.72;position:relative;z-index:2}
+.ai-list li{border-color:rgba(124,92,255,.25);background:linear-gradient(180deg,#fbf9ff,#f5f2ff)}
+.ai-list .bl-dot{background:linear-gradient(135deg,#7c5cff,#0fb5c9)}
+
+/* 检测（可交互：点选 → 判分 → 显示解析） */
+.quiz-body{justify-content:flex-start;gap:1.1cqw}
+.quiz-top{display:flex;align-items:center;justify-content:space-between;gap:1.2cqw;flex:0 0 auto}
+.quiz-meta{font-size:1.02cqw;color:var(--muted)}
+.quiz-meta b{color:var(--brand);font-size:1.1cqw}
+.q-reveal{cursor:pointer;font-family:inherit;font-size:.98cqw;font-weight:700;color:var(--brand-dk);
+  background:#eef4ff;border:1px solid #d6e3fb;border-radius:.5cqw;padding:.4cqw .95cqw;transition:.18s}
+.q-reveal:hover{background:#e2ecff;border-color:var(--brand)}
+.quiz-acts{display:flex;align-items:center;gap:.6cqw;flex:0 0 auto}
+.q-reset-all{cursor:pointer;font-family:inherit;font-size:.98cqw;font-weight:700;color:var(--muted);
+  background:#fff;border:1px solid var(--line);border-radius:.5cqw;padding:.4cqw .9cqw;transition:.18s}
+.q-reset-all:hover{color:var(--accent);border-color:#ffd0a8;background:#fff8f2}
+.quiz{list-style:none;display:flex;flex-direction:column;gap:1cqw;overflow:auto;padding-right:.3cqw}
+.quiz.dense{gap:.55cqw}
+.quiz-body:has(.quiz.dense){gap:.7cqw}
+.quiz-item{background:var(--surface);border:1px solid var(--line);border-radius:.9cqw;padding:1cqw 1.2cqw;
+  transition:border-color .2s,box-shadow .2s}
+.quiz-item.ok{border-color:rgba(18,161,80,.45);box-shadow:0 10px 26px -20px rgba(18,161,80,.7)}
+.quiz-item.bad{border-color:rgba(214,83,79,.45);box-shadow:0 10px 26px -20px rgba(214,83,79,.6)}
+.quiz.dense .quiz-item{padding:.6cqw .95cqw}
+.quiz.dense .q{font-size:1.08cqw}
+.quiz.dense .opts{margin-top:.4cqw;gap:.45cqw}
+.quiz.dense .opt{font-size:.94cqw;padding:.22cqw .62cqw}
+.quiz.dense .q-foot{margin-top:.4cqw;min-height:1.15cqw}
+.quiz.dense .q-check{font-size:.88cqw;padding:.16cqw .6cqw}
+.quiz.dense .q-verdict{font-size:.9cqw}
+.quiz.dense .q-ans{margin-top:.4cqw;font-size:.92cqw;padding:.4cqw .7cqw}
+.q{display:flex;gap:.55cqw;align-items:baseline;font-size:1.22cqw;font-weight:700;line-height:1.5}
+.quiz.dense .q{font-size:1.12cqw}
+.q-no{font-family:var(--mono);font-size:.92cqw;font-weight:800;color:var(--brand);flex:0 0 auto}
+.q-tag{flex:0 0 auto;font-size:.8cqw;font-weight:700;color:#fff;background:var(--brand2);
+  border-radius:.32cqw;padding:.08cqw .42cqw;letter-spacing:.04em}
+.q-tag.multi{background:var(--violet)}
+.q-txt{flex:1;min-width:0}
+.opts{display:flex;flex-wrap:wrap;gap:.55cqw;margin-top:.62cqw}
+.opt{cursor:pointer;display:inline-flex;gap:.42cqw;align-items:center;font-family:inherit;text-align:left;
+  font-size:1.02cqw;line-height:1.45;color:#33456b;background:#f5f8ff;border:1px solid #e0e9fb;
+  border-radius:.55cqw;padding:.36cqw .8cqw;transition:background .16s,border-color .16s,box-shadow .16s}
+.quiz.dense .opt{font-size:.96cqw;padding:.28cqw .7cqw}
+.opt:hover{border-color:var(--brand);background:#eef4ff}
+.opt i{font-style:normal;font-family:var(--mono);font-weight:800;font-size:.88em;color:var(--brand)}
+.opt.sel{background:#e6efff;border-color:var(--brand);box-shadow:0 0 0 .16cqw rgba(47,107,255,.16)}
+.opt.right{background:rgba(18,161,80,.1);border-color:#12A150;color:#0b5f2f}
+.opt.right i{color:#0b5f2f}
+.q-foot{display:flex;align-items:center;gap:.8cqw;margin-top:.6cqw;min-height:1.5cqw}
+.q-check{cursor:pointer;font-family:inherit;font-size:.94cqw;font-weight:700;color:var(--brand);
+  background:#fff;border:1px solid #c9daff;border-radius:.45cqw;padding:.26cqw .75cqw;transition:.16s}
+.q-check:hover{background:#eef4ff}
+.q-reset{cursor:pointer;font-family:inherit;font-size:.94cqw;font-weight:700;color:var(--muted);
+  background:#fff;border:1px solid var(--line);border-radius:.45cqw;padding:.26cqw .7cqw;transition:.16s}
+.q-reset:hover{color:var(--accent);border-color:#ffd0a8;background:#fff8f2}
+.q-reset:disabled{opacity:.38;cursor:default}
+.q-reset:disabled:hover{color:var(--muted);border-color:var(--line);background:#fff}
+.quiz.dense .q-reset{font-size:.88cqw;padding:.16cqw .55cqw}
+.q-verdict{font-size:.96cqw;font-weight:700}
+.quiz-item.ok .q-verdict{color:var(--ok)}
+.quiz-item.bad .q-verdict{color:#d9534f}
+.q-ans{display:none;margin-top:.6cqw;font-size:.98cqw;line-height:1.6;color:#0f7a3d;
+  background:rgba(18,161,80,.08);border-radius:.5cqw;padding:.5cqw .8cqw}
+.quiz-item.revealed .q-ans{display:block;animation:rise .3s both}
+.q-ans b{color:#0b5f2f;margin-right:.45cqw}
+.ans-key{font-family:var(--mono);font-weight:800;margin-right:.6cqw}
+.ans-tip{color:var(--muted)}
+
+/* 目标 */
+.objs{display:grid;grid-template-columns:repeat(3,1fr);gap:1.4cqw}
+.obj{border-radius:1.1cqw;padding:1.4cqw;border:1px solid var(--line);background:var(--surface)}
+.obj-h{font-size:1.3cqw;font-weight:800;margin-bottom:.85cqw;display:flex;align-items:center;gap:.55cqw}
+.obj-h::before{content:"";width:.55cqw;height:1.35cqw;border-radius:99px}
+.obj ul{list-style:none;display:flex;flex-direction:column;gap:.62cqw}
+.obj li{font-size:1.1cqw;line-height:1.58;color:var(--muted);padding-left:1.15cqw;position:relative}
+.obj li::before{content:"";position:absolute;left:0;top:.6cqw;width:.42cqw;height:.42cqw;border-radius:50%;background:#9db4d6}
+.obj-1 .obj-h::before{background:var(--brand)}.obj-2 .obj-h::before{background:var(--brand2)}.obj-3 .obj-h::before{background:var(--accent)}
+.obj-1 .obj-h{color:var(--brand-dk)}.obj-2 .obj-h{color:#0a7b87}.obj-3 .obj-h{color:#b8730f}
+
+/* 思政 */
+.s-ideo .s-body{justify-content:center}
+.ideo-wrap{display:flex;flex-direction:column;gap:1.3cqw}
+.ideo-quote{position:relative;background:linear-gradient(180deg,#fff8f0,#fffbf6);border:1px solid #ffe3c8;border-left:.42cqw solid var(--accent);
+  border-radius:.95cqw;padding:1.6cqw 1.8cqw 1.6cqw 2.2cqw;font-size:1.3cqw;line-height:1.85;color:#4a3a28}
+.ideo-quote strong{color:#a3510a}
+.ideo-topic{font-size:1.16cqw;color:var(--muted);background:rgba(47,107,255,.06);border-radius:.8cqw;padding:.9cqw 1.2cqw;line-height:1.6}
+.it-label{display:inline-block;font-weight:800;color:#fff;background:var(--brand);border-radius:.45cqw;font-size:.96cqw;padding:.16cqw .6cqw;margin-right:.6cqw}
+
+/* 大纲 */
+.outline{list-style:none;display:flex;flex-direction:column;gap:.95cqw;counter-reset:none}
+.outline li{display:flex;align-items:center;gap:1.2cqw;background:var(--surface);border:1px solid var(--line);border-radius:.9cqw;padding:1.05cqw 1.35cqw;
+  box-shadow:0 10px 26px -22px rgba(20,40,90,.55)}
+.oi{font-family:var(--mono);font-size:1.1cqw;font-weight:800;color:var(--brand);background:rgba(47,107,255,.1);border-radius:.5cqw;padding:.28cqw .7cqw}
+.ot{font-size:1.34cqw;font-weight:700}
+
+/* 参考 */
+.refs{list-style:none;display:flex;flex-direction:column;gap:.85cqw}
+.refs li{display:flex;align-items:baseline;gap:.9cqw;background:var(--surface);border:1px solid var(--line);border-radius:.8cqw;padding:.9cqw 1.15cqw}
+.ref-idx{font-family:var(--mono);font-size:1cqw;font-weight:800;color:var(--brand)}
+.ref-t{font-size:1.16cqw;font-weight:600}
+.ref-u{font-family:var(--mono);font-size:.92cqw;color:var(--muted);word-break:break-all}
+
+/* 结束 */
+.s-end{align-items:center;justify-content:center;text-align:center;background:linear-gradient(140deg,#12203b,#1d3a78 55%,#0e6f88);}
+.s-end .end-t{color:#fff}
+.end-mark{font-size:2.4cqw;color:#7fd7e4;margin-bottom:.6cqw}
+.end-t{font-size:3.4cqw;font-weight:900;letter-spacing:.02em}
+.end-s{margin-top:1.2cqw;font-size:1.35cqw;color:#a9c4e8}
+/* 结束页导航：下一讲 / 返回总目录 */
+.end-inner{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.9cqw;max-width:74%}
+.end-next{margin-top:2.6cqw;display:inline-flex;align-items:center;gap:1cqw;text-decoration:none;
+  background:rgba(255,255,255,.09);border:1px solid rgba(140,200,235,.42);border-radius:.9cqw;
+  padding:1cqw 1.5cqw;transition:.22s;backdrop-filter:blur(6px);max-width:100%}
+.end-next:hover{background:rgba(255,255,255,.16);border-color:#7fd7e4;transform:translateY(-2px);
+  box-shadow:0 18px 40px -26px rgba(0,0,0,.9)}
+.en-lab{flex:0 0 auto;font-size:.92cqw;font-weight:800;letter-spacing:.06em;color:#0c2036;
+  background:linear-gradient(135deg,#7fd7e4,#4fc3d9);border-radius:.4cqw;padding:.2cqw .62cqw}
+.en-t{color:#eaf4ff;font-size:1.18cqw;font-weight:700;line-height:1.5}
+.en-ar{color:#7fd7e4;font-size:1.3cqw;font-weight:800}
+.end-next.is-final{cursor:default;box-shadow:none}
+.end-next.is-final:hover{transform:none;background:rgba(255,255,255,.09);border-color:rgba(140,200,235,.42);box-shadow:none}
+.end-back{margin-top:.5cqw;display:inline-flex;align-items:center;gap:.35cqw;text-decoration:none;
+  font-size:1.02cqw;color:#9fbde0;border-bottom:1px dashed rgba(159,189,224,.45);padding-bottom:.12cqw;transition:.2s}
+.end-back:hover{color:#fff;border-bottom-color:#7fd7e4}
+
+/* 进度 & HUD */
+.topbar{position:absolute;left:0;top:0;height:.42cqw;width:100%;background:rgba(47,107,255,.1);z-index:6}
+.topbar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--brand),var(--brand2),var(--violet));
+  transition:width .45s cubic-bezier(.2,.7,.2,1)}
+.hud{position:absolute;right:2.2cqw;bottom:1.5cqw;z-index:6;display:flex;align-items:center;gap:1cqw;
+  font-size:1cqw;color:var(--muted);font-family:var(--mono)}
+.hud .btn{cursor:pointer;background:rgba(255,255,255,.82);border:1px solid var(--line);border-radius:.55cqw;padding:.32cqw .7cqw;
+  transition:.2s}
+.hud .btn:hover{border-color:var(--brand);color:var(--brand)}
+.hud .btn[data-on="0"]{color:#a8b6cc;background:rgba(255,255,255,.5);border-style:dashed}
+.hud .btn[data-on="0"]:hover{color:var(--accent);border-color:#ffd0a8;border-style:solid;background:#fff8f2}
+.hud .btn[data-on="1"]{color:#0a7b87;border-color:#bfe6ea;background:rgba(15,181,201,.09)}
+.hud .btn[data-on="1"]:hover{border-color:var(--brand2);background:rgba(15,181,201,.16)}
+.pageno b{color:var(--ink)}
+.legend{position:absolute;left:2.2cqw;bottom:1.5cqw;z-index:6;font-size:.96cqw;color:#9aabc4;font-family:var(--mono)}
+.flip-toast{position:absolute;left:50%;bottom:9%;z-index:9;transform:translate(-50%,10px);
+  background:rgba(16,29,50,.9);color:#fff;font-family:var(--mono);font-size:1.02cqw;letter-spacing:.02em;
+  padding:.62cqw 1.25cqw;border-radius:999px;opacity:0;pointer-events:none;white-space:nowrap;
+  transition:opacity .22s,transform .22s;box-shadow:0 18px 40px -22px rgba(0,0,0,.8)}
+.flip-toast.show{opacity:1;transform:translate(-50%,0)}
+/* 导航抽屉 */
+.drawer{position:absolute;inset:0;z-index:8;background:rgba(12,22,40,.55);backdrop-filter:blur(6px);display:none;padding:4cqw}
+.drawer.open{display:block}
+.drawer-panel{background:var(--surface);border-radius:1.2cqw;height:100%;padding:2cqw;overflow:auto;box-shadow:0 40px 80px -30px rgba(0,0,0,.5)}
+.drawer-h{font-size:1.5cqw;font-weight:800;margin-bottom:1.2cqw;display:flex;justify-content:space-between}
+.drawer-h span{cursor:pointer;color:var(--muted);font-weight:600;font-size:1.1cqw}
+.drawer ul{list-style:none;display:grid;grid-template-columns:1fr 1fr;gap:.55cqw}
+.drawer li{display:flex;gap:.7cqw;align-items:center;padding:.6cqw .8cqw;border-radius:.6cqw;cursor:pointer;border:1px solid transparent}
+.drawer li:hover{background:#f2f6ff;border-color:#dbe6fb}
+.drawer li.cur{background:#eaf1ff;border-color:#c9daff}
+.nv-idx{font-family:var(--mono);font-size:.92cqw;color:var(--brand);font-weight:800}
+.nv-t{font-size:1.06cqw;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+/* ───────── 屏幕自适应 ─────────
+   1) 16:9 / 16:10 笔记本与投影：等比缩放（默认）
+   2) 4:3 老投影 / 上下更紧：压缩留白与圆角
+   3) 超宽屏：仍按高度定宽，不拉伸变形
+   4) 竖屏（手机、平板竖握）：改为纵向流式阅读，单列重排
+   5) 系统开启「减弱动效」时关闭所有动画
+*/
+@media (max-aspect-ratio: 4/3) and (orientation: landscape){
+  .wrap{padding:1.2vh}
+  .stage{border-radius:14px}
+  .slide{padding:3.4cqw 4.2cqw 3.2cqw;gap:1.5cqw}
+  .s-title{font-size:2.62cqw}
+  .blist{gap:.85cqw}
+  .blist li{font-size:1.32cqw;padding:.9cqw 1.15cqw}
+  .legend{display:none}
+}
+@media (min-aspect-ratio: 21/9){
+  .stage{max-width:calc(100vh * 16 / 9);max-height:calc(100vw * 9 / 16)}
+}
+@media (prefers-reduced-motion: reduce){
+  .an{opacity:1!important;animation:none!important}
+  .blob,.orb,.codewin{animation:none!important}
+  .slide{transition:none}
+}
+/* —— 竖屏：纵向流式阅读 —— */
+@media (orientation: portrait){
+  html,body{height:auto;overflow-x:hidden;overflow-y:auto}
+  html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+  body{overflow:visible;background:var(--bg)}
+  .wrap{display:block;height:auto;padding:0}
+  .stage{width:100%;height:auto;max-width:none;max-height:none;aspect-ratio:auto;border-radius:0;
+    overflow:visible;box-shadow:none;container-type:inline-size;background:transparent}
+  .bgfx{display:none}
+  .slide{position:relative;inset:auto;opacity:1!important;visibility:visible!important;transform:none!important;
+    padding:8vw 6vw 9vw;gap:5vw;min-height:auto;background:var(--bg2);border-bottom:1px solid var(--line)}
+  .slide.prev{transform:none!important}
+  .an{opacity:1!important;animation:none!important;transform:none!important}
+  .s-head{flex-direction:column;gap:0}
+  .kicker{font-size:2.6vw;padding:1vw 2.6vw;margin-bottom:2.2vw;letter-spacing:.1em}
+  .s-title{font-size:6.4vw;line-height:1.3}
+  .s-sub{margin-top:2vw;font-size:3.4vw}
+  .s-body{gap:4vw;justify-content:flex-start}
+  .s-body.two{flex-direction:column;gap:4.4vw}
+  .col-l,.col-r{gap:3.4vw}
+  /* 封面 */
+  .s-cover{flex-direction:column;align-items:flex-start;gap:5vw;padding:12vw 6vw 10vw}
+  .cover-art{display:none}
+  .brandrow{margin-bottom:4vw;gap:2vw}
+  .brandmark{font-size:4.4vw}.brandsub{font-size:3vw}
+  .cover-title{font-size:9.6vw;line-height:1.22}
+  .cover-sub{font-size:3.8vw;max-width:none;margin-top:2.6vw}
+  .pills{gap:2vw;margin-top:4vw}
+  .pill{font-size:2.8vw;padding:1.2vw 2.8vw}
+  .cover-meta{font-size:2.9vw;gap:2vw;margin-top:4vw}
+  .cover-meta b{font-size:3.4vw}
+  /* 章节页 */
+  .sec-num{font-size:17vw}
+  .sec-title{font-size:7.2vw;margin-top:3vw}
+  .sec-sub{font-size:3.6vw;max-width:none;margin-top:3vw}
+  .is-active .sec-line{animation:none;width:26vw}
+  .sec-line{margin:4vw 0}
+  /* 列表 / 卡片 */
+  .blist{gap:2.6vw}
+  .blist li{font-size:3.7vw;padding:2.8vw 3.4vw;border-radius:2.4vw;gap:2.4vw;line-height:1.62}
+  .blist.small li{font-size:3.4vw;padding:2.4vw 3vw}
+  .blist.dense li{font-size:3.3vw;padding:2.2vw 3vw}
+  .bl-dot{width:1.8vw;height:1.8vw;margin-top:1.8vw;box-shadow:0 0 0 .8vw rgba(47,107,255,.12)}
+  .outline{gap:2.4vw}
+  .outline li{padding:2.8vw 3.4vw;border-radius:2.2vw;gap:3vw}
+  .oi{font-size:2.8vw;padding:.8vw 2vw}
+  .ot{font-size:3.9vw}
+  .grid{gap:3vw}
+  .grid.cols-2,.grid.cols-3,.grid.cols-4{grid-template-columns:1fr}
+  .card{padding:4.2vw;border-radius:2.6vw}
+  .card-t{font-size:4.1vw;margin-bottom:1.6vw}
+  .card-d{font-size:3.3vw}
+  .card-ico{font-size:5.6vw;margin-bottom:1.6vw}
+  .card::before{width:.8vw}
+  /* 表格 */
+  .tbl-wrap{overflow-x:auto;border-radius:2.4vw;-webkit-overflow-scrolling:touch}
+  .tbl{font-size:3.1vw;min-width:110vw}
+  .tbl th{font-size:3vw;padding:2.4vw 2.8vw;white-space:nowrap}
+  .tbl td{padding:2.2vw 2.8vw}
+  /* 对比 */
+  .cmp-wrap{grid-template-columns:1fr;gap:3.4vw}
+  .cmp{padding:3.6vw;border-radius:2.4vw}
+  .cmp-h{font-size:3.8vw;margin-bottom:2.4vw}
+  .cmp ul{gap:2vw}
+  .cmp li{font-size:3.2vw;padding-left:3.6vw}
+  .cmp li::before{width:1.4vw;height:1.4vw;top:1.7vw}
+  /* 步骤 / 流程 */
+  .steps{gap:2.6vw}
+  .step{padding:3vw 3.4vw;border-radius:2.2vw;gap:3vw}
+  .step-n{width:7.4vw;height:7.4vw;font-size:3.2vw}
+  .step-t{font-size:3.7vw}
+  .step-d{font-size:3.2vw;margin-top:.8vw}
+  .flow{flex-direction:column;gap:1.6vw}
+  .fl{padding:3.6vw;border-radius:2.4vw}
+  .fl-ico{font-size:6.4vw}
+  .fl-t{font-size:3.9vw}
+  .fl-d{font-size:3.1vw}
+  .fl-arrow{width:100%;height:6vw;transform:rotate(90deg)}
+  .flow-note{font-size:3.1vw;padding:2.4vw 3vw;border-radius:2vw;margin-top:2.6vw}
+  /* 代码 */
+  .codebox,.task-code{border-radius:2.4vw}
+  .cb-bar{padding:2.2vw 3vw;gap:2.4vw}
+  .cb-lang,.cb-file{font-size:2.7vw}
+  .cb-code{font-size:3.1vw;line-height:1.62;padding:3vw 3.4vw}
+  .caption{font-size:3vw;margin-top:2.4vw}
+  .demo-code summary{font-size:2.9vw;padding:2.2vw 3vw}
+  .demo-code .cb-code{font-size:2.9vw}
+  /* 任务 / 演示 */
+  .task-goal{font-size:3.4vw;padding:3.2vw;border-radius:2.2vw}
+  .tg-label{font-size:2.6vw;padding:.5vw 1.8vw;margin-right:1.6vw;border-radius:1.2vw}
+  .task-steps{gap:2.4vw}
+  .task-steps li{font-size:3.3vw;padding-left:6.4vw}
+  .task-steps li::before{width:4.6vw;height:4.6vw;font-size:2.8vw}
+  .demo-right{height:auto;gap:2.6vw}
+  .demo-frame{height:66vw;min-height:190px;border-radius:2.4vw}
+  .hint{font-size:3.1vw;padding:2.6vw 3vw;border-radius:2vw;margin-top:2.6vw}
+  /* AI */
+  .ai-card{padding:4.4vw;border-radius:2.6vw}
+  .ai-card p{font-size:3.5vw}
+  .ai-badge{width:8.4vw;height:8.4vw;font-size:3.2vw;border-radius:2vw;margin-bottom:2.4vw}
+  /* 检测（!important：压过横屏 dense 的 cqw 规则，否则竖屏字号塌缩） */
+  .quiz-body{gap:3.4vw}
+  .quiz-top{flex-direction:column;align-items:flex-start;gap:2.4vw}
+  .quiz-meta{font-size:3vw}
+  .quiz-meta b{font-size:3.4vw}
+  .quiz-acts{gap:2vw}
+  .q-reveal,.q-reset-all{font-size:3vw;padding:1.6vw 3.4vw;border-radius:2vw}
+  .quiz{gap:3vw;overflow:visible}
+  .quiz.dense{gap:2.6vw}
+  .quiz-item,.quiz.dense .quiz-item{padding:3.4vw 3.6vw;border-radius:2.4vw}
+  .quiz.dense .q{font-size:3.6vw;gap:1.6vw;line-height:1.55}
+  .q-no{font-size:2.9vw}
+  .q-tag{font-size:2.4vw;padding:.3vw 1.4vw;border-radius:1.2vw}
+  .opts,.quiz.dense .opts{gap:1.8vw;margin-top:2.2vw}
+  .opt,.quiz.dense .opt{font-size:3.2vw;padding:1.4vw 2.8vw;border-radius:2vw;gap:1.4vw}
+  .q-foot,.quiz.dense .q-foot{margin-top:2vw;gap:2.4vw;min-height:0}
+  .q-check,.quiz.dense .q-check{font-size:2.9vw;padding:1.2vw 2.8vw;border-radius:1.6vw}
+  .q-reset,.quiz.dense .q-reset{font-size:2.9vw;padding:1.2vw 2.6vw;border-radius:1.6vw}
+  .q-verdict,.quiz.dense .q-verdict{font-size:2.9vw}
+  .q-ans,.quiz.dense .q-ans{font-size:3vw;padding:2.2vw 3vw;border-radius:1.8vw;margin-top:2vw}
+  /* 目标 / 思政 */
+  .objs{grid-template-columns:1fr;gap:3vw}
+  .obj{padding:4vw;border-radius:2.4vw}
+  .obj-h{font-size:3.9vw;margin-bottom:2.4vw}
+  .obj-h::before{width:1.4vw;height:4vw}
+  .obj ul{gap:2vw}
+  .obj li{font-size:3.2vw;padding-left:3.4vw}
+  .obj li::before{width:1.2vw;height:1.2vw;top:1.6vw}
+  .ideo-wrap{gap:3.4vw}
+  .ideo-quote{font-size:3.6vw;padding:4vw 4.4vw;border-radius:2.4vw;line-height:1.8}
+  .ideo-topic{font-size:3.2vw;padding:2.8vw 3.2vw;border-radius:2.2vw}
+  .it-label{font-size:2.6vw;padding:.5vw 1.6vw;border-radius:1.2vw;margin-right:1.4vw}
+  /* 参考 / 结束 */
+  .refs{gap:2.2vw}
+  .refs li{padding:2.8vw 3.2vw;border-radius:2vw;gap:2.4vw}
+  .ref-idx{font-size:2.8vw}
+  .ref-t{font-size:3.3vw}
+  .ref-u{font-size:2.7vw}
+  .s-end{align-items:center;justify-content:center;min-height:60vh}
+  .end-t{font-size:8.4vw}
+  .end-s{font-size:3.6vw;margin-top:3vw}
+  .end-mark{font-size:6vw}
+  .end-inner{max-width:none;width:100%;gap:2vw}
+  .end-next{margin-top:5vw;gap:2.2vw;padding:3vw 3.6vw;border-radius:2.4vw;flex-wrap:wrap;justify-content:center}
+  .en-lab{font-size:2.6vw;padding:.8vw 2vw;border-radius:1.2vw}
+  .en-t{font-size:3.4vw}
+  .en-ar{font-size:3.6vw}
+  .end-back{font-size:3vw;margin-top:2.6vw}
+  /* HUD / 目录：固定悬浮 */
+  .topbar{position:fixed;height:1.2vw;z-index:20}
+  .hud{position:fixed;right:3vw;bottom:calc(3vw + env(safe-area-inset-bottom));z-index:20;
+    background:rgba(255,255,255,.94);border:1px solid var(--line);border-radius:999px;
+    padding:2.2vw 3.4vw;gap:3vw;font-size:3vw;box-shadow:0 10px 30px -12px rgba(16,34,74,.35)}
+  .hud .btn{font-size:2.9vw;padding:1vw 2.4vw;border-radius:1.6vw}
+  .flip-toast{position:fixed;bottom:calc(16vw + env(safe-area-inset-bottom));z-index:21;
+    font-size:3vw;padding:2.2vw 4vw;max-width:84vw;white-space:normal;text-align:center;line-height:1.5}
+  .legend{display:none}
+  .drawer{position:fixed;padding:4vw}
+  .drawer-panel{padding:5vw;border-radius:3vw}
+  .drawer-h{font-size:4.2vw;margin-bottom:3vw}
+  .drawer-h span{font-size:3.2vw}
+  .drawer ul{grid-template-columns:1fr;gap:1.6vw}
+  .drawer li{padding:2.4vw 3vw;border-radius:2vw;gap:2.4vw}
+  .nv-idx{font-size:2.8vw}
+  .nv-t{font-size:3.2vw;white-space:normal}
+}
+/* 打印 */
+@media print{
+  body{overflow:visible}
+  .wrap{padding:0;display:block}
+  .stage{width:100%;max-width:none;height:auto;aspect-ratio:auto;border-radius:0;box-shadow:none}
+  .slide{position:relative;opacity:1!important;visibility:visible!important;transform:none!important;
+    page-break-after:always;height:100vh;width:100%}
+  .an{opacity:1!important;animation:none!important}
+  .topbar,.hud,.legend,.drawer{display:none!important}
+}
+</style>
+</head>
+<body>
+<div class="wrap"><div class="stage" id="stage">
+  <div class="bgfx"><div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div><div class="grid-lines"></div></div>
+  <div class="topbar"><i id="bar"></i></div>
+
+<section class="slide s-cover is-active" data-kind="cover">
+  <div class="cover-left">
+    <div class="brandrow an" style="--i:0">
+      <span class="brandmark">网页制作</span>
+      <span class="brandsub">HTML5 + CSS3</span>
+    </div>
+    <div class="kicker an" style="--i:1">项目9 · 第 23 单元</div>
+    <h1 class="cover-title an" style="--i:2">变换：2D 变换与 3D 变换</h1>
+    <p class="cover-sub an" style="--i:3">一个 transform 属性，让元素旋转、缩放、平移、扭曲，甚至变成立方体</p>
+    <div class="pills"><span class="pill" style="--i:3">transform</span><span class="pill" style="--i:4">translate / rotate</span><span class="pill" style="--i:5">scale / skew</span><span class="pill" style="--i:6">perspective</span><span class="pill" style="--i:7">preserve-3d</span></div>
+    <div class="cover-meta an" style="--i:9">
+      <span class="m-item"><b>40</b> 分钟</span>
+      <span class="dot"></span>
+      <span class="m-item">教材《网页制作（HTML5+CSS3）》项目9</span>
+      <span class="dot"></span>
+      <span class="m-item">电子工业出版社 · 2025 年 1 月第 1 版</span>
+    </div>
+  </div>
+  <div class="cover-art" aria-hidden="true">
+    <div class="orb o1"></div><div class="orb o2"></div><div class="orb o3"></div>
+    <div class="codewin">
+      <div class="cw-bar"><i></i><i></i><i></i></div>
+      <pre class="cw-body"><span class="pn">&lt;!</span><span class="tg">DOCTYPE</span> <span class="at">html</span><span class="pn">&gt;</span>
+<span class="pn">&lt;</span><span class="tg">html</span> <span class="at">lang</span>=<span class="st">"zh-CN"</span><span class="pn">&gt;</span>
+  <span class="pn">&lt;</span><span class="tg">head</span><span class="pn">&gt;</span> <span class="pn">&lt;</span><span class="tg">meta</span> <span class="at">charset</span>=<span class="st">"UTF-8"</span><span class="pn">&gt;</span> <span class="pn">&lt;/</span><span class="tg">head</span><span class="pn">&gt;</span>
+  <span class="pn">&lt;</span><span class="tg">body</span><span class="pn">&gt;</span>
+    <span class="pn">&lt;</span><span class="tg">h1</span><span class="pn">&gt;</span>Hello, Web<span class="pn">&lt;/</span><span class="tg">h1</span><span class="pn">&gt;</span>
+  <span class="pn">&lt;/</span><span class="tg">body</span><span class="pn">&gt;</span>
+<span class="pn">&lt;/</span><span class="tg">html</span><span class="pn">&gt;</span></pre>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-kind="objectives">
+  
+  <header class="s-head">
+    <div class="s-head-left">
+      
+      <h2 class="s-title an" style="--i:1">本单元我们要达成什么</h2>
+      <p class="s-sub an" style="--i:2">对照教材《项目9》的学习目标 / 技能目标 / 素养目标</p>
+    </div>
+  </header>
+  <div class="s-body"><div class="objs"><div class="obj obj-1" class="an " style="--i:1">
+          <div class="obj-h">知识目标</div><ul><li>掌握 CSS3 2D 变换的相关概念</li><li>掌握 CSS3 3D 变换的相关概念</li><li>理解变换轴心 transform-origin 的作用</li></ul></div><div class="obj obj-2" class="an " style="--i:2">
+          <div class="obj-h">技能目标</div><ul><li>能使用 transform 实现旋转、缩放、平移、扭曲</li><li>能正确书写复合变换函数</li><li>能使用 perspective 与 preserve-3d 搭建 3D 场景</li></ul></div><div class="obj obj-3" class="an " style="--i:3">
+          <div class="obj-h">素养目标</div><ul><li>培养精益求精的工匠精神</li><li>培养勇于探索、崇尚科学的意志和品德</li><li>培养严谨求实的学习态度</li></ul></div></div></div>
+</section>
+
+<section class="slide s-ideo" data-kind="ideology">
+  
+  <header class="s-head">
+    <div class="s-head-left">
+      
+      <h2 class="s-title an" style="--i:1">迭代开发：工匠精神在代码里的样子</h2>
+      <p class="s-sub an" style="--i:2">教材《项目9》思政课堂</p>
+    </div>
+  </header>
+  <div class="s-body"><div class="ideo-wrap">
+    <div class="ideo-quote an" style="--i:1">互联网的<strong>迭代开发思想</strong>是工匠精神的一种体现，这种思想强调在开发过程中不断进行反馈和改进，追求产品的完美和极致。在每一次迭代过程中，开发人员不断优化和改进产品，逐步完善产品的功能和性能，以满足用户的需求和期望。<strong>这种不断追求卓越的精神正是工匠精神的体现。</strong>在现代社会，工匠精神已经成为许多行业所追求的核心价值。无论是软件工程师、设计师还是其他领域的专业人才，都需要具备这种精益求精的精神，只有这样才能创造出更加优秀的产品。</div>
+    <div class="ideo-topic an" style="--i:2"><span class="it-label">课堂讨论</span>本单元的「变换」效果往往需要反复微调角度、轴心与透视距离。请结合岗位谈一谈：你在调试页面效果时，愿意为一个 1 像素的误差反复迭代多少次？为什么？</div>
+  </div></div>
+</section>
+
+<section class="slide" data-kind="outline">
+  
+  <header class="s-head">
+    <div class="s-head-left">
+      
+      <h2 class="s-title an" style="--i:1">本单元导览</h2>
+      <p class="s-sub an" style="--i:2">从二维平面走到三维空间</p>
+    </div>
+  </header>
+  <div class="s-body"><ol class="outline"><li class="an " style="--i:1"><span class="oi">01</span><span class="ot">变换（transform）到底能做哪几件事？（9.1）</span></li><li class="an " style="--i:2"><span class="oi">02</span><span class="ot">2D 变换：坐标系、五大函数、复合变换与变换轴心（9.2）</span></li><li class="an " style="--i:3"><span class="oi">03</span><span class="ot">3D 变换：立体坐标系、3D 函数、透视与消失点（9.3）</span></li><li class="an " style="--i:4"><span class="oi">04</span><span class="ot">任务 9-1：用 3D 变换做一个真正的正方体骰子</span></li></ol></div>
+</section>
+
+<section class="slide s-section" data-kind="section">
+  <div class="sec-inner">
+    <div class="sec-num an" style="--i:0">9.1</div>
+    <h2 class="sec-title an" style="--i:1">变换</h2>
+    <div class="sec-line an" style="--i:2"></div>
+    <p class="sec-sub an" style="--i:3">不改变文档流，只改变「看起来在哪、看起来多大」。</p>
+  </div>
+</section>
+
+<section class="slide" data-kind="bullets">
+  
+  <header class="s-head">
+    <div class="s-head-left">
+      <div class="kicker an" style="--i:0">知识要点</div>
+      <h2 class="s-title an" style="--i:1">transform：CSS3 的变换属性</h2>
+      <p class="s-sub an" style="--i:2">教材原文：允许对元素进行旋转、扭曲、缩放、平移、矩阵变形等</p>
+    </div>
+  </header>
+  <div class="s-body"><ul class="blist dense"><li class="an " style="--i:1"><span class="bl-dot"></span><span>变换（transform）是 <strong>CSS3 的新样式属性之一</strong>，允许对元素进行<strong>旋转 rotate、扭曲 skew、缩放 scale、平移 translate、矩阵变形 matrix</strong> 等操作。</span></li><li class="an " style="--i:2"><span class="bl-dot"></span><span>由此可实现 <strong>2D 变换</strong>或 <strong>3D 变换</strong>。</span></li><li class="an " style="--i:3"><span class="bl-dot"></span><span>基本语法：<code>transform: none | transform-functions;</code></span></li><li class="an " style="--i:4"><span class="bl-dot"></span><span><code>none</code> 表示<strong>没有变换</strong>；<code>transform-functions</code> 表示<strong>一个或多个</strong>变换函数。</span></li><li class="an " style="--i:5"><span class="bl-dot"></span><span>重要提醒：transform <strong>不会让元素脱离文档流</strong>，它只是改变了元素的视觉呈现，原位置依然被占据。</span></li></ul></div>
+</section>
+
+<section class="slide s-section" data-kind="section">
+  <div class="sec-inner">
+    <div class="sec-num an" style="--i:0">9.2</div>
+    <h2 class="sec-title an" style="--i:1">2D 变换</h2>
+    <div class="sec-line an" style="--i:2"></div>
+    <p class="sec-sub an" style="--i:3">先把坐标系弄清楚，否则正负号永远会搞反。</p>
+  </div>
+</section>
+
+<section class="slide" data-kind="bullets">
+  
+  <header class="s-head">
+    <div class="s-head-left">
+      <div class="kicker an" style="--i:0">知识要点</div>
+      <h2 class="s-title an" style="--i:1">2D 变换的坐标系（教材图 9-1）</h2>
+      <p class="s-sub an" style="--i:2">原点在元素左上角，y 轴向下为正——与数学课里的坐标系相反</p>
+    </div>
+  </header>
+  <div class="s-body"><ul class="blist"><li class="an " style="--i:1"><span class="bl-dot"></span><span>CSS3 的 2D 变换基于 <strong>2D 图形坐标系</strong>：原点 (0,0) 位于<strong>元素的左上角</strong>。</span></li><li class="an " style="--i:2"><span class="bl-dot"></span><span>每个点使用一组 <strong>(x, y)</strong> 构建的<strong>笛卡儿坐标系</strong>来描述。</span></li><li class="an " style="--i:3"><span class="bl-dot"></span><span><strong>x 轴向右为正方向，y 轴向下为正方向。</strong></span></li><li class="an " style="--i:4"><span class="bl-dot"></span><span>因此 <code>translate(10px, 20px)</code> 表示<strong>向右 10px、向下 20px</strong>；<code>translateY(-20px)</code> 才是向上。</span></li></ul></div>
+</section>
+
+<section class="slide" data-kind="table">
+  
+  <header class="s-head">
+    <div class="s-head-left">
+      <div class="kicker an" style="--i:0">对照表</div>
+      <h2 class="s-title an" style="--i:1">常用的 2D 变换函数（教材表 9-1）</h2>
+      <p class="s-sub an" style="--i:2">五大函数：平移、旋转、缩放、倾斜、矩阵</p>
+    </div>
+  </header>
+  <div class="s-body"><div class="tbl-wrap">
+    <table class="tbl"><thead><tr><th>2D 变换函数</th><th>描述</th></tr></thead><tbody><tr class="an " style="--i:1"><td><code>translate(tx,ty)</code></td><td>包含两个参数值，分别指定 x 轴和 y 轴的平移量。根据<strong>左侧（x 轴）</strong>和<strong>顶部（y 轴）</strong>位置给定的参数，从当前元素位置开始移动</td></tr><tr class="an " style="--i:2"><td><code>rotate(ra)</code></td><td>包含一个角度参数，指定元素<strong>顺时针</strong>旋转的角度。<strong>参数值为负表示逆时针</strong>旋转</td></tr><tr class="an " style="--i:3"><td><code>scale(sx[,sy])</code></td><td>两个参数分别为 x 轴、y 轴的缩放值。<strong>第二个参数为空时等于第一个</strong>；小于 1 为缩小，大于 1 为放大</td></tr><tr class="an " style="--i:4"><td><code>skew(ax[,ay])</code></td><td>两个参数分别为 x 轴、y 轴<strong>倾斜的角度</strong>。第二个参数为空时<strong>默认值为 0</strong>；值为负表示向相反方向倾斜</td></tr><tr class="an " style="--i:5"><td><code>matrix(a,b,c,d,tx,ty)</code></td><td>以包含 <strong>6 个值</strong>的转换矩阵形式指定 2D 变换。<strong>a、b、c、d</strong> 描述线变换，<strong>tx</strong> 表示水平偏移，<strong>ty</strong> 表示垂直偏移</td></tr></tbody></table>
+  </div></div>
+</section>
+
+<section class="slide" data-kind="code">
+  
+  <header class="s-head">
+    <div class="s-head-left">
+      <div class="kicker an" style="--i:0">代码示例</div>
+      <h2 class="s-title an" style="--i:1">2D 变换综合示例（代码 9-1）</h2>
+      <p class="s-sub an" style="--i:2">同一组 100px×100px 的方块，分别应用 5 种变换（图 9-2）</p>
+    </div>
+  </header>
+  <div class="s-body col"><div class="codebox" class="an " style="--i:1">
+      <div class="cb-bar"><span class="cb-lang">CSS</span>
+      <span class="cb-file">style.css</span></div>
+      <pre class="cb-code"><span class="sel"><span class="cls">.outer</span></span><span class="pn">{</span> <span class="prop">background-color</span>:<span class="num">#FFE4C4</span><span class="pn">;</span> <span class="prop">height</span>:<span class="num">100</span>%<span class="pn">;</span><span class="pn">}</span><span class="sel">
+<span class="cls">.box</span></span><span class="pn">{</span> <span class="prop">background-color</span>:<span class="num">#01FFFF</span><span class="pn">;</span> <span class="prop">width</span>:<span class="num">100px</span><span class="pn">;</span> <span class="prop">height</span>:<span class="num">100px</span><span class="pn">;</span>
+      <span class="prop">display</span>:inline-block<span class="pn">;</span> <span class="prop">margin</span>:<span class="num">50px</span><span class="pn">;</span> <span class="prop">text-align</span>:center<span class="pn">;</span><span class="pn">}</span><span class="sel">
+<span class="cls">.box2</span></span><span class="pn">{</span> <span class="prop">transform</span>: <span class="fn">rotate</span>(<span class="num">45deg</span>)<span class="pn">;</span><span class="pn">}</span><span class="sel">
+<span class="cls">.box3</span></span><span class="pn">{</span> <span class="prop">transform</span>: <span class="fn">translate</span>(<span class="num">10px</span>,<span class="num">20px</span>)<span class="pn">;</span><span class="pn">}</span><span class="sel">
+<span class="cls">.box4</span></span><span class="pn">{</span> <span class="prop">transform</span>: <span class="fn">scale</span>(<span class="num">2</span>,<span class="num">0.5</span>)<span class="pn">;</span><span class="pn">}</span><span class="sel">
+<span class="cls">.box5</span></span><span class="pn">{</span> <span class="prop">transform</span>: <span class="fn">skew</span>(<span class="num">30deg</span>,<span class="num">20deg</span>)<span class="pn">;</span><span class="pn">}</span><span class="sel">
+<span class="cls">.box6</span></span><span class="pn">{</span> <span class="prop">transform</span>: <span class="fn">matrix</span>(<span class="num">1</span>,<span class="num">0.2</span>,-<span class="num">1.2</span>,<span class="num">1</span>,<span class="num">0</span>,<span class="num">0</span>)<span class="pn">;</span><span class="pn">}</span></pre>
+    </div>
+    <div class="caption an" style="--i:2"><b>对照表 9-1 看代码：</b><code>rotate(45deg)</code> 顺时针 45 度；<code>scale(2,0.5)</code> 横向放大 2 倍、纵向压缩一半；<code>matrix(1,0.2,-1.2,1,0,0)</code> 是前四者叠加后的矩阵写法。</div>
+  </div>
+</section>
+
+<section class="slide" data-kind="bullets">
+  
+  <header class="s-head">
+    <div class="s-head-left">
+      <div class="kicker an" style="--i:0">知识要点</div>
+      <h2 class="s-title an" style="--i:1">单轴函数与复合变换</h2>
+      <p class="s-sub an" style="--i:2">教材标注的「常见的编程错误」：多个变换函数之间要用空格，不能用逗号</p>
+    </div>
+  </header>
+  <div class="s-body"><ul class="blist dense"><li class="an " style="--i:1"><span class="bl-dot"></span><span>只在一个轴上变换时，可用单轴函数：<code>translateX()</code>、<code>translateY()</code>、<code>scaleX()</code>、<code>scaleY()</code>、<code>skewX()</code>、<code>skewY()</code>。</span></li><li class="an " style="--i:2"><span class="bl-dot"></span><span>CSS3 支持对同一元素进行<strong>多个变换函数的复合操作</strong>：<code>transform: transform-functions1 transform-functions2 …</code></span></li><li class="an " style="--i:3"><span class="bl-dot"></span><span>示例：<code>transform: scale(2.0) translate(10px,20px);</code></span></li><li class="an " style="--i:4"><span class="bl-dot"></span><span><strong>多个变换函数之间必须使用空格分隔</strong>——教材原文：<strong>使用逗号而不使用空格分隔多个变换函数，是一种常见的编程错误。</strong></span></li><li class="an " style="--i:5"><span class="bl-dot"></span><span>复合变换的<strong>书写顺序会影响结果</strong>：先平移后旋转 ≠ 先旋转后平移，因为变换是依次作用于坐标系的。</span></li></ul></div>
+</section>
+
+<section class="slide" data-kind="demo">
+  
+  <header class="s-head">
+    <div class="s-head-left">
+      <div class="kicker an" style="--i:0">效果演示</div>
+      <h2 class="s-title an" style="--i:1">交互演示｜五种 2D 变换与变换轴心</h2>
+      <p class="s-sub an" style="--i:2">上行：rotate / translate / scale / skew / matrix；下行：默认轴心与 top left 轴心的对比</p>
+    </div>
+  </header>
+  <div class="s-body two demo">
+    <div class="col-l"><ul class="blist small"><li class="an " style="--i:1"><span class="bl-dot"></span><span><code>rotate(45deg)</code> 为<strong>顺时针</strong>，负值才是逆时针。</span></li><li class="an " style="--i:2"><span class="bl-dot"></span><span><code>translate()</code> 的两个值分别是<strong>向右</strong>与<strong>向下</strong>的位移量。</span></li><li class="an " style="--i:3"><span class="bl-dot"></span><span><code>scale(sx, sy)</code> 只写一个值时，<strong>两轴等比缩放</strong>。</span></li><li class="an " style="--i:4"><span class="bl-dot"></span><span>下行右侧的橙色块把 <code>transform-origin</code> 设为 <strong>top left</strong>，缩放时<strong>左上角固定不动</strong>——这就是轴心的作用。</span></li></ul>
+      <div class="hint an" style="--i:5"><b>动手试试：</b>把 scale 与 rotate 写在一起（用空格分隔），交换顺序再看看结果是否相同。</div>
+    </div>
+    <div class="col-r"><iframe class="demo-frame" title="效果预览" srcdoc="&lt;style&gt;.d23{margin:0;font-family:&#x27;PingFang SC&#x27;,system-ui,sans-serif;color:#1b2a44}.d23 .row{display:flex;justify-content:center;gap:14px;padding:4px 0}.d23 .cell{width:114px;text-align:center}.d23 .bx{height:76px;border-radius:10px;background:linear-gradient(135deg,#2f6bff,#0fb5c9);color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;box-shadow:0 10px 24px -12px rgba(20,40,90,.6)}.d23 .r{animation:rr 3s linear infinite}.d23 .t{animation:tt 2.4s ease-in-out infinite alternate}.d23 .s{animation:ss 2.2s ease-in-out infinite alternate}.d23 .k{animation:kk 2.6s ease-in-out infinite alternate}.d23 .m{animation:mm 3s ease-in-out infinite alternate}.d23 .lb{margin-top:7px;font-size:11px;color:#1d46b8;font-family:Menlo,monospace}.d23 .orow{display:flex;justify-content:center;gap:24px;margin-top:16px}.d23 .og{position:relative;width:240px;height:104px;background:#eef3ff;border:1px solid #d5e2fb;border-radius:10px}.d23 .ghost{position:absolute;left:22px;top:22px;width:56px;height:56px;border:2px dashed #9db8f0;border-radius:8px}.d23 .org{position:absolute;left:22px;top:22px;width:56px;height:56px;border-radius:8px;background:linear-gradient(135deg,#ff9d00,#ff5e7d);animation:sc 2.4s ease-in-out infinite alternate}.d23 .tl{transform-origin:top left}.d23 .cap{position:absolute;right:10px;bottom:8px;font-size:11px;color:#5a6c85;font-family:Menlo,monospace}@keyframes rr{from{transform:rotate(0)}to{transform:rotate(360deg)}}@keyframes tt{from{transform:translate(0,0)}to{transform:translate(16px,-16px)}}@keyframes ss{from{transform:scale(1)}to{transform:scale(0.62,1.32)}}@keyframes kk{from{transform:skew(0,0)}to{transform:skew(22deg,-12deg)}}@keyframes mm{from{transform:matrix(1,0,0,1,0,0)}to{transform:matrix(1,0.2,-1.2,1,0,0)}}@keyframes sc{from{transform:scale(1)}to{transform:scale(1.55)}}&lt;/style&gt;&lt;div class=&#x27;d23&#x27;&gt;&lt;div class=&#x27;row&#x27;&gt;&lt;div class=&#x27;cell&#x27;&gt;&lt;div class=&#x27;bx r&#x27;&gt;rotate&lt;/div&gt;&lt;div class=&#x27;lb&#x27;&gt;rotate(360deg)&lt;/div&gt;&lt;/div&gt;&lt;div class=&#x27;cell&#x27;&gt;&lt;div class=&#x27;bx t&#x27;&gt;translate&lt;/div&gt;&lt;div class=&#x27;lb&#x27;&gt;translate(16px,-16px)&lt;/div&gt;&lt;/div&gt;&lt;div class=&#x27;cell&#x27;&gt;&lt;div class=&#x27;bx s&#x27;&gt;scale&lt;/div&gt;&lt;div class=&#x27;lb&#x27;&gt;scale(0.62,1.32)&lt;/div&gt;&lt;/div&gt;&lt;div class=&#x27;cell&#x27;&gt;&lt;div class=&#x27;bx k&#x27;&gt;skew&lt;/div&gt;&lt;div class=&#x27;lb&#x27;&gt;skew(22deg,-12deg)&lt;/div&gt;&lt;/div&gt;&lt;div class=&#x27;cell&#x27;&gt;&lt;div class=&#x27;bx m&#x27;&gt;matrix&lt;/div&gt;&lt;div class=&#x27;lb&#x27;&gt;matrix(1,.2,-1.2,1,0,0)&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class=&#x27;orow&#x27;&gt;&lt;div class=&#x27;og&#x27;&gt;&lt;div class=&#x27;ghost&#x27;&gt;&lt;/div&gt;&lt;div class=&#x27;org&#x27;&gt;&lt;/div&gt;&lt;div class=&#x27;cap&#x27;&gt;默认轴心 50% 50%&lt;/div&gt;&lt;/div&gt;&lt;div class=&#x27;og&#x27;&gt;&lt;div class=&#x27;ghost&#x27;&gt;&lt;/div&gt;&lt;div class=&#x27;org tl&#x27;&gt;&lt;/div&gt;&lt;div class=&#x27;cap&#x27;&gt;transform-origin: top left&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;"></iframe></div>
+  </div>
+</section>
+
+<section class="slide" data-kind="codebullets">
+  
+  <header class="s-head">
+    <div class="s-head-left">
+      <div class="kicker an" style="--i:0">代码与要点</div>
+      <h2 class="s-title an" style="--i:1">变换轴心 transform-origin（代码 9-2）</h2>
+      <p class="s-sub an" style="--i:2">缩放、扭曲的轴心默认在盒子中心；想换支点，就改这个属性</p>
+    </div>
+  </header>
+  <div class="s-body two">
+    <div class="col-l"><ul class="blist small dense"><li class="an " style="--i:1"><span class="bl-dot"></span><span>语法：<code>transform-origin: x y;</code>——<strong>属性值 x 和 y 之间使用空格分隔</strong>（不是逗号）。</span></li><li class="an " style="--i:2"><span class="bl-dot"></span><span>未指定 x y 时，默认变换轴心是<strong>元素中心点 50% 50%</strong>，也可用 <code>center center</code> 等价替换。</span></li><li class="an " style="--i:3"><span class="bl-dot"></span><span>x、y 可以是<strong>具体像素</strong>，也可以是 CSS3 预定义方位值：<code>top</code>、<code>bottom</code>、<code>left</code>、<code>right</code>、<code>center</code>。</span></li><li class="an " style="--i:4"><span class="bl-dot"></span><span>教材解析：box2 与 box4 都放大 2 倍并半透明，默认轴心在中心（box2）；把缩放点定到左上角后得到 box4 的效果（图 9-3）。</span></li></ul></div>
+    <div class="col-r"><div class="codebox" class="an " style="--i:1">
+      <div class="cb-bar"><span class="cb-lang">CSS</span>
+      <span class="cb-file">style.css</span></div>
+      <pre class="cb-code"><span class="sel"><span class="c">/* 代码 9-2（关键片段） */</span>
+<span class="cls">.outer</span></span><span class="pn">{</span> <span class="prop">display</span>:inline-block<span class="pn">;</span> <span class="prop">background-color</span>:<span class="num">#FFE4C4</span><span class="pn">;</span> <span class="prop">height</span>:<span class="num">300px</span><span class="pn">;</span> <span class="prop">width</span>:<span class="num">500px</span><span class="pn">;</span> <span class="prop">position</span>:relative<span class="pn">;</span><span class="pn">}</span><span class="sel">
+<span class="cls">.box</span></span><span class="pn">{</span> <span class="prop">background-color</span>:<span class="num">#01FFFF</span><span class="pn">;</span> <span class="prop">width</span>:<span class="num">100px</span><span class="pn">;</span> <span class="prop">height</span>:<span class="num">100px</span><span class="pn">;</span> <span class="prop">display</span>:inline-block<span class="pn">;</span>
+      <span class="prop">margin</span>:<span class="num">50px</span><span class="pn">;</span> <span class="prop">text-align</span>:center<span class="pn">;</span> <span class="prop">position</span>:absolute<span class="pn">;</span><span class="pn">}</span><span class="sel">
+<span class="cls">.box2</span>,<span class="cls">.box4</span></span><span class="pn">{</span> <span class="prop">opacity</span>:<span class="num">0.3</span><span class="pn">;</span> <span class="prop">transform</span>:<span class="fn">scale</span>(<span class="num">2</span>)<span class="pn">;</span><span class="pn">}</span><span class="sel">
+<span class="cls">.box4</span></span><span class="pn">{</span> <span class="prop">transform-origin</span>: top left<span class="pn">;</span><span class="pn">}</span>
+
+<span class="c">/* 其他写法 */</span>
+<span class="prop">transform-origin</span>: <span class="num">50px</span> <span class="num">50px</span><span class="pn">;</span>
+<span class="prop">transform-origin</span>: left bottom<span class="pn">;</span></pre></div></div>
+  </div>
+</section>
+
+<section class="slide s-section" data-kind="section">
+  <div class="sec-inner">
+    <div class="sec-num an" style="--i:0">9.3</div>
+    <h2 class="sec-title an" style="--i:1">3D 变换</h2>
+    <div class="sec-line an" style="--i:2"></div>
+    <p class="sec-sub an" style="--i:3">多了一个 z 轴，就多了一整套「近大远小」的透视规则。</p>
+  </div>
+</section>
+
+<section class="slide" data-kind="bullets">
+  
+  <header class="s-head">
+    <div class="s-head-left">
+      <div class="kicker an" style="--i:0">知识要点</div>
+      <h2 class="s-title an" style="--i:1">3D 立体坐标系与透视原理</h2>
+      <p class="s-sub an" style="--i:2">教材图 9-4～9-6：z 轴垂直屏幕，向外为正</p>
+    </div>
+  </header>
+  <div class="s-body"><ul class="blist dense"><li class="an " style="--i:1"><span class="bl-dot"></span><span><strong>x 轴</strong>：水平向右为正值，反之为负值。</span></li><li class="an " style="--i:2"><span class="bl-dot"></span><span><strong>y 轴</strong>：垂直向下为正值，反之为负值。</span></li><li class="an " style="--i:3"><span class="bl-dot"></span><span><strong>z 轴</strong>：<strong>垂直屏幕，向外为正值，向内为负值。</strong></span></li><li class="an " style="--i:4"><span class="bl-dot"></span><span><strong>perspective 是观察者与 z=0 平面的距离：</strong>值越大，好像离屏幕越远，物体看起来<strong>越小</strong>；值越小，好像凑到屏幕前，物体看起来<strong>越大</strong>。</span></li><li class="an " style="--i:5"><span class="bl-dot"></span><span>用 <code>translateZ()</code> 把元素向 z 轴正方向移动，它会<strong>看起来比原本大</strong>——这就是透视中<strong>近大远小</strong>的效果。</span></li></ul></div>
+</section>
+
+<section class="slide" data-kind="table">
+  
+  <header class="s-head">
+    <div class="s-head-left">
+      <div class="kicker an" style="--i:0">对照表</div>
+      <h2 class="s-title an" style="--i:1">常用的 3D 变换函数与相关属性（教材表 9-2）</h2>
+      <p class="s-sub an" style="--i:2">3D 函数大都以「*3d」命名，是在 2D 函数基础上增加了 z 轴方向</p>
+    </div>
+  </header>
+  <div class="s-body"><div class="tbl-wrap">
+    <table class="tbl"><thead><tr><th>3D 变换函数 / 属性</th><th>描述</th></tr></thead><tbody><tr class="an " style="--i:1"><td><code>translate3d(tx,ty,tz)</code></td><td>定义 3D 平移，参数值为在<strong>相应轴方向</strong>上的平移量</td></tr><tr class="an " style="--i:2"><td><code>rotate3d(rx,ry,rz,angle)</code></td><td>定义 3D 旋转，<code>angle</code> 为<strong>绕相应轴方向</strong>旋转的角度</td></tr><tr class="an " style="--i:3"><td><code>scale3d(sx,sy,sz)</code></td><td>定义 3D 缩放，参数值为<strong>相应轴方向</strong>的缩放值</td></tr><tr class="an " style="--i:4"><td><code>matrix3d(…)</code></td><td>以包含 <strong>16 个值</strong>的 4×4 转换矩阵形式指定 3D 变换。<strong>a1…d3</strong> 表示线性变换，<strong>a4、b4、c4、d4</strong> 表示平移</td></tr><tr class="an " style="--i:5"><td><code>perspective(length)</code></td><td>指定<strong>透视距离</strong>，即观察者与 z=0 平面的距离。z 大于 0 时 3D 元素比正常大，z 小于 0 时比正常小</td></tr><tr class="an " style="--i:6"><td><code>perspective-origin(x,y)</code></td><td>定义透视关系中<strong>消失点</strong>的坐标，可以使用方向预设值</td></tr><tr class="an " style="--i:7"><td><code>transform-style(flat / preserve-3d)</code></td><td><code>flat</code>：所有子元素在 <strong>2D 平面</strong>中呈现（<strong>默认值</strong>）；<code>preserve-3d</code>：所有子元素在 <strong>3D 空间</strong>中呈现</td></tr><tr class="an " style="--i:8"><td><code>backface-visibility(visible / hidden)</code></td><td>设置当元素<strong>背面朝向观察者</strong>时是否可见</td></tr></tbody></table>
+  </div></div>
+</section>
+
+<section class="slide" data-kind="codebullets">
+  
+  <header class="s-head">
+    <div class="s-head-left">
+      <div class="kicker an" style="--i:0">代码与要点</div>
+      <h2 class="s-title an" style="--i:1">perspective 的两种写法与两个搭档属性</h2>
+      <p class="s-sub an" style="--i:2">写在哪一层，决定了 3D 场景是「一个整体」还是「各自为政」</p>
+    </div>
+  </header>
+  <div class="s-body two">
+    <div class="col-l"><ul class="blist small dense"><li class="an " style="--i:1"><span class="bl-dot"></span><span><strong>指定父元素</strong>：把 <code>perspective</code> 设在 3D 渲染元素的<strong>共同父元素</strong>上，所有子元素共享同一个透视空间（最常用）。</span></li><li class="an " style="--i:2"><span class="bl-dot"></span><span><strong>指定子元素</strong>：把它与 <code>transform</code> 写在一起，即 <code>perspective()</code> 函数，只作用于当前元素。教材预告：<strong>任务 9-5 将用这种方式实现卡片翻转。</strong></span></li><li class="an " style="--i:3"><span class="bl-dot"></span><span><code>perspective-origin</code> 指定<strong>消失点</strong>位置，默认 <code>center center</code>（等价于 <code>50% 50%</code>）。<strong>只给定一个值时，另一个取默认值 center。</strong></span></li><li class="an " style="--i:4"><span class="bl-dot"></span><span><code>backface-visibility</code> 控制<strong>背面是否可见</strong>；做翻牌、翻转卡片时常设为 <code>hidden</code>。</span></li><li class="an " style="--i:5"><span class="bl-dot"></span><span>要让子元素真正待在 3D 空间里，必须先把 <code>transform-style</code> 设为 <code>preserve-3d</code>——<strong>这是 3D 变换最容易漏掉的一步。</strong></span></li></ul></div>
+    <div class="col-r"><div class="codebox" class="an " style="--i:1">
+      <div class="cb-bar"><span class="cb-lang">CSS</span>
+      <span class="cb-file">style.css</span></div>
+      <pre class="cb-code"><span class="sel"><span class="c">/* （1）指定父元素：设置在 3D 渲染元素的共同父元素上 */</span>
+<span class="cls">.parent</span></span><span class="pn">{</span> <span class="prop">perspective</span>:<span class="num">800px</span><span class="pn">;</span><span class="pn">}</span><span class="sel">
+
+<span class="c">/* （2）指定子元素：与 transform 属性写在一起 */</span>
+<span class="cls">.parent</span> <span class="cls">.sub</span></span><span class="pn">{</span> <span class="prop">transform</span>: <span class="fn">perspective</span>(<span class="num">800px</span>) <span class="fn">rotate</span>(<span class="num">45deg</span>)<span class="pn">;</span><span class="pn">}</span><span class="sel">
+
+<span class="c">/* 让子元素在 3D 空间中呈现 */</span>
+<span class="cls">.parent</span></span><span class="pn">{</span> <span class="prop">transform-style</span>: preserve-3d<span class="pn">;</span><span class="pn">}</span><span class="sel">
+<span class="cls">.parent</span> <span class="cls">.sub</span></span><span class="pn">{</span> <span class="prop">backface-visibility</span>: hidden<span class="pn">;</span><span class="pn">}</span></pre></div></div>
+  </div>
+</section>
+
+<section class="slide" data-kind="task">
+  
+  <header class="s-head">
+    <div class="s-head-left">
+      <div class="kicker an" style="--i:0">任务驱动</div>
+      <h2 class="s-title an" style="--i:1">任务 9-1｜制作 3D 骰子</h2>
+      <p class="s-sub an" style="--i:2">利用 3D 变换知识，制作图 9-11 的 3D 骰子效果，正方体尺寸为 100px×100px</p>
+    </div>
+  </header>
+  <div class="s-body two">
+    <div class="col-l">
+      <div class="task-goal an" style="--i:1"><span class="tg-label">任务目标</span>用 6 个面拼成一个<strong>真正的正方体</strong>：每个面先旋转到位，再沿 z 轴推出半个边长。</div>
+      <ol class="task-steps"><li class="an " style="--i:2">父容器 <code>.outer</code>：400px×200px、<code>padding:50px</code>、背景 <code>#FFE4C4</code>。</li><li class="an " style="--i:3"><code>#dice</code>：100px×100px、<code>margin:0 auto</code>、<code>transform-style:preserve-3d</code>、<code>perspective:800px</code>、<code>perspective-origin:bottom center</code>，并用 <code>rotate3d(1,1,0,332deg)</code> 摆出立体角度。</li><li class="an " style="--i:4">每个面 <code>.face</code>：用 Flex 将数字居中、<code>position:absolute</code>、<code>backface-visibility:inherit</code>、字号 60px、白色文字。</li><li class="an " style="--i:5">正面 front：沿 z 轴<strong>正方向</strong>平移 <strong>50px</strong>（骰子边长的一半）。</li><li class="an " style="--i:6">背面 back：平移后再<strong>沿 y 轴旋转 180 度</strong>，让正面朝外；左面 −90 度，右面 90 度，上下面同理绕 x 轴旋转。</li></ol>
+    </div>
+    <div class="col-r"><div class="task-code" class="an " style="--i:7">
+          <pre class="cb-code"><span class="sel"><span class="c">/* 代码 9-3 */</span>
+<span class="id">#dice</span></span><span class="pn">{</span>
+    <span class="prop">width</span>:<span class="num">100px</span><span class="pn">;</span> <span class="prop">height</span>:<span class="num">100px</span><span class="pn">;</span> <span class="prop">margin</span>:<span class="num">0</span> auto<span class="pn">;</span>
+    <span class="prop">transform-style</span>:preserve-3d<span class="pn">;</span>
+    <span class="prop">perspective</span>:<span class="num">800px</span><span class="pn">;</span>
+    <span class="prop">perspective-origin</span>:bottom center<span class="pn">;</span>
+    <span class="prop">transform</span>:<span class="fn">rotate3d</span>(<span class="num">1</span>, <span class="num">1</span>, <span class="num">0</span>, <span class="num">332deg</span>)<span class="pn">;</span><span class="pn">}</span><span class="sel">
+<span class="cls">.face</span></span><span class="pn">{</span>
+    <span class="prop">display</span>:flex<span class="pn">;</span> <span class="prop">align-items</span>:center<span class="pn">;</span> <span class="prop">justify-content</span>:center<span class="pn">;</span>
+    <span class="prop">width</span>:<span class="num">100</span>%<span class="pn">;</span> <span class="prop">height</span>:<span class="num">100</span>%<span class="pn">;</span> <span class="prop">position</span>:absolute<span class="pn">;</span>
+    <span class="prop">backface-visibility</span>:inherit<span class="pn">;</span> <span class="prop">font-size</span>:<span class="num">60px</span><span class="pn">;</span> <span class="prop">color</span>:<span class="num">#fff</span><span class="pn">;</span><span class="pn">}</span><span class="sel">
+<span class="cls">.front</span> </span><span class="pn">{</span> <span class="prop">background</span>:<span class="fn">rgba</span>(<span class="num">90</span>,<span class="num">90</span>,<span class="num">90</span>,<span class="num">0.7</span>)<span class="pn">;</span>   <span class="prop">transform</span>:<span class="fn">translateZ</span>(<span class="num">50px</span>)<span class="pn">;</span><span class="pn">}</span><span class="sel">
+<span class="cls">.back</span>  </span><span class="pn">{</span> <span class="prop">background</span>:<span class="fn">rgba</span>(<span class="num">0</span>,<span class="num">210</span>,<span class="num">0</span>,<span class="num">0.7</span>)<span class="pn">;</span>    <span class="prop">transform</span>:<span class="fn">rotateY</span>(<span class="num">180deg</span>) <span class="fn">translateZ</span>(<span class="num">50px</span>)<span class="pn">;</span><span class="pn">}</span><span class="sel">
+<span class="cls">.right</span> </span><span class="pn">{</span> <span class="prop">background</span>:<span class="fn">rgba</span>(<span class="num">210</span>,<span class="num">0</span>,<span class="num">0</span>,<span class="num">0.7</span>)<span class="pn">;</span>    <span class="prop">transform</span>:<span class="fn">rotateY</span>(<span class="num">90deg</span>)  <span class="fn">translateZ</span>(<span class="num">50px</span>)<span class="pn">;</span><span class="pn">}</span><span class="sel">
+<span class="cls">.left</span>  </span><span class="pn">{</span> <span class="prop">background</span>:<span class="fn">rgba</span>(<span class="num">0</span>,<span class="num">0</span>,<span class="num">210</span>,<span class="num">0.7</span>)<span class="pn">;</span>    <span class="prop">transform</span>:<span class="fn">rotateY</span>(-<span class="num">90deg</span>) <span class="fn">translateZ</span>(<span class="num">50px</span>)<span class="pn">;</span><span class="pn">}</span><span class="sel">
+<span class="cls">.top</span>   </span><span class="pn">{</span> <span class="prop">background</span>:<span class="fn">rgba</span>(<span class="num">210</span>,<span class="num">210</span>,<span class="num">0</span>,<span class="num">0.7</span>)<span class="pn">;</span>  <span class="prop">transform</span>:<span class="fn">rotateX</span>(<span class="num">90deg</span>)  <span class="fn">translateZ</span>(<span class="num">50px</span>)<span class="pn">;</span><span class="pn">}</span><span class="sel">
+<span class="cls">.bottom</span></span><span class="pn">{</span> <span class="prop">background</span>:<span class="fn">rgba</span>(<span class="num">210</span>,<span class="num">0</span>,<span class="num">210</span>,<span class="num">0.7</span>)<span class="pn">;</span>  <span class="prop">transform</span>:<span class="fn">rotateX</span>(-<span class="num">90deg</span>) <span class="fn">translateZ</span>(<span class="num">50px</span>)<span class="pn">;</span><span class="pn">}</span></pre></div></div>
+  </div>
+</section>
+
+<section class="slide" data-kind="demo">
+  
+  <header class="s-head">
+    <div class="s-head-left">
+      <div class="kicker an" style="--i:0">效果演示</div>
+      <h2 class="s-title an" style="--i:1">交互演示｜会转的 3D 骰子（六面点数用纯 CSS 绘制）</h2>
+      <p class="s-sub an" style="--i:2">preserve-3d + translateZ(55px) 搭出立方体，rotateY 让它一直转</p>
+    </div>
+  </header>
+  <div class="s-body two demo">
+    <div class="col-l"><ul class="blist small"><li class="an " style="--i:1"><span class="bl-dot"></span><span>骰子边长 110px，所以每个面沿 z 轴平移 <strong>55px</strong>（<strong>边长的一半</strong>）。</span></li><li class="an " style="--i:2"><span class="bl-dot"></span><span>「先旋转、再平移」是固定套路：<code>rotateY(90deg) translateZ(55px)</code> 把面转到右侧并推到位。</span></li><li class="an " style="--i:3"><span class="bl-dot"></span><span>父级 <code>transform-style:preserve-3d</code> 是<strong>必要条件</strong>，否则 6 个面会被压平成一堆。</span></li><li class="an " style="--i:4"><span class="bl-dot"></span><span>这里的点数不是图片，而是 <strong>6 个 div + border-radius:50%</strong> 用网格布局画出来的。</span></li></ul>
+      <div class="hint an" style="--i:5"><b>动手试试：</b>把 perspective 从 800px 改成 300px，观察「近大远小」会变得多么夸张。</div>
+    </div>
+    <div class="col-r"><iframe class="demo-frame" title="效果预览" srcdoc="&lt;style&gt;.d23b{margin:0;font-family:&#x27;PingFang SC&#x27;,system-ui,sans-serif;color:#1b2a44}.d23b .stage{display:flex;align-items:center;justify-content:center;gap:22px;padding:4px 6px}.d23b .scene{width:190px;height:190px;perspective:800px;perspective-origin:center center;display:flex;align-items:center;justify-content:center}.d23b .dice{position:relative;width:110px;height:110px;transform-style:preserve-3d;animation:spin 9s linear infinite}.d23b .face{position:absolute;left:0;top:0;right:0;bottom:0;display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(3,1fr);padding:13px;border-radius:12px;border:2px solid rgba(255,255,255,.4)}.d23b .pip{width:20px;height:20px;border-radius:50%;background:#fff;align-self:center;justify-self:center;box-shadow:inset 0 -3px 0 rgba(0,0,0,.2)}.d23b .f1 .pip:nth-child(1){grid-area:2/2}.d23b .f2 .pip:nth-child(1){grid-area:1/1}.d23b .f2 .pip:nth-child(2){grid-area:3/3}.d23b .f3 .pip:nth-child(1){grid-area:1/1}.d23b .f3 .pip:nth-child(2){grid-area:2/2}.d23b .f3 .pip:nth-child(3){grid-area:3/3}.d23b .f4 .pip:nth-child(1){grid-area:1/1}.d23b .f4 .pip:nth-child(2){grid-area:1/3}.d23b .f4 .pip:nth-child(3){grid-area:3/1}.d23b .f4 .pip:nth-child(4){grid-area:3/3}.d23b .f5 .pip:nth-child(1){grid-area:1/1}.d23b .f5 .pip:nth-child(2){grid-area:1/3}.d23b .f5 .pip:nth-child(3){grid-area:2/2}.d23b .f5 .pip:nth-child(4){grid-area:3/1}.d23b .f5 .pip:nth-child(5){grid-area:3/3}.d23b .f6 .pip:nth-child(1){grid-area:1/1}.d23b .f6 .pip:nth-child(2){grid-area:2/1}.d23b .f6 .pip:nth-child(3){grid-area:3/1}.d23b .f6 .pip:nth-child(4){grid-area:1/3}.d23b .f6 .pip:nth-child(5){grid-area:2/3}.d23b .f6 .pip:nth-child(6){grid-area:3/3}.d23b .front{background:rgba(90,90,90,.9);transform:translateZ(55px)}.d23b .back{background:rgba(0,180,0,.88);transform:rotateY(180deg) translateZ(55px)}.d23b .right{background:rgba(200,0,0,.88);transform:rotateY(90deg) translateZ(55px)}.d23b .left{background:rgba(0,0,200,.88);transform:rotateY(-90deg) translateZ(55px)}.d23b .top{background:rgba(200,180,0,.92);transform:rotateX(90deg) translateZ(55px)}.d23b .bottom{background:rgba(190,0,190,.88);transform:rotateX(-90deg) translateZ(55px)}.d23b .doc{width:300px;font-size:11.5px;line-height:1.9;color:#5a6c85}.d23b .doc code{background:#eef3ff;border:1px solid #d5e2fb;border-radius:5px;padding:1px 5px;color:#1d46b8;font-family:Menlo,monospace;font-size:11px}.d23b .doc p{margin:0 0 6px}@keyframes spin{from{transform:rotateX(-18deg) rotateY(0deg)}to{transform:rotateX(-18deg) rotateY(360deg)}}&lt;/style&gt;&lt;div class=&#x27;d23b&#x27;&gt;&lt;div class=&#x27;stage&#x27;&gt;&lt;div class=&#x27;scene&#x27;&gt;&lt;div class=&#x27;dice&#x27;&gt;&lt;div class=&#x27;face front f1&#x27;&gt;&lt;span class=&#x27;pip&#x27;&gt;&lt;/span&gt;&lt;/div&gt;&lt;div class=&#x27;face back f2&#x27;&gt;&lt;span class=&#x27;pip&#x27;&gt;&lt;/span&gt;&lt;span class=&#x27;pip&#x27;&gt;&lt;/span&gt;&lt;/div&gt;&lt;div class=&#x27;face right f3&#x27;&gt;&lt;span class=&#x27;pip&#x27;&gt;&lt;/span&gt;&lt;span class=&#x27;pip&#x27;&gt;&lt;/span&gt;&lt;span class=&#x27;pip&#x27;&gt;&lt;/span&gt;&lt;/div&gt;&lt;div class=&#x27;face left f4&#x27;&gt;&lt;span class=&#x27;pip&#x27;&gt;&lt;/span&gt;&lt;span class=&#x27;pip&#x27;&gt;&lt;/span&gt;&lt;span class=&#x27;pip&#x27;&gt;&lt;/span&gt;&lt;span class=&#x27;pip&#x27;&gt;&lt;/span&gt;&lt;/div&gt;&lt;div class=&#x27;face top f5&#x27;&gt;&lt;span class=&#x27;pip&#x27;&gt;&lt;/span&gt;&lt;span class=&#x27;pip&#x27;&gt;&lt;/span&gt;&lt;span class=&#x27;pip&#x27;&gt;&lt;/span&gt;&lt;span class=&#x27;pip&#x27;&gt;&lt;/span&gt;&lt;span class=&#x27;pip&#x27;&gt;&lt;/span&gt;&lt;/div&gt;&lt;div class=&#x27;face bottom f6&#x27;&gt;&lt;span class=&#x27;pip&#x27;&gt;&lt;/span&gt;&lt;span class=&#x27;pip&#x27;&gt;&lt;/span&gt;&lt;span class=&#x27;pip&#x27;&gt;&lt;/span&gt;&lt;span class=&#x27;pip&#x27;&gt;&lt;/span&gt;&lt;span class=&#x27;pip&#x27;&gt;&lt;/span&gt;&lt;span class=&#x27;pip&#x27;&gt;&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class=&#x27;doc&#x27;&gt;&lt;p&gt;&lt;code&gt;transform-style: preserve-3d&lt;/code&gt;　·　&lt;code&gt;perspective: 800px&lt;/code&gt;&lt;/p&gt;&lt;p&gt;&lt;code&gt;front&lt;/code&gt; → &lt;code&gt;translateZ(55px)&lt;/code&gt;&lt;/p&gt;&lt;p&gt;&lt;code&gt;back&lt;/code&gt; → &lt;code&gt;rotateY(180deg) translateZ(55px)&lt;/code&gt;&lt;/p&gt;&lt;p&gt;&lt;code&gt;right&lt;/code&gt; → &lt;code&gt;rotateY(90deg) translateZ(55px)&lt;/code&gt;&lt;/p&gt;&lt;p&gt;&lt;code&gt;left&lt;/code&gt; → &lt;code&gt;rotateY(-90deg) translateZ(55px)&lt;/code&gt;&lt;/p&gt;&lt;p&gt;&lt;code&gt;top&lt;/code&gt; → &lt;code&gt;rotateX(90deg) translateZ(55px)&lt;/code&gt;&lt;/p&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;"></iframe></div>
+  </div>
+</section>
+
+<section class="slide s-ai" data-kind="ai">
+  
+  <header class="s-head">
+    <div class="s-head-left">
+      <div class="kicker an" style="--i:0">AI 前沿</div>
+      <h2 class="s-title an" style="--i:1">AI 前沿：一句话生成一个 3D 立方体</h2>
+      <p class="s-sub an" style="--i:2">空间想象力不够，AI 可以帮你补；但参数还得你来核对</p>
+    </div>
+  </header>
+  <div class="s-body two">
+    <div class="col-l"><div class="ai-card an" style="--i:1">
+      <div class="ai-badge">AI</div>
+      <p>3D 变换是初学者最容易「脑子里转不过来」的部分：六个面各转多少度、往哪个方向推、透视距离取多少，全靠空间想象。现在你可以直接告诉 AI：<strong>「用 CSS 做一个 100px 的立方体骰子，六个面用 flex 画点数，沿 y 轴无限旋转」</strong>，DeepSeek、通义千问、GitHub Copilot 都能给出完整代码。关键是你要能<strong>看懂并核对那 6 行 transform</strong>——否则改一个尺寸就全乱了。</p></div></div>
+    <div class="col-r"><ul class="blist small ai-list"><li class="an " style="--i:2">核对清单：translateZ 是否为<strong>边长的一半</strong>？父级是否写了 <code>preserve-3d</code>？perspective 是否落在父层？</li><li class="an " style="--i:3">调试技巧：先给 6 个面设不同半透明颜色（教材正是这么做的），能一眼看出哪个面转错了。</li><li class="an " style="--i:4">工具推荐：Copilot / 通义灵码可在编辑器里实时补全 <code>@keyframes</code>，并逐行解释每个函数的作用。</li><li class="an " style="--i:5">职业提醒：AI 生成的 3D 代码常常缺少<strong>兼容性前缀与降级方案</strong>——上线前必须人工补上。</li></ul></div>
+  </div>
+</section>
+
+<section class="slide" data-kind="quiz">
+  
+  <header class="s-head">
+    <div class="s-head-left">
+      <div class="kicker an" style="--i:0">随堂检测</div>
+      <h2 class="s-title an" style="--i:1">随堂检测</h2>
+      <p class="s-sub an" style="--i:2">结合教材 9.1～9.3 要点自测</p>
+    </div>
+  </header>
+  <div class="s-body quiz-body">
+    <div class="quiz-top an" style="--i:0">
+      <span class="quiz-meta">共 <b>5</b> 题　·　先独立作答，再点「查看答案」；误点可「重做」</span>
+      <span class="quiz-acts">
+        <button type="button" class="q-reset-all" id="quizResetAll">全部重做</button>
+        <button type="button" class="q-reveal" id="quizReveal">显示全部答案</button>
+      </span>
+    </div>
+    <ol class="quiz dense"><li class="quiz-item single" class="an " style="--i:1" data-type="single" data-answer="B">
+          <div class="q"><span class="q-no">01</span>
+            <span class="q-tag single">单选</span><span class="q-txt">在 CSS3 的 2D 坐标系中，原点位于（　　）。</span></div>
+          <div class="opts"><button type="button" class="opt" data-k="A"><i>A</i><span>元素的中心</span></button><button type="button" class="opt" data-k="B"><i>B</i><span>元素的左上角</span></button><button type="button" class="opt" data-k="C"><i>C</i><span>浏览器的左上角</span></button><button type="button" class="opt" data-k="D"><i>D</i><span>屏幕中心</span></button></div>
+          <div class="q-foot"><button type="button" class="q-check">查看答案</button>
+            <button type="button" class="q-reset" disabled>重做</button>
+            <span class="q-verdict"></span></div>
+          <div class="q-ans"><b>答案</b><span class="ans-key">B</span><span class="ans-tip">教材图 9-1：原点 (0,0) 在元素左上角，x 轴向右为正，y 轴向下为正。</span></div>
+        </li><li class="quiz-item single" class="an " style="--i:2" data-type="single" data-answer="B">
+          <div class="q"><span class="q-no">02</span>
+            <span class="q-tag single">单选</span><span class="q-txt">关于多个变换函数的复合操作，写法正确的是（　　）。</span></div>
+          <div class="opts"><button type="button" class="opt" data-k="A"><i>A</i><span>transform: scale(2.0), translate(10px,20px);</span></button><button type="button" class="opt" data-k="B"><i>B</i><span>transform: scale(2.0) translate(10px,20px);</span></button><button type="button" class="opt" data-k="C"><i>C</i><span>transform: scale(2.0) + translate(10px,20px);</span></button><button type="button" class="opt" data-k="D"><i>D</i><span>transform: scale(2.0) translate(10px,20px),;</span></button></div>
+          <div class="q-foot"><button type="button" class="q-check">查看答案</button>
+            <button type="button" class="q-reset" disabled>重做</button>
+            <span class="q-verdict"></span></div>
+          <div class="q-ans"><b>答案</b><span class="ans-key">B</span><span class="ans-tip">教材原文：使用逗号而不使用空格分隔多个变换函数，是一种常见的编程错误。</span></div>
+        </li><li class="quiz-item single" class="an " style="--i:3" data-type="single" data-answer="B">
+          <div class="q"><span class="q-no">03</span>
+            <span class="q-tag single">单选</span><span class="q-txt">要让子元素在 3D 空间中呈现，父元素必须设置（　　）。</span></div>
+          <div class="opts"><button type="button" class="opt" data-k="A"><i>A</i><span>transform-style: flat;</span></button><button type="button" class="opt" data-k="B"><i>B</i><span>transform-style: preserve-3d;</span></button><button type="button" class="opt" data-k="C"><i>C</i><span>backface-visibility: hidden;</span></button><button type="button" class="opt" data-k="D"><i>D</i><span>perspective-origin: center;</span></button></div>
+          <div class="q-foot"><button type="button" class="q-check">查看答案</button>
+            <button type="button" class="q-reset" disabled>重做</button>
+            <span class="q-verdict"></span></div>
+          <div class="q-ans"><b>答案</b><span class="ans-key">B</span><span class="ans-tip">transform-style 的默认值是 flat（2D 平面）；只有 preserve-3d 才能让子元素留在 3D 空间。</span></div>
+        </li><li class="quiz-item multi" class="an " style="--i:4" data-type="multi" data-answer="AB">
+          <div class="q"><span class="q-no">04</span>
+            <span class="q-tag multi">多选</span><span class="q-txt">下列关于 2D 变换函数与变换轴心的说法中，正确的有（　　）。</span></div>
+          <div class="opts"><button type="button" class="opt" data-k="A"><i>A</i><span><code>rotate(45deg)</code> 表示顺时针旋转 45 度，取负值表示逆时针旋转</span></button><button type="button" class="opt" data-k="B"><i>B</i><span><code>scale(2)</code> 只写一个参数时，x、y 两轴等比放大 2 倍</span></button><button type="button" class="opt" data-k="C"><i>C</i><span><code>transform-origin</code> 的两个值之间必须用逗号分隔</span></button><button type="button" class="opt" data-k="D"><i>D</i><span><code>skew(30deg)</code> 省略第二个参数时，默认与第一个参数相同</span></button></div>
+          <div class="q-foot"><button type="button" class="q-check">查看答案</button>
+            <button type="button" class="q-reset" disabled>重做</button>
+            <span class="q-verdict"></span></div>
+          <div class="q-ans"><b>答案</b><span class="ans-key">A、B</span><span class="ans-tip">轴心用<strong>空格</strong>分隔；<code>skew</code> 省略第二个参数时默认值为 <strong>0</strong>，不是与第一个相同。</span></div>
+        </li><li class="quiz-item multi" class="an " style="--i:5" data-type="multi" data-answer="ABD">
+          <div class="q"><span class="q-no">05</span>
+            <span class="q-tag multi">多选</span><span class="q-txt">下列关于 3D 变换与透视的说法中，正确的有（　　）。</span></div>
+          <div class="opts"><button type="button" class="opt" data-k="A"><i>A</i><span>z 轴垂直屏幕，向外为正值、向内为负值</span></button><button type="button" class="opt" data-k="B"><i>B</i><span><code>perspective</code> 值越大，物体看起来越小</span></button><button type="button" class="opt" data-k="C"><i>C</i><span><code>transform-style</code> 的默认值是 <code>preserve-3d</code></span></button><button type="button" class="opt" data-k="D"><i>D</i><span><code>backface-visibility:hidden</code> 可让元素背面朝向观察者时不可见</span></button></div>
+          <div class="q-foot"><button type="button" class="q-check">查看答案</button>
+            <button type="button" class="q-reset" disabled>重做</button>
+            <span class="q-verdict"></span></div>
+          <div class="q-ans"><b>答案</b><span class="ans-key">A、B、D</span><span class="ans-tip"><code>transform-style</code> 默认是 <code>flat</code>（2D 平面），必须显式写成 <code>preserve-3d</code> 才能保留 3D 空间。</span></div>
+        </li></ol>
+  </div>
+</section>
+
+<section class="slide" data-kind="summary">
+  
+  <header class="s-head">
+    <div class="s-head-left">
+      
+      <h2 class="s-title an" style="--i:1">本课小结</h2>
+      
+    </div>
+  </header>
+  <div class="s-body"><ul class="blist"><li class="an " style="--i:1"><span class="bl-dot"></span><span>一个属性五件事：<code>transform</code> 负责<strong>旋转 rotate、扭曲 skew、缩放 scale、平移 translate、矩阵变形 matrix</strong>；语法为 <code>transform: none | transform-functions;</code>。</span></li><li class="an " style="--i:2"><span class="bl-dot"></span><span>2D 坐标系：原点在<strong>元素左上角</strong>，<strong>x 向右为正、y 向下为正</strong>；<code>rotate</code> 正值为顺时针。</span></li><li class="an " style="--i:3"><span class="bl-dot"></span><span>复合变换多个函数之间<strong>用空格分隔</strong>（用逗号是常见编程错误），且<strong>顺序会影响最终结果</strong>。</span></li><li class="an " style="--i:4"><span class="bl-dot"></span><span><code>transform-origin: x y</code> 用空格分隔，默认轴心为 <strong>50% 50%</strong>（盒子中心）。</span></li><li class="an " style="--i:5"><span class="bl-dot"></span><span>3D 三要素：<strong>z 轴垂直屏幕向外为正</strong>、<code>transform-style:preserve-3d</code>、<code>perspective</code> 透视距离（<strong>近大远小</strong>）。</span></li><li class="an " style="--i:6"><span class="bl-dot"></span><span>骰子套路：每个面<strong>先旋转到位，再 translateZ(边长的一半)</strong>。</span></li></ul></div>
+</section>
+
+<section class="slide" data-kind="homework">
+  
+  <header class="s-head">
+    <div class="s-head-left">
+      
+      <h2 class="s-title an" style="--i:1">课后作业</h2>
+      
+    </div>
+  </header>
+  <div class="s-body"><ul class="blist hw"><li class="an " style="--i:1"><span class="bl-dot"></span><span><strong>操作题：</strong>完成教材任务 9-1，制作 3D 骰子；把边长改为 160px，重算 translateZ 并验证。</span></li><li class="an " style="--i:2"><span class="bl-dot"></span><span><strong>简述题（教材 9.8）：</strong>以右手法则为例：伸出右手，大拇指指向旋转轴的正方向，其余四指的环绕方向恰好对应旋转的正方向。请结合本项目的示例，验证并说明 CSS3 的 3D 空间旋转符合<strong>左手法则还是右手法则</strong>。</span></li><li class="an " style="--i:3"><span class="bl-dot"></span><span><strong>思考题：</strong>把 <code>perspective</code> 分别设为 200px、800px、2000px，截图对比并说明「近大远小」的变化规律。</span></li><li class="an " style="--i:4"><span class="bl-dot"></span><span><strong>预习：</strong>阅读教材 9.4，思考过渡（transition）与变换（transform）在拼写与作用上有何不同。</span></li></ul></div>
+</section>
+
+<section class="slide" data-kind="refs">
+  
+  <header class="s-head">
+    <div class="s-head-left">
+      
+      <h2 class="s-title an" style="--i:1">出处与参考</h2>
+      <p class="s-sub an" style="--i:2">本课件内容依据教材，并核对以下权威技术文档</p>
+    </div>
+  </header>
+  <div class="s-body"><ol class="refs"><li class="an " style="--i:1"><span class="ref-idx">01</span><span class="ref-t">教材《网页制作（HTML5+CSS3）》项目9 过渡和动画（9.1～9.3，PDF 288–299）</span><span class="ref-u">郑哲、傅冬 主编 · 电子工业出版社 · 2025 年 1 月第 1 版</span></li><li class="an " style="--i:2"><span class="ref-idx">02</span><span class="ref-t">MDN Web Docs · transform</span><span class="ref-u">https://developer.mozilla.org/zh-CN/docs/Web/CSS/transform</span></li><li class="an " style="--i:3"><span class="ref-idx">03</span><span class="ref-t">MDN Web Docs · transform-function（变换函数）</span><span class="ref-u">https://developer.mozilla.org/zh-CN/docs/Web/CSS/transform-function</span></li><li class="an " style="--i:4"><span class="ref-idx">04</span><span class="ref-t">MDN Web Docs · transform-origin</span><span class="ref-u">https://developer.mozilla.org/zh-CN/docs/Web/CSS/transform-origin</span></li><li class="an " style="--i:5"><span class="ref-idx">05</span><span class="ref-t">MDN Web Docs · transform-style 与 perspective（3D 场景）</span><span class="ref-u">https://developer.mozilla.org/zh-CN/docs/Web/CSS/transform-style</span></li><li class="an " style="--i:6"><span class="ref-idx">06</span><span class="ref-t">W3C · CSS Transforms Module Level 1</span><span class="ref-u">https://www.w3.org/TR/css-transforms-1/</span></li></ol></div>
+</section>
+
+<section class="slide s-end" data-kind="end">
+  <div class="end-inner">
+    <div class="end-mark an" style="--i:0">·</div>
+    <h2 class="end-t an" style="--i:1">第 23 单元 · 结束</h2>
+    <p class="end-s an" style="--i:2">下一单元：让变化「慢慢发生」——过渡与动画</p>
+    <a class="end-next an" style="--i:3" href="U24%20%E8%BF%87%E6%B8%A1%E4%B8%8E%E5%8A%A8%E7%94%BB%EF%BC%9Atransition%20%E4%B8%8E%20%40keyframes.html"><span class="en-lab">下一讲</span><span class="en-t">U24 过渡与动画：transition 与 @keyframes</span><span class="en-ar">→</span></a>
+    <a class="end-back an" style="--i:4" href="../../index.html"><span>←</span> 返回总目录</a>
+  </div>
+</section>
+  <div class="legend">← → 翻页　·　C 点击翻页开关　·　O 目录　·　F 全屏　·　P 打印　·　拖动圈选不翻页</div>
+  <div class="hud">
+    <span class="btn" id="btnClick" data-on="1" title="开启 / 关闭「点击鼠标切换页面」（快捷键 C）">点击翻页 开</span>
+    <span class="btn" id="btnNav">目录</span>
+    <span class="btn" id="btnFull">全屏</span>
+    <span class="pageno"><b id="cur">1</b> / 25</span>
+  </div>
+  <div class="flip-toast" id="flipToast"></div>
+  <div class="drawer" id="drawer">
+    <div class="drawer-panel">
+      <div class="drawer-h">本单元目录 <span id="drawerClose">关闭 ✕</span></div>
+      <ul id="drawerList"><li data-go="0"><span class="nv-idx">01</span><span class="nv-t">变换：2D 变换与 3D 变换</span></li><li data-go="1"><span class="nv-idx">02</span><span class="nv-t">本单元我们要达成什么</span></li><li data-go="2"><span class="nv-idx">03</span><span class="nv-t">思政课堂</span></li><li data-go="3"><span class="nv-idx">04</span><span class="nv-t">导览</span></li><li data-go="4"><span class="nv-idx">05</span><span class="nv-t">9.1 变换</span></li><li data-go="5"><span class="nv-idx">06</span><span class="nv-t">transform 概念</span></li><li data-go="6"><span class="nv-idx">07</span><span class="nv-t">9.2 2D 变换</span></li><li data-go="7"><span class="nv-idx">08</span><span class="nv-t">2D 坐标系</span></li><li data-go="8"><span class="nv-idx">09</span><span class="nv-t">表9-1 2D函数</span></li><li data-go="9"><span class="nv-idx">10</span><span class="nv-t">代码9-1</span></li><li data-go="10"><span class="nv-idx">11</span><span class="nv-t">复合变换</span></li><li data-go="11"><span class="nv-idx">12</span><span class="nv-t">2D 变换演示</span></li><li data-go="12"><span class="nv-idx">13</span><span class="nv-t">变换轴心</span></li><li data-go="13"><span class="nv-idx">14</span><span class="nv-t">9.3 3D 变换</span></li><li data-go="14"><span class="nv-idx">15</span><span class="nv-t">3D 坐标系</span></li><li data-go="15"><span class="nv-idx">16</span><span class="nv-t">表9-2 3D函数</span></li><li data-go="16"><span class="nv-idx">17</span><span class="nv-t">perspective 写法</span></li><li data-go="17"><span class="nv-idx">18</span><span class="nv-t">任务9-1 3D骰子</span></li><li data-go="18"><span class="nv-idx">19</span><span class="nv-t">3D 骰子演示</span></li><li data-go="19"><span class="nv-idx">20</span><span class="nv-t">AI 前沿</span></li><li data-go="20"><span class="nv-idx">21</span><span class="nv-t">随堂检测</span></li><li data-go="21"><span class="nv-idx">22</span><span class="nv-t">本课小结</span></li><li data-go="22"><span class="nv-idx">23</span><span class="nv-t">课后作业</span></li><li data-go="23"><span class="nv-idx">24</span><span class="nv-t">出处与参考</span></li><li data-go="24"><span class="nv-idx">25</span><span class="nv-t">结束</span></li></ul>
+    </div>
+  </div>
+</div></div>
+<script>
+(function(){
+  var slides = Array.prototype.slice.call(document.querySelectorAll('.slide'));
+  var total = slides.length, cur = 0;
+  var stage = document.getElementById('stage');
+  var bar = document.getElementById('bar'), curEl = document.getElementById('cur');
+  var drawer = document.getElementById('drawer');
+  var mqPortrait = window.matchMedia('(orientation: portrait)');
+  var flow = mqPortrait.matches;
+
+  /* ---- 点击翻页开关（记忆教师偏好，跨课件生效） ---- */
+  var clickOn = true;
+  try{ clickOn = localStorage.getItem('deck_clickflip') !== '0'; }catch(e){}
+  var btnClick = document.getElementById('btnClick');
+  var toastEl = document.getElementById('flipToast'), toastTimer = null;
+  function tip(msg){
+    if(!toastEl) return;
+    toastEl.textContent = msg;
+    toastEl.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function(){ toastEl.classList.remove('show'); }, 1500);
+  }
+  function syncClickBtn(){
+    if(!btnClick) return;
+    if(flow){                                   // 竖屏为滚屏阅读，点击翻页天然不生效
+      btnClick.textContent = '竖屏阅读';
+      btnClick.setAttribute('data-on', '0');
+      btnClick.setAttribute('title', '竖屏为纵向阅读模式，上下滚动即可；旋转为横屏后可用点击翻页');
+      return;
+    }
+    btnClick.textContent = '点击翻页 ' + (clickOn ? '开' : '关');
+    btnClick.setAttribute('data-on', clickOn ? '1' : '0');
+    btnClick.setAttribute('title', clickOn
+      ? '当前：点击鼠标可切换页面。点此关闭（快捷键 C）'
+      : '当前：点击鼠标不翻页，方便圈选讲解。点此开启（快捷键 C）');
+  }
+  function toggleClickFlip(silent){
+    clickOn = !clickOn;
+    try{ localStorage.setItem('deck_clickflip', clickOn ? '1' : '0'); }catch(e){}
+    syncClickBtn();
+    if(!silent) tip(clickOn ? '点击翻页已开启' : '点击翻页已关闭 · 仍可用 ← → 或滑动翻页');
+  }
+  syncClickBtn();
+
+  function hasSelection(){
+    var s = window.getSelection && window.getSelection();
+    return !!(s && String(s.text || s).length > 0);
+  }
+  function setIndex(n){
+    cur = Math.max(0, Math.min(total-1, n));
+    slides.forEach(function(s,i){ s.classList.toggle('is-active', i===cur); });
+    var act = slides[cur];
+    if(act && !flow) act.querySelectorAll('.an').forEach(function(el){ void el.offsetWidth; });
+    bar.style.width = (total>1 ? (cur/(total-1)*100) : 100)+'%';
+    curEl.textContent = cur+1;
+    document.querySelectorAll('#drawerList li').forEach(function(li,i){ li.classList.toggle('cur', i===cur); });
+  }
+  function go(n, instant){
+    n = Math.max(0, Math.min(total-1, n));
+    var same = (n===cur && slides[cur] && slides[cur].classList.contains('is-active'));
+    slides.forEach(function(s,i){
+      s.classList.remove('prev');
+      if(i<n) s.classList.add('prev');
+      if(i===n) s.classList.add('is-active');
+    });
+    setIndex(n);
+    if(flow){
+      var el = slides[n];
+      if(el && el.scrollIntoView) el.scrollIntoView({behavior: instant ? 'auto' : 'smooth', block:'start'});
+    } else if(same){
+      var a = slides[n]; if(a) a.querySelectorAll('.an').forEach(function(el){ void el.offsetWidth; });
+    }
+    try{ history.replaceState(null,'','#'+(n+1)); }catch(e){}
+  }
+
+  /* 键盘 */
+  document.addEventListener('keydown', function(e){
+    var k = e.key;
+    if(k==='ArrowRight'||k==='ArrowDown'||k===' '||k==='PageDown'||k==='Enter'){ e.preventDefault(); go(cur+1); }
+    else if(k==='ArrowLeft'||k==='ArrowUp'||k==='PageUp'){ e.preventDefault(); go(cur-1); }
+    else if(k==='Home'){ go(0); } else if(k==='End'){ go(total-1); }
+    else if(k==='o'||k==='O'){ drawer.classList.toggle('open'); }
+    else if(k==='f'||k==='F'){ toggleFull(); }
+    else if(k==='c'||k==='C'){ toggleClickFlip(); }
+    else if(k==='Escape'){ drawer.classList.remove('open'); }
+    else if(k==='p'||k==='P'){ window.print(); }
+  });
+  function toggleFull(){
+    if(!document.fullscreenElement){ (document.documentElement.requestFullscreen||function(){}).call(document.documentElement); }
+    else { document.exitFullscreen(); }
+  }
+
+  /* 点击翻页：拖动圈选文字、双击选词、点按钮/选项一律不翻页 */
+  var down = null, clickTimer = null;
+  function isInteractive(el){
+    return !!(el.closest('.hud')||el.closest('.drawer')||el.closest('iframe')||el.closest('summary')||
+              el.closest('details')||el.closest('.quiz')||el.closest('a')||el.closest('button')||
+              el.closest('input')||el.closest('select')||el.closest('textarea')||el.closest('label'));
+  }
+  stage.addEventListener('mousedown', function(e){ down = {x:e.clientX, y:e.clientY, t:Date.now()}; });
+  stage.addEventListener('click', function(e){
+    if(flow) return;
+    clearTimeout(clickTimer);
+    if(!clickOn) return;                           // 开关关闭：点击不翻页
+    if(e.detail > 1) return;                       // 双击 / 三击 = 选词，不翻页
+    if(isInteractive(e.target)) return;
+    if(hasSelection()) return;                     // 已有选中内容，不翻页
+    if(down && (Math.abs(e.clientX-down.x)>6 || Math.abs(e.clientY-down.y)>6)) return;  // 拖动圈选
+    if(down && (Date.now()-down.t > 800)) return;  // 长按
+    var r = stage.getBoundingClientRect();
+    var dir = (e.clientX - r.left) > r.width*0.5 ? 1 : -1;
+    clickTimer = setTimeout(function(){
+      if(hasSelection()) return;                   // 圈选期间保持静止
+      go(cur+dir);
+    }, 220);
+  });
+  document.addEventListener('dblclick', function(){ clearTimeout(clickTimer); });
+  document.addEventListener('selectionchange', function(){ if(hasSelection()) clearTimeout(clickTimer); });
+
+  /* 触摸：仅在横向滑动时翻页；竖屏交给页面滚动 */
+  var sx=null, sy=null, st=0;
+  stage.addEventListener('touchstart', function(e){
+    if(e.touches.length>1){ sx=null; return; }
+    sx=e.touches[0].clientX; sy=e.touches[0].clientY; st=Date.now();
+  }, {passive:true});
+  stage.addEventListener('touchend', function(e){
+    if(sx===null) return;
+    var dx=e.changedTouches[0].clientX-sx, dy=e.changedTouches[0].clientY-sy;
+    sx=null;
+    if(flow) return;
+    if(Date.now()-st>900) return;                  // 长按选词
+    if(hasSelection()) return;
+    if(Math.abs(dx)>55 && Math.abs(dy)<Math.abs(dx)*0.75) go(dx<0?cur+1:cur-1);
+  }, {passive:true});
+
+  /* 竖屏：滚动时同步页码与进度 */
+  if('IntersectionObserver' in window){
+    var io = new IntersectionObserver(function(entries){
+      if(!flow) return;
+      var best=null;
+      entries.forEach(function(en){
+        if(en.isIntersecting && (!best || en.intersectionRatio > best.intersectionRatio)) best = en;
+      });
+      if(best){
+        var i = slides.indexOf(best.target);
+        if(i>=0 && i!==cur) setIndex(i);
+      }
+    }, {threshold:[0.2,0.5,0.8]});
+    slides.forEach(function(s){ io.observe(s); });
+  }
+  function onOrient(){
+    flow = mqPortrait.matches;
+    syncClickBtn();
+    clearTimeout(clickTimer);
+  }
+  mqPortrait.addEventListener ? mqPortrait.addEventListener('change', onOrient) : mqPortrait.addListener(onOrient);
+
+  /* 目录 / HUD */
+  if(btnClick) btnClick.addEventListener('click', function(e){ e.stopPropagation(); toggleClickFlip(); });
+  document.getElementById('btnNav').addEventListener('click', function(e){ e.stopPropagation(); drawer.classList.add('open'); });
+  document.getElementById('btnFull').addEventListener('click', function(e){ e.stopPropagation(); toggleFull(); });
+  document.getElementById('drawerClose').addEventListener('click', function(){ drawer.classList.remove('open'); });
+  drawer.addEventListener('click', function(e){ if(e.target===drawer) drawer.classList.remove('open'); });
+  document.querySelectorAll('#drawerList li').forEach(function(li){
+    li.addEventListener('click', function(){ go(parseInt(li.dataset.go,10)); drawer.classList.remove('open'); });
+  });
+
+  /* 随堂检测：点选选项 → 判分 → 显示答案与解析 → 单选/全量重做 */
+  function keysOf(item){
+    return (item.getAttribute('data-answer')||'').toUpperCase().replace(/[^A-Z]/g,'').split('');
+  }
+  function reveal(item){
+    var ans = keysOf(item);
+    item.querySelectorAll('.opt').forEach(function(b){
+      if(ans.indexOf(b.getAttribute('data-k'))>=0) b.classList.add('right');
+    });
+    item.classList.add('revealed');
+  }
+  function resetItem(item){
+    item.classList.remove('revealed','ok','bad');
+    item.querySelectorAll('.opt').forEach(function(b){ b.classList.remove('right','sel'); });
+    var v = item.querySelector('.q-verdict'); if(v) v.textContent='';
+    var rs = item.querySelector('.q-reset'); if(rs) rs.disabled = true;
+  }
+  document.querySelectorAll('.quiz-item').forEach(function(item){
+    var qtype = item.getAttribute('data-type')||'single';
+    var btnReset = item.querySelector('.q-reset');
+    item.querySelectorAll('.opt').forEach(function(btn){
+      btn.addEventListener('click', function(ev){
+        ev.stopPropagation();
+        /* 已揭示答案后再点选项 = 重新作答，自动收起答案 */
+        if(item.classList.contains('revealed')){
+          item.classList.remove('revealed','ok','bad');
+          item.querySelectorAll('.opt').forEach(function(b){ b.classList.remove('right'); });
+          var v0 = item.querySelector('.q-verdict'); if(v0) v0.textContent='';
+        }
+        if(qtype==='single'){
+          item.querySelectorAll('.opt').forEach(function(b){ b.classList.remove('sel'); });
+          btn.classList.add('sel');
+        } else {
+          btn.classList.toggle('sel');
+        }
+        item.classList.remove('ok','bad');
+        var v = item.querySelector('.q-verdict'); if(v) v.textContent='';
+        if(btnReset) btnReset.disabled = false;
+      });
+    });
+    var chk = item.querySelector('.q-check');
+    if(chk) chk.addEventListener('click', function(ev){
+      ev.stopPropagation();
+      var ans = keysOf(item);
+      var sel = Array.prototype.slice.call(item.querySelectorAll('.opt.sel')).map(function(b){ return b.getAttribute('data-k'); });
+      var ok = sel.length>0 && sel.length===ans.length && sel.filter(function(k){ return ans.indexOf(k)>=0; }).length===ans.length;
+      reveal(item);
+      if(btnReset) btnReset.disabled = false;
+      item.classList.remove('ok','bad'); item.classList.add(ok?'ok':'bad');
+      var v = item.querySelector('.q-verdict');
+      if(v) v.textContent = ok ? '✓ 回答正确' : (sel.length ? '✗ 再想一想，正确项已标绿' : '请先选择答案');
+    });
+    if(btnReset) btnReset.addEventListener('click', function(ev){
+      ev.stopPropagation();
+      resetItem(item);
+      tip('本题已重置，可重新作答');
+    });
+  });
+  var btnReveal = document.getElementById('quizReveal');
+  if(btnReveal) btnReveal.addEventListener('click', function(ev){
+    ev.stopPropagation();
+    var on = btnReveal.getAttribute('data-on')==='1';
+    var next = !on;
+    document.querySelectorAll('.quiz-item').forEach(function(item){
+      if(next){
+        reveal(item);
+        var rs = item.querySelector('.q-reset'); if(rs) rs.disabled = false;
+      } else {
+        resetItem(item);
+      }
+    });
+    btnReveal.setAttribute('data-on', next ? '1':'0');
+    btnReveal.textContent = next ? '隐藏答案' : '显示全部答案';
+  });
+  var btnResetAll = document.getElementById('quizResetAll');
+  if(btnResetAll) btnResetAll.addEventListener('click', function(ev){
+    ev.stopPropagation();
+    document.querySelectorAll('.quiz-item').forEach(resetItem);
+    if(btnReveal){ btnReveal.setAttribute('data-on','0'); btnReveal.textContent = '显示全部答案'; }
+    tip('已清空本题全部作答，可重新开始');
+  });
+
+  var h = parseInt((location.hash||'').replace('#',''),10);
+  go(isNaN(h)?0:h-1, true);
+})();
+</script>
+</body>
+</html>

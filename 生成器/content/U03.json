@@ -1,0 +1,470 @@
+{
+  "id": "U03",
+  "project": "项目2",
+  "project_name": "HTML 基础",
+  "unit": "第 3 单元",
+  "title": "HTML 简介、页面基本结构与语法规则",
+  "subtitle": "从第一行 DOCTYPE 出发，读懂一个 HTML 页面的骨架，掌握标签的写法规则",
+  "duration": 40,
+  "cover_tags": [
+    "超文本标记语言",
+    "DOCTYPE",
+    "UTF-8",
+    "单标签/双标签",
+    "标准模式"
+  ],
+  "ref_book": "电子工业出版社 · 2025 年 1 月第 1 版",
+  "objectives": {
+    "knowledge": [
+      "了解 HTML 页面的基本结构",
+      "掌握 HTML 标签的写法",
+      "掌握 charset 字符集设置与 DOCTYPE 的作用",
+      "知道标准模式与怪异模式的区别"
+    ],
+    "skill": [
+      "能写出规范的 HTML5 页面骨架代码",
+      "能正确区分并使用单标签与双标签",
+      "能避免标签拼错、交叉嵌套、标签不成对等常见错误"
+    ],
+    "literacy": [
+      "培养严谨务实的劳动态度",
+      "培养精益求精的工匠精神",
+      "养成规范书写、反复校验的工程习惯"
+    ]
+  },
+  "slides": [
+    {
+      "type": "objectives",
+      "title": "本单元我们要达成什么",
+      "subtitle": "对照教材《项目2》HTML 基础 2.1～2.3 的学习目标",
+      "objectives": {
+        "knowledge": [
+          "了解 HTML 页面的基本结构",
+          "掌握 HTML 标签的写法",
+          "掌握常见 HTML 标签的语法和语义",
+          "使用 HTML5 中的标签语义化页面"
+        ],
+        "skill": [
+          "能使用符合语义的 HTML 标签描述文档结构",
+          "能使用符合语义的 HTML 标签表达文档内容",
+          "能正确使用链接和锚点",
+          "能使用图片标签引入图片"
+        ],
+        "literacy": [
+          "培养严谨务实的劳动态度",
+          "培养精益求精的工匠精神",
+          "培养勇于探索、敢于尝试的创新精神",
+          "培养网络安全意识，做遵法守规的 Web 前端工程师"
+        ]
+      }
+    },
+    {
+      "type": "ideology",
+      "title": "数字经济发展与「数字鸿沟」",
+      "subtitle": "教材《项目2》思政课堂",
+      "nav": "思政课堂",
+      "text": "「十四五」以来，我国数字经济发展取得了显著成就，人工智能、大数据、区块链、云计算等新兴数字产业异军突起。移动支付、电子商务、网络购物、视频直播、在线学习、远程会议、个性化定制、智慧物流等新业态新模式竞相发展。同时也要看到：我国数字经济还存在发展不平衡的问题，关键核心技术的<strong>自主创新能力不强</strong>，不同行业、区域、群体间的<strong>「数字鸿沟」尚未弥合</strong>，数据资源价值潜力有待释放、数字经济治理体系亟待完善，迫切需要补齐短板，推动<strong>数字经济高质量发展</strong>。",
+      "topic": "页面结构的一行 DOCTYPE、一句字符集声明，看起来是小事，却决定了亿万用户看到的内容是否一致。请结合岗位谈一谈：规范、严谨地写好每一个标签，与弥合「数字鸿沟」有什么关系？"
+    },
+    {
+      "type": "outline",
+      "title": "本单元导览",
+      "subtitle": "三个问题，建立 HTML 的地基",
+      "nav": "导览",
+      "items": [
+        "什么是 HTML？HTML、CSS、JavaScript 各自负责什么？",
+        "一个标准页面由哪几部分组成？DOCTYPE 与字符集有什么作用？",
+        "标签该怎么写？单标签、双标签、嵌套与并列分别是什么规矩？"
+      ]
+    },
+    {
+      "type": "section",
+      "no": "2.1",
+      "title": "HTML 简介",
+      "text": "HTML 是「超文本标记语言」，页面由一个个标签搭出来——这就是一切的开始。",
+      "nav": "2.1 HTML 简介"
+    },
+    {
+      "type": "codebullets",
+      "title": "什么是 HTML？——超文本标记语言",
+      "subtitle": "教材原文：不管多么复杂、精美的页面，都是通过这些 HTML 标签相互嵌套或并列组合而成的",
+      "nav": "什么是 HTML",
+      "items": [
+        "HTML 是一种<strong>超文本标记语言</strong>，由它构成的页面有一个非常大的特点：由许多 <strong>HTML 标签（也叫元素）</strong>组成。",
+        "不管多么复杂、多么精美的页面，都是通过这些 HTML 标签<strong>相互嵌套或并列</strong>组合而成的——<strong>HTML 标签是定义页面内容的核心</strong>。",
+        "教材比喻：把 HTML 标签理解成<strong>乐高组件</strong>，就像用乐高组件搭建物体一样，用它就能搭出各种各样的页面。",
+        "写一个标签不难，难的是用合适的标签搭出<strong>结构清晰、语义正确</strong>的页面——这正是本项目要练的基本功。"
+      ],
+      "lang": "html",
+      "file": "代码2-1 第一个HTML 页面",
+      "code": "<!DOCTYPE html>\n<html>\n  <head>\n    <meta charset=\"utf-8\" />\n    <title>第一个HTML 页面</title>\n  </head>\n  <body>\n    欢迎一起学习Web 前端技术\n  </body>\n</html>"
+    },
+    {
+      "type": "cards",
+      "title": "HTML、CSS 与 JavaScript 的分工（教材图2-1）",
+      "subtitle": "记牢这个比喻：结构是骨架，样式是穿搭，行为是动作",
+      "nav": "三者分工",
+      "cols": 3,
+      "items": [
+        {
+          "title": "HTML —— 人的「骨架」",
+          "text": "页面有哪几块内容、内容之间是什么关系，全靠它支撑；本课程项目2 就聚焦这一层。"
+        },
+        {
+          "title": "CSS —— 给人「穿搭和化妆」",
+          "text": "用于<strong>美化内容和布局</strong>，让用户愉快地浏览和阅读网页；对应教材项目3 之后的内容。"
+        },
+        {
+          "title": "JavaScript —— 赋予「动作和行为」",
+          "text": "主要用于<strong>实现网页交互</strong>。三者分工合作，缺一不可，但学习的顺序是 HTML → CSS → JavaScript。"
+        }
+      ]
+    },
+    {
+      "type": "section",
+      "no": "2.2",
+      "title": "HTML 页面的基本结构",
+      "text": "先看骨架、再看血肉：DOCTYPE、head、meta、title、body 一个都不能少。",
+      "nav": "2.2 基本结构"
+    },
+    {
+      "type": "code",
+      "title": "文档类型声明 DOCTYPE",
+      "subtitle": "告诉浏览器：我这份文档是 HTML，请按什么规范来解析",
+      "nav": "DOCTYPE 声明",
+      "lang": "html",
+      "file": "DOCTYPE 的两种写法",
+      "code": "<!-- HTML5 以前：必须通过 DTD 指定文档解析规范 -->\n<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\"\n\"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">\n\n<!-- HTML5 以后：规则宽松，统一简写为 -->\n<!DOCTYPE html>",
+      "caption": "DOCTYPE 是 <code>document type</code> 的缩写，用来告诉浏览器 HTML 文档的类型以及如何解析网页。教材示例中的 <code>w3.o**</code> 为脱敏网址，实际为 <code>w3.org</code>；DOCTYPE <strong>不区分大小写</strong>，但<strong>统一写成大写形式</strong>是良好的编程习惯。"
+    },
+    {
+      "type": "compare",
+      "title": "怪异模式 vs 标准模式",
+      "subtitle": "用了 DOCTYPE，浏览器才按 W3C 官方标准渲染页面",
+      "nav": "两种渲染模式",
+      "a": {
+        "title": "怪异模式 Quirks",
+        "items": [
+          "没有写 DOCTYPE 时的解析方式",
+          "浏览器<strong>使用自己的模式</strong>解析渲染页面",
+          "页面运行在<strong>低版本 IE 浏览器</strong>下影响很大",
+          "不同浏览器之间容易「各显示各的」"
+        ]
+      },
+      "b": {
+        "title": "标准模式 Standards",
+        "items": [
+          "使用了 DOCTYPE 时的解析方式",
+          "浏览器<strong>使用 W3C 官方标准</strong>解析渲染页面",
+          "影响对 <strong>CSS 代码甚至 JavaScript 脚本</strong>的解析",
+          "<strong>技巧：</strong>正确使用 DOCTYPE，对页面渲染非常重要"
+        ]
+      }
+    },
+    {
+      "type": "table",
+      "title": "页面的基本结构：五个基本组成部分",
+      "subtitle": "对照教材图2-2 HTML 页面的基本结构",
+      "nav": "基本结构组成",
+      "head": [
+        "组成部分",
+        "标签",
+        "作用与说明"
+      ],
+      "rows": [
+        [
+          "文档类型声明",
+          "<code>&lt;!DOCTYPE html&gt;</code>",
+          "写在最前面，决定浏览器是走标准模式还是怪异模式"
+        ],
+        [
+          "根标签",
+          "<code>&lt;html&gt;</code>",
+          "页面中所有标签的<strong>顶层标签（根标签）</strong>，所有标签都必须放在它内部"
+        ],
+        [
+          "头部区域",
+          "<code>&lt;head&gt;</code>",
+          "设置<strong>网页标题、字符集、网页描述</strong>等，这些内容<strong>一般不会直接显示在内容区域</strong>"
+        ],
+        [
+          "元数据",
+          "<code>&lt;meta&gt;</code>",
+          "位于 <code>head</code> 内、<strong>不包含任何文字内容</strong>，以「名称=值」的属性形式定义元数据"
+        ],
+        [
+          "网页标题",
+          "<code>&lt;title&gt;</code>",
+          "出现在<strong>浏览器标签栏</strong>，也是<strong>搜索引擎索引</strong>与 SEO 的关键依据；标题在页面中应<strong>唯一</strong>"
+        ],
+        [
+          "主体部分",
+          "<code>&lt;body&gt;</code>",
+          "指定浏览器显示的<strong>主体部分</strong>，所有需要显示的内容都放在它之间"
+        ]
+      ]
+    },
+    {
+      "type": "codebullets",
+      "title": "用 meta 设置字符集：统一使用 UTF-8",
+      "subtitle": "字符集没写或写错，页面就会显示乱码",
+      "nav": "meta 与字符集",
+      "items": [
+        "浏览器会根据 <code>meta</code> 的设置<strong>调用相应的字符编码</strong>以正确显示页面内容；没设置时使用默认编码：简体中文操作系统为 <strong>GB2312</strong>，Google Chrome 默认为 <strong>GBK</strong>。",
+        "编码设置与页面内容不一致 → <strong>页面显示乱码</strong>。<code>UTF-8</code> 又称「<strong>万国码</strong>」，涵盖几乎所有地区文字，实际开发首选。",
+        "像 <code>meta</code> 这样<strong>只有开始标签、没有结束标签</strong>的称为<strong>单标签</strong>，可写成 <code>&lt;meta /&gt;</code>；<strong>按 HTML5 规范，单标签的「/」建议省略</strong>。",
+        "一个标签可以有<strong>多个属性，属性之间用空格分隔</strong>；一个属性若有<strong>多个取值，用分号分隔</strong>（如 <code>text/html</code> 与 <code>UTF-8</code>）。",
+        "<code>meta</code> 还可设置<strong>关键字</strong>（帮助搜索引擎理解页面主要特征，对用户不可见）；关键字一般 <strong>10 个以内</strong>较合理，多了会分散权重。"
+      ],
+      "lang": "html",
+      "file": "meta 标签的写法",
+      "code": "<!-- （1）HTML5 的写法（推荐） -->\n<meta charset=\"UTF-8\">\n\n<!-- （2）HTML4 / XHTML 的写法 -->\n<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\">\n\n<!-- （3）教材关键字写法 -->\n<meta keyword=\"keyword1,keyword2,keyword3…\">\n<!-- （4）标准关键字写法 -->\n<meta name=\"keywords\" content=\"keyword1,keyword2,keyword3\">",
+      "caption": "教材原文关键字处写作 <code>keyword</code> 属性；按 W3C/MDN 的通用写法应为 <code>name=\"keywords\"</code> 配合 <code>content</code>，此处按标准表述。"
+    },
+    {
+      "type": "demo",
+      "title": "效果演示｜head 与 body：谁负责「描述」，谁负责「显示」",
+      "subtitle": "观察：title 跑到哪里去了？head 里的内容去哪儿了？",
+      "nav": "head 与 body 演示",
+      "items": [
+        "左上角的<strong>浏览器标签栏</strong>显示的内容，来自 <code>head</code> 中的 <code>&lt;title&gt;</code>。",
+        "<code>head</code> 里定义的元信息（字符集、标题、描述）<strong>不会出现在正文区域</strong>。",
+        "只有写在 <code>body</code> 之间的内容才会显示在浏览器中。",
+        "记住一句话：<code>head</code> 负责描述页面，<code>body</code> 负责呈现页面——分工不能混。"
+      ],
+      "hint": "动手试一试：把 title 改成你自己的班级姓名，刷新页面，看看标签栏发生了什么变化。",
+      "html": "<style>*{box-sizing:border-box}body{margin:0;font-family:'PingFang SC',system-ui,sans-serif;background:#f4f8fd}.wrap{width:660px;padding:6px}.browser{border:1px solid #dfe6f2;border-radius:12px;overflow:hidden;box-shadow:0 18px 40px -22px rgba(20,40,90,.45);background:#fff}.tabs{display:flex;align-items:center;gap:8px;background:#eef3fb;padding:8px 10px;border-bottom:1px solid #dfe6f2}.dot{width:10px;height:10px;border-radius:50%;background:#ff5f57;display:inline-block;margin-right:4px}.dot.g{background:#febc2e}.dot.b{background:#28c840}.tab{background:#fff;border-radius:8px;padding:5px 12px;font-size:12px;color:#33456b;overflow:hidden;white-space:nowrap;width:0;animation:type 1s steps(15) .5s forwards}@keyframes type{to{width:15ch}}.stage{display:flex;gap:12px;padding:14px;background:#f7f9fd}.box{border-radius:10px;padding:10px 12px;font-size:12.5px;line-height:1.8;opacity:0;animation:up .5s forwards}.hb{flex:0 0 38%;border:1.5px dashed #b9c6dd;background:#f2f5fb;color:#7b8aa3;animation-delay:1s}.bb{flex:1;border:1.5px solid #9dc0ff;background:#fff;color:#33456b;animation-delay:1.4s}.box b{display:block;font-size:12px;margin-bottom:6px;color:#0e1b2e}.no{color:#a3afc4}.yes{color:#177a4a}@keyframes up{from{opacity:0;transform:translateY(10px)}}.note{margin-top:10px;font-size:12.5px;color:#c2601a;background:#fff3e7;border-radius:8px;padding:8px 12px;line-height:1.7;opacity:0;animation:up .5s 1.9s forwards}</style><div class='wrap'><div class='browser'><div class='tabs'><span class='dot'></span><span class='dot g'></span><span class='dot b'></span><span class='tab'>第一个HTML 页面</span></div><div class='stage'><div class='box hb'><b>head · 头部区域</b>meta charset、title 标题、网页描述…<br><span class='no'>× 不在视口中显示</span></div><div class='box bb'><b>body · 主体区域</b>欢迎一起学习Web 前端技术<br><span class='yes'>√ 浏览器可见</span></div></div></div><div class='note'>记住三句话：<code>head</code> 描述页面、<code>body</code> 呈现页面、<code>title</code> 显示在浏览器标签栏并参与搜索引擎索引。</div></div>"
+    },
+    {
+      "type": "section",
+      "no": "2.3",
+      "title": "HTML 语法规则",
+      "text": "标签不能自创，不能交叉嵌套，更不能忘了成对——规矩不多，但条条要紧。",
+      "nav": "2.3 语法规则"
+    },
+    {
+      "type": "codebullets",
+      "title": "单标签与双标签的语法（语法2-1）",
+      "subtitle": "先分清模样，再谈规矩",
+      "nav": "单标签与双标签",
+      "items": [
+        "<strong>双标签</strong>：开始标签 + 内容元素 + 结束标签；<strong>结束标签中有一个正斜杠「/」</strong>，如 <code>&lt;/h1&gt;</code>。",
+        "<strong>内容元素</strong>：开始标签和结束标签之间的内容，可以是<strong>要呈现的文字，也可以是其他元素</strong>。",
+        "<strong>单标签（空标签）</strong>：只有开始标签、没有结束标签，也没有内容元素，如 <code>meta</code>、<code>hr</code>、<code>br</code>。",
+        "单标签写成 <code>&lt;meta /&gt;</code> 是 XHTML 的习惯；<strong>按 HTML5 规范，单标签的「/」建议省略</strong>。",
+        "属性写在开始标签内部，形如 <code>属性名=\"属性值\"</code>，多个属性之间用空格分隔。"
+      ],
+      "lang": "html",
+      "file": "语法2-1 单标签和双标签",
+      "code": "<!-- 定义语法：单标签 -->\n<标签名 属性1=\"属性值1\" 属性2=\"属性值2\" … />\n<!-- 示例 -->\n<img src=\"../images/pic01.png\" />\n\n<!-- 定义语法：双标签 -->\n<标签名 属性1=\"属性值1\" 属性2=\"属性值2\" …>\n[内容元素]…\n</标签名>\n<!-- 示例 -->\n<h1>\n   欢迎一起学习<strong>Web 前端技术</strong>\n</h1>"
+    },
+    {
+      "type": "bullets",
+      "title": "标签语法的 6 条书写规则",
+      "subtitle": "教材 2.3 原序整理，请把它们抄进笔记本",
+      "nav": "6 条书写规则",
+      "items": [
+        "① 标签通常是<strong>由一组尖括号包围的关键字词</strong>，如 <code>html</code>、<code>body</code>、<code>title</code>；它们<strong>具有特定语义，不能自行更改和创作</strong>——例如 <code>&lt;book&gt;</code> 不是合法的 HTML 标签。",
+        "② 标签通常<strong>成对出现</strong>：第一个是<strong>开始标签</strong>，第二个是<strong>结束标签</strong>，区别就在于结束标签里有一个正斜杠「/」。",
+        "③ 开始标签和结束标签之间的内容称为<strong>内容元素</strong>，它可以是呈现的文字，也可以是其他元素。",
+        "④ 并非所有标签都是双标签，<code>meta</code>、<code>hr</code>、<code>br</code> 等<strong>单标签</strong>没有结束标签，也没有内容元素。",
+        "⑤ 标签可以<strong>嵌套</strong>，形成「<strong>父子关系</strong>」；<strong>嵌套时不能使用交叉嵌套</strong>。",
+        "⑥ 标签也可以<strong>并列</strong>，形成「<strong>兄弟关系</strong>」。"
+      ]
+    },
+    {
+      "type": "compare",
+      "title": "嵌套（父子） vs 并列（兄弟）",
+      "subtitle": "对照教材图2-3 与图2-4 理解两种关系",
+      "nav": "嵌套与并列",
+      "a": {
+        "title": "嵌套 —— 父子关系",
+        "items": [
+          "标签<strong>相互包含</strong>时形成嵌套",
+          "被嵌套的标签为<strong>子标签</strong>，包裹它的为<strong>父标签</strong>",
+          "例：<code>head</code> 与它内部的 <code>meta</code> 就是父子关系",
+          "<strong>严禁交叉嵌套</strong>：必须先闭合后打开的那个标签"
+        ]
+      },
+      "b": {
+        "title": "并列 —— 兄弟关系",
+        "items": [
+          "标签<strong>同级排列、互不包含</strong>时形成并列",
+          "同一个父标签下的多个子标签互为兄弟",
+          "例：<code>meta</code> 与 <code>title</code> 就是并列的兄弟关系",
+          "书写时通常<strong>缩进对齐</strong>，让结构一目了然"
+        ]
+      }
+    },
+    {
+      "type": "demo",
+      "title": "效果演示｜正确的嵌套 vs 交叉嵌套",
+      "subtitle": "左边是父子包含，右边是教材点名的「交叉嵌套」错误",
+      "nav": "嵌套与交叉演示",
+      "items": [
+        "左边：<code>head</code> 包裹着 <code>title</code>，<strong>子标签完整闭合在父标签内部</strong>。",
+        "右边：<code>&lt;head&gt;</code>、<code>&lt;title&gt;</code> 的关闭顺序写反了，形成<strong>交叉嵌套</strong>。",
+        "口诀：<strong>最后打开的标签，必须最先关闭</strong>。",
+        "养成习惯：写开始标签时，<strong>顺手把结束标签写上</strong>，再回来补内容。"
+      ],
+      "hint": "练一练：把 <code>html / head / meta / title / body / h1</code> 按正确的嵌套顺序写一遍，父子的缩进层次要对齐。",
+      "html": "<style>*{box-sizing:border-box}body{margin:0;font-family:'PingFang SC',system-ui,sans-serif;background:#f5f8fd}.wrap{width:660px;display:flex;gap:12px;padding:6px}.panel{flex:1;background:#fff;border:1px solid #e2e8f2;border-radius:12px;padding:12px 14px;box-shadow:0 14px 30px -22px rgba(20,40,90,.45)}.ttl{font-size:13px;font-weight:700;margin-bottom:8px}.ok .ttl{color:#177a4a}.bad .ttl{color:#c0392b}pre{margin:0;font-family:Menlo,Consolas,monospace;font-size:12.5px;line-height:2;color:#33456b}.row{display:block;border-radius:6px;padding:0 6px;opacity:.3}.ok .row{animation:g 3s infinite}.bad .row{animation:r 3s infinite}@keyframes g{0%,8%{opacity:.3}14%,34%{opacity:1;background:#e7f7ef}40%,100%{opacity:.3}}@keyframes r{0%,8%{opacity:.3}14%,34%{opacity:1;background:#fdeceb}40%,100%{opacity:.3}}.r2{animation-delay:.4s}.r3{animation-delay:.8s}.r4{animation-delay:1.2s}.chip{margin-top:10px;display:inline-block;font-size:11.5px;border-radius:999px;padding:4px 10px}.c1{background:#e7f7ef;color:#177a4a}.c2{background:#fdeceb;color:#c0392b}</style><div class='wrap'><div class='panel ok'><div class='ttl'>✓ 正确 · 嵌套包含（父子关系）</div><pre><span class='row'>&lt;head&gt;</span><span class='row r2'>　&lt;title&gt;我的第一个网页&lt;/title&gt;</span><span class='row r3'>　&lt;meta charset=UTF-8&gt;</span><span class='row r4'>&lt;/head&gt;</span></pre><span class='chip c1'>父子关系 · 子标签完整闭合在父标签内</span></div><div class='panel bad'><div class='ttl'>✗ 错误 · 交叉嵌套</div><pre><span class='row'>&lt;head&gt;</span><span class='row r2'>　&lt;title&gt;我的第一个网页</span><span class='row r3'>&lt;/head&gt;</span><span class='row r4'>　&lt;/title&gt;</span></pre><span class='chip c2'>常见编程错误 · 打开与关闭的顺序交叉了</span></div></div>"
+    },
+    {
+      "type": "bullets",
+      "title": "常见的编程错误与良好的编程习惯",
+      "subtitle": "教材 2.3 列出的 3 类错误，初学者几乎人人踩过",
+      "nav": "常见错误与习惯",
+      "items": [
+        "<strong>错误一</strong>：标签名<strong>误拼错拼、多字少字、包含空格</strong>——标签具有特定语义，必须严格书写。",
+        "<strong>错误二</strong>：在嵌套标签时进行<strong>交叉嵌套</strong>——这是最容易被浏览器「猜错意图」的错误。",
+        "<strong>错误三</strong>：书写双标签或嵌套子标签时<strong>未成对</strong>——漏写结束标签会让页面越显示越乱。",
+        "<strong>习惯一</strong>：标签<strong>不区分大小写</strong>，但统一使用<strong>全小写</strong>是良好的编程习惯。",
+        "<strong>习惯二</strong>：<code>DOCTYPE</code> 统一<strong>大写</strong>；HTML5 项目中单标签<strong>不写结尾的「/」</strong>；<strong>及时保存</strong>文件并规范命名。"
+      ]
+    },
+    {
+      "type": "ai",
+      "title": "AI 前沿：让大模型读懂你的标签树",
+      "subtitle": "结构越规范，AI、搜索引擎和读屏软件越能「看懂」你的页面",
+      "nav": "AI 前沿",
+      "text": "大语言模型在生成或修改页面时，第一步就是<strong>解析标签构成的结构</strong>。语义清晰、嵌套规范的 HTML 会被准确理解；交叉嵌套、滥用标签则会让模型「猜结构」，输出自然不可靠。<strong>你写代码的规范程度，直接决定了 AI 帮你改代码的质量。</strong>",
+      "items": [
+        "智能补全：GitHub Copilot、通义灵码、文心快码会模仿你已有的<strong>缩进、命名与嵌套风格</strong>继续往下写。",
+        "结构改写：把一段结构混乱的旧代码交给 DeepSeek、通义千问等国产大模型，请它修正交叉嵌套并规范 <code>head</code> / <code>body</code> 结构。",
+        "即时答疑：把 MDN 上的标签页链接与你的疑问一起提交，让 AI 对照官方文档给出解释。",
+        "职业提醒：<strong>AI 生成的代码必须人工校核结构与语义</strong>——判断对错的能力，来自你亲手敲过的每一个标签。"
+      ]
+    },
+    {
+      "type": "quiz",
+      "title": "随堂检测",
+      "subtitle": "第 1 题选自教材项目2 课后选择题，其余为配套自测",
+      "nav": "随堂检测",
+      "items": [
+        {
+          "q": "需要配合外部样式表使用的 HTML 标签是（　　）。",
+          "options": [
+            "A. style",
+            "B. link",
+            "C. a",
+            "D. p"
+          ],
+          "answer": "B",
+          "tip": "教材 2.6 作业第 4 题。<code>link</code> 标签写在 <code>head</code> 中，用于引入外部样式表；<code>style</code> 用于书写内嵌样式。",
+          "type": "single"
+        },
+        {
+          "q": "下列关于 DOCTYPE 的说法，正确的是（　　）。",
+          "options": [
+            "A. HTML5 必须书写完整的 DTD 描述",
+            "B. 使用 DOCTYPE 时浏览器按标准模式渲染页面",
+            "C. 不写 DOCTYPE 浏览器也会按标准模式渲染",
+            "D. DOCTYPE 用来设置页面字符集"
+          ],
+          "answer": "B",
+          "tip": "HTML5 可统一简写为 <code>&lt;!DOCTYPE html&gt;</code>；不写 DOCTYPE 会进入怪异模式；字符集由 <code>meta</code> 的 <code>charset</code> 属性设置。",
+          "type": "single"
+        },
+        {
+          "q": "在 HTML5 项目中，符合良好编程习惯的写法是（　　）。",
+          "options": [
+            "A. <code>&lt;META CHARSET=\"UTF-8\"&gt;</code>",
+            "B. <code>&lt;meta charset=\"UTF-8\" /&gt;</code>",
+            "C. <code>&lt;meta charset=\"UTF-8\"&gt;</code>",
+            "D. <code>&lt;/meta charset=\"UTF-8\"&gt;</code>"
+          ],
+          "answer": "C",
+          "tip": "标签名<strong>统一小写</strong>；HTML5 中单标签的「/」建议省略；<code>meta</code> 是单标签，没有结束标签。",
+          "type": "single"
+        },
+        {
+          "type": "multi",
+          "q": "下列关于 HTML 页面基本结构的说法中，正确的有（　　）。",
+          "options": [
+            "A. DOCTYPE 声明写在文档最前面，决定浏览器以标准模式还是怪异模式解析",
+            "B. <code>head</code> 中设置网页标题、字符集等，这些内容一般不直接显示在内容区域",
+            "C. <code>meta</code> 位于 <code>head</code> 内、不包含文字内容，以「名称=值」的属性形式定义元数据",
+            "D. 只有写在 <code>html</code> 根标签之外的内容才会被浏览器显示"
+          ],
+          "answer": "ABC",
+          "tip": "真正显示的是 <code>body</code> 之间的内容；所有标签都必须放在 <code>html</code> 内部。"
+        },
+        {
+          "type": "multi",
+          "q": "关于标签的语法规则，下列说法正确的有（　　）。",
+          "options": [
+            "A. 标签名不区分大小写，但统一使用全小写是良好的编程习惯",
+            "B. <code>meta</code>、<code>hr</code>、<code>br</code> 属于单标签，没有结束标签和内容元素",
+            "C. 双标签的结束标签中不需要书写正斜杠「/」",
+            "D. 标签可以嵌套形成父子关系，嵌套时不能交叉"
+          ],
+          "answer": "ABD",
+          "tip": "结束标签必须带正斜杠，如 <code>&lt;/h1&gt;</code>；交叉嵌套是教材点名的错误写法。"
+        }
+      ]
+    },
+    {
+      "type": "summary",
+      "title": "本课小结",
+      "subtitle": "抓住这五句话，HTML 的规矩就装进脑子里了",
+      "nav": "本课小结",
+      "items": [
+        "HTML 是<strong>超文本标记语言</strong>，页面由标签<strong>相互嵌套或并列</strong>组合而成；<strong>HTML 结构、CSS 样式、JavaScript 行为</strong>三者分工明确。",
+        "基本结构：先写 <code>DOCTYPE</code>（<strong>HTML5 简写、建议大写</strong>），再是 <code>html</code> 根标签，内部是 <code>head</code>（<code>meta</code>、<code>title</code>）与 <code>body</code>。",
+        "写了 DOCTYPE 走<strong>标准模式</strong>，不写可能落入<strong>怪异模式</strong>；字符集统一用 <strong>UTF-8</strong>，避免页面乱码。",
+        "标签<strong>成对出现</strong>、可带<strong>内容元素</strong>；<code>meta</code>、<code>hr</code>、<code>br</code> 是<strong>单标签</strong>，HTML5 中省略结尾的「/」。",
+        "避开三类错误：<strong>标签名书写错误、交叉嵌套、标签不成对</strong>；标签名统一小写，结束标签顺手写。"
+      ]
+    },
+    {
+      "type": "homework",
+      "title": "课后作业",
+      "nav": "课后作业",
+      "items": [
+        "<strong>操作题 1：</strong>在 HBuilderX 中新建 index.html，按本节规范写出完整页面骨架（DOCTYPE、html、head、meta UTF-8、title、body），在 body 中写一段自我介绍。",
+        "<strong>操作题 2（改错）：</strong>把教材「常见编程错误」的 3 种情况各写一遍，用浏览器打开观察显示结果，并说明浏览器做了什么处理。",
+        "<strong>选择题：</strong>完成教材项目2「一、选择题」第 4 题，并说明 <code>link</code> 与 <code>style</code> 在使用场景上的区别。",
+        "<strong>预习：</strong>阅读教材 2.4.1，把表 2-1 的 7 个文档结构标签抄写一遍，各用一句话说明其语义。"
+      ]
+    },
+    {
+      "type": "refs",
+      "title": "出处与参考",
+      "subtitle": "本课件内容依据教材，并核对以下权威技术文档",
+      "nav": "出处与参考",
+      "items": [
+        {
+          "t": "教材《网页制作（HTML5+CSS3）》项目2 HTML 基础（2.1～2.3）",
+          "u": "郑哲、傅冬 主编 · 电子工业出版社 · 2025 年 1 月第 1 版"
+        },
+        {
+          "t": "MDN Web Docs · HTML 基础（文档结构与标签）",
+          "u": "https://developer.mozilla.org/zh-CN/docs/Learn/Getting_started_with_the_web/HTML_basics"
+        },
+        {
+          "t": "MDN Web Docs · 怪异模式和标准模式",
+          "u": "https://developer.mozilla.org/zh-CN/docs/Web/HTML/Quirks_mode_and_standards_mode"
+        },
+        {
+          "t": "MDN Web Docs · meta 元素",
+          "u": "https://developer.mozilla.org/zh-CN/docs/Web/HTML/Element/meta"
+        },
+        {
+          "t": "MDN Web Docs · head 元素",
+          "u": "https://developer.mozilla.org/zh-CN/docs/Web/HTML/Element/head"
+        },
+        {
+          "t": "MDN Web Docs · HTML 元素参考",
+          "u": "https://developer.mozilla.org/zh-CN/docs/Web/HTML/Element"
+        }
+      ]
+    },
+    {
+      "type": "end",
+      "title": "第 3 单元 · 结束",
+      "text": "下一单元：语义化标签与常用文本标签，让每一块内容「名副其实」",
+      "nav": "结束"
+    }
+  ]
+}

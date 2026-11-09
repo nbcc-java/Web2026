@@ -1,0 +1,1429 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>字体属性、文本排版与自定义字体 · 网页制作课件</title>
+<style>
+:root{
+  --bg:#EEF3FB; --bg2:#F7FAFF; --surface:#fff; --ink:#0E1B2E; --muted:#5A6C85;
+  --brand:#2F6BFF; --brand-dk:#1D46B8; --brand2:#0FB5C9; --violet:#7C5CFF; --accent:#FF8A3D;
+  --ok:#12A150; --line:#E1E8F4; --code-bg:#0D1A2B; --code-ink:#DCE7F8;
+  --font:'PingFang SC','Microsoft YaHei','Hiragino Sans GB','Source Han Sans SC',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --mono:'JetBrains Mono','SF Mono',Menlo,Consolas,'Courier New',monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+.slide{user-select:text;-webkit-user-select:text}
+.hud,.legend,.drawer,.kicker,.topbar{user-select:none;-webkit-user-select:none}
+::selection{background:rgba(47,107,255,.22)}
+html,body{height:100%}
+body{background:radial-gradient(1200px 800px at 12% 0%,#e6efff 0%,transparent 55%),
+             radial-gradient(1000px 700px at 100% 100%,#e9fbfd 0%,transparent 50%),var(--bg);
+     font-family:var(--font);color:var(--ink);overflow:hidden;-webkit-font-smoothing:antialiased}
+.wrap{height:100%;display:grid;place-items:center;padding:2.2vh 2.2vh}
+.stage{position:relative;width:100%;height:100%;max-width:calc(100vh * 16 / 9);max-height:calc(100vw * 9 / 16);
+       aspect-ratio:16/9;background:var(--bg2);border-radius:20px;overflow:hidden;
+       box-shadow:0 34px 80px -30px rgba(18,42,92,.42),0 0 0 1px rgba(255,255,255,.7) inset;
+       container-type:size}
+/* 背景装饰 */
+.bgfx{position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:0}
+.blob{position:absolute;border-radius:50%;filter:blur(46px);opacity:.5}
+.b1{width:38cqw;height:38cqw;left:-10cqw;top:-14cqw;background:linear-gradient(135deg,#bcd4ff,#8fb6ff);animation:float1 18s ease-in-out infinite}
+.b2{width:30cqw;height:30cqw;right:-8cqw;top:6cqw;background:linear-gradient(135deg,#b8f0f6,#7fe3ef);animation:float2 22s ease-in-out infinite}
+.b3{width:26cqw;height:26cqw;left:22cqw;bottom:-14cqw;background:linear-gradient(135deg,#d9ccff,#b9a6ff);animation:float3 26s ease-in-out infinite}
+@keyframes float1{50%{transform:translate(4cqw,3cqw) scale(1.06)}}
+@keyframes float2{50%{transform:translate(-4cqw,4cqw) scale(1.08)}}
+@keyframes float3{50%{transform:translate(3cqw,-4cqw) scale(1.05)}}
+.grid-lines{position:absolute;inset:0;background-image:linear-gradient(rgba(47,107,255,.05) 1px,transparent 1px),
+   linear-gradient(90deg,rgba(47,107,255,.05) 1px,transparent 1px);background-size:4cqw 4cqw;opacity:.7}
+
+/* 幻灯片 */
+.slide{position:absolute;inset:0;z-index:2;padding:4.4cqw 5cqw 4cqw;display:flex;flex-direction:column;gap:1.9cqw;
+  opacity:0;visibility:hidden;transform:translateY(1.4cqw) scale(.99);
+  transition:opacity .52s ease,transform .52s cubic-bezier(.2,.7,.2,1),visibility .52s}
+.slide.is-active{opacity:1;visibility:visible;transform:none}
+.slide.prev{transform:translateY(-1.4cqw) scale(.99)}
+.s-head{display:flex;justify-content:space-between;align-items:flex-start;gap:2cqw;flex:0 0 auto}
+.kicker{display:inline-block;font-size:1.16cqw;font-weight:700;letter-spacing:.16em;color:var(--brand);
+  background:linear-gradient(90deg,rgba(47,107,255,.12),rgba(15,181,201,.12));padding:.42cqw 1cqw;border-radius:999px;margin-bottom:.75cqw}
+.s-title{font-size:2.86cqw;font-weight:800;letter-spacing:.01em;line-height:1.2}
+.s-sub{margin-top:.6cqw;font-size:1.32cqw;color:var(--muted);line-height:1.55}
+.s-body{flex:1;min-height:0;display:flex;flex-direction:column;justify-content:center;gap:1.5cqw}
+.s-body.two{flex-direction:row;align-items:stretch;gap:2.2cqw}
+.s-body.two>*{flex:1;min-width:0}
+.s-body.col{justify-content:center}
+.col-l,.col-r{min-width:0;display:flex;flex-direction:column;justify-content:center;gap:1.2cqw}
+
+/* 入场动画 */
+.an{opacity:0}
+.is-active .an{animation:rise .66s cubic-bezier(.2,.75,.2,1) both;animation-delay:calc(var(--i,0)*95ms + 120ms)}
+@keyframes rise{from{opacity:0;transform:translateY(1.5cqw)}to{opacity:1;transform:none}}
+
+/* 封面 */
+.s-cover{flex-direction:row;align-items:center;gap:3cqw;padding:6cqw 6cqw}
+.cover-left{flex:1.15;min-width:0;z-index:2}
+.brandrow{display:flex;align-items:baseline;gap:.9cqw;margin-bottom:2.1cqw}
+.brandmark{font-size:1.7cqw;font-weight:800;color:var(--brand);letter-spacing:.08em}
+.brandsub{font-size:1.1cqw;font-weight:700;color:var(--brand2);letter-spacing:.2em}
+.cover-title{font-size:4.5cqw;font-weight:900;line-height:1.14;letter-spacing:-.01em;
+  background:linear-gradient(120deg,#12306f,#2f6bff 45%,#0fb5c9);-webkit-background-clip:text;background-clip:text;color:transparent}
+.cover-sub{margin-top:1.2cqw;font-size:1.55cqw;color:var(--muted);line-height:1.7;max-width:34cqw}
+.pills{display:flex;flex-wrap:wrap;gap:.7cqw;margin-top:1.9cqw}
+.pill{font-size:1.03cqw;font-weight:700;color:var(--brand-dk);background:rgba(47,107,255,.1);
+  border:1px solid rgba(47,107,255,.2);padding:.4cqw 1cqw;border-radius:999px}
+.pill{opacity:0}
+.is-active .pill{animation:rise .6s both;animation-delay:calc(var(--i)*95ms + 120ms)}
+.cover-meta{margin-top:2.3cqw;display:flex;align-items:center;gap:.9cqw;flex-wrap:wrap;font-size:1.02cqw;color:var(--muted)}
+.cover-meta b{color:var(--brand);font-size:1.2cqw}
+.cover-meta .dot{width:.34cqw;height:.34cqw;border-radius:50%;background:#c3cfe2}
+.cover-art{flex:.85;position:relative;min-width:0;display:grid;place-items:center}
+.orb{position:absolute;border-radius:50%;filter:blur(10px);opacity:.75}
+.o1{width:15cqw;height:15cqw;right:-1cqw;top:2cqw;background:radial-gradient(circle at 30% 30%,#9dc2ff,#4f83ff)}
+.o2{width:8cqw;height:8cqw;right:12cqw;bottom:4cqw;background:radial-gradient(circle at 30% 30%,#a9f0f7,#1fc2d6)}
+.o3{width:5cqw;height:5cqw;right:3cqw;bottom:12cqw;background:radial-gradient(circle at 30% 30%,#d5c7ff,#8a63ff)}
+.orb{animation:orb 9s ease-in-out infinite}
+.o2{animation-duration:11s}.o3{animation-duration:13s}
+@keyframes orb{50%{transform:translateY(-1.6cqw) scale(1.06)}}
+.codewin{position:relative;z-index:2;width:100%;max-width:32cqw;background:var(--code-bg);border-radius:1.2cqw;
+  box-shadow:0 30px 60px -22px rgba(13,26,43,.7);overflow:hidden;transform:rotate(-1.5deg);
+  animation:rise .8s cubic-bezier(.2,.75,.2,1) .35s both}
+.cw-bar{display:flex;gap:.5cqw;padding:.85cqw 1.1cqw;background:rgba(255,255,255,.06)}
+.cw-bar i{width:.72cqw;height:.72cqw;border-radius:50%;background:#ff5f57}
+.cw-bar i:nth-child(2){background:#febc2e}.cw-bar i:nth-child(3){background:#28c840}
+.cw-body{padding:1.3cqw 1.5cqw;font-family:var(--mono);font-size:1.06cqw;line-height:1.85;color:var(--code-ink);white-space:pre;overflow:auto}
+
+/* 章节过渡 */
+.s-section{align-items:center;justify-content:center;text-align:center}
+.sec-inner{display:flex;flex-direction:column;align-items:center}
+.sec-num{font-size:7.6cqw;font-weight:900;line-height:1;
+  background:linear-gradient(120deg,#2f6bff,#0fb5c9);-webkit-background-clip:text;background-clip:text;color:transparent;letter-spacing:-.03em}
+.sec-title{margin-top:1.2cqw;font-size:3.1cqw;font-weight:800}
+.sec-line{width:0;height:.4cqw;border-radius:99px;background:linear-gradient(90deg,var(--brand),var(--brand2));margin:1.4cqw 0}
+.is-active .sec-line{animation:draw .8s ease .5s both}
+@keyframes draw{from{width:0}to{width:11cqw}}
+.sec-sub{font-size:1.4cqw;color:var(--muted);max-width:44cqw;line-height:1.7}
+
+/* 要点列表 */
+.blist{list-style:none;display:flex;flex-direction:column;gap:1.05cqw}
+.blist li{display:flex;gap:.95cqw;align-items:flex-start;font-size:1.42cqw;line-height:1.6;
+  background:var(--surface);border:1px solid var(--line);border-radius:.85cqw;padding:1.05cqw 1.3cqw;
+  box-shadow:0 8px 22px -16px rgba(20,40,90,.5);transition:transform .25s,box-shadow .25s}
+.blist li:hover{transform:translateX(.4cqw);box-shadow:0 12px 26px -16px rgba(47,107,255,.55)}
+.blist.small li{font-size:1.24cqw;padding:.85cqw 1.1cqw}
+.blist.dense{gap:.68cqw}
+.blist.dense li{font-size:1.18cqw;padding:.72cqw 1.1cqw;line-height:1.55}
+.outline.dense{gap:.62cqw}
+.outline.dense li{padding:.72cqw 1.15cqw}
+.outline.dense .ot{font-size:1.16cqw}
+.grid.dense{gap:.95cqw}
+.card.dense{padding:1.1cqw}
+.card.dense .card-t{font-size:1.26cqw;margin-bottom:.4cqw}
+.card.dense .card-d{font-size:1.03cqw;line-height:1.55}
+.bl-dot{flex:0 0 auto;width:.62cqw;height:.62cqw;border-radius:50%;margin-top:.62cqw;
+  background:linear-gradient(135deg,var(--brand),var(--brand2));box-shadow:0 0 0 .28cqw rgba(47,107,255,.12)}
+.blist b,.blist strong{color:var(--brand-dk)}
+.blist code{font-family:var(--mono);font-size:.92em;background:#eef3ff;color:#1d46b8;padding:.1em .42em;border-radius:.35em}
+.hw li{background:linear-gradient(180deg,#fbfcff,#f3f7ff)}
+
+/* 卡片 */
+.grid{display:grid;gap:1.3cqw}
+.grid.cols-2{grid-template-columns:repeat(2,1fr)}
+.grid.cols-3{grid-template-columns:repeat(3,1fr)}
+.grid.cols-4{grid-template-columns:repeat(2,1fr)}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:1.1cqw;padding:1.5cqw;position:relative;overflow:hidden;
+  box-shadow:0 14px 32px -22px rgba(20,40,90,.55);transition:transform .28s,box-shadow .28s,border-color .28s}
+.card:hover{transform:translateY(-.5cqw);box-shadow:0 22px 40px -22px rgba(47,107,255,.5);border-color:rgba(47,107,255,.35)}
+.card::before{content:"";position:absolute;left:0;top:0;height:100%;width:.3cqw;background:linear-gradient(180deg,var(--brand),var(--brand2))}
+.card-ico{font-size:1.75cqw;margin-bottom:.6cqw}
+.card-t{font-size:1.42cqw;font-weight:800;margin-bottom:.55cqw}
+.card-d{font-size:1.14cqw;color:var(--muted);line-height:1.62}
+
+/* 表格 */
+.tbl-wrap{background:var(--surface);border:1px solid var(--line);border-radius:1.1cqw;overflow:hidden;
+  box-shadow:0 16px 36px -26px rgba(20,40,90,.6)}
+.tbl{width:100%;border-collapse:collapse;font-size:1.16cqw}
+.tbl th{background:linear-gradient(180deg,#eef4ff,#e4edff);color:var(--brand-dk);font-weight:800;text-align:left;
+  padding:.95cqw 1.2cqw;border-bottom:1px solid #d8e3f7;font-size:1.12cqw;letter-spacing:.02em}
+.tbl td{padding:.85cqw 1.2cqw;border-bottom:1px solid var(--line);line-height:1.55}
+.tbl tbody tr:last-child td{border-bottom:0}
+.tbl tbody tr:hover{background:#f7faff}
+.tbl code{font-family:var(--mono);font-size:.92em;background:#eef3ff;color:#1d46b8;padding:.08em .4em;border-radius:.35em}
+
+/* 对比 */
+.cmp-wrap{display:grid;grid-template-columns:1fr 1fr;gap:1.8cqw}
+.cmp{border-radius:1.1cqw;padding:1.4cqw;border:1px solid var(--line);background:var(--surface)}
+.cmp-h{font-size:1.4cqw;font-weight:800;margin-bottom:.9cqw;display:flex;align-items:center;gap:.6cqw}
+.cmp-a .cmp-h{color:var(--brand-dk)}
+.cmp-b .cmp-h{color:#b8730f}
+.cmp ul{list-style:none;display:flex;flex-direction:column;gap:.7cqw}
+.cmp li{font-size:1.16cqw;line-height:1.6;color:var(--muted);padding-left:1.3cqw;position:relative}
+.cmp li::before{content:"";position:absolute;left:0;top:.62cqw;width:.5cqw;height:.5cqw;border-radius:2px;background:var(--brand)}
+.cmp-b li::before{background:var(--accent)}
+.cmp-a{background:linear-gradient(180deg,#f6f9ff,#fff)}
+
+/* 步骤 */
+.steps{display:flex;flex-direction:column;gap:1cqw}
+.step{display:flex;gap:1.2cqw;align-items:flex-start;background:var(--surface);border:1px solid var(--line);
+  border-radius:.9cqw;padding:1cqw 1.25cqw}
+.step-n{flex:0 0 auto;width:2.3cqw;height:2.3cqw;border-radius:50%;display:grid;place-items:center;font-weight:800;font-size:1.15cqw;color:#fff;
+  background:linear-gradient(135deg,var(--brand),var(--brand2))}
+.step-t{font-size:1.3cqw;font-weight:800}
+.step-d{font-size:1.12cqw;color:var(--muted);line-height:1.6;margin-top:.25cqw}
+
+/* 流程图 */
+.flow{display:flex;align-items:stretch;justify-content:center;gap:0;flex-wrap:nowrap}
+.fl{flex:1;min-width:0;background:var(--surface);border:1px solid var(--line);border-radius:1cqw;padding:1.3cqw 1cqw;text-align:center;
+  box-shadow:0 12px 28px -22px rgba(20,40,90,.55)}
+.fl-ico{font-size:1.9cqw;margin-bottom:.5cqw}
+.fl-t{font-size:1.24cqw;font-weight:800;margin-bottom:.35cqw;color:var(--brand-dk)}
+.fl-d{font-size:1.02cqw;color:var(--muted);line-height:1.55}
+.fl-arrow{flex:0 0 auto;width:2.2cqw;position:relative;display:grid;place-items:center}
+.fl-arrow::after{content:"";width:1.4cqw;height:.22cqw;background:linear-gradient(90deg,var(--brand),var(--brand2));border-radius:99px;position:relative}
+.fl-arrow::before{content:"";position:absolute;right:.35cqw;width:.6cqw;height:.6cqw;border-top:.2cqw solid var(--brand2);border-right:.2cqw solid var(--brand2);transform:rotate(45deg)}
+.flow-note{margin-top:1.3cqw;font-size:1.1cqw;color:var(--muted);text-align:center;background:rgba(47,107,255,.06);border-radius:.8cqw;padding:.8cqw 1.2cqw}
+
+/* 代码 */
+.codebox{background:var(--code-bg);border-radius:1.1cqw;overflow:hidden;box-shadow:0 26px 54px -26px rgba(13,26,43,.75)}
+.cb-bar{display:flex;align-items:center;gap:.8cqw;padding:.8cqw 1.2cqw;background:rgba(255,255,255,.06);border-bottom:1px solid rgba(255,255,255,.07)}
+.cb-lang{font-family:var(--mono);font-size:.92cqw;font-weight:700;color:#7fd7e4;letter-spacing:.12em}
+.cb-file{font-family:var(--mono);font-size:.92cqw;color:#7f93ad}
+.cb-code{padding:1.25cqw 1.5cqw;font-family:var(--mono);font-size:1.06cqw;line-height:1.78;color:var(--code-ink);white-space:pre;overflow:auto;max-height:100%}
+.cb-code .pn{color:#7f93ad}.cb-code .tg{color:#6fd6ff}.cb-code .at{color:#ffcf7a}.cb-code .st{color:#a5e88a}
+.cb-code .c{color:#6b8099;font-style:italic}.cb-code .sel{color:#ffb3c8}.cb-code .cls{color:#ffd479}
+.cb-code .id{color:#9fe8ff}.cb-code .pc{color:#c8a2ff}.cb-code .prop{color:#8fd3ff}.cb-code .num{color:#f7c774}
+.cb-code .fn{color:#d0b0ff}.cb-code .imp{color:#ff8a8a}.cb-code .at-rules{color:#ff9f6b}
+.caption{margin-top:1cqw;font-size:1.08cqw;color:var(--muted);line-height:1.6}
+.caption b{color:var(--brand-dk)}
+
+/* 任务 */
+.task-goal{background:linear-gradient(180deg,#f4f8ff,#eef4ff);border:1px solid #dbe6fb;border-radius:.9cqw;padding:1.05cqw 1.25cqw;
+  font-size:1.22cqw;line-height:1.62}
+.tg-label{display:inline-block;font-weight:800;color:#fff;background:var(--brand);border-radius:.45cqw;
+  font-size:.98cqw;padding:.16cqw .6cqw;margin-right:.6cqw;vertical-align:.08cqw}
+.task-steps{list-style:none;counter-reset:ts;display:flex;flex-direction:column;gap:.75cqw}
+.task-steps li{counter-increment:ts;position:relative;padding-left:2.3cqw;font-size:1.14cqw;line-height:1.6}
+.task-steps li::before{content:counter(ts);position:absolute;left:0;top:.08cqw;width:1.55cqw;height:1.55cqw;border-radius:50%;
+  background:rgba(47,107,255,.12);color:var(--brand-dk);font-size:.92cqw;font-weight:800;display:grid;place-items:center}
+.task-code{background:var(--code-bg);border-radius:.9cqw;overflow:hidden;box-shadow:0 20px 44px -26px rgba(13,26,43,.7)}
+
+/* 演示 */
+.demo-right{display:flex;flex-direction:column;gap:1cqw;height:100%}
+.demo-frame{flex:1;width:100%;min-height:0;border:1px solid var(--line);border-radius:1cqw;background:#fff;
+  box-shadow:0 22px 46px -26px rgba(20,40,90,.6)}
+.demo-code{background:var(--code-bg);border-radius:.9cqw;overflow:hidden}
+.demo-code summary{cursor:pointer;color:#9fb6d4;font-size:1.02cqw;padding:.7cqw 1.1cqw;font-family:var(--mono);user-select:none}
+.demo-code .cb-code{padding:0 1.2cqw 1.1cqw;font-size:.96cqw}
+.hint{margin-top:1cqw;font-size:1.08cqw;color:var(--muted);background:rgba(255,138,61,.1);border-left:.3cqw solid var(--accent);
+  border-radius:.6cqw;padding:.8cqw 1.1cqw;line-height:1.6}
+.hint b{color:#c2601a}
+
+/* AI */
+.ai-card{background:linear-gradient(160deg,#171a3a,#2b2a5e 55%,#3a2a6a);border-radius:1.1cqw;padding:1.7cqw;color:#e8e6ff;
+  position:relative;overflow:hidden;box-shadow:0 24px 52px -26px rgba(40,30,90,.8)}
+.ai-card::after{content:"";position:absolute;right:-6cqw;top:-6cqw;width:14cqw;height:14cqw;border-radius:50%;
+  background:radial-gradient(circle,rgba(124,92,255,.6),transparent 65%);animation:float1 12s ease-in-out infinite}
+.ai-badge{display:inline-grid;place-items:center;width:2.6cqw;height:2.6cqw;border-radius:.7cqw;font-weight:900;font-size:1.1cqw;
+  background:linear-gradient(135deg,#7c5cff,#0fb5c9);color:#fff;margin-bottom:.9cqw;letter-spacing:.04em}
+.ai-card p{font-size:1.22cqw;line-height:1.72;position:relative;z-index:2}
+.ai-list li{border-color:rgba(124,92,255,.25);background:linear-gradient(180deg,#fbf9ff,#f5f2ff)}
+.ai-list .bl-dot{background:linear-gradient(135deg,#7c5cff,#0fb5c9)}
+
+/* 检测（可交互：点选 → 判分 → 显示解析） */
+.quiz-body{justify-content:flex-start;gap:1.1cqw}
+.quiz-top{display:flex;align-items:center;justify-content:space-between;gap:1.2cqw;flex:0 0 auto}
+.quiz-meta{font-size:1.02cqw;color:var(--muted)}
+.quiz-meta b{color:var(--brand);font-size:1.1cqw}
+.q-reveal{cursor:pointer;font-family:inherit;font-size:.98cqw;font-weight:700;color:var(--brand-dk);
+  background:#eef4ff;border:1px solid #d6e3fb;border-radius:.5cqw;padding:.4cqw .95cqw;transition:.18s}
+.q-reveal:hover{background:#e2ecff;border-color:var(--brand)}
+.quiz-acts{display:flex;align-items:center;gap:.6cqw;flex:0 0 auto}
+.q-reset-all{cursor:pointer;font-family:inherit;font-size:.98cqw;font-weight:700;color:var(--muted);
+  background:#fff;border:1px solid var(--line);border-radius:.5cqw;padding:.4cqw .9cqw;transition:.18s}
+.q-reset-all:hover{color:var(--accent);border-color:#ffd0a8;background:#fff8f2}
+.quiz{list-style:none;display:flex;flex-direction:column;gap:1cqw;overflow:auto;padding-right:.3cqw}
+.quiz.dense{gap:.55cqw}
+.quiz-body:has(.quiz.dense){gap:.7cqw}
+.quiz-item{background:var(--surface);border:1px solid var(--line);border-radius:.9cqw;padding:1cqw 1.2cqw;
+  transition:border-color .2s,box-shadow .2s}
+.quiz-item.ok{border-color:rgba(18,161,80,.45);box-shadow:0 10px 26px -20px rgba(18,161,80,.7)}
+.quiz-item.bad{border-color:rgba(214,83,79,.45);box-shadow:0 10px 26px -20px rgba(214,83,79,.6)}
+.quiz.dense .quiz-item{padding:.6cqw .95cqw}
+.quiz.dense .q{font-size:1.08cqw}
+.quiz.dense .opts{margin-top:.4cqw;gap:.45cqw}
+.quiz.dense .opt{font-size:.94cqw;padding:.22cqw .62cqw}
+.quiz.dense .q-foot{margin-top:.4cqw;min-height:1.15cqw}
+.quiz.dense .q-check{font-size:.88cqw;padding:.16cqw .6cqw}
+.quiz.dense .q-verdict{font-size:.9cqw}
+.quiz.dense .q-ans{margin-top:.4cqw;font-size:.92cqw;padding:.4cqw .7cqw}
+.q{display:flex;gap:.55cqw;align-items:baseline;font-size:1.22cqw;font-weight:700;line-height:1.5}
+.quiz.dense .q{font-size:1.12cqw}
+.q-no{font-family:var(--mono);font-size:.92cqw;font-weight:800;color:var(--brand);flex:0 0 auto}
+.q-tag{flex:0 0 auto;font-size:.8cqw;font-weight:700;color:#fff;background:var(--brand2);
+  border-radius:.32cqw;padding:.08cqw .42cqw;letter-spacing:.04em}
+.q-tag.multi{background:var(--violet)}
+.q-txt{flex:1;min-width:0}
+.opts{display:flex;flex-wrap:wrap;gap:.55cqw;margin-top:.62cqw}
+.opt{cursor:pointer;display:inline-flex;gap:.42cqw;align-items:center;font-family:inherit;text-align:left;
+  font-size:1.02cqw;line-height:1.45;color:#33456b;background:#f5f8ff;border:1px solid #e0e9fb;
+  border-radius:.55cqw;padding:.36cqw .8cqw;transition:background .16s,border-color .16s,box-shadow .16s}
+.quiz.dense .opt{font-size:.96cqw;padding:.28cqw .7cqw}
+.opt:hover{border-color:var(--brand);background:#eef4ff}
+.opt i{font-style:normal;font-family:var(--mono);font-weight:800;font-size:.88em;color:var(--brand)}
+.opt.sel{background:#e6efff;border-color:var(--brand);box-shadow:0 0 0 .16cqw rgba(47,107,255,.16)}
+.opt.right{background:rgba(18,161,80,.1);border-color:#12A150;color:#0b5f2f}
+.opt.right i{color:#0b5f2f}
+.q-foot{display:flex;align-items:center;gap:.8cqw;margin-top:.6cqw;min-height:1.5cqw}
+.q-check{cursor:pointer;font-family:inherit;font-size:.94cqw;font-weight:700;color:var(--brand);
+  background:#fff;border:1px solid #c9daff;border-radius:.45cqw;padding:.26cqw .75cqw;transition:.16s}
+.q-check:hover{background:#eef4ff}
+.q-reset{cursor:pointer;font-family:inherit;font-size:.94cqw;font-weight:700;color:var(--muted);
+  background:#fff;border:1px solid var(--line);border-radius:.45cqw;padding:.26cqw .7cqw;transition:.16s}
+.q-reset:hover{color:var(--accent);border-color:#ffd0a8;background:#fff8f2}
+.q-reset:disabled{opacity:.38;cursor:default}
+.q-reset:disabled:hover{color:var(--muted);border-color:var(--line);background:#fff}
+.quiz.dense .q-reset{font-size:.88cqw;padding:.16cqw .55cqw}
+.q-verdict{font-size:.96cqw;font-weight:700}
+.quiz-item.ok .q-verdict{color:var(--ok)}
+.quiz-item.bad .q-verdict{color:#d9534f}
+.q-ans{display:none;margin-top:.6cqw;font-size:.98cqw;line-height:1.6;color:#0f7a3d;
+  background:rgba(18,161,80,.08);border-radius:.5cqw;padding:.5cqw .8cqw}
+.quiz-item.revealed .q-ans{display:block;animation:rise .3s both}
+.q-ans b{color:#0b5f2f;margin-right:.45cqw}
+.ans-key{font-family:var(--mono);font-weight:800;margin-right:.6cqw}
+.ans-tip{color:var(--muted)}
+
+/* 目标 */
+.objs{display:grid;grid-template-columns:repeat(3,1fr);gap:1.4cqw}
+.obj{border-radius:1.1cqw;padding:1.4cqw;border:1px solid var(--line);background:var(--surface)}
+.obj-h{font-size:1.3cqw;font-weight:800;margin-bottom:.85cqw;display:flex;align-items:center;gap:.55cqw}
+.obj-h::before{content:"";width:.55cqw;height:1.35cqw;border-radius:99px}
+.obj ul{list-style:none;display:flex;flex-direction:column;gap:.62cqw}
+.obj li{font-size:1.1cqw;line-height:1.58;color:var(--muted);padding-left:1.15cqw;position:relative}
+.obj li::before{content:"";position:absolute;left:0;top:.6cqw;width:.42cqw;height:.42cqw;border-radius:50%;background:#9db4d6}
+.obj-1 .obj-h::before{background:var(--brand)}.obj-2 .obj-h::before{background:var(--brand2)}.obj-3 .obj-h::before{background:var(--accent)}
+.obj-1 .obj-h{color:var(--brand-dk)}.obj-2 .obj-h{color:#0a7b87}.obj-3 .obj-h{color:#b8730f}
+
+/* 思政 */
+.s-ideo .s-body{justify-content:center}
+.ideo-wrap{display:flex;flex-direction:column;gap:1.3cqw}
+.ideo-quote{position:relative;background:linear-gradient(180deg,#fff8f0,#fffbf6);border:1px solid #ffe3c8;border-left:.42cqw solid var(--accent);
+  border-radius:.95cqw;padding:1.6cqw 1.8cqw 1.6cqw 2.2cqw;font-size:1.3cqw;line-height:1.85;color:#4a3a28}
+.ideo-quote strong{color:#a3510a}
+.ideo-topic{font-size:1.16cqw;color:var(--muted);background:rgba(47,107,255,.06);border-radius:.8cqw;padding:.9cqw 1.2cqw;line-height:1.6}
+.it-label{display:inline-block;font-weight:800;color:#fff;background:var(--brand);border-radius:.45cqw;font-size:.96cqw;padding:.16cqw .6cqw;margin-right:.6cqw}
+
+/* 大纲 */
+.outline{list-style:none;display:flex;flex-direction:column;gap:.95cqw;counter-reset:none}
+.outline li{display:flex;align-items:center;gap:1.2cqw;background:var(--surface);border:1px solid var(--line);border-radius:.9cqw;padding:1.05cqw 1.35cqw;
+  box-shadow:0 10px 26px -22px rgba(20,40,90,.55)}
+.oi{font-family:var(--mono);font-size:1.1cqw;font-weight:800;color:var(--brand);background:rgba(47,107,255,.1);border-radius:.5cqw;padding:.28cqw .7cqw}
+.ot{font-size:1.34cqw;font-weight:700}
+
+/* 参考 */
+.refs{list-style:none;display:flex;flex-direction:column;gap:.85cqw}
+.refs li{display:flex;align-items:baseline;gap:.9cqw;background:var(--surface);border:1px solid var(--line);border-radius:.8cqw;padding:.9cqw 1.15cqw}
+.ref-idx{font-family:var(--mono);font-size:1cqw;font-weight:800;color:var(--brand)}
+.ref-t{font-size:1.16cqw;font-weight:600}
+.ref-u{font-family:var(--mono);font-size:.92cqw;color:var(--muted);word-break:break-all}
+
+/* 结束 */
+.s-end{align-items:center;justify-content:center;text-align:center;background:linear-gradient(140deg,#12203b,#1d3a78 55%,#0e6f88);}
+.s-end .end-t{color:#fff}
+.end-mark{font-size:2.4cqw;color:#7fd7e4;margin-bottom:.6cqw}
+.end-t{font-size:3.4cqw;font-weight:900;letter-spacing:.02em}
+.end-s{margin-top:1.2cqw;font-size:1.35cqw;color:#a9c4e8}
+/* 结束页导航：下一讲 / 返回总目录 */
+.end-inner{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.9cqw;max-width:74%}
+.end-next{margin-top:2.6cqw;display:inline-flex;align-items:center;gap:1cqw;text-decoration:none;
+  background:rgba(255,255,255,.09);border:1px solid rgba(140,200,235,.42);border-radius:.9cqw;
+  padding:1cqw 1.5cqw;transition:.22s;backdrop-filter:blur(6px);max-width:100%}
+.end-next:hover{background:rgba(255,255,255,.16);border-color:#7fd7e4;transform:translateY(-2px);
+  box-shadow:0 18px 40px -26px rgba(0,0,0,.9)}
+.en-lab{flex:0 0 auto;font-size:.92cqw;font-weight:800;letter-spacing:.06em;color:#0c2036;
+  background:linear-gradient(135deg,#7fd7e4,#4fc3d9);border-radius:.4cqw;padding:.2cqw .62cqw}
+.en-t{color:#eaf4ff;font-size:1.18cqw;font-weight:700;line-height:1.5}
+.en-ar{color:#7fd7e4;font-size:1.3cqw;font-weight:800}
+.end-next.is-final{cursor:default;box-shadow:none}
+.end-next.is-final:hover{transform:none;background:rgba(255,255,255,.09);border-color:rgba(140,200,235,.42);box-shadow:none}
+.end-back{margin-top:.5cqw;display:inline-flex;align-items:center;gap:.35cqw;text-decoration:none;
+  font-size:1.02cqw;color:#9fbde0;border-bottom:1px dashed rgba(159,189,224,.45);padding-bottom:.12cqw;transition:.2s}
+.end-back:hover{color:#fff;border-bottom-color:#7fd7e4}
+
+/* 进度 & HUD */
+.topbar{position:absolute;left:0;top:0;height:.42cqw;width:100%;background:rgba(47,107,255,.1);z-index:6}
+.topbar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--brand),var(--brand2),var(--violet));
+  transition:width .45s cubic-bezier(.2,.7,.2,1)}
+.hud{position:absolute;right:2.2cqw;bottom:1.5cqw;z-index:6;display:flex;align-items:center;gap:1cqw;
+  font-size:1cqw;color:var(--muted);font-family:var(--mono)}
+.hud .btn{cursor:pointer;background:rgba(255,255,255,.82);border:1px solid var(--line);border-radius:.55cqw;padding:.32cqw .7cqw;
+  transition:.2s}
+.hud .btn:hover{border-color:var(--brand);color:var(--brand)}
+.hud .btn[data-on="0"]{color:#a8b6cc;background:rgba(255,255,255,.5);border-style:dashed}
+.hud .btn[data-on="0"]:hover{color:var(--accent);border-color:#ffd0a8;border-style:solid;background:#fff8f2}
+.hud .btn[data-on="1"]{color:#0a7b87;border-color:#bfe6ea;background:rgba(15,181,201,.09)}
+.hud .btn[data-on="1"]:hover{border-color:var(--brand2);background:rgba(15,181,201,.16)}
+.pageno b{color:var(--ink)}
+.legend{position:absolute;left:2.2cqw;bottom:1.5cqw;z-index:6;font-size:.96cqw;color:#9aabc4;font-family:var(--mono)}
+.flip-toast{position:absolute;left:50%;bottom:9%;z-index:9;transform:translate(-50%,10px);
+  background:rgba(16,29,50,.9);color:#fff;font-family:var(--mono);font-size:1.02cqw;letter-spacing:.02em;
+  padding:.62cqw 1.25cqw;border-radius:999px;opacity:0;pointer-events:none;white-space:nowrap;
+  transition:opacity .22s,transform .22s;box-shadow:0 18px 40px -22px rgba(0,0,0,.8)}
+.flip-toast.show{opacity:1;transform:translate(-50%,0)}
+/* 导航抽屉 */
+.drawer{position:absolute;inset:0;z-index:8;background:rgba(12,22,40,.55);backdrop-filter:blur(6px);display:none;padding:4cqw}
+.drawer.open{display:block}
+.drawer-panel{background:var(--surface);border-radius:1.2cqw;height:100%;padding:2cqw;overflow:auto;box-shadow:0 40px 80px -30px rgba(0,0,0,.5)}
+.drawer-h{font-size:1.5cqw;font-weight:800;margin-bottom:1.2cqw;display:flex;justify-content:space-between}
+.drawer-h span{cursor:pointer;color:var(--muted);font-weight:600;font-size:1.1cqw}
+.drawer ul{list-style:none;display:grid;grid-template-columns:1fr 1fr;gap:.55cqw}
+.drawer li{display:flex;gap:.7cqw;align-items:center;padding:.6cqw .8cqw;border-radius:.6cqw;cursor:pointer;border:1px solid transparent}
+.drawer li:hover{background:#f2f6ff;border-color:#dbe6fb}
+.drawer li.cur{background:#eaf1ff;border-color:#c9daff}
+.nv-idx{font-family:var(--mono);font-size:.92cqw;color:var(--brand);font-weight:800}
+.nv-t{font-size:1.06cqw;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+/* ───────── 屏幕自适应 ─────────
+   1) 16:9 / 16:10 笔记本与投影：等比缩放（默认）
+   2) 4:3 老投影 / 上下更紧：压缩留白与圆角
+   3) 超宽屏：仍按高度定宽，不拉伸变形
+   4) 竖屏（手机、平板竖握）：改为纵向流式阅读，单列重排
+   5) 系统开启「减弱动效」时关闭所有动画
+*/
+@media (max-aspect-ratio: 4/3) and (orientation: landscape){
+  .wrap{padding:1.2vh}
+  .stage{border-radius:14px}
+  .slide{padding:3.4cqw 4.2cqw 3.2cqw;gap:1.5cqw}
+  .s-title{font-size:2.62cqw}
+  .blist{gap:.85cqw}
+  .blist li{font-size:1.32cqw;padding:.9cqw 1.15cqw}
+  .legend{display:none}
+}
+@media (min-aspect-ratio: 21/9){
+  .stage{max-width:calc(100vh * 16 / 9);max-height:calc(100vw * 9 / 16)}
+}
+@media (prefers-reduced-motion: reduce){
+  .an{opacity:1!important;animation:none!important}
+  .blob,.orb,.codewin{animation:none!important}
+  .slide{transition:none}
+}
+/* —— 竖屏：纵向流式阅读 —— */
+@media (orientation: portrait){
+  html,body{height:auto;overflow-x:hidden;overflow-y:auto}
+  html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+  body{overflow:visible;background:var(--bg)}
+  .wrap{display:block;height:auto;padding:0}
+  .stage{width:100%;height:auto;max-width:none;max-height:none;aspect-ratio:auto;border-radius:0;
+    overflow:visible;box-shadow:none;container-type:inline-size;background:transparent}
+  .bgfx{display:none}
+  .slide{position:relative;inset:auto;opacity:1!important;visibility:visible!important;transform:none!important;
+    padding:8vw 6vw 9vw;gap:5vw;min-height:auto;background:var(--bg2);border-bottom:1px solid var(--line)}
+  .slide.prev{transform:none!important}
+  .an{opacity:1!important;animation:none!important;transform:none!important}
+  .s-head{flex-direction:column;gap:0}
+  .kicker{font-size:2.6vw;padding:1vw 2.6vw;margin-bottom:2.2vw;letter-spacing:.1em}
+  .s-title{font-size:6.4vw;line-height:1.3}
+  .s-sub{margin-top:2vw;font-size:3.4vw}
+  .s-body{gap:4vw;justify-content:flex-start}
+  .s-body.two{flex-direction:column;gap:4.4vw}
+  .col-l,.col-r{gap:3.4vw}
+  /* 封面 */
+  .s-cover{flex-direction:column;align-items:flex-start;gap:5vw;padding:12vw 6vw 10vw}
+  .cover-art{display:none}
+  .brandrow{margin-bottom:4vw;gap:2vw}
+  .brandmark{font-size:4.4vw}.brandsub{font-size:3vw}
+  .cover-title{font-size:9.6vw;line-height:1.22}
+  .cover-sub{font-size:3.8vw;max-width:none;margin-top:2.6vw}
+  .pills{gap:2vw;margin-top:4vw}
+  .pill{font-size:2.8vw;padding:1.2vw 2.8vw}
+  .cover-meta{font-size:2.9vw;gap:2vw;margin-top:4vw}
+  .cover-meta b{font-size:3.4vw}
+  /* 章节页 */
+  .sec-num{font-size:17vw}
+  .sec-title{font-size:7.2vw;margin-top:3vw}
+  .sec-sub{font-size:3.6vw;max-width:none;margin-top:3vw}
+  .is-active .sec-line{animation:none;width:26vw}
+  .sec-line{margin:4vw 0}
+  /* 列表 / 卡片 */
+  .blist{gap:2.6vw}
+  .blist li{font-size:3.7vw;padding:2.8vw 3.4vw;border-radius:2.4vw;gap:2.4vw;line-height:1.62}
+  .blist.small li{font-size:3.4vw;padding:2.4vw 3vw}
+  .blist.dense li{font-size:3.3vw;padding:2.2vw 3vw}
+  .bl-dot{width:1.8vw;height:1.8vw;margin-top:1.8vw;box-shadow:0 0 0 .8vw rgba(47,107,255,.12)}
+  .outline{gap:2.4vw}
+  .outline li{padding:2.8vw 3.4vw;border-radius:2.2vw;gap:3vw}
+  .oi{font-size:2.8vw;padding:.8vw 2vw}
+  .ot{font-size:3.9vw}
+  .grid{gap:3vw}
+  .grid.cols-2,.grid.cols-3,.grid.cols-4{grid-template-columns:1fr}
+  .card{padding:4.2vw;border-radius:2.6vw}
+  .card-t{font-size:4.1vw;margin-bottom:1.6vw}
+  .card-d{font-size:3.3vw}
+  .card-ico{font-size:5.6vw;margin-bottom:1.6vw}
+  .card::before{width:.8vw}
+  /* 表格 */
+  .tbl-wrap{overflow-x:auto;border-radius:2.4vw;-webkit-overflow-scrolling:touch}
+  .tbl{font-size:3.1vw;min-width:110vw}
+  .tbl th{font-size:3vw;padding:2.4vw 2.8vw;white-space:nowrap}
+  .tbl td{padding:2.2vw 2.8vw}
+  /* 对比 */
+  .cmp-wrap{grid-template-columns:1fr;gap:3.4vw}
+  .cmp{padding:3.6vw;border-radius:2.4vw}
+  .cmp-h{font-size:3.8vw;margin-bottom:2.4vw}
+  .cmp ul{gap:2vw}
+  .cmp li{font-size:3.2vw;padding-left:3.6vw}
+  .cmp li::before{width:1.4vw;height:1.4vw;top:1.7vw}
+  /* 步骤 / 流程 */
+  .steps{gap:2.6vw}
+  .step{padding:3vw 3.4vw;border-radius:2.2vw;gap:3vw}
+  .step-n{width:7.4vw;height:7.4vw;font-size:3.2vw}
+  .step-t{font-size:3.7vw}
+  .step-d{font-size:3.2vw;margin-top:.8vw}
+  .flow{flex-direction:column;gap:1.6vw}
+  .fl{padding:3.6vw;border-radius:2.4vw}
+  .fl-ico{font-size:6.4vw}
+  .fl-t{font-size:3.9vw}
+  .fl-d{font-size:3.1vw}
+  .fl-arrow{width:100%;height:6vw;transform:rotate(90deg)}
+  .flow-note{font-size:3.1vw;padding:2.4vw 3vw;border-radius:2vw;margin-top:2.6vw}
+  /* 代码 */
+  .codebox,.task-code{border-radius:2.4vw}
+  .cb-bar{padding:2.2vw 3vw;gap:2.4vw}
+  .cb-lang,.cb-file{font-size:2.7vw}
+  .cb-code{font-size:3.1vw;line-height:1.62;padding:3vw 3.4vw}
+  .caption{font-size:3vw;margin-top:2.4vw}
+  .demo-code summary{font-size:2.9vw;padding:2.2vw 3vw}
+  .demo-code .cb-code{font-size:2.9vw}
+  /* 任务 / 演示 */
+  .task-goal{font-size:3.4vw;padding:3.2vw;border-radius:2.2vw}
+  .tg-label{font-size:2.6vw;padding:.5vw 1.8vw;margin-right:1.6vw;border-radius:1.2vw}
+  .task-steps{gap:2.4vw}
+  .task-steps li{font-size:3.3vw;padding-left:6.4vw}
+  .task-steps li::before{width:4.6vw;height:4.6vw;font-size:2.8vw}
+  .demo-right{height:auto;gap:2.6vw}
+  .demo-frame{height:66vw;min-height:190px;border-radius:2.4vw}
+  .hint{font-size:3.1vw;padding:2.6vw 3vw;border-radius:2vw;margin-top:2.6vw}
+  /* AI */
+  .ai-card{padding:4.4vw;border-radius:2.6vw}
+  .ai-card p{font-size:3.5vw}
+  .ai-badge{width:8.4vw;height:8.4vw;font-size:3.2vw;border-radius:2vw;margin-bottom:2.4vw}
+  /* 检测（!important：压过横屏 dense 的 cqw 规则，否则竖屏字号塌缩） */
+  .quiz-body{gap:3.4vw}
+  .quiz-top{flex-direction:column;align-items:flex-start;gap:2.4vw}
+  .quiz-meta{font-size:3vw}
+  .quiz-meta b{font-size:3.4vw}
+  .quiz-acts{gap:2vw}
+  .q-reveal,.q-reset-all{font-size:3vw;padding:1.6vw 3.4vw;border-radius:2vw}
+  .quiz{gap:3vw;overflow:visible}
+  .quiz.dense{gap:2.6vw}
+  .quiz-item,.quiz.dense .quiz-item{padding:3.4vw 3.6vw;border-radius:2.4vw}
+  .quiz.dense .q{font-size:3.6vw;gap:1.6vw;line-height:1.55}
+  .q-no{font-size:2.9vw}
+  .q-tag{font-size:2.4vw;padding:.3vw 1.4vw;border-radius:1.2vw}
+  .opts,.quiz.dense .opts{gap:1.8vw;margin-top:2.2vw}
+  .opt,.quiz.dense .opt{font-size:3.2vw;padding:1.4vw 2.8vw;border-radius:2vw;gap:1.4vw}
+  .q-foot,.quiz.dense .q-foot{margin-top:2vw;gap:2.4vw;min-height:0}
+  .q-check,.quiz.dense .q-check{font-size:2.9vw;padding:1.2vw 2.8vw;border-radius:1.6vw}
+  .q-reset,.quiz.dense .q-reset{font-size:2.9vw;padding:1.2vw 2.6vw;border-radius:1.6vw}
+  .q-verdict,.quiz.dense .q-verdict{font-size:2.9vw}
+  .q-ans,.quiz.dense .q-ans{font-size:3vw;padding:2.2vw 3vw;border-radius:1.8vw;margin-top:2vw}
+  /* 目标 / 思政 */
+  .objs{grid-template-columns:1fr;gap:3vw}
+  .obj{padding:4vw;border-radius:2.4vw}
+  .obj-h{font-size:3.9vw;margin-bottom:2.4vw}
+  .obj-h::before{width:1.4vw;height:4vw}
+  .obj ul{gap:2vw}
+  .obj li{font-size:3.2vw;padding-left:3.4vw}
+  .obj li::before{width:1.2vw;height:1.2vw;top:1.6vw}
+  .ideo-wrap{gap:3.4vw}
+  .ideo-quote{font-size:3.6vw;padding:4vw 4.4vw;border-radius:2.4vw;line-height:1.8}
+  .ideo-topic{font-size:3.2vw;padding:2.8vw 3.2vw;border-radius:2.2vw}
+  .it-label{font-size:2.6vw;padding:.5vw 1.6vw;border-radius:1.2vw;margin-right:1.4vw}
+  /* 参考 / 结束 */
+  .refs{gap:2.2vw}
+  .refs li{padding:2.8vw 3.2vw;border-radius:2vw;gap:2.4vw}
+  .ref-idx{font-size:2.8vw}
+  .ref-t{font-size:3.3vw}
+  .ref-u{font-size:2.7vw}
+  .s-end{align-items:center;justify-content:center;min-height:60vh}
+  .end-t{font-size:8.4vw}
+  .end-s{font-size:3.6vw;margin-top:3vw}
+  .end-mark{font-size:6vw}
+  .end-inner{max-width:none;width:100%;gap:2vw}
+  .end-next{margin-top:5vw;gap:2.2vw;padding:3vw 3.6vw;border-radius:2.4vw;flex-wrap:wrap;justify-content:center}
+  .en-lab{font-size:2.6vw;padding:.8vw 2vw;border-radius:1.2vw}
+  .en-t{font-size:3.4vw}
+  .en-ar{font-size:3.6vw}
+  .end-back{font-size:3vw;margin-top:2.6vw}
+  /* HUD / 目录：固定悬浮 */
+  .topbar{position:fixed;height:1.2vw;z-index:20}
+  .hud{position:fixed;right:3vw;bottom:calc(3vw + env(safe-area-inset-bottom));z-index:20;
+    background:rgba(255,255,255,.94);border:1px solid var(--line);border-radius:999px;
+    padding:2.2vw 3.4vw;gap:3vw;font-size:3vw;box-shadow:0 10px 30px -12px rgba(16,34,74,.35)}
+  .hud .btn{font-size:2.9vw;padding:1vw 2.4vw;border-radius:1.6vw}
+  .flip-toast{position:fixed;bottom:calc(16vw + env(safe-area-inset-bottom));z-index:21;
+    font-size:3vw;padding:2.2vw 4vw;max-width:84vw;white-space:normal;text-align:center;line-height:1.5}
+  .legend{display:none}
+  .drawer{position:fixed;padding:4vw}
+  .drawer-panel{padding:5vw;border-radius:3vw}
+  .drawer-h{font-size:4.2vw;margin-bottom:3vw}
+  .drawer-h span{font-size:3.2vw}
+  .drawer ul{grid-template-columns:1fr;gap:1.6vw}
+  .drawer li{padding:2.4vw 3vw;border-radius:2vw;gap:2.4vw}
+  .nv-idx{font-size:2.8vw}
+  .nv-t{font-size:3.2vw;white-space:normal}
+}
+/* 打印 */
+@media print{
+  body{overflow:visible}
+  .wrap{padding:0;display:block}
+  .stage{width:100%;max-width:none;height:auto;aspect-ratio:auto;border-radius:0;box-shadow:none}
+  .slide{position:relative;opacity:1!important;visibility:visible!important;transform:none!important;
+    page-break-after:always;height:100vh;width:100%}
+  .an{opacity:1!important;animation:none!important}
+  .topbar,.hud,.legend,.drawer{display:none!important}
+}
+</style>
+</head>
+<body>
+<div class="wrap"><div class="stage" id="stage">
+  <div class="bgfx"><div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div><div class="grid-lines"></div></div>
+  <div class="topbar"><i id="bar"></i></div>
+
+<section class="slide s-cover is-active" data-kind="cover">
+  <div class="cover-left">
+    <div class="brandrow an" style="--i:0">
+      <span class="brandmark">网页制作</span>
+      <span class="brandsub">HTML5 + CSS3</span>
+    </div>
+    <div class="kicker an" style="--i:1">项目3 · 第 7 单元</div>
+    <h1 class="cover-title an" style="--i:2">字体属性、文本排版与自定义字体</h1>
+    <p class="cover-sub an" style="--i:3">把文字调成想要的样子：字号、字体族、字重、行高，再到用 @font-face 引入个性化字体</p>
+    <div class="pills"><span class="pill" style="--i:3">font-size</span><span class="pill" style="--i:4">font-family</span><span class="pill" style="--i:5">line-height</span><span class="pill" style="--i:6">文本排版</span><span class="pill" style="--i:7">@font-face</span></div>
+    <div class="cover-meta an" style="--i:9">
+      <span class="m-item"><b>40</b> 分钟</span>
+      <span class="dot"></span>
+      <span class="m-item">教材《网页制作（HTML5+CSS3）》项目3</span>
+      <span class="dot"></span>
+      <span class="m-item">电子工业出版社 · 2025 年 1 月第 1 版</span>
+    </div>
+  </div>
+  <div class="cover-art" aria-hidden="true">
+    <div class="orb o1"></div><div class="orb o2"></div><div class="orb o3"></div>
+    <div class="codewin">
+      <div class="cw-bar"><i></i><i></i><i></i></div>
+      <pre class="cw-body"><span class="pn">&lt;!</span><span class="tg">DOCTYPE</span> <span class="at">html</span><span class="pn">&gt;</span>
+<span class="pn">&lt;</span><span class="tg">html</span> <span class="at">lang</span>=<span class="st">"zh-CN"</span><span class="pn">&gt;</span>
+  <span class="pn">&lt;</span><span class="tg">head</span><span class="pn">&gt;</span> <span class="pn">&lt;</span><span class="tg">meta</span> <span class="at">charset</span>=<span class="st">"UTF-8"</span><span class="pn">&gt;</span> <span class="pn">&lt;/</span><span class="tg">head</span><span class="pn">&gt;</span>
+  <span class="pn">&lt;</span><span class="tg">body</span><span class="pn">&gt;</span>
+    <span class="pn">&lt;</span><span class="tg">h1</span><span class="pn">&gt;</span>Hello, Web<span class="pn">&lt;/</span><span class="tg">h1</span><span class="pn">&gt;</span>
+  <span class="pn">&lt;/</span><span class="tg">body</span><span class="pn">&gt;</span>
+<span class="pn">&lt;/</span><span class="tg">html</span><span class="pn">&gt;</span></pre>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-kind="objectives">
+  
+  <header class="s-head">
+    <div class="s-head-left">
+      
+      <h2 class="s-title an" style="--i:1">本单元我们要达成什么</h2>
+      <p class="s-sub an" style="--i:2">对照教材《项目3》3.3.4～3.3.5 的学习目标</p>
+    </div>
+  </header>
+  <div class="s-body"><div class="objs"><div class="obj obj-1" class="an " style="--i:1">
+          <div class="obj-h">知识目标</div><ul><li>掌握 font-size、font-family 等字体属性的取值</li><li>掌握 font-weight、font-style、line-height 的用法</li><li>掌握 text-align、text-indent 等文本排版属性的用法</li><li>理解 @font-face 自定义字体的定义与引用规则</li></ul></div><div class="obj obj-2" class="an " style="--i:2">
+          <div class="obj-h">技能目标</div><ul><li>能使用选择器对页面中的文字进行排版</li><li>能使用 font 简写属性一次定义多种字体样式</li><li>能使用 line-height 实现单行文字垂直居中</li><li>能使用 @font-face 定义并引用自定义字体</li></ul></div><div class="obj obj-3" class="an " style="--i:3">
+          <div class="obj-h">素养目标</div><ul><li>培养有始有终、精益求精的工匠精神</li><li>培养极致思维、用户思维的互联网思维模式</li><li>具备情趣高尚的审美意识</li></ul></div></div></div>
+</section>
+
+<section class="slide s-ideo" data-kind="ideology">
+  
+  <header class="s-head">
+    <div class="s-head-left">
+      
+      <h2 class="s-title an" style="--i:1">工匠精神：像素级的打磨，才是「提品质」</h2>
+      <p class="s-sub an" style="--i:2">教材《项目3》思政课堂</p>
+    </div>
+  </header>
+  <div class="s-body"><div class="ideo-wrap">
+    <div class="ideo-quote an" style="--i:1"><strong>工匠精神（craftsman's spirit）</strong>是一种职业精神，它是<strong>职业道德、职业能力、职业品质</strong>的体现，是从业者的一种<strong>职业价值取向和行为表现</strong>。2016 年，《政府工作报告》提出：鼓励企业开展<strong>个性化定制、柔性化生产</strong>，培育<strong>精益求精的工匠精神</strong>，<strong>增品种、提品质、创品牌</strong>。此后，除了制造业，<strong>各行各业都提倡工匠精神</strong>。</div>
+    <div class="ideo-topic an" style="--i:2"><span class="it-label">课堂讨论</span>字号、行高、字距这些「差一个像素」的细节，用户未必说得出来，却一定感受得到。请结合前端岗位谈谈：如何用精益求精的态度打磨页面的文字排版？</div>
+  </div></div>
+</section>
+
+<section class="slide" data-kind="outline">
+  
+  <header class="s-head">
+    <div class="s-head-left">
+      
+      <h2 class="s-title an" style="--i:1">本单元导览</h2>
+      <p class="s-sub an" style="--i:2">从「字体三件套」到「自定义字体」，五步搞定文字</p>
+    </div>
+  </header>
+  <div class="s-body"><ol class="outline dense"><li class="an " style="--i:1"><span class="oi">01</span><span class="ot">字体大小怎么定？px、pt、em、rem、% 到底差在哪？</span></li><li class="an " style="--i:2"><span class="oi">02</span><span class="ot">字体族怎么选？通用字体、候选列表与中英混排的顺序</span></li><li class="an " style="--i:3"><span class="oi">03</span><span class="ot">字重、风格与行高：加粗、倾斜，以及单行文字垂直居中（任务3-3）</span></li><li class="an " style="--i:4"><span class="oi">04</span><span class="ot">font 简写属性与文本排版五件套（任务3-4、任务3-5）</span></li><li class="an " style="--i:5"><span class="oi">05</span><span class="ot">自定义字体：用 @font-face 把个性化字体搬进网页（任务3-6）</span></li></ol></div>
+</section>
+
+<section class="slide s-section" data-kind="section">
+  <div class="sec-inner">
+    <div class="sec-num an" style="--i:0">3.3.4</div>
+    <h2 class="sec-title an" style="--i:1">字体属性</h2>
+    <div class="sec-line an" style="--i:2"></div>
+    <p class="sec-sub an" style="--i:3">除了 color，文字的加粗、变大、行距，都由这一节的属性说了算。</p>
+  </div>
+</section>
+
+<section class="slide" data-kind="table">
+  
+  <header class="s-head">
+    <div class="s-head-left">
+      <div class="kicker an" style="--i:0">对照表</div>
+      <h2 class="s-title an" style="--i:1">font-size 属性值与常用单位（教材表3-3 及单位对比）</h2>
+      <p class="s-sub an" style="--i:2">为什么需要这么多数值类型？为的是兼容不同浏览器与移动设备尺寸</p>
+    </div>
+  </header>
+  <div class="s-body"><div class="tbl-wrap">
+    <table class="tbl"><thead><tr><th>取值 / 单位</th><th>描述</th></tr></thead><tbody><tr class="an " style="--i:1"><td>medium</td><td>如果不设置，则为<strong>浏览器的默认字体大小</strong>，通常为 <strong>16px</strong></td></tr><tr class="an " style="--i:2"><td>length</td><td>某个<strong>固定值</strong>，常用单位为<strong>像素（px）、em、点（pt）、rem</strong>；使用最频繁，数值越大字体越大</td></tr><tr class="an " style="--i:3"><td>百分比</td><td>基于<strong>父元素或默认值</strong>的百分比（%），是一个<strong>相对值</strong></td></tr><tr class="an " style="--i:4"><td>inherit</td><td><strong>继承父元素的字体大小</strong>；当前元素未设置字体大小时，会自动继承父元素</td></tr><tr class="an " style="--i:5"><td>px</td><td>主要用于<strong>计算机屏幕</strong>，一个像素对应屏幕上的一个像素点；<strong>固定大小、不具伸缩性</strong>，在种类繁多的移动设备上不太可行</td></tr><tr class="an " style="--i:6"><td>pt</td><td>英文 point 的缩写，主要用于<strong>印刷媒体</strong>，是 <strong>Photoshop、AI 中默认字体大小单位</strong>；<strong>1 点 = 1 英寸的 1/72</strong>，同样不具伸缩性，现在网页中已很少使用</td></tr><tr class="an " style="--i:7"><td>em</td><td><strong>相对长度单位</strong>，相对于<strong>当前元素</strong>的字体大小；未设置时相对浏览器默认字体大小，<strong>具有伸缩性</strong>。教材换算：默认时 <strong>1em = 12pt = 16px</strong></td></tr><tr class="an " style="--i:8"><td>rem</td><td>全称 <strong>root em（根 em）</strong>，CSS3 新增，<strong>总是相对于 HTML 根元素</strong>；既可只改根元素就成比例调整所有字体，又能避免字体大小<strong>逐层复合的连锁反应</strong>；除 IE8 及更早版本外，主流浏览器均支持</td></tr><tr class="an " style="--i:9"><td>%</td><td>与 em 一样相对于<strong>父元素或默认值</strong>，<strong>100% = 1em</strong>；同样具有伸缩性，适合移动设备</td></tr></tbody></table>
+  </div></div>
+</section>
+
+<section class="slide" data-kind="codebullets">
+  
+  <header class="s-head">
+    <div class="s-head-left">
+      <div class="kicker an" style="--i:0">代码与要点</div>
+      <h2 class="s-title an" style="--i:1">font-family 属性控制字体族（语法3-5）</h2>
+      <p class="s-sub an" style="--i:2">为什么不是一个字体名，而是一长串候选列表？</p>
+    </div>
+  </header>
+  <div class="s-body two">
+    <div class="col-l"><ul class="blist small dense"><li class="an " style="--i:1"><span class="bl-dot"></span><span>用户的计算机<strong>可能没有安装设计师指定的字体</strong>，因此需要一个<strong>候选的字体族列表</strong>，让浏览器决定最佳的显示效果。</span></li><li class="an " style="--i:2"><span class="bl-dot"></span><span>字体族分<strong>通用字体</strong>与<strong>具体字体</strong>两大类；浏览器按 <code>font-family</code> 列表<strong>从左到右的优先顺序</strong>查找并显示。</span></li><li class="an " style="--i:3"><span class="bl-dot"></span><span><strong>排列原则：</strong>最佳字体置于<strong>优先顺位</strong>，相近字体置于<strong>候选顺位</strong>，<strong>通用字体作为最后保障</strong>。</span></li><li class="an " style="--i:4"><span class="bl-dot"></span><span><strong>引号规则：</strong>字体名称中<strong>包含空格</strong>（如 Times New Roman）时须加双引号；为兼容性考虑，<strong>建议对所有中文字体加双引号</strong>。</span></li><li class="an " style="--i:5"><span class="bl-dot"></span><span><strong>中文字体的英文名：</strong><code>Microsoft YaHei</code> 微软雅黑、<code>SimSun</code> 宋体、<code>SimHei</code> 黑体；某些版本的 Firefox 与 Opera 不支持 SimSun，宋体甚至写成 Unicode 形式 <code>"\5b8b\4f53"</code>。</span></li><li class="an " style="--i:6"><span class="bl-dot"></span><span><strong>中西文混排：</strong>通常<strong>把西文字体靠前放</strong>——西文字体不含汉字，若中文字体优先级更高，会导致指定的西文字体不显示。</span></li></ul></div>
+    <div class="col-r"><div class="codebox" class="an " style="--i:1">
+      <div class="cb-bar"><span class="cb-lang">CSS</span>
+      <span class="cb-file">语法3-5</span></div>
+      <pre class="cb-code"><span class="c">/* 定义语法 */</span>
+<span class="prop">font-family</span>:字体族1,字体族2,…,通用字体族|inherit
+ <span class="num">1</span>
+font-family:Tahoma,&quot<span class="pn">;</span>Microsoft YaHei&quot<span class="pn">;</span>,&quot<span class="pn">;</span>SimSun&quot<span class="pn">;</span>,Sans-Serif<span class="pn">;</span>
+
+<span class="c">/* 宋体的 Unicode 写法（兼容 Firefox / Opera） */</span>
+<span class="prop">font-family</span>:tahoma,&quot<span class="pn">;</span>microsoft yahei&quot<span class="pn">;</span>,&quot<span class="pn">;</span>\5b8b\4f53&quot<span class="pn">;</span>,sans-serif</pre></div></div>
+  </div>
+</section>
+
+<section class="slide" data-kind="table">
+  
+  <header class="s-head">
+    <div class="s-head-left">
+      <div class="kicker an" style="--i:0">对照表</div>
+      <h2 class="s-title an" style="--i:1">表3-4 6 种通用字体（教材表）</h2>
+      <p class="s-sub an" style="--i:2">通用字体是所有系统都安装的基础字体，用来兜底，避免客户端没装指定字体</p>
+    </div>
+  </header>
+  <div class="s-body"><div class="tbl-wrap">
+    <table class="tbl"><thead><tr><th>字体</th><th>含义</th></tr></thead><tbody><tr class="an " style="--i:1"><td>Serif</td><td><strong>衬线字体</strong>：衬线是指除字母结构笔画之外的装饰性笔画；衬线强调每个字母笔画的开始和结束，<strong>宋体就是典型的中文衬线字体</strong></td></tr><tr class="an " style="--i:2"><td>Sans-serif</td><td><strong>非衬线字体</strong>：没有边角装饰；教材示例——<strong>Google 首页中的文字就是典型的非衬线字体</strong></td></tr><tr class="an " style="--i:3"><td>Monospace</td><td><strong>等宽字体</strong></td></tr><tr class="an " style="--i:4"><td>Cursive</td><td><strong>手写字体</strong></td></tr><tr class="an " style="--i:5"><td>Fantasy</td><td><strong>奇幻字体</strong></td></tr><tr class="an " style="--i:6"><td>System UI</td><td><strong>系统 UI 字体</strong></td></tr></tbody></table>
+  </div></div>
+</section>
+
+<section class="slide" data-kind="demo">
+  
+  <header class="s-head">
+    <div class="s-head-left">
+      <div class="kicker an" style="--i:0">效果演示</div>
+      <h2 class="s-title an" style="--i:1">现场演示｜字体属性一览</h2>
+      <p class="s-sub an" style="--i:2">衬线与非衬线、字重、字体风格，以及 em 的伸缩性</p>
+    </div>
+  </header>
+  <div class="s-body two demo">
+    <div class="col-l"><ul class="blist small"><li class="an " style="--i:1"><span class="bl-dot"></span><span><strong>衬线字体</strong>有边角装饰，源于古罗马石碑上用<strong>方头笔刷</strong>书写后雕凿的收尾笔画；<strong>宋体即典型中文衬线字体</strong>。</span></li><li class="an " style="--i:2"><span class="bl-dot"></span><span><strong>非衬线字体</strong>没有边角装饰，Google 首页的文字就是典型代表。</span></li><li class="an " style="--i:3"><span class="bl-dot"></span><span><code>font-weight</code>：默认 normal（400），bold 为粗体（700），bolder 更粗；<strong>数值只能整百调整</strong>。</span></li><li class="an " style="--i:4"><span class="bl-dot"></span><span><code>font-style</code>：italic 与 oblique 非常相近，实际使用时<strong>多用 italic 表示倾斜</strong>。</span></li><li class="an " style="--i:5"><span class="bl-dot"></span><span>右侧动画演示 <strong>em 的伸缩性</strong>：1em 随当前字体大小自动重新计算，因此特别适合移动设备。</span></li></ul>
+      <div class="hint an" style="--i:6"><b>动手试试：</b>把 font-size 从 16px 改成 20px，观察以 em 为单位的元素如何「跟着变」——这就是相对单位的价值。</div>
+    </div>
+    <div class="col-r"><iframe class="demo-frame" title="效果预览" srcdoc="&lt;style&gt;*{box-sizing:border-box}body{margin:0;font-family:&#x27;PingFang SC&#x27;,system-ui,sans-serif}.wrap{width:660px;background:#fff;border:1px solid #e5ecf7;border-radius:14px;overflow:hidden;box-shadow:0 20px 44px -22px rgba(20,40,90,.45)}.hd{background:#f6f9ff;border-bottom:1px solid #e5ecf7;padding:9px 16px;font-size:12.5px;color:#5a6c85}.hd b{font-family:Menlo,monospace;color:#1d46b8}.bd{padding:14px 16px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.cell{border:1px solid #e8eef8;border-radius:10px;padding:8px 12px;background:#fcfdff;animation:up .6s both}.cell:nth-child(2){animation-delay:.1s}.cell:nth-child(3){animation-delay:.2s}.cell:nth-child(4){animation-delay:.3s}.lb{display:block;font:11px Menlo,monospace;color:#8b9ab1;margin-bottom:3px}.cell p{margin:0;font-size:17px;color:#0e1b2e}.serif{font-family:&#x27;Times New Roman&#x27;,SimSun,serif}.sans{font-family:Tahoma,&#x27;Microsoft YaHei&#x27;,sans-serif}.w400{font-weight:400}.w700{font-weight:700}.w900{font-weight:900}.it{font-style:italic}.n{font-style:normal}.cell em{font-size:16px}.bar{margin-top:12px;display:flex;align-items:center;gap:14px;border:1px dashed #c9daff;border-radius:10px;padding:8px 14px;background:#fafcff}.grow{font-size:12px;font-weight:700;color:#1d46b8;animation:grow 3.2s ease-in-out infinite}.tk{font-size:12px;color:#5a6c85}@keyframes grow{0%{font-size:12px}50%{font-size:34px}100%{font-size:12px}}@keyframes up{from{opacity:0;transform:translateY(8px)}}&lt;/style&gt;&lt;div class=&#x27;wrap&#x27;&gt;&lt;div class=&#x27;hd&#x27;&gt;font-family / font-weight / font-style · &lt;b&gt;1em = 16px（可伸缩）&lt;/b&gt;&lt;/div&gt;&lt;div class=&#x27;bd&#x27;&gt;&lt;div class=&#x27;grid&#x27;&gt;&lt;div class=&#x27;cell&#x27;&gt;&lt;span class=&#x27;lb&#x27;&gt;Serif 衬线字体&lt;/span&gt;&lt;p class=&#x27;serif&#x27;&gt;工匠精神 Craftsman&lt;/p&gt;&lt;/div&gt;&lt;div class=&#x27;cell&#x27;&gt;&lt;span class=&#x27;lb&#x27;&gt;Sans-serif 非衬线字体&lt;/span&gt;&lt;p class=&#x27;sans&#x27;&gt;工匠精神 Craftsman&lt;/p&gt;&lt;/div&gt;&lt;div class=&#x27;cell&#x27;&gt;&lt;span class=&#x27;lb&#x27;&gt;font-weight&lt;/span&gt;&lt;p&gt;&lt;span class=&#x27;w400&#x27;&gt;标准&lt;/span&gt; &lt;span class=&#x27;w700&#x27;&gt;bold&lt;/span&gt; &lt;span class=&#x27;w900&#x27;&gt;bolder&lt;/span&gt;&lt;/p&gt;&lt;/div&gt;&lt;div class=&#x27;cell&#x27;&gt;&lt;span class=&#x27;lb&#x27;&gt;font-style&lt;/span&gt;&lt;p&gt;&lt;em class=&#x27;n&#x27;&gt;normal&lt;/em&gt; · &lt;em class=&#x27;it&#x27;&gt;italic 斜体&lt;/em&gt;&lt;/p&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class=&#x27;bar&#x27;&gt;&lt;span class=&#x27;lb&#x27;&gt;em 的伸缩性&lt;/span&gt;&lt;span class=&#x27;grow&#x27;&gt;A&lt;/span&gt;&lt;span class=&#x27;tk&#x27;&gt;1em 随当前字体大小自动重新计算&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;"></iframe></div>
+  </div>
+</section>
+
+<section class="slide" data-kind="table">
+  
+  <header class="s-head">
+    <div class="s-head-left">
+      <div class="kicker an" style="--i:0">对照表</div>
+      <h2 class="s-title an" style="--i:1">表3-5 / 表3-6 字重与字体风格（教材表）</h2>
+      <p class="s-sub an" style="--i:2">师生问答：h1 默认有加粗效果，能否用 font-weight:normal 去掉？——当然可以，这正是 CSS 的神奇之处</p>
+    </div>
+  </header>
+  <div class="s-body"><div class="tbl-wrap">
+    <table class="tbl"><thead><tr><th>属性</th><th>属性值</th><th>描述</th></tr></thead><tbody><tr class="an " style="--i:1"><td>font-weight</td><td>normal</td><td><strong>默认值</strong>，标准字体粗细（对应数值 400）</td></tr><tr class="an " style="--i:2"><td>font-weight</td><td>bold</td><td>粗体（对应数值 700）</td></tr><tr class="an " style="--i:3"><td>font-weight</td><td>bolder</td><td>更粗的字体</td></tr><tr class="an " style="--i:4"><td>font-weight</td><td>100 / 200 / … / 900</td><td><strong>由细到粗的数值</strong>；<strong>只能整百调整</strong>，相近数值表现差异不明显</td></tr><tr class="an " style="--i:5"><td>font-weight</td><td>lighter</td><td>更细的字体</td></tr><tr class="an " style="--i:6"><td>font-weight</td><td>inherit</td><td>继承父元素的字体粗细</td></tr><tr class="an " style="--i:7"><td>font-style</td><td>normal</td><td><strong>默认值</strong>，标准字体</td></tr><tr class="an " style="--i:8"><td>font-style</td><td>italic</td><td>斜体字体</td></tr><tr class="an " style="--i:9"><td>font-style</td><td>oblique</td><td>倾斜字体（与 italic 非常相近，实际多用 italic）</td></tr><tr class="an " style="--i:10"><td>font-style</td><td>inherit</td><td>继承父元素的字体风格</td></tr></tbody></table>
+  </div></div>
+</section>
+
+<section class="slide" data-kind="table">
+  
+  <header class="s-head">
+    <div class="s-head-left">
+      <div class="kicker an" style="--i:0">对照表</div>
+      <h2 class="s-title an" style="--i:1">表3-7 line-height 属性值（教材表）</h2>
+      <p class="s-sub an" style="--i:2">行高通常指两行文字基线之间的距离；默认约为当前字体大小的 110%～120%</p>
+    </div>
+  </header>
+  <div class="s-body"><div class="tbl-wrap">
+    <table class="tbl"><thead><tr><th>属性值</th><th>描述</th></tr></thead><tbody><tr class="an " style="--i:1"><td>normal</td><td><strong>默认值</strong>，通常为<strong>当前字体大小的 110%～120%</strong></td></tr><tr class="an " style="--i:2"><td>number</td><td><strong>不带任何单位的数值</strong>，行距为<strong>当前字体大小乘该数值</strong>，效果类似于 em</td></tr><tr class="an " style="--i:3"><td>length</td><td>以 <strong>px、em、pt</strong> 为单位的<strong>固定值</strong></td></tr><tr class="an " style="--i:4"><td>百分比</td><td>相对于<strong>当前字体大小的百分比</strong></td></tr><tr class="an " style="--i:5"><td>inherit</td><td>继承父元素的文字行高</td></tr></tbody></table>
+  </div></div>
+</section>
+
+<section class="slide" data-kind="demo">
+  
+  <header class="s-head">
+    <div class="s-head-left">
+      <div class="kicker an" style="--i:0">效果演示</div>
+      <h2 class="s-title an" style="--i:1">任务3-3｜单行文字的垂直居中</h2>
+      <p class="s-sub an" style="--i:2">行距 = 行高 − 字体高度；把行高设为容器高度，文字就垂直居中了</p>
+    </div>
+  </header>
+  <div class="s-body two demo">
+    <div class="col-l"><ul class="blist small"><li class="an " style="--i:1"><span class="bl-dot"></span><span><strong>行高</strong>是两行文字<strong>基线</strong>之间的距离；<strong>行距</strong>是上一行底线与下一行顶线之间的距离，即 <strong>行距 = 行高 − 字体高度</strong>。</span></li><li class="an " style="--i:2"><span class="bl-dot"></span><span>把行距再分成相等的<strong>上间距</strong>和<strong>下间距</strong>：<strong>行高 = 上间距 + 字体高度 + 下间距</strong>，默认情况下字体高度垂直居中。</span></li><li class="an " style="--i:3"><span class="bl-dot"></span><span>要<strong>实现元素在容器中垂直居中，只需把行高设置为元素容器的高度</strong>——这就是本任务的核心。</span></li><li class="an " style="--i:4"><span class="bl-dot"></span><span>教师补充：为保证阅读舒适性，<strong>通常把行高设为当前字体大小的 1.4～1.5 倍</strong>。</span></li><li class="an " style="--i:5"><span class="bl-dot"></span><span><strong>常见的编程错误：</strong>行高是<strong>非负的正整数，使用负数是错误的</strong>。</span></li></ul>
+      <div class="hint an" style="--i:6"><b>动手试试：</b>把容器的 height 与 p 的 line-height 同时改成 200px，观察居中效果是否依然成立。</div>
+    </div>
+    <div class="col-r"><div class="demo-right">
+          <iframe class="demo-frame" title="效果预览" srcdoc="&lt;style&gt;*{box-sizing:border-box}body{margin:0;font-family:&#x27;PingFang SC&#x27;,system-ui,sans-serif}.wrap{width:660px;background:#fff;border:1px solid #e5ecf7;border-radius:14px;overflow:hidden;box-shadow:0 20px 44px -22px rgba(20,40,90,.45)}.hd{background:#f6f9ff;border-bottom:1px solid #e5ecf7;padding:9px 16px;font-size:12.5px;color:#5a6c85}.hd b{font-family:Menlo,monospace;color:#1d46b8}.bd{display:flex;gap:16px;padding:14px 16px}.col{flex:1}.lb{display:block;font:11px Menlo,monospace;color:#8b9ab1;margin-bottom:6px}.box{height:130px;border:1px solid #ccc;border-radius:8px;position:relative;background:#fcfdff}.def p{margin:0;line-height:normal;text-align:center;padding-top:6px;color:#8b9ab1}.ok p{margin:0;line-height:130px;text-align:center;font-size:16px;color:#0e1b2e}.mid{position:absolute;left:0;right:0;top:65px;border-top:1px dashed #2f6bff;opacity:0;animation:show 3s infinite}.mid::after{content:&#x27;容器高度 / 2&#x27;;position:absolute;right:6px;top:-16px;font-size:10px;color:#2f6bff;background:#eaf1ff;border-radius:4px;padding:1px 5px}.ok{animation:glow 3s infinite}@keyframes show{0%,10%{opacity:0}25%,70%{opacity:1}90%,100%{opacity:0}}@keyframes glow{0%,100%{box-shadow:0 0 0 0 rgba(47,107,255,0)}50%{box-shadow:0 0 0 4px rgba(47,107,255,.12)}}&lt;/style&gt;&lt;div class=&#x27;wrap&#x27;&gt;&lt;div class=&#x27;hd&#x27;&gt;任务3-3 &lt;b&gt;.parent{height:300px}&lt;/b&gt; · &lt;b&gt;p{line-height:300px}&lt;/b&gt; —— 行高 = 容器高度&lt;/div&gt;&lt;div class=&#x27;bd&#x27;&gt;&lt;div class=&#x27;col&#x27;&gt;&lt;span class=&#x27;lb&#x27;&gt;默认行高（文字贴顶）&lt;/span&gt;&lt;div class=&#x27;box def&#x27;&gt;&lt;p&gt;WebDesign 课程&lt;/p&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class=&#x27;col&#x27;&gt;&lt;span class=&#x27;lb&#x27;&gt;line-height = 容器高度&lt;/span&gt;&lt;div class=&#x27;box ok&#x27;&gt;&lt;p&gt;WebDesign 课程&lt;/p&gt;&lt;div class=&#x27;mid&#x27;&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;"></iframe>
+          <details class="demo-code"><summary>查看源码</summary>
+          <pre class="cb-code">&lt;!DOCTYPE html&gt;
+<span class="pn">&lt;</span><span class="tg">html</span><span class="pn">&gt;</span>
+  <span class="pn">&lt;</span><span class="tg">head</span><span class="pn">&gt;</span>
+    <span class="pn">&lt;</span><span class="tg">meta</span> charset=&quot;utf-8&quot;<span class="pn">&gt;</span>
+    <span class="pn">&lt;</span><span class="tg">title</span><span class="pn">&gt;</span>垂直居中<span class="pn">&lt;/</span><span class="tg">title</span><span class="pn">&gt;</span>
+    <span class="pn">&lt;</span><span class="tg">style</span><span class="pn">&gt;</span>
+      .parent{
+        height:300px;
+        border:1px solid #ccc;
+      }
+      p{
+        line-height:300px;
+        text-align:center;
+      }
+    <span class="pn">&lt;/</span><span class="tg">style</span><span class="pn">&gt;</span>
+  <span class="pn">&lt;/</span><span class="tg">head</span><span class="pn">&gt;</span>
+  <span class="pn">&lt;</span><span class="tg">body</span><span class="pn">&gt;</span>
+    <span class="pn">&lt;</span><span class="tg">div</span> class=&quot;parent&quot;<span class="pn">&gt;</span>
+      <span class="pn">&lt;</span><span class="tg">p</span><span class="pn">&gt;</span>WebDesign 课程<span class="pn">&lt;/</span><span class="tg">p</span><span class="pn">&gt;</span>
+    <span class="pn">&lt;/</span><span class="tg">div</span><span class="pn">&gt;</span>
+  <span class="pn">&lt;/</span><span class="tg">body</span><span class="pn">&gt;</span>
+<span class="pn">&lt;/</span><span class="tg">html</span><span class="pn">&gt;</span></pre></details></div></div>
+  </div>
+</section>
+
+<section class="slide" data-kind="codebullets">
+  
+  <header class="s-head">
+    <div class="s-head-left">
+      <div class="kicker an" style="--i:0">代码与要点</div>
+      <h2 class="s-title an" style="--i:1">font 简写属性（语法3-9）</h2>
+      <p class="s-sub an" style="--i:2">一次性定义多种字体样式，也叫综合样式属性</p>
+    </div>
+  </header>
+  <div class="s-body two">
+    <div class="col-l"><ul class="blist small dense"><li class="an " style="--i:1"><span class="bl-dot"></span><span>写法顺序：<code>font: font-style | font-variant | font-weight | font-size/line-height | font-family;</code></span></li><li class="an " style="--i:2"><span class="bl-dot"></span><span><strong>常见的编程错误：</strong><code>line-height</code> 在 font 简写属性中<strong>必须和 font-size 连用</strong>，并写成「<strong>font-size/line-height</strong>」的形式。</span></li><li class="an " style="--i:3"><span class="bl-dot"></span><span><strong>技巧：</strong>font 简写属性中<strong>至少包含 font-size 和 font-family 两个值</strong>，不设置的其他值使用默认值。</span></li><li class="an " style="--i:4"><span class="bl-dot"></span><span>教材示例 <code>font: italic bold 12px/2em "SimSun",sans-serif</code> 等价于分别书写 5 条独立声明。</span></li></ul></div>
+    <div class="col-r"><div class="codebox" class="an " style="--i:1">
+      <div class="cb-bar"><span class="cb-lang">CSS</span>
+      <span class="cb-file">语法3-9</span></div>
+      <pre class="cb-code"><span class="c">/* 定义语法 */</span>
+<span class="prop">font</span>: font-style | font-variant | font-weight | font-size/line-height |
+font-family<span class="pn">;</span>
+
+<span class="c">/* 示例 */</span>
+<span class="prop">font</span>: italic bold <span class="num">12px</span>/<span class="num">2em</span> &quot<span class="pn">;</span>SimSun&quot<span class="pn">;</span>,sans-serif
+
+<span class="c">/* 等价于 */</span>
+<span class="prop">font-style</span>:italic<span class="pn">;</span>
+<span class="prop">font-weight</span>:bold<span class="pn">;</span>
+<span class="prop">font-size</span>:<span class="num">12px</span><span class="pn">;</span>
+<span class="prop">line-height</span>:<span class="num">2em</span><span class="pn">;</span>
+<span class="prop">font-family</span>:&quot<span class="pn">;</span>simsun&quot<span class="pn">;</span>,sans-serif<span class="pn">;</span></pre></div></div>
+  </div>
+</section>
+
+<section class="slide" data-kind="task">
+  
+  <header class="s-head">
+    <div class="s-head-left">
+      <div class="kicker an" style="--i:0">任务驱动</div>
+      <h2 class="s-title an" style="--i:1">任务3-4｜字体综合练习</h2>
+      <p class="s-sub an" style="--i:2">目标：用字体属性做出「Web Design 课程」的效果（教材图3-13）</p>
+    </div>
+  </header>
+  <div class="s-body two">
+    <div class="col-l">
+      <div class="task-goal an" style="--i:1"><span class="tg-label">任务目标</span>综合使用 <code>font-family</code>、<code>color</code>、<code>font-weight</code>、<code>font-style</code>，并通过<strong>伪元素 ::first-letter 实现首字母下沉</strong>（放大 2 倍）。</div>
+      <ol class="task-steps"><li class="an " style="--i:2">{'title': '设定整体字体与颜色', 'text': '在 <code>p</code> 上写 <code>font-family</code>（含 Unicode 宋体写法）与 <code>color:#f00</code>。'}</li><li class="an " style="--i:3">{'title': '强调英文部分', 'text': '用 <code>&lt;span&gt;</code> 包裹英文，设置 <code>font-weight:bolder</code> 与 <code>font-style:italic</code>。'}</li><li class="an " style="--i:4">{'title': '首字母下沉', 'text': '写 <code>p::first-letter { font-size:2em; }</code>，让段落第一个字符放大 2 倍（更详细用法见 3.3.7）。'}</li><li class="an " style="--i:5">{'title': '对比思考', 'text': '不用伪元素时，需要用 <code>&lt;span&gt;</code> 包裹首字符——伪元素是一种<strong>简化的做法</strong>。'}</li></ol>
+    </div>
+    <div class="col-r"><div class="task-code" class="an " style="--i:6">
+          <pre class="cb-code">&lt;!DOCTYPE html&gt;
+<span class="pn">&lt;</span><span class="tg">html</span><span class="pn">&gt;</span>
+  <span class="pn">&lt;</span><span class="tg">head</span><span class="pn">&gt;</span>
+    <span class="pn">&lt;</span><span class="tg">meta</span> charset=&quot;utf-8&quot;<span class="pn">&gt;</span>
+    <span class="pn">&lt;</span><span class="tg">title</span><span class="pn">&gt;</span>字体属性<span class="pn">&lt;/</span><span class="tg">title</span><span class="pn">&gt;</span>
+    <span class="pn">&lt;</span><span class="tg">style</span><span class="pn">&gt;</span>
+      p {
+        font-family: tahoma, &quot;microsoft yahei&quot;, &quot;\5b8b\4f53&quot;, sans-serif;
+        color:#f00;
+      }
+      span {
+        font-weight: bolder;
+        font-style: italic;
+      }
+      p::first-letter {
+        font-size: 2em;
+      }
+    <span class="pn">&lt;/</span><span class="tg">style</span><span class="pn">&gt;</span>
+  <span class="pn">&lt;/</span><span class="tg">head</span><span class="pn">&gt;</span>
+  <span class="pn">&lt;</span><span class="tg">body</span><span class="pn">&gt;</span>
+    <span class="pn">&lt;</span><span class="tg">p</span><span class="pn">&gt;</span>
+      <span class="pn">&lt;</span><span class="tg">span</span><span class="pn">&gt;</span>
+        Web Design
+      <span class="pn">&lt;/</span><span class="tg">span</span><span class="pn">&gt;</span>
+      课程
+    <span class="pn">&lt;/</span><span class="tg">p</span><span class="pn">&gt;</span>
+  <span class="pn">&lt;/</span><span class="tg">body</span><span class="pn">&gt;</span>
+<span class="pn">&lt;/</span><span class="tg">html</span><span class="pn">&gt;</span></pre></div></div>
+  </div>
+</section>
+
+<section class="slide" data-kind="table">
+  
+  <header class="s-head">
+    <div class="s-head-left">
+      <div class="kicker an" style="--i:0">对照表</div>
+      <h2 class="s-title an" style="--i:1">表3-8～表3-10 对齐、缩进与文字修饰（教材表）</h2>
+      <p class="s-sub an" style="--i:2">用 CSS 的 text-align 代替标签的 align 属性，才符合「内容与样式分离」</p>
+    </div>
+  </header>
+  <div class="s-body"><div class="tbl-wrap">
+    <table class="tbl"><thead><tr><th>属性</th><th>属性值</th><th>描述</th></tr></thead><tbody><tr class="an " style="--i:1"><td>text-align</td><td>left</td><td><strong>默认值</strong>，左对齐</td></tr><tr class="an " style="--i:2"><td>text-align</td><td>right</td><td>右对齐</td></tr><tr class="an " style="--i:3"><td>text-align</td><td>center</td><td>居中</td></tr><tr class="an " style="--i:4"><td>text-align</td><td>inherit</td><td>继承父元素的 text-align 属性值</td></tr><tr class="an " style="--i:5"><td>text-indent</td><td>length</td><td>以 <strong>px、pt、em</strong> 为单位的固定值，<strong>默认为 0</strong>；常用 <code>text-indent:2em</code> 实现首行缩进 2 个字符</td></tr><tr class="an " style="--i:6"><td>text-indent</td><td>百分比</td><td>相对于<strong>父元素宽度</strong>的百分比</td></tr><tr class="an " style="--i:7"><td>text-indent</td><td>inherit</td><td>继承父元素的 text-indent 属性值</td></tr><tr class="an " style="--i:8"><td>text-decoration</td><td>none</td><td><strong>默认值</strong>，没有装饰线</td></tr><tr class="an " style="--i:9"><td>text-decoration</td><td>underline</td><td>下画线</td></tr><tr class="an " style="--i:10"><td>text-decoration</td><td>overline</td><td>上画线</td></tr><tr class="an " style="--i:11"><td>text-decoration</td><td>line-through</td><td>删除线</td></tr><tr class="an " style="--i:12"><td>text-decoration</td><td>inherit</td><td>继承父元素的 text-decoration 属性值</td></tr></tbody></table>
+  </div></div>
+</section>
+
+<section class="slide" data-kind="table">
+  
+  <header class="s-head">
+    <div class="s-head-left">
+      <div class="kicker an" style="--i:0">对照表</div>
+      <h2 class="s-title an" style="--i:1">表3-11～表3-12 字符间距与单词间距（教材表）</h2>
+      <p class="s-sub an" style="--i:2">CSS 通过识别单词之间的空格来判断是否构成一个单词</p>
+    </div>
+  </header>
+  <div class="s-body"><div class="tbl-wrap">
+    <table class="tbl"><thead><tr><th>属性</th><th>属性值</th><th>描述</th></tr></thead><tbody><tr class="an " style="--i:1"><td>letter-spacing</td><td>normal</td><td><strong>默认值</strong>，字符间距为 0</td></tr><tr class="an " style="--i:2"><td>letter-spacing</td><td>length</td><td>以 <strong>px、em、pt</strong> 为单位的固定值，<strong>可以为负值</strong></td></tr><tr class="an " style="--i:3"><td>letter-spacing</td><td>inherit</td><td>继承父元素的 letter-spacing 属性值</td></tr><tr class="an " style="--i:4"><td>word-spacing</td><td>normal</td><td><strong>默认值</strong>，单词间距为 0</td></tr><tr class="an " style="--i:5"><td>word-spacing</td><td>length</td><td>以 <strong>px、em、pt</strong> 为单位的固定值，<strong>可以为负值</strong></td></tr><tr class="an " style="--i:6"><td>word-spacing</td><td>inherit</td><td>继承父元素的 word-spacing 属性值</td></tr></tbody></table>
+  </div></div>
+</section>
+
+<section class="slide" data-kind="demo">
+  
+  <header class="s-head">
+    <div class="s-head-left">
+      <div class="kicker an" style="--i:0">效果演示</div>
+      <h2 class="s-title an" style="--i:1">任务3-5｜文字排版控制</h2>
+      <p class="s-sub an" style="--i:2">用素材 T03-04.html 编写 CSS 文字样式，实现教材图3-14 的效果</p>
+    </div>
+  </header>
+  <div class="s-body two demo">
+    <div class="col-l"><ul class="blist small"><li class="an " style="--i:1"><span class="bl-dot"></span><span>段落 <code>p</code> 使用 <strong>font 简写属性</strong>：<code>font: 16px/2em "SimSun", Sans-serif</code>，并设 <code>text-indent:2em</code> 实现<strong>首行缩进 2 个字符</strong>。</span></li><li class="an " style="--i:2"><span class="bl-dot"></span><span><code>span</code> 部分：<strong>红色、较粗（bolder）的微软雅黑字体</strong>，带<strong>下画线</strong>，字符间距 <strong>1.05em</strong>。</span></li><li class="an " style="--i:3"><span class="bl-dot"></span><span>外层 <code>div</code> 宽度 600px 并加 1px 灰色边框，作为排版容器。</span></li><li class="an " style="--i:4"><span class="bl-dot"></span><span><strong>悬念验证：</strong>中文段落中字词之间不需要空格分隔，使用 <code>word-spacing</code> 还有效果吗？请动手试一试。</span></li></ul>
+      <div class="hint an" style="--i:5"><b>动手试试：</b>给段落加上 word-spacing:1em，观察中文是否发生变化，并解释原因（提示：CSS 靠空格识别单词）。</div>
+    </div>
+    <div class="col-r"><div class="demo-right">
+          <iframe class="demo-frame" title="效果预览" srcdoc="&lt;style&gt;*{box-sizing:border-box}body{margin:0;font-family:&#x27;PingFang SC&#x27;,system-ui,sans-serif}.wrap{width:660px;background:#fff;border:1px solid #e5ecf7;border-radius:14px;overflow:hidden;box-shadow:0 20px 44px -22px rgba(20,40,90,.45)}.hd{background:#f6f9ff;border-bottom:1px solid #e5ecf7;padding:9px 16px;font-size:12.5px;color:#5a6c85}.hd b{font-family:Menlo,monospace;color:#1d46b8}.bd{padding:14px 16px}.paper{border:1px solid #ccc;border-radius:6px;padding:12px 14px;background:#fff}.paper p{margin:0 0 6px;font:14px/2em SimSun,serif;color:#333;text-indent:2em;animation:fade .8s both}.paper p:nth-child(2){animation-delay:.35s}.paper span{color:red;font-weight:bolder;font-family:&#x27;Microsoft YaHei&#x27;,serif;text-decoration:underline;letter-spacing:1.05em;animation:hot 2.6s 1s infinite}@keyframes hot{0%,100%{background:rgba(255,0,0,0)}50%{background:rgba(255,0,0,.10)}}@keyframes fade{from{opacity:0;transform:translateY(6px)}}.ft{margin-top:8px;font-size:11.5px;color:#8b9ab1;text-align:center}&lt;/style&gt;&lt;div class=&#x27;wrap&#x27;&gt;&lt;div class=&#x27;hd&#x27;&gt;任务3-5 &lt;b&gt;p{font:16px/2em; text-indent:2em}&lt;/b&gt; · &lt;b&gt;span{红色+bolder+下划线+1.05em}&lt;/b&gt;&lt;/div&gt;&lt;div class=&#x27;bd&#x27;&gt;&lt;div class=&#x27;paper&#x27;&gt;&lt;p&gt;&lt;span&gt;宁波城市职业技术学院&lt;/span&gt;创建于2003 年，学校的前身是宁波大学职业技术教育学院，是一所面向现代服务业，培养高素质技术技能应用型人才的全日制普通高等职业院校。&lt;/p&gt;&lt;p&gt;学校办学起步早，办学起点高，2022 年，学校以 A++ 等级位列武书连一流高职高专排行榜第 20 位。&lt;/p&gt;&lt;/div&gt;&lt;div class=&#x27;ft&#x27;&gt;首行缩进 2 字符 · 行高 2em · 字符间距 1.05em&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;"></iframe>
+          <details class="demo-code"><summary>查看源码</summary>
+          <pre class="cb-code">&lt;!DOCTYPE html&gt;
+<span class="pn">&lt;</span><span class="tg">html</span><span class="pn">&gt;</span>
+  <span class="pn">&lt;</span><span class="tg">head</span><span class="pn">&gt;</span>
+    <span class="pn">&lt;</span><span class="tg">meta</span> charset=&quot;utf-8&quot;<span class="pn">&gt;</span>
+    <span class="pn">&lt;</span><span class="tg">title</span><span class="pn">&gt;</span>字词控制<span class="pn">&lt;/</span><span class="tg">title</span><span class="pn">&gt;</span>
+    <span class="pn">&lt;</span><span class="tg">style</span><span class="pn">&gt;</span>
+      p {
+        font: 16px/2em &quot;SimSun&quot;, Sans-serif;
+        text-indent: 2em;
+      }
+      span {
+        color: red;
+        font-weight: bolder;
+        font-family: &quot;Microsoft YaHei&quot;, serif;
+        text-decoration: underline;
+        letter-spacing: 1.05em;
+      }
+      div {
+        width: 600px;
+        border: 1px solid #ccc;
+      }
+    <span class="pn">&lt;/</span><span class="tg">style</span><span class="pn">&gt;</span>
+  <span class="pn">&lt;/</span><span class="tg">head</span><span class="pn">&gt;</span>
+  <span class="pn">&lt;</span><span class="tg">body</span><span class="pn">&gt;</span>
+    <span class="pn">&lt;</span><span class="tg">div</span> id=&quot;outer&quot;<span class="pn">&gt;</span>
+      <span class="pn">&lt;</span><span class="tg">p</span><span class="pn">&gt;</span>
+        <span class="pn">&lt;</span><span class="tg">span</span><span class="pn">&gt;</span>宁波城市职业技术学院<span class="pn">&lt;/</span><span class="tg">span</span><span class="pn">&gt;</span>创建于2003 年，学校的前身是宁波大学职业技术教育学院，是一所面向现代服务业，培养高素质技术技能应用型人才的全日制普通高等职业院校。
+      <span class="pn">&lt;/</span><span class="tg">p</span><span class="pn">&gt;</span>
+      <span class="pn">&lt;</span><span class="tg">p</span><span class="pn">&gt;</span>
+        学校办学起步早，办学起点高，2022 年，学校以 A++ 等级位列武书连一流高职高专排行榜第 20 位。
+      <span class="pn">&lt;/</span><span class="tg">p</span><span class="pn">&gt;</span>
+    <span class="pn">&lt;/</span><span class="tg">div</span><span class="pn">&gt;</span>
+  <span class="pn">&lt;/</span><span class="tg">body</span><span class="pn">&gt;</span>
+<span class="pn">&lt;/</span><span class="tg">html</span><span class="pn">&gt;</span></pre></details></div></div>
+  </div>
+</section>
+
+<section class="slide" data-kind="codebullets">
+  
+  <header class="s-head">
+    <div class="s-head-left">
+      <div class="kicker an" style="--i:0">代码与要点</div>
+      <h2 class="s-title an" style="--i:1">3.3.5 自定义字体：@font-face</h2>
+      <p class="s-sub an" style="--i:2">除了系统字体，还可以引入个性化字体文件，实现特定的艺术效果</p>
+    </div>
+  </header>
+  <div class="s-body two">
+    <div class="col-l"><ul class="blist small dense"><li class="an " style="--i:1"><span class="bl-dot"></span><span>通过 CSS 的 <strong>at 规则（at-rule）@font-face</strong> 指定一个用于显示的自定义字体，字体通过 <code>src</code> 属性加载。</span></li><li class="an " style="--i:2"><span class="bl-dot"></span><span><code>src</code> 属性值可以是<strong>相对路径或 URL 地址</strong>，分别从<strong>用户本地或远程服务器</strong>加载字体文件。</span></li><li class="an " style="--i:3"><span class="bl-dot"></span><span>使用分两步：<strong>① 定义自定义字体</strong>（@font-face）；<strong>② 引用自定义字体</strong>（像普通字体一样用 font-family 使用）。</span></li><li class="an " style="--i:4"><span class="bl-dot"></span><span><strong>注意事项：</strong>自定义字体的名称要<strong>符合标识符的定义规则</strong>；引用时须与定义的名称<strong>完全一致</strong>。</span></li><li class="an " style="--i:5"><span class="bl-dot"></span><span><strong>常见的编程错误：</strong>引用的字体名称与自定义的字体名称<strong>不一致</strong>，是自定义字体不起作用的常见原因。</span></li></ul></div>
+    <div class="col-r"><div class="codebox" class="an " style="--i:1">
+      <div class="cb-bar"><span class="cb-lang">CSS</span>
+      <span class="cb-file">自定义字体语法</span></div>
+      <pre class="cb-code"><span class="sel"><span class="at">@font-face</span></span><span class="pn">{</span>
+  <span class="prop">font-family</span>:自定义字体的名称<span class="pn">;</span>
+  <span class="prop">src</span>: <span class="fn">url</span>(&#x27<span class="pn">;</span>fontfile_url&#x27<span class="pn">;</span>)<span class="pn">;</span><span class="pn">}</span><span class="sel">
+
+<span class="c">/* 示例：定义 */</span>
+<span class="at">@font-face</span></span><span class="pn">{</span>
+  <span class="prop">font-family</span>:qigong<span class="pn">;</span>
+  <span class="prop">src</span>: <span class="fn">url</span>(&#x27<span class="pn">;</span>assets/qigong.ttf&#x27<span class="pn">;</span>)<span class="pn">;</span><span class="pn">}</span>
+
+<span class="c">/* 引用：名称必须完全一致 */</span>
+<span class="prop">font-family</span>:qigong<span class="pn">;</span></pre></div></div>
+  </div>
+</section>
+
+<section class="slide" data-kind="task">
+  
+  <header class="s-head">
+    <div class="s-head-left">
+      <div class="kicker an" style="--i:0">任务驱动</div>
+      <h2 class="s-title an" style="--i:1">任务3-6｜使用自定义字体</h2>
+      <p class="s-sub an" style="--i:2">教材背景：启功先生是近代著名的书法家、红学家，「有始有终 精益求精」为其书法作品</p>
+    </div>
+  </header>
+  <div class="s-body two">
+    <div class="col-l">
+      <div class="task-goal an" style="--i:1"><span class="tg-label">任务目标</span>通过<strong>自定义字体规则和引用字体语法</strong>，使用自定义<strong>思源黑体（SourceHanSansCN）</strong>制作教材图3-16 所示的页面效果。</div>
+      <ol class="task-steps"><li class="an " style="--i:2">{'title': '准备字体文件', 'text': '把字体文件（如 <code>SourceHanSansCN-Bold.otf</code>）放入项目的 <strong>assets 文件夹</strong>中。'}</li><li class="an " style="--i:3">{'title': '定义自定义字体', 'text': '在 <code>&lt;style&gt;</code> 中写 <code>@font-face{ src:url(…); font-family:SourceHanSansCN; }</code>。'}</li><li class="an " style="--i:4">{'title': '引用自定义字体', 'text': '选择 <code>h2</code> 标签，写 <code>font-family:SourceHanSansCN</code> 与 <code>font-size:3em</code>，把自定义字体应用到目标对象。'}</li><li class="an " style="--i:5">{'title': '拓展练习', 'text': '1998—1999 年受启功先生推荐，「<strong>方正启体字库</strong>」由秦永龙先生书写、北京北大方正电子有限公司制作；可下载该字体替换思源黑体，对比效果。'}</li></ol>
+    </div>
+    <div class="col-r"><div class="task-code" class="an " style="--i:6">
+          <pre class="cb-code">&lt;!DOCTYPE html&gt;
+<span class="pn">&lt;</span><span class="tg">html</span><span class="pn">&gt;</span>
+  <span class="pn">&lt;</span><span class="tg">head</span><span class="pn">&gt;</span>
+    <span class="pn">&lt;</span><span class="tg">meta</span> charset=&quot;utf-8&quot;<span class="pn">&gt;</span>
+    <span class="pn">&lt;</span><span class="tg">title</span><span class="pn">&gt;</span>有始有终、精益求精<span class="pn">&lt;/</span><span class="tg">title</span><span class="pn">&gt;</span>
+    <span class="pn">&lt;</span><span class="tg">style</span><span class="pn">&gt;</span>
+      @font-face{
+        src:url(&#x27;./assets/ SourceHanSansCN-Bold.otf&#x27;);
+        font-family: SourceHanSansCN;
+      }
+      h2{
+        font-family: SourceHanSansCN;
+        font-size: 3em;
+      }
+    <span class="pn">&lt;/</span><span class="tg">style</span><span class="pn">&gt;</span>
+  <span class="pn">&lt;/</span><span class="tg">head</span><span class="pn">&gt;</span>
+  <span class="pn">&lt;</span><span class="tg">body</span><span class="pn">&gt;</span>
+    <span class="pn">&lt;</span><span class="tg">h2</span><span class="pn">&gt;</span>有始有终<span class="pn">&lt;/</span><span class="tg">h2</span><span class="pn">&gt;</span>
+    <span class="pn">&lt;</span><span class="tg">h2</span><span class="pn">&gt;</span>精益求精<span class="pn">&lt;/</span><span class="tg">h2</span><span class="pn">&gt;</span>
+  <span class="pn">&lt;/</span><span class="tg">body</span><span class="pn">&gt;</span>
+<span class="pn">&lt;/</span><span class="tg">html</span><span class="pn">&gt;</span></pre></div></div>
+  </div>
+</section>
+
+<section class="slide s-ai" data-kind="ai">
+  
+  <header class="s-head">
+    <div class="s-head-left">
+      <div class="kicker an" style="--i:0">AI 前沿</div>
+      <h2 class="s-title an" style="--i:1">AI 前沿：让 AI 帮你做字体方案，但别忘了版权与性能</h2>
+      <p class="s-sub an" style="--i:2">字体是设计与工程的交叉点，AI 能提速，判断仍在你</p>
+    </div>
+  </header>
+  <div class="s-body two">
+    <div class="col-l"><div class="ai-card an" style="--i:1">
+      <div class="ai-badge">AI</div>
+      <p>字体排版本质上是<strong>设计决策</strong>。如今可以让 AI 先给出一版 <code>font-family</code> 候选列表、行高与字距方案，再由你结合品牌调性、可读性与加载性能做取舍——AI 负责「出方案」，你负责「定标准」。</p></div></div>
+    <div class="col-r"><ul class="blist small ai-list"><li class="an " style="--i:2">通义灵码、文心快码、GitHub Copilot 可根据注释自动生成 <code>font</code> 简写属性与排版样式，并给出 px/em/rem 的取值建议。</li><li class="an " style="--i:3">DeepSeek、通义千问能直接比较 <strong>em 与 rem 的适用场景</strong>，并给出移动端响应式排版的代码示例。</li><li class="an " style="--i:4">自定义字体方面，AI 可快速生成 <code>@font-face</code> 代码，但<strong>字体版权、文件体积与加载性能</strong>必须由人工把关。</li><li class="an " style="--i:5">职业提醒：中文字体文件动辄数 MB，课堂作业可以用，生产环境要考虑<strong>字体子集化与加载策略</strong>。</li></ul></div>
+  </div>
+</section>
+
+<section class="slide" data-kind="quiz">
+  
+  <header class="s-head">
+    <div class="s-head-left">
+      <div class="kicker an" style="--i:0">随堂检测</div>
+      <h2 class="s-title an" style="--i:1">随堂检测</h2>
+      <p class="s-sub an" style="--i:2">第 1 题选自教材 3.5 作业「一、选择题」，第 2～3 题为配套自测</p>
+    </div>
+  </header>
+  <div class="s-body quiz-body">
+    <div class="quiz-top an" style="--i:0">
+      <span class="quiz-meta">共 <b>5</b> 题　·　先独立作答，再点「查看答案」；误点可「重做」</span>
+      <span class="quiz-acts">
+        <button type="button" class="q-reset-all" id="quizResetAll">全部重做</button>
+        <button type="button" class="q-reveal" id="quizReveal">显示全部答案</button>
+      </span>
+    </div>
+    <ol class="quiz dense"><li class="quiz-item single" class="an " style="--i:1" data-type="single" data-answer="D">
+          <div class="q"><span class="q-no">01</span>
+            <span class="q-tag single">单选</span><span class="q-txt">关于文字的样式排版，说法错误的是（　　）。</span></div>
+          <div class="opts"><button type="button" class="opt" data-k="A"><i>A</i><span>设置字体大小使用 font-size 属性</span></button><button type="button" class="opt" data-k="B"><i>B</i><span>设置字体粗细使用 font-weight 属性</span></button><button type="button" class="opt" data-k="C"><i>C</i><span>设置文字行距使用 line-height 属性</span></button><button type="button" class="opt" data-k="D"><i>D</i><span>设置字体颜色使用 font-color 属性</span></button></div>
+          <div class="q-foot"><button type="button" class="q-check">查看答案</button>
+            <button type="button" class="q-reset" disabled>重做</button>
+            <span class="q-verdict"></span></div>
+          <div class="q-ans"><b>答案</b><span class="ans-key">D</span><span class="ans-tip">设置字体颜色使用的是 color 属性，CSS 中并没有 font-color 这个属性。</span></div>
+        </li><li class="quiz-item single" class="an " style="--i:2" data-type="single" data-answer="D">
+          <div class="q"><span class="q-no">02</span>
+            <span class="q-tag single">单选</span><span class="q-txt">下列单位中，总是相对于 HTML 根元素、可避免字体大小逐层复合的是（　　）。</span></div>
+          <div class="opts"><button type="button" class="opt" data-k="A"><i>A</i><span>px</span></button><button type="button" class="opt" data-k="B"><i>B</i><span>pt</span></button><button type="button" class="opt" data-k="C"><i>C</i><span>em</span></button><button type="button" class="opt" data-k="D"><i>D</i><span>rem</span></button></div>
+          <div class="q-foot"><button type="button" class="q-check">查看答案</button>
+            <button type="button" class="q-reset" disabled>重做</button>
+            <span class="q-verdict"></span></div>
+          <div class="q-ans"><b>答案</b><span class="ans-key">D</span><span class="ans-tip">rem 即 root em，CSS3 新增，始终相对于 HTML 根元素；em 相对于当前元素（或父元素）。</span></div>
+        </li><li class="quiz-item single" class="an " style="--i:3" data-type="single" data-answer="B">
+          <div class="q"><span class="q-no">03</span>
+            <span class="q-tag single">单选</span><span class="q-txt">要用 @font-face 引入自定义字体，下列说法正确的是（　　）。</span></div>
+          <div class="opts"><button type="button" class="opt" data-k="A"><i>A</i><span>直接用 src 属性即可，无需定义字体名</span></button><button type="button" class="opt" data-k="B"><i>B</i><span>引用时的字体名必须与 @font-face 中定义的名称完全一致</span></button><button type="button" class="opt" data-k="C"><i>C</i><span>自定义字体只能放在远程服务器，不能用本地路径</span></button><button type="button" class="opt" data-k="D"><i>D</i><span>font-family 中不能出现自定义字体名</span></button></div>
+          <div class="q-foot"><button type="button" class="q-check">查看答案</button>
+            <button type="button" class="q-reset" disabled>重做</button>
+            <span class="q-verdict"></span></div>
+          <div class="q-ans"><b>答案</b><span class="ans-key">B</span><span class="ans-tip">名称不一致是自定义字体不起作用的常见原因；src 既可用相对路径，也可用 URL。</span></div>
+        </li><li class="quiz-item multi" class="an " style="--i:4" data-type="multi" data-answer="ABC">
+          <div class="q"><span class="q-no">04</span>
+            <span class="q-tag multi">多选</span><span class="q-txt">关于 font-family 属性，下列说法中正确的有（　　）。</span></div>
+          <div class="opts"><button type="button" class="opt" data-k="A"><i>A</i><span>浏览器按候选列表从左到右的顺序查找并显示字体</span></button><button type="button" class="opt" data-k="B"><i>B</i><span>字体名称中含空格时须加双引号，中文字体建议也加双引号</span></button><button type="button" class="opt" data-k="C"><i>C</i><span>通用字体族通常放在列表最后，作为兜底保障</span></button><button type="button" class="opt" data-k="D"><i>D</i><span>中西文混排时，通常把中文字体放在列表最前面</span></button></div>
+          <div class="q-foot"><button type="button" class="q-check">查看答案</button>
+            <button type="button" class="q-reset" disabled>重做</button>
+            <span class="q-verdict"></span></div>
+          <div class="q-ans"><b>答案</b><span class="ans-key">A、B、C</span><span class="ans-tip">中西文混排应把<strong>西文字体靠前</strong>：中文字体优先级更高时，指定的西文字体将无法显示。</span></div>
+        </li><li class="quiz-item multi" class="an " style="--i:5" data-type="multi" data-answer="ABD">
+          <div class="q"><span class="q-no">05</span>
+            <span class="q-tag multi">多选</span><span class="q-txt">关于 font 简写属性与 line-height，下列说法中正确的有（　　）。</span></div>
+          <div class="opts"><button type="button" class="opt" data-k="A"><i>A</i><span>font 简写中至少应包含 font-size 和 font-family 两个值</span></button><button type="button" class="opt" data-k="B"><i>B</i><span>简写中的 line-height 必须与 font-size 连用，写成 font-size/line-height</span></button><button type="button" class="opt" data-k="C"><i>C</i><span>line-height 允许使用负值，以便把行距压得更紧凑</span></button><button type="button" class="opt" data-k="D"><i>D</i><span>把行高设置为容器高度，可实现单行文字在容器中垂直居中</span></button></div>
+          <div class="q-foot"><button type="button" class="q-check">查看答案</button>
+            <button type="button" class="q-reset" disabled>重做</button>
+            <span class="q-verdict"></span></div>
+          <div class="q-ans"><b>答案</b><span class="ans-key">A、B、D</span><span class="ans-tip">行高是<strong>非负</strong>的，使用负数是错误的；单行居中靠「行高 = 容器高度」。</span></div>
+        </li></ol>
+  </div>
+</section>
+
+<section class="slide" data-kind="summary">
+  
+  <header class="s-head">
+    <div class="s-head-left">
+      
+      <h2 class="s-title an" style="--i:1">本课小结</h2>
+      
+    </div>
+  </header>
+  <div class="s-body"><ul class="blist"><li class="an " style="--i:1"><span class="bl-dot"></span><span>字体三件套：<code>font-size</code>（medium/length/百分比/inherit，px·pt·em·rem·%）、<code>font-family</code>（候选列表＋通用字体兜底）、<code>font-weight</code> 与 <code>font-style</code>。</span></li><li class="an " style="--i:2"><span class="bl-dot"></span><span>字体族要点：中文字体<strong>建议加双引号</strong>并优先使用英文名，中英混排时<strong>西文字体靠前</strong>；衬线字体有边角装饰，<strong>宋体即典型中文衬线字体</strong>。</span></li><li class="an " style="--i:3"><span class="bl-dot"></span><span>行高：默认约为字体大小的 <strong>110%～120%</strong>，<strong>行距 = 行高 − 字体高度</strong>；把<strong>行高设为容器高度</strong>即可实现单行文字垂直居中。</span></li><li class="an " style="--i:4"><span class="bl-dot"></span><span>排版五件套：<code>text-align</code>、<code>text-indent</code>、<code>text-decoration</code>、<code>letter-spacing</code>、<code>word-spacing</code>；<code>font</code> 简写时 <strong>line-height 必须与 font-size 连用</strong>。</span></li><li class="an " style="--i:5"><span class="bl-dot"></span><span>自定义字体：<code>@font-face</code> 定义（<code>src</code> 加载）＋<code>font-family</code> 引用，<strong>两处字体名必须完全一致</strong>。</span></li></ul></div>
+</section>
+
+<section class="slide" data-kind="homework">
+  
+  <header class="s-head">
+    <div class="s-head-left">
+      
+      <h2 class="s-title an" style="--i:1">课后作业</h2>
+      
+    </div>
+  </header>
+  <div class="s-body"><ul class="blist hw"><li class="an " style="--i:1"><span class="bl-dot"></span><span><strong>选择题：</strong>完成教材 3.5 作业「一、选择题」第 2 题，并说明其余三个选项为什么正确。</span></li><li class="an " style="--i:2"><span class="bl-dot"></span><span><strong>操作题（教材原题）：</strong>请使用 <code>@font-face</code> 自定义字体语法、引用规则和<strong>思源黑体</strong>，以<strong>《沁园春·雪》</strong>这首词为主题，实现个性化的图文创作。</span></li><li class="an " style="--i:3"><span class="bl-dot"></span><span><strong>验证题：</strong>在中文段落上分别使用 <code>letter-spacing</code> 与 <code>word-spacing</code>，记录两者的效果差异并解释原因。</span></li><li class="an " style="--i:4"><span class="bl-dot"></span><span><strong>项目讨论（教材原题）：</strong>简述<strong>自定义字体的基本步骤和实现要点</strong>，并在下次课做 2 分钟分享。</span></li></ul></div>
+</section>
+
+<section class="slide" data-kind="refs">
+  
+  <header class="s-head">
+    <div class="s-head-left">
+      
+      <h2 class="s-title an" style="--i:1">出处与参考</h2>
+      <p class="s-sub an" style="--i:2">本课件内容依据教材，并核对以下权威技术文档</p>
+    </div>
+  </header>
+  <div class="s-body"><ol class="refs"><li class="an " style="--i:1"><span class="ref-idx">01</span><span class="ref-t">教材《网页制作（HTML5+CSS3）》项目3 使用CSS基本选择器美化页面（3.3.4～3.3.5）</span><span class="ref-u">郑哲、傅冬 主编 · 电子工业出版社 · 2025 年 1 月第 1 版</span></li><li class="an " style="--i:2"><span class="ref-idx">02</span><span class="ref-t">MDN Web Docs · font-family</span><span class="ref-u">https://developer.mozilla.org/zh-CN/docs/Web/CSS/font-family</span></li><li class="an " style="--i:3"><span class="ref-idx">03</span><span class="ref-t">MDN Web Docs · font-size</span><span class="ref-u">https://developer.mozilla.org/zh-CN/docs/Web/CSS/font-size</span></li><li class="an " style="--i:4"><span class="ref-idx">04</span><span class="ref-t">MDN Web Docs · font-weight 与 font-style</span><span class="ref-u">https://developer.mozilla.org/zh-CN/docs/Web/CSS/font-weight</span></li><li class="an " style="--i:5"><span class="ref-idx">05</span><span class="ref-t">MDN Web Docs · line-height</span><span class="ref-u">https://developer.mozilla.org/zh-CN/docs/Web/CSS/line-height</span></li><li class="an " style="--i:6"><span class="ref-idx">06</span><span class="ref-t">MDN Web Docs · @font-face（自定义字体）</span><span class="ref-u">https://developer.mozilla.org/zh-CN/docs/Web/CSS/@font-face</span></li></ol></div>
+</section>
+
+<section class="slide s-end" data-kind="end">
+  <div class="end-inner">
+    <div class="end-mark an" style="--i:0">·</div>
+    <h2 class="end-t an" style="--i:1">第 7 单元 · 结束</h2>
+    <p class="end-s an" style="--i:2">下一单元：伪类、伪元素与通用选择器——处理文档树之外的世界</p>
+    <a class="end-next an" style="--i:3" href="U08%20%E4%BC%AA%E7%B1%BB%E3%80%81%E4%BC%AA%E5%85%83%E7%B4%A0%E4%B8%8E%E9%80%9A%E7%94%A8%E9%80%89%E6%8B%A9%E5%99%A8.html"><span class="en-lab">下一讲</span><span class="en-t">U08 伪类、伪元素与通用选择器</span><span class="en-ar">→</span></a>
+    <a class="end-back an" style="--i:4" href="../../index.html"><span>←</span> 返回总目录</a>
+  </div>
+</section>
+  <div class="legend">← → 翻页　·　C 点击翻页开关　·　O 目录　·　F 全屏　·　P 打印　·　拖动圈选不翻页</div>
+  <div class="hud">
+    <span class="btn" id="btnClick" data-on="1" title="开启 / 关闭「点击鼠标切换页面」（快捷键 C）">点击翻页 开</span>
+    <span class="btn" id="btnNav">目录</span>
+    <span class="btn" id="btnFull">全屏</span>
+    <span class="pageno"><b id="cur">1</b> / 25</span>
+  </div>
+  <div class="flip-toast" id="flipToast"></div>
+  <div class="drawer" id="drawer">
+    <div class="drawer-panel">
+      <div class="drawer-h">本单元目录 <span id="drawerClose">关闭 ✕</span></div>
+      <ul id="drawerList"><li data-go="0"><span class="nv-idx">01</span><span class="nv-t">字体属性、文本排版与自定义字体</span></li><li data-go="1"><span class="nv-idx">02</span><span class="nv-t">学习目标</span></li><li data-go="2"><span class="nv-idx">03</span><span class="nv-t">思政课堂</span></li><li data-go="3"><span class="nv-idx">04</span><span class="nv-t">导览</span></li><li data-go="4"><span class="nv-idx">05</span><span class="nv-t">3.3.4 字体属性</span></li><li data-go="5"><span class="nv-idx">06</span><span class="nv-t">font-size 与单位</span></li><li data-go="6"><span class="nv-idx">07</span><span class="nv-t">font-family</span></li><li data-go="7"><span class="nv-idx">08</span><span class="nv-t">表3-4 通用字体</span></li><li data-go="8"><span class="nv-idx">09</span><span class="nv-t">字体属性演示</span></li><li data-go="9"><span class="nv-idx">10</span><span class="nv-t">表3-5/3-6 字重与风格</span></li><li data-go="10"><span class="nv-idx">11</span><span class="nv-t">表3-7 行高</span></li><li data-go="11"><span class="nv-idx">12</span><span class="nv-t">任务3-3 演示</span></li><li data-go="12"><span class="nv-idx">13</span><span class="nv-t">font 简写属性</span></li><li data-go="13"><span class="nv-idx">14</span><span class="nv-t">任务3-4</span></li><li data-go="14"><span class="nv-idx">15</span><span class="nv-t">表3-8~3-10</span></li><li data-go="15"><span class="nv-idx">16</span><span class="nv-t">表3-11~3-12</span></li><li data-go="16"><span class="nv-idx">17</span><span class="nv-t">任务3-5 演示</span></li><li data-go="17"><span class="nv-idx">18</span><span class="nv-t">@font-face</span></li><li data-go="18"><span class="nv-idx">19</span><span class="nv-t">任务3-6</span></li><li data-go="19"><span class="nv-idx">20</span><span class="nv-t">AI 前沿</span></li><li data-go="20"><span class="nv-idx">21</span><span class="nv-t">随堂检测</span></li><li data-go="21"><span class="nv-idx">22</span><span class="nv-t">本课小结</span></li><li data-go="22"><span class="nv-idx">23</span><span class="nv-t">课后作业</span></li><li data-go="23"><span class="nv-idx">24</span><span class="nv-t">出处与参考</span></li><li data-go="24"><span class="nv-idx">25</span><span class="nv-t">结束</span></li></ul>
+    </div>
+  </div>
+</div></div>
+<script>
+(function(){
+  var slides = Array.prototype.slice.call(document.querySelectorAll('.slide'));
+  var total = slides.length, cur = 0;
+  var stage = document.getElementById('stage');
+  var bar = document.getElementById('bar'), curEl = document.getElementById('cur');
+  var drawer = document.getElementById('drawer');
+  var mqPortrait = window.matchMedia('(orientation: portrait)');
+  var flow = mqPortrait.matches;
+
+  /* ---- 点击翻页开关（记忆教师偏好，跨课件生效） ---- */
+  var clickOn = true;
+  try{ clickOn = localStorage.getItem('deck_clickflip') !== '0'; }catch(e){}
+  var btnClick = document.getElementById('btnClick');
+  var toastEl = document.getElementById('flipToast'), toastTimer = null;
+  function tip(msg){
+    if(!toastEl) return;
+    toastEl.textContent = msg;
+    toastEl.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function(){ toastEl.classList.remove('show'); }, 1500);
+  }
+  function syncClickBtn(){
+    if(!btnClick) return;
+    if(flow){                                   // 竖屏为滚屏阅读，点击翻页天然不生效
+      btnClick.textContent = '竖屏阅读';
+      btnClick.setAttribute('data-on', '0');
+      btnClick.setAttribute('title', '竖屏为纵向阅读模式，上下滚动即可；旋转为横屏后可用点击翻页');
+      return;
+    }
+    btnClick.textContent = '点击翻页 ' + (clickOn ? '开' : '关');
+    btnClick.setAttribute('data-on', clickOn ? '1' : '0');
+    btnClick.setAttribute('title', clickOn
+      ? '当前：点击鼠标可切换页面。点此关闭（快捷键 C）'
+      : '当前：点击鼠标不翻页，方便圈选讲解。点此开启（快捷键 C）');
+  }
+  function toggleClickFlip(silent){
+    clickOn = !clickOn;
+    try{ localStorage.setItem('deck_clickflip', clickOn ? '1' : '0'); }catch(e){}
+    syncClickBtn();
+    if(!silent) tip(clickOn ? '点击翻页已开启' : '点击翻页已关闭 · 仍可用 ← → 或滑动翻页');
+  }
+  syncClickBtn();
+
+  function hasSelection(){
+    var s = window.getSelection && window.getSelection();
+    return !!(s && String(s.text || s).length > 0);
+  }
+  function setIndex(n){
+    cur = Math.max(0, Math.min(total-1, n));
+    slides.forEach(function(s,i){ s.classList.toggle('is-active', i===cur); });
+    var act = slides[cur];
+    if(act && !flow) act.querySelectorAll('.an').forEach(function(el){ void el.offsetWidth; });
+    bar.style.width = (total>1 ? (cur/(total-1)*100) : 100)+'%';
+    curEl.textContent = cur+1;
+    document.querySelectorAll('#drawerList li').forEach(function(li,i){ li.classList.toggle('cur', i===cur); });
+  }
+  function go(n, instant){
+    n = Math.max(0, Math.min(total-1, n));
+    var same = (n===cur && slides[cur] && slides[cur].classList.contains('is-active'));
+    slides.forEach(function(s,i){
+      s.classList.remove('prev');
+      if(i<n) s.classList.add('prev');
+      if(i===n) s.classList.add('is-active');
+    });
+    setIndex(n);
+    if(flow){
+      var el = slides[n];
+      if(el && el.scrollIntoView) el.scrollIntoView({behavior: instant ? 'auto' : 'smooth', block:'start'});
+    } else if(same){
+      var a = slides[n]; if(a) a.querySelectorAll('.an').forEach(function(el){ void el.offsetWidth; });
+    }
+    try{ history.replaceState(null,'','#'+(n+1)); }catch(e){}
+  }
+
+  /* 键盘 */
+  document.addEventListener('keydown', function(e){
+    var k = e.key;
+    if(k==='ArrowRight'||k==='ArrowDown'||k===' '||k==='PageDown'||k==='Enter'){ e.preventDefault(); go(cur+1); }
+    else if(k==='ArrowLeft'||k==='ArrowUp'||k==='PageUp'){ e.preventDefault(); go(cur-1); }
+    else if(k==='Home'){ go(0); } else if(k==='End'){ go(total-1); }
+    else if(k==='o'||k==='O'){ drawer.classList.toggle('open'); }
+    else if(k==='f'||k==='F'){ toggleFull(); }
+    else if(k==='c'||k==='C'){ toggleClickFlip(); }
+    else if(k==='Escape'){ drawer.classList.remove('open'); }
+    else if(k==='p'||k==='P'){ window.print(); }
+  });
+  function toggleFull(){
+    if(!document.fullscreenElement){ (document.documentElement.requestFullscreen||function(){}).call(document.documentElement); }
+    else { document.exitFullscreen(); }
+  }
+
+  /* 点击翻页：拖动圈选文字、双击选词、点按钮/选项一律不翻页 */
+  var down = null, clickTimer = null;
+  function isInteractive(el){
+    return !!(el.closest('.hud')||el.closest('.drawer')||el.closest('iframe')||el.closest('summary')||
+              el.closest('details')||el.closest('.quiz')||el.closest('a')||el.closest('button')||
+              el.closest('input')||el.closest('select')||el.closest('textarea')||el.closest('label'));
+  }
+  stage.addEventListener('mousedown', function(e){ down = {x:e.clientX, y:e.clientY, t:Date.now()}; });
+  stage.addEventListener('click', function(e){
+    if(flow) return;
+    clearTimeout(clickTimer);
+    if(!clickOn) return;                           // 开关关闭：点击不翻页
+    if(e.detail > 1) return;                       // 双击 / 三击 = 选词，不翻页
+    if(isInteractive(e.target)) return;
+    if(hasSelection()) return;                     // 已有选中内容，不翻页
+    if(down && (Math.abs(e.clientX-down.x)>6 || Math.abs(e.clientY-down.y)>6)) return;  // 拖动圈选
+    if(down && (Date.now()-down.t > 800)) return;  // 长按
+    var r = stage.getBoundingClientRect();
+    var dir = (e.clientX - r.left) > r.width*0.5 ? 1 : -1;
+    clickTimer = setTimeout(function(){
+      if(hasSelection()) return;                   // 圈选期间保持静止
+      go(cur+dir);
+    }, 220);
+  });
+  document.addEventListener('dblclick', function(){ clearTimeout(clickTimer); });
+  document.addEventListener('selectionchange', function(){ if(hasSelection()) clearTimeout(clickTimer); });
+
+  /* 触摸：仅在横向滑动时翻页；竖屏交给页面滚动 */
+  var sx=null, sy=null, st=0;
+  stage.addEventListener('touchstart', function(e){
+    if(e.touches.length>1){ sx=null; return; }
+    sx=e.touches[0].clientX; sy=e.touches[0].clientY; st=Date.now();
+  }, {passive:true});
+  stage.addEventListener('touchend', function(e){
+    if(sx===null) return;
+    var dx=e.changedTouches[0].clientX-sx, dy=e.changedTouches[0].clientY-sy;
+    sx=null;
+    if(flow) return;
+    if(Date.now()-st>900) return;                  // 长按选词
+    if(hasSelection()) return;
+    if(Math.abs(dx)>55 && Math.abs(dy)<Math.abs(dx)*0.75) go(dx<0?cur+1:cur-1);
+  }, {passive:true});
+
+  /* 竖屏：滚动时同步页码与进度 */
+  if('IntersectionObserver' in window){
+    var io = new IntersectionObserver(function(entries){
+      if(!flow) return;
+      var best=null;
+      entries.forEach(function(en){
+        if(en.isIntersecting && (!best || en.intersectionRatio > best.intersectionRatio)) best = en;
+      });
+      if(best){
+        var i = slides.indexOf(best.target);
+        if(i>=0 && i!==cur) setIndex(i);
+      }
+    }, {threshold:[0.2,0.5,0.8]});
+    slides.forEach(function(s){ io.observe(s); });
+  }
+  function onOrient(){
+    flow = mqPortrait.matches;
+    syncClickBtn();
+    clearTimeout(clickTimer);
+  }
+  mqPortrait.addEventListener ? mqPortrait.addEventListener('change', onOrient) : mqPortrait.addListener(onOrient);
+
+  /* 目录 / HUD */
+  if(btnClick) btnClick.addEventListener('click', function(e){ e.stopPropagation(); toggleClickFlip(); });
+  document.getElementById('btnNav').addEventListener('click', function(e){ e.stopPropagation(); drawer.classList.add('open'); });
+  document.getElementById('btnFull').addEventListener('click', function(e){ e.stopPropagation(); toggleFull(); });
+  document.getElementById('drawerClose').addEventListener('click', function(){ drawer.classList.remove('open'); });
+  drawer.addEventListener('click', function(e){ if(e.target===drawer) drawer.classList.remove('open'); });
+  document.querySelectorAll('#drawerList li').forEach(function(li){
+    li.addEventListener('click', function(){ go(parseInt(li.dataset.go,10)); drawer.classList.remove('open'); });
+  });
+
+  /* 随堂检测：点选选项 → 判分 → 显示答案与解析 → 单选/全量重做 */
+  function keysOf(item){
+    return (item.getAttribute('data-answer')||'').toUpperCase().replace(/[^A-Z]/g,'').split('');
+  }
+  function reveal(item){
+    var ans = keysOf(item);
+    item.querySelectorAll('.opt').forEach(function(b){
+      if(ans.indexOf(b.getAttribute('data-k'))>=0) b.classList.add('right');
+    });
+    item.classList.add('revealed');
+  }
+  function resetItem(item){
+    item.classList.remove('revealed','ok','bad');
+    item.querySelectorAll('.opt').forEach(function(b){ b.classList.remove('right','sel'); });
+    var v = item.querySelector('.q-verdict'); if(v) v.textContent='';
+    var rs = item.querySelector('.q-reset'); if(rs) rs.disabled = true;
+  }
+  document.querySelectorAll('.quiz-item').forEach(function(item){
+    var qtype = item.getAttribute('data-type')||'single';
+    var btnReset = item.querySelector('.q-reset');
+    item.querySelectorAll('.opt').forEach(function(btn){
+      btn.addEventListener('click', function(ev){
+        ev.stopPropagation();
+        /* 已揭示答案后再点选项 = 重新作答，自动收起答案 */
+        if(item.classList.contains('revealed')){
+          item.classList.remove('revealed','ok','bad');
+          item.querySelectorAll('.opt').forEach(function(b){ b.classList.remove('right'); });
+          var v0 = item.querySelector('.q-verdict'); if(v0) v0.textContent='';
+        }
+        if(qtype==='single'){
+          item.querySelectorAll('.opt').forEach(function(b){ b.classList.remove('sel'); });
+          btn.classList.add('sel');
+        } else {
+          btn.classList.toggle('sel');
+        }
+        item.classList.remove('ok','bad');
+        var v = item.querySelector('.q-verdict'); if(v) v.textContent='';
+        if(btnReset) btnReset.disabled = false;
+      });
+    });
+    var chk = item.querySelector('.q-check');
+    if(chk) chk.addEventListener('click', function(ev){
+      ev.stopPropagation();
+      var ans = keysOf(item);
+      var sel = Array.prototype.slice.call(item.querySelectorAll('.opt.sel')).map(function(b){ return b.getAttribute('data-k'); });
+      var ok = sel.length>0 && sel.length===ans.length && sel.filter(function(k){ return ans.indexOf(k)>=0; }).length===ans.length;
+      reveal(item);
+      if(btnReset) btnReset.disabled = false;
+      item.classList.remove('ok','bad'); item.classList.add(ok?'ok':'bad');
+      var v = item.querySelector('.q-verdict');
+      if(v) v.textContent = ok ? '✓ 回答正确' : (sel.length ? '✗ 再想一想，正确项已标绿' : '请先选择答案');
+    });
+    if(btnReset) btnReset.addEventListener('click', function(ev){
+      ev.stopPropagation();
+      resetItem(item);
+      tip('本题已重置，可重新作答');
+    });
+  });
+  var btnReveal = document.getElementById('quizReveal');
+  if(btnReveal) btnReveal.addEventListener('click', function(ev){
+    ev.stopPropagation();
+    var on = btnReveal.getAttribute('data-on')==='1';
+    var next = !on;
+    document.querySelectorAll('.quiz-item').forEach(function(item){
+      if(next){
+        reveal(item);
+        var rs = item.querySelector('.q-reset'); if(rs) rs.disabled = false;
+      } else {
+        resetItem(item);
+      }
+    });
+    btnReveal.setAttribute('data-on', next ? '1':'0');
+    btnReveal.textContent = next ? '隐藏答案' : '显示全部答案';
+  });
+  var btnResetAll = document.getElementById('quizResetAll');
+  if(btnResetAll) btnResetAll.addEventListener('click', function(ev){
+    ev.stopPropagation();
+    document.querySelectorAll('.quiz-item').forEach(resetItem);
+    if(btnReveal){ btnReveal.setAttribute('data-on','0'); btnReveal.textContent = '显示全部答案'; }
+    tip('已清空本题全部作答，可重新开始');
+  });
+
+  var h = parseInt((location.hash||'').replace('#',''),10);
+  go(isNaN(h)?0:h-1, true);
+})();
+</script>
+</body>
+</html>

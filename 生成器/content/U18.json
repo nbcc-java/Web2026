@@ -1,0 +1,447 @@
+{
+  "id": "U18",
+  "project": "项目7",
+  "project_name": "浮动和定位",
+  "unit": "第 18 单元",
+  "title": "标准流、浮动与清除浮动",
+  "subtitle": "看懂盒子默认怎么排、浮动又打破了什么，再用 clear 与 BFC 把高度塌陷补回来",
+  "duration": 40,
+  "cover_tags": [
+    "标准流",
+    "float",
+    "clear",
+    "BFC"
+  ],
+  "ref_book": "电子工业出版社 · 2025 年 1 月第 1 版",
+  "objectives": {
+    "knowledge": [
+      "了解网页布局排版的概念",
+      "掌握标准流排版的相关概念",
+      "掌握浮动排版的相关概念与特性",
+      "使用 BFC 解决高度塌陷的问题"
+    ],
+    "skill": [
+      "能使用浮动实现横向排列与图文环绕",
+      "能使用 clear 属性清除浮动",
+      "能使用 BFC 解决父容器高度塌陷"
+    ],
+    "literacy": [
+      "培养正确的审美观念",
+      "培养严谨求实的劳动作风",
+      "培养精益求精的工匠精神"
+    ]
+  },
+  "slides": [
+    {
+      "type": "objectives",
+      "title": "本单元我们要达成什么",
+      "subtitle": "对照教材《项目7》7.1 的学习目标 / 技能目标 / 素养目标",
+      "objectives": {
+        "knowledge": [
+          "了解网页布局排版的概念",
+          "掌握标准流排版的相关概念",
+          "掌握浮动排版的相关概念与特性",
+          "使用 BFC 解决高度塌陷的问题"
+        ],
+        "skill": [
+          "能使用浮动实现横向排列与图文环绕",
+          "能使用 clear 属性清除浮动",
+          "能使用 BFC 解决父容器高度塌陷"
+        ],
+        "literacy": [
+          "培养正确的审美观念",
+          "培养严谨求实的劳动作风",
+          "培养精益求精的工匠精神"
+        ]
+      }
+    },
+    {
+      "type": "ideology",
+      "title": "用网页技术，为美丽乡村打开一扇窗",
+      "subtitle": "教材《项目7》思政课堂",
+      "nav": "思政课堂",
+      "text": "以 Web 前端技术为代表的网页应用技术可以帮助乡村地区宣传本地特色和文化，吸引游客前来观光旅游，促进经济发展。同时，网页应用技术还可以为乡村地区提供数字化服务，如<strong>在线教育、医疗</strong>等，提高乡村地区居民的生活质量。未来，随着互联网技术的不断发展，网页应用技术将更加深入地应用于<strong>美丽乡村建设</strong>中，为乡村地区带来更多发展机遇和可能性。",
+      "topic": "布局是网页的「骨架」。请结合岗位谈一谈：在为乡村地区做宣传页面时，一套清晰、稳定、能适配不同屏幕的布局方案，对当地百姓意味着什么？"
+    },
+    {
+      "type": "outline",
+      "title": "本单元导览",
+      "subtitle": "一条主线：标准流 → 打破它 → 修补它",
+      "nav": "导览",
+      "items": [
+        "盒子默认是怎么排的？（标准流 / 文档流 / 普通流）",
+        "浮动做了什么？三个任务看清它的三条特性",
+        "浮动留下的烂摊子：父容器高度塌陷",
+        "怎么收拾？clear 清除浮动 与 BFC 两条路线"
+      ]
+    },
+    {
+      "type": "section",
+      "no": "7.1.1",
+      "title": "标准流",
+      "text": "一切布局的起点：盒子按默认方式排，谁都别抢谁的位置。",
+      "nav": "7.1.1 标准流"
+    },
+    {
+      "type": "bullets",
+      "title": "标准流：像河流一样向下流淌的默认排版",
+      "subtitle": "教材原文：标准流亦称文档流、普通流，是元素的默认排版方式",
+      "nav": "标准流要点",
+      "items": [
+        "网页布局要解决的问题：<strong>一个网页如何排列分布这些盒子</strong>，从而达到美观的排版。",
+        "CSS2 提供 3 种盒子排版模型：<strong>标准流排版、浮动排版、定位排版</strong>；CSS3 又新增了 <strong>Flex 排版、网格排版</strong> 等。",
+        "定义：元素在排版布局过程中，会默认按照<strong>自左而右、自上而下</strong>的方式流式排列；当前面的内容位置发生变化时，后面的内容位置也会随之发生变化。",
+        "具体表现：多个元素根据定义顺序形成盒子序列，<strong>同级块级盒子自上而下</strong>排列，<strong>同级行内元素自左而右</strong>排列；对于子元素亦是如此。",
+        "整个页面犹如河流一样不断分支，并向同一个方向流动，<strong>故而称其为「标准流」</strong>。",
+        "<strong>关键结论：</strong>浮动排版和定位排版，<strong>都是通过更改元素的默认排版方式实现的</strong>。"
+      ]
+    },
+    {
+      "type": "section",
+      "no": "7.1.2",
+      "title": "浮动排版",
+      "text": "浮动靠 CSS2 的 float 属性实现，它让盒子「浮」起来，也带走了父容器的高度。",
+      "nav": "7.1.2 浮动排版"
+    },
+    {
+      "type": "table",
+      "title": "表7-1 float 属性值（教材完整还原）",
+      "subtitle": "当 float 值为 left 或 right 时，元素变成浮动元素，同时脱离标准流",
+      "nav": "float 属性值",
+      "head": [
+        "属性值",
+        "描述"
+      ],
+      "rows": [
+        [
+          "<code>none</code>",
+          "默认值，不浮动，按照标准流排列元素"
+        ],
+        [
+          "<code>left</code>",
+          "向左浮动，元素浮动在父元素的左侧"
+        ],
+        [
+          "<code>right</code>",
+          "向右浮动，元素浮动在父元素的右侧"
+        ],
+        [
+          "<code>inherit</code>",
+          "继承父元素的 float 属性值"
+        ]
+      ]
+    },
+    {
+      "type": "task",
+      "title": "任务7-1｜浮动特性1：脱离标准流",
+      "subtitle": "目标：使用 float 属性将「框1」盒子向右浮动，比较浮动前、后的效果（图7-2、图7-3）",
+      "nav": "任务7-1 脱离标准流",
+      "goal": "观察浮动前后盒子的位置变化，理解「浮动元素不在标准流中，标准流中的块框表现得就像浮动框不存在一样」。",
+      "steps": [
+        "准备一个带虚线边框的父容器 <code>.outer</code>，内部放三个 50px×50px 的 <code>.box</code>。",
+        "浮动前：div 作为块级元素<strong>占据父容器的一整行</strong>，三个框自上而下排列。",
+        "给「框1」加上 <code>.box1{ float:right; }</code>，它向右移动，<strong>直到外边框碰到父容器的边框为止</strong>。",
+        "依次给「框2」「框3」也加上 <code>.box1</code>：三个框<strong>向右排列成一行</strong>。",
+        "由于子元素全部脱离标准流，<strong>父容器最终塌陷成了一条线</strong>（图7-4、图7-5）。"
+      ],
+      "lang": "css",
+      "code": ".outer{ border:1px dashed #969696; }\n.box{\n    background-color:#FAFAF1;\n    border:1px dashed #373734;\n    width:50px; height:50px; margin:10px;\n}\n.box1{ float:right; }"
+    },
+    {
+      "type": "bullets",
+      "title": "浮动的四大特性（教材归纳，务必照讲）",
+      "subtitle": "这四条，是理解后续所有浮动布局的地基",
+      "nav": "浮动四大特性",
+      "items": [
+        "<strong>① 浮动可以让块级元素显示在同一行中。</strong>",
+        "<strong>② 当浮动元素向指定方向移动时，直到它碰到父容器的边框或另一个浮动框为止。</strong>",
+        "<strong>③ 浮动元素会脱离原来的标准流，且不占据原来标准流中的位置和空间。</strong>",
+        "<strong>④ 子元素全部浮动后，如果父容器中没有其他内容撑开高度，则会发生高度塌陷。</strong>",
+        "补充：浮动框向左/右移动，<strong>直到它的外边缘碰到父容器（包含框）的边框或另一个浮动框的边框</strong>为止。"
+      ]
+    },
+    {
+      "type": "task",
+      "title": "任务7-2｜浮动特性2：图文环绕（浮动的本质）",
+      "subtitle": "目标：验证浮动元素浮于标准流之上/之下，并利用浮动实现图文环绕效果",
+      "nav": "任务7-2 图文环绕",
+      "goal": "用新疆简介素材，把图片向左浮动，观察文字如何绕开图片重新排列。",
+      "steps": [
+        "实验：把 <code>.box1</code> 改成 <code>float:left</code> 后，「框1」似乎把顶替上来的「框2」遮挡了（图7-6）。",
+        "用开发者工具选中「框2」可见：它<strong>隐藏在「框1」之下</strong>，但「框2」中的<strong>文字仍在原来的位置上</strong>（第二行），并与「框3」重叠（图7-7）。",
+        "<strong>核心原理——元素立体两层模型：</strong>HTML 元素在构造时由两层构成，<strong>底层是元素层，其上方是内容层</strong>（文字、图片、视频等）。",
+        "设置浮动后，该元素<strong>脱离标准流、提升层级</strong>，「浮」到内容层；后面的元素上移占据浮动元素原有的元素层位置。",
+        "此时标准流元素的<strong>内容层被挤出来，形成环绕效果</strong>（图7-9）——这正是有些书把浮动称为<strong>「提升半个层级」</strong>的原因。",
+        "<strong>图文环绕是浮动的本质。</strong>"
+      ],
+      "lang": "css",
+      "code": ".outer{ width:500px; background-color:#F8F4E7; color:#666; padding:5px 10px; }\n.outer>img{ width:250px; float:left; padding:5px; }\n.outer>p{ text-indent:2em; }\n.outer>p.intro::first-letter{ font-size:2em; }"
+    },
+    {
+      "type": "task",
+      "title": "任务7-3｜浮动特性3：浮动对行内元素的影响",
+      "subtitle": "目标：把研究对象从 div 换成 span，观察浮动对行内元素的特性",
+      "nav": "任务7-3 行内元素",
+      "goal": "验证「浮动会使行内元素具有块级元素的特征」这一结论。",
+      "steps": [
+        "准备两个 <code>span</code>，并设置 <code>width:50px; height:50px</code>。",
+        "<strong>浮动前：</strong><code>width</code>、<code>height</code> 对行内元素<strong>不起作用</strong>，宽高由文字内容决定（图7-11）。",
+        "给「行内2」加上 <code>.fl{ float:left; }</code>：它<strong>突然变大，width / height 起作用了</strong>（图7-12）。",
+        "同时，排在后面的「行内2」向左浮动后被排到左边，<strong>原本在前面的「行内1」被挤到了右边</strong>。",
+        "<strong>结论一：</strong>浮动会使行内元素具有块级元素的特征，又称「<strong>块级格式化上下文</strong>」。",
+        "<strong>结论二：</strong>行内元素在立体空间中与文字同属<strong>内容层</strong>，会受到浮动影响被挤出原有位置。"
+      ],
+      "lang": "css",
+      "code": ".outer{ border:1px dashed #969696; }\n.outer span{ border:1px dashed #373734; background-color:#FAFAF1;\n    width:50px; height:50px; }\n.fl{ float:left; }"
+    },
+    {
+      "type": "demo",
+      "title": "效果演示｜浮动的三个特性，动起来看",
+      "subtitle": "① 脱离标准流　② 图文环绕　③ 行内元素块级化，三格同步演示",
+      "nav": "浮动三特性演示",
+      "items": [
+        "<strong>第一格：</strong>「框1」向右浮出，后面两个框依次上移占位，父容器虚线框随之<strong>塌陷</strong>。",
+        "<strong>第二格：</strong>图片浮到左侧内容层，文字绕开它重新排布——这就是浮动的本质。",
+        "<strong>第三格：</strong>行内元素 <code>span</code> 一旦浮动，<code>width</code>、<code>height</code> 立刻生效，摇身变成块级。",
+        "三格循环播放，注意观察「元素层」与「内容层」的错位关系。"
+      ],
+      "hint": "重点看第一格：父容器的虚线框为什么会「塌成一条线」？这就是下一节要解决的 height collapse（高度塌陷）。",
+      "html": "<style>*{box-sizing:border-box}body{margin:0;font-family:'PingFang SC',system-ui,sans-serif;background:linear-gradient(150deg,#eef4ff,#f7fbff);padding:12px}.u18{display:flex;gap:10px}.u18 .cell{flex:1;background:#fff;border:1px solid #e2e8f2;border-radius:12px;padding:9px 10px;box-shadow:0 14px 30px -20px rgba(20,40,90,.45);animation:u18r .5s both}.u18 .cell:nth-child(2){animation-delay:.12s}.u18 .cell:nth-child(3){animation-delay:.24s}.u18 h4{margin:0 0 7px;font-size:11.5px;color:#1d46b8;border-left:3px solid #2f6bff;padding-left:6px}.u18 .note{font-size:10.5px;color:#8c9bb1;margin:7px 0 0;line-height:1.6}.u18 .outer{position:relative;border:1px dashed #969696;height:112px;overflow:hidden;background:#fcfcfa;transition:height .8s ease}.u18 .b{position:absolute;width:40px;height:26px;line-height:26px;text-align:center;font-size:10.5px;color:#5a6c85;background:#FAFAF1;border:1px dashed #373734}.u18 .b1{left:5px;top:5px;animation:u18f1 7s infinite}.u18 .b2{left:5px;top:35px;animation:u18f2 7s infinite}.u18 .b3{left:5px;top:65px;animation:u18f3 7s infinite}@keyframes u18f1{0%,12%{left:5px;top:5px}28%,100%{left:auto;right:5px;top:5px}}@keyframes u18f2{0%,12%{top:35px}28%,100%{top:5px}}@keyframes u18f3{0%,12%{top:65px}28%,100%{top:35px}}.u18 .outer.b{height:112px;animation:u18collapse 7s infinite}@keyframes u18collapse{0%,30%{height:112px}45%,100%{height:2px}}.u18 .wrap{position:relative;height:112px;overflow:hidden;background:#F8F4E7;padding:5px 6px}.u18 .pic{position:absolute;left:5px;top:5px;width:52px;height:44px;border-radius:5px;background:linear-gradient(135deg,#7fd1c1,#2f9e8f);animation:u18img 7s infinite}.u18 .pic::after{content:'';position:absolute;inset:0;background:radial-gradient(circle at 30% 25%,rgba(255,255,255,.7),transparent 55%)}@keyframes u18img{0%,12%{transform:translateY(0);opacity:.75}28%,100%{transform:translateY(0);opacity:1}}.u18 .line{height:6px;border-radius:3px;background:#e3e7ee;margin-bottom:7px}.u18 .line.a{width:96%;margin-left:0;animation:u18la 7s infinite}.u18 .line.b2{width:96%;animation:u18la 7s infinite}.u18 .line.c{width:72%;margin-left:0;animation:u18lc 7s infinite}.u18 .line.d{width:60%;margin-left:0;animation:u18lc 7s infinite}@keyframes u18la{0%,12%{margin-left:0}28%,100%{margin-left:62px}}@keyframes u18lc{0%,12%{margin-left:0;width:96%}28%,100%{margin-left:0;width:96%}}.u18 .inl{height:34px;border:1px dashed #969696;background:#fcfcfa;padding:4px;line-height:26px}.u18 .inl span{display:inline-block;font-size:10.5px;color:#5a6c85;background:#FAFAF1;border:1px dashed #373734;vertical-align:middle}.u18 .inl .s1{width:38px;height:20px;line-height:20px;text-align:center}.u18 .inl .s2{width:38px;height:20px;line-height:20px;text-align:center;animation:u18inl 7s infinite}@keyframes u18inl{0%,12%{width:38px;height:20px;float:none;background:#FAFAF1}28%,100%{width:52px;height:26px;float:left;background:#dbe8ff;border-color:#2f6bff;color:#1d46b8}}@keyframes u18r{from{opacity:0;transform:translateY(12px)}}</style>\n<div class='u18'>\n<div class='cell'>\n<h4>① 脱离标准流</h4>\n<div class='outer b'><div class='b b1'>框1</div><div class='b b2'>框2</div><div class='b b3'>框3</div></div>\n<p class='note'>float:right 后框1 浮到右侧，<br>后两个框上移，父容器塌陷</p>\n</div>\n<div class='cell'>\n<h4>② 图文环绕</h4>\n<div class='wrap'><div class='pic'></div><div class='line a'></div><div class='line b2'></div><div class='line c'></div><div class='line d'></div></div>\n<p class='note'>图片浮到内容层，<br>文字被挤出形成环绕</p>\n</div>\n<div class='cell'>\n<h4>③ 行内块级化</h4>\n<div class='inl'><span class='s1'>行内1</span><span class='s2'>行内2</span></div>\n<p class='note'>浮动前宽高失效；<br>浮动后 width / height 生效</p>\n</div>\n</div>"
+    },
+    {
+      "type": "section",
+      "no": "7.1.3",
+      "title": "清除浮动",
+      "text": "父容器失去高度的现象，被形象地称为「高度塌陷」——用 clear 把它撑回来。",
+      "nav": "7.1.3 清除浮动"
+    },
+    {
+      "type": "table",
+      "title": "表7-2 clear 属性值（教材完整还原）",
+      "subtitle": "清除浮动使用 clear 属性；对右浮动用 right，对左浮动用 left，两侧都有时用 both",
+      "nav": "clear 属性值",
+      "head": [
+        "属性值",
+        "描述"
+      ],
+      "rows": [
+        [
+          "<code>left</code>",
+          "元素<strong>左侧</strong>不允许有浮动元素"
+        ],
+        [
+          "<code>right</code>",
+          "元素<strong>右侧</strong>不允许有浮动元素"
+        ],
+        [
+          "<code>both</code>",
+          "元素<strong>两侧</strong>不允许有浮动元素"
+        ],
+        [
+          "<code>none</code>",
+          "默认值，元素两侧<strong>允许</strong>有浮动元素"
+        ],
+        [
+          "<code>inherit</code>",
+          "继承父元素的 clear 属性值"
+        ]
+      ]
+    },
+    {
+      "type": "task",
+      "title": "任务7-4｜使用清除浮动解决父容器高度塌陷",
+      "subtitle": "目标：用清除浮动的样式属性和规则，解决父容器高度塌陷的问题（图7-16、图7-17）",
+      "nav": "任务7-4 解决塌陷",
+      "goal": "在浮动元素之后添加一个承担清除浮动工作的元素，让父容器重新被撑开。",
+      "steps": [
+        "先记住<strong>清除浮动的三个前提条件和要点</strong>（教材原文）：① 具有 clear 属性的元素<strong>必须是块级元素</strong>。",
+        "② 具有 clear 属性的元素必须与浮动元素是<strong>同级元素（兄弟关系）</strong>。",
+        "③ 设置 clear 属性的目的是<strong>清除标准流元素上方的浮动元素对自身的影响</strong>。",
+        "<strong>方案一（加空 div）：</strong>在浮动元素之后添加 <code>&lt;div class='clr'&gt;&lt;/div&gt;</code>，样式为 <code>.clr{ clear:right; }</code>——能达成目的，但在 HTML 中<strong>添加了不具有语义功能的空 div</strong>。",
+        "<strong>方案二（推荐，::after 伪元素）：</strong>给父容器加一个类，用伪元素在内容末尾插入一个清除浮动的块级盒子。",
+        "<strong>易错点（教材原话）：</strong>因为 <code>::after</code> 伪元素<strong>默认是行内元素</strong>，根据前提条件，<strong>必须将其 display 设置为 block</strong>；同时需要满足<strong>添加的内容为空</strong>，可通过 <code>content:\"\"</code> 实现。"
+      ],
+      "lang": "css",
+      "code": "/* 代码7-6 方案二：使用 ::after 伪元素（推荐） */\n.clr::after{\n    content:\"\";\n    display:block;\n    clear:right;\n}\n\n/* 举一反三：清除其他方向或两侧浮动，\n   只需修改 clear 的属性值即可 */\n\n/* 配合的 HTML */\n/* <div class=\"outer clr\"> */\n/*   <div class=\"box box1\">框1</div> */\n/*   <div class=\"box box1\">框2</div> */\n/*   <div class=\"box box1\">框3</div> */\n/* </div> */"
+    },
+    {
+      "type": "section",
+      "no": "7.1.4",
+      "title": "使用 BFC 解决高度塌陷",
+      "text": "如果说 clear 是「事后补救」，BFC 就是「提前围一堵墙」。",
+      "nav": "7.1.4 BFC"
+    },
+    {
+      "type": "bullets",
+      "title": "BFC：给浮动元素围一堵「围墙」",
+      "subtitle": "教材比喻：「如同围墙，围墙内的东西出不去，围墙外的东西进不来。」",
+      "nav": "BFC 概念",
+      "items": [
+        "<strong>BFC（Block Formatting Context，块级格式上下文）：</strong>使用浮动的元素将生成 BFC，它为元素提供了一个<strong>独立的布局环境</strong>。",
+        "该环境中的内容<strong>不会影响外部的布局</strong>，外部的布局<strong>同样也不会影响该环境中的内容</strong>。",
+        "解决高度塌陷的<strong>第二个思路</strong>：给父容器加上一堵围墙（BFC），<strong>围墙能包含浮动元素，使之无法脱离父容器区域</strong>，从而达到清除浮动的效果。",
+        "教材补充：目前看到的 3 种触发 BFC 的方式之外，<strong>还可以通过绝对定位等其他方式触发 BFC</strong>。"
+      ]
+    },
+    {
+      "type": "task",
+      "title": "任务7-5｜触发 BFC 的 3 种常用方式",
+      "subtitle": "目标：用 inline-block、父元素浮动、overflow 三种方式触发 BFC，解决高度塌陷",
+      "nav": "任务7-5 触发 BFC",
+      "goal": "比较三种触发方式的原理与副作用，学会「根据具体情况选择合适的方法」。",
+      "steps": [
+        "<strong>方式1：设置 <code>display:inline-block</code></strong>——触发 BFC 后，每个行内块元素都具有<strong>「包裹性」</strong>，当其中存在浮动元素时，能包裹住内部的浮动元素（图7-18）。",
+        "<strong>方式2：设置父元素浮动</strong>——父元素具有 BFC，可以包裹住浮动的子元素。",
+        "<strong>注意事项（教材原文）：</strong>给父元素设置浮动属性后，<strong>同样也会影响自身和其他元素</strong>。所以每种方法都有其自身的特点和优缺点，<strong>需要根据具体情况来选择</strong>（图7-19）。",
+        "<strong>方式3：设置 <code>overflow</code> 属性值（最常用）</strong>——<strong>当把父元素的 overflow 设置为除默认值之外的值时，就会触发该元素的 BFC</strong>，故可设为 <code>scroll</code>、<code>hidden</code> 或 <code>auto</code>（图7-20）。",
+        "<code>overflow</code> 取值速记：<code>visible</code> 默认不裁剪、<code>hidden</code> 溢出隐藏、<code>scroll</code> 始终显示滚动条、<code>auto</code> 由浏览器决定是否显示滚动条、<code>inherit</code> 继承父元素。"
+      ],
+      "lang": "css",
+      "code": "/* 方式1：inline-block 触发 BFC */\n.outer{ border:1px dashed #969696; display:inline-block; }\n\n/* 方式2：父元素浮动触发 BFC */\n.outer{ border:1px dashed #969696; float:left; }\n\n/* 方式3：overflow 触发 BFC（最常用） */\n.outer{ border:1px dashed #969696; overflow:hidden; }\n\n/* 三种方式的 .box / .fr / .fl 均相同 */\n.box{ background-color:#FAFAF1; border:1px dashed #373734;\n      width:50px; height:50px; margin:10px; }\n.fr{ float:right; }\n.fl{ float:left; }"
+    },
+    {
+      "type": "ai",
+      "title": "AI 前沿：让 AI 诊断「高度塌陷」这类布局疑难杂症",
+      "subtitle": "布局 Bug 看不见摸不着，却是 AI 辅助调试最能发挥价值的场景",
+      "nav": "AI 前沿",
+      "text": "浮动带来的高度塌陷、外边距合并、元素错位，都属于「现象清楚、原因隐蔽」的问题。把现象描述清楚，交给 <strong>DeepSeek、通义千问、文心一言</strong> 这类大模型，它往往能一次命中根因并给出 clear、BFC、Flex 等多种解法。但要注意：AI 常会直接推荐 <strong>Flex / Grid</strong> 方案——这在生产中没错，但<strong>考试要求与教材体系要求你必须懂 float 与 BFC 的原理</strong>。",
+      "items": [
+        "AI 排错：把「父容器高度变成 0」的现象描述给 <strong>通义灵码、文心快码、GitHub Copilot</strong>，让它列出所有可能的成因与对应解法。",
+        "AI 讲解：让 AI 用「围墙」之外的比喻再解释一遍 BFC，换个角度常常一下就通了。",
+        "AI 重构：让 AI 把一段浮动布局改写成等效的 Flex 布局，并对比两种写法的差异。",
+        "职业提醒：<strong>先懂原理，再用 AI 提速</strong>。说不清「为什么要清除浮动」的人，也判断不了 AI 给的方案对不对。"
+      ]
+    },
+    {
+      "type": "quiz",
+      "title": "随堂检测",
+      "subtitle": "选自教材 7.5 作业选择题，检验你的理解",
+      "nav": "随堂检测",
+      "items": [
+        {
+          "q": "浮动最初的用途是（　　）。",
+          "options": [
+            "A. 制作导航",
+            "B. 实现图文混排",
+            "C. 解决父容器高度坍塌的问题",
+            "D. 影响行内元素的尺寸"
+          ],
+          "answer": "B",
+          "tip": "浮动的本质是图文环绕；教材任务7-2 明确指出「图文环绕是浮动的本质」。",
+          "type": "single"
+        },
+        {
+          "q": "关于浮动，说法错误的是（　　）。",
+          "options": [
+            "A. 浮动元素会脱离原来的标准流",
+            "B. 不论是块级元素还是行内元素，只要是浮动元素都可以指定其宽度、高度",
+            "C. 不论是块级元素还是行内元素，只要是非静态元素都可以指定其宽度、高度",
+            "D. 通过对浮动元素设置 overflow 属性值可以触发 BFC"
+          ],
+          "answer": "C",
+          "tip": "能否指定宽高取决于是否浮动/是否为块级，「非静态元素」并非判定标准；相对定位的行内元素依然不能指定宽高。",
+          "type": "single"
+        },
+        {
+          "q": "要清除浮动，使用 clear 属性的元素必须满足的前提不包括（　　）。",
+          "options": [
+            "A. 必须是块级元素",
+            "B. 必须与浮动元素是同级元素（兄弟关系）",
+            "C. 必须位于浮动元素之后",
+            "D. 必须设置 overflow 属性"
+          ],
+          "answer": "D",
+          "tip": "教材给出三个前提：块级元素、与浮动元素同级、目的是清除上方浮动元素对自身的影响；overflow 是触发 BFC 的另一条路线。",
+          "type": "single"
+        },
+        {
+          "q": "下列做法中，不能触发 BFC 的是（　　）。",
+          "options": [
+            "A. 给父元素设置 display:inline-block",
+            "B. 给父元素设置 float:left",
+            "C. 给父元素设置 overflow:hidden",
+            "D. 给父元素设置 overflow:visible"
+          ],
+          "answer": "D",
+          "tip": "教材原文：当把父元素的 overflow 设置为除默认值（visible）之外的值时才会触发 BFC。",
+          "type": "single"
+        },
+        {
+          "type": "multi",
+          "q": "下列关于浮动与清除浮动的说法中，正确的有（　　）。",
+          "options": [
+            "A. 元素设置 float:left 后脱离标准流，不再占据原来在标准流中的位置和空间",
+            "B. 浮动元素向指定方向移动时，直到外边缘碰到父容器的边框或另一个浮动框为止",
+            "C. 子元素全部浮动且父容器没有其他内容撑开高度时，父容器会发生高度塌陷",
+            "D. 具有 clear 属性的元素可以是行内元素，只要写在浮动元素之后即可"
+          ],
+          "answer": "ABC",
+          "tip": "教材给出清除浮动的三个前提：具有 clear 属性的元素<strong>必须是块级元素</strong>、必须是浮动元素的兄弟、目的是清除上方浮动的影响，故 D 错。"
+        }
+      ]
+    },
+    {
+      "type": "summary",
+      "title": "本课小结",
+      "subtitle": "五句话，把「标准流—浮动—修补」这条线串起来",
+      "nav": "本课小结",
+      "items": [
+        "<strong>标准流</strong>是元素的默认排版方式：自左而右、自上而下，块级自上而下、行内自左而右；<strong>浮动与定位都是更改默认排版方式实现的</strong>。",
+        "<code>float</code> 取 <code>left</code>/<code>right</code> 时元素<strong>脱离标准流</strong>；四大特性：同行显示、碰到边框或浮动框为止、不占原空间、<strong>子元素全浮动导致高度塌陷</strong>。",
+        "<strong>元素立体两层模型</strong>：底层是元素层、上方是内容层；浮动元素浮到内容层，后面元素上移占元素层，其<strong>内容层被挤出形成环绕</strong>——所以浮动被叫做「提升半个层级」。",
+        "<strong>清除浮动</strong>用 <code>clear</code>；三个前提：必须是块级元素、必须是浮动元素的兄弟、目的是清除上方浮动的影响；<strong><code>::after</code> 伪元素方案须设 <code>display:block</code> 且 <code>content:\"\"</code></strong>。",
+        "<strong>BFC</strong> 是独立布局环境，像一堵围墙；三种常用触发方式：<code>display:inline-block</code>、父元素浮动、<code>overflow</code> 取非 visible 值。"
+      ]
+    },
+    {
+      "type": "homework",
+      "title": "课后作业",
+      "nav": "课后作业",
+      "items": [
+        "<strong>选择题：</strong>完成教材 7.5「一、选择题」第 3～4 题，并说明每个选项为何对或错。",
+        "<strong>操作题：</strong>依次完成教材任务7-1 至任务7-5，把每个任务的效果截图整理成一份对比笔记，重点记录「浮动前 / 浮动后 / 清除后」三张图。",
+        "<strong>思考题：</strong>分别用「加空 div」「::after 伪元素」「overflow:hidden」三种方式解决同一个高度塌陷问题，比较它们的优缺点与适用场景。",
+        "<strong>项目讨论：</strong>使用所学知识，以<strong>美丽乡村</strong>为主题，帮助你所在的城市设计和规划一个网页。试讨论你的做法、思路及特点！",
+        "<strong>预习：</strong>阅读教材 7.2.1～7.2.3，思考：定位与浮动有什么不同？「已定位元素」又指什么？"
+      ]
+    },
+    {
+      "type": "refs",
+      "title": "出处与参考",
+      "subtitle": "本课件内容依据教材，并核对以下权威技术文档",
+      "nav": "出处与参考",
+      "items": [
+        {
+          "t": "教材《网页制作（HTML5+CSS3）》项目7 浮动和定位（7.1）",
+          "u": "郑哲、傅冬 主编 · 电子工业出版社 · 2025 年 1 月第 1 版"
+        },
+        {
+          "t": "MDN Web Docs · float",
+          "u": "https://developer.mozilla.org/zh-CN/docs/Web/CSS/float"
+        },
+        {
+          "t": "MDN Web Docs · clear",
+          "u": "https://developer.mozilla.org/zh-CN/docs/Web/CSS/clear"
+        },
+        {
+          "t": "MDN Web Docs · 块格式化上下文（BFC）",
+          "u": "https://developer.mozilla.org/zh-CN/docs/Web/CSS/CSS_display/Block_formatting_context"
+        },
+        {
+          "t": "MDN Web Docs · overflow",
+          "u": "https://developer.mozilla.org/zh-CN/docs/Web/CSS/overflow"
+        },
+        {
+          "t": "MDN Web Docs · 定位（理解标准流与脱离文档流）",
+          "u": "https://developer.mozilla.org/zh-CN/docs/Learn/CSS/CSS_layout/Positioning"
+        }
+      ]
+    },
+    {
+      "type": "end",
+      "title": "第 18 单元 · 结束",
+      "text": "下一单元：走进定位，让盒子在纵深方向叠加起来",
+      "nav": "结束"
+    }
+  ]
+}

@@ -1,0 +1,444 @@
+{
+  "id": "U17",
+  "project": "项目6",
+  "project_name": "表格和表单",
+  "unit": "第 17 单元",
+  "title": "表单新属性与表单美化",
+  "subtitle": "用 HTML5 新属性替代脚本，用重置与自定义样式统一各浏览器的观感",
+  "duration": 40,
+  "cover_tags": [
+    "required / pattern",
+    "form / formaction",
+    "样式重置",
+    "outline"
+  ],
+  "ref_book": "电子工业出版社 · 2025 年 1 月第 1 版",
+  "objectives": {
+    "knowledge": [
+      "掌握 HTML5 表单新属性的用法",
+      "理解 required、pattern 等属性如何替代脚本校验",
+      "理解表单默认样式的来源与重置方法",
+      "掌握属性选择器在表单重置中的应用"
+    ],
+    "skill": [
+      "能使用表单新属性实现非空校验与正则验证",
+      "能重置常见表单标签的默认样式",
+      "能个性化美化表单控件并完成登录表单制作"
+    ],
+    "literacy": [
+      "培养以用户为中心的产品质量意识",
+      "培养勇于探索、崇尚科学的意志和品德",
+      "遵守网络规范、网络法规"
+    ]
+  },
+  "slides": [
+    {
+      "type": "objectives",
+      "title": "本单元我们要达成什么",
+      "subtitle": "对照教材《项目6》6.5.5～6.5.6 的学习目标 / 技能目标 / 素养目标",
+      "objectives": {
+        "knowledge": [
+          "掌握 HTML5 表单新属性的用法",
+          "理解 required、pattern 等属性如何替代脚本校验",
+          "理解表单默认样式的来源与重置方法",
+          "掌握属性选择器在表单重置中的应用"
+        ],
+        "skill": [
+          "能使用表单新属性实现非空校验与正则验证",
+          "能重置常见表单标签的默认样式",
+          "能个性化美化表单控件"
+        ],
+        "literacy": [
+          "培养以用户为中心的产品质量意识",
+          "培养勇于探索、崇尚科学的意志和品德",
+          "遵守网络规范、网络法规"
+        ]
+      }
+    },
+    {
+      "type": "ideology",
+      "title": "迎难而上：把「差不多」的表单做到「刚刚好」",
+      "subtitle": "教材《项目6》思政课堂",
+      "nav": "思政课堂",
+      "text": "2022 年 2 月 4 日至 20 日，北京冬奥会在我国北京市和张家口市联合举行，它是一次全球性的体育盛会。在这次冬奥会上，展现出了<strong>胸怀大局、自信开放、迎难而上、追求卓越、共创未来</strong>的“<strong>北京冬奥精神</strong>”。它激励着我们这代人坚持理想信念，坚定不移地为社会主义伟大事业而奋斗；坚持实事求是，脚踏实地地去创造。我们要把爱国之情、报国之志转化为实际行动，努力拼搏，为祖国争光！",
+      "topic": "教材强调「培养以用户为中心的产品质量意识」。请结合岗位讨论：一个没有及时给出错误提示、换个浏览器就错位的表单，暴露了开发者怎样的职业态度？"
+    },
+    {
+      "type": "outline",
+      "title": "本单元导览",
+      "subtitle": "上半场让表单「变聪明」，下半场让表单「变好看」",
+      "nav": "导览",
+      "items": [
+        "HTML5 为表单新增了哪些属性？（form、formaction、required、autofocus、pattern）",
+        "一个表单里有两个提交按钮怎么办？formaction 出手",
+        "pattern + 正则表达式：把校验规则写进 HTML",
+        "为什么要重置表单默认样式？outline 与 border 有何不同？",
+        "任务6-4、任务6-5：个性化表单控件美化与登录表单制作"
+      ]
+    },
+    {
+      "type": "section",
+      "no": "6.5.5",
+      "title": "表单新属性",
+      "text": "HTML5 把过去要靠脚本才能做的事，收进了标签属性里。",
+      "nav": "6.5.5 表单新属性"
+    },
+    {
+      "type": "cards",
+      "title": "HTML5 表单五大新属性速览",
+      "subtitle": "教材原文：这些新属性提供了数据验证、非空校验、自动聚焦和信息提示等功能",
+      "nav": "五大新属性",
+      "cols": 3,
+      "items": [
+        {
+          "title": "form",
+          "text": "为所有表单标签定义与某个表单之间的<strong>从属关系</strong>，让控件可以写在 form 之外，<strong>布局更灵活</strong>。"
+        },
+        {
+          "title": "formaction",
+          "text": "一个表单里有<strong>两个以上提交按钮</strong>时，用它为每个按钮指定不同的后台处理程序，取代过去用脚本动态修改 action 的做法。"
+        },
+        {
+          "title": "required",
+          "text": "实现<strong>非空校验</strong>，取代「判断内容是否为空 / 字符长度是否为零」的实现脚本，简化页面开发步骤。"
+        },
+        {
+          "title": "autofocus",
+          "text": "页面加载完成后让该标签<strong>自动获得焦点</strong>。属性值是一个布尔值，<strong>默认 false</strong>；一个页面中<strong>最多只能对一个标签设置</strong>。"
+        },
+        {
+          "title": "pattern",
+          "text": "input 的<strong>验证属性</strong>，属性值是一个<strong>正则表达式</strong>，用于验证输入内容的有效性；配合 <code>title</code> 给出错误提示。"
+        }
+      ]
+    },
+    {
+      "type": "codebullets",
+      "title": "form 属性：让控件跳出 form 的「围墙」",
+      "subtitle": "教材原文：HTML5 之前，一个表单的标签必须放在 form 标签内",
+      "nav": "form 属性",
+      "items": [
+        "HTML5 为所有表单标签添加了 <code>form</code> 属性，用于定义<strong>表单标签和某个表单之间的从属关系</strong>。",
+        "它允许把 <code>input</code> 放在 <code>form</code> 标签<strong>之外</strong>，但需通过 form 属性指定它所属的表单。",
+        "<strong>form 属性的值对应表单标签的 id 属性值</strong>——不是 name，别搞混。",
+        "意义：<strong>可以更灵活地实现表单的布局</strong>，比如把提交按钮放在页面任意角落，而数据仍随该表单提交。"
+      ],
+      "lang": "html",
+      "file": "form 属性示例（教材原文）",
+      "code": "<form id=\"login_form\">\n…\n</form>\n<input type=\"text\" form=\"login_form\">"
+    },
+    {
+      "type": "code",
+      "title": "formaction 属性：一个表单，多个去向",
+      "subtitle": "教材场景：学工系统的学生管理模块，一个表单里包含新增、修改、删除三个按钮",
+      "nav": "代码6-11 formaction",
+      "lang": "html",
+      "file": "代码6-11（教材原文）",
+      "code": "<form action=\"\">\n    <p>姓名:张三</p>\n    <p>学号:031102</p>\n    <p>\n        <input type=\"submit\" value=\"新增\" formaction=\"add.do\">\n        <input type=\"submit\" value=\"修改\" formaction=\"update.do\">\n        <input type=\"submit\" value=\"删除\" formaction=\"delete.do\">\n    </p>\n</form>",
+      "caption": "适用标签：<code>input type='submit'</code>、<code>input type='image'</code>、<code>button type='submit'</code>。HTML5 之前只能通过 JavaScript 动态修改 form 的 action 属性，现在只需在每个<strong>提交按钮</strong>上写 formaction。"
+    },
+    {
+      "type": "code",
+      "title": "required 属性：一句代码实现非空校验",
+      "subtitle": "适用标签：input、textarea、select 等表单中需要提交内容的标签",
+      "nav": "代码6-12 required",
+      "lang": "html",
+      "file": "代码6-12（教材原文）",
+      "code": "<form action=\"\">\n    <p>姓名:<input type=\"text\" id=\"name\" required /></p>\n    <p>学号:<input type=\"text\" name=\"id\" id=\"id\" required /></p>\n    <p><input type=\"submit\" value=\"确定提交\">\n    </p>\n</form>",
+      "caption": "两种写法等价：<code>required</code> 与 <code>required='true'</code>。它的作用是<strong>取代「判断内容是否为空、字符长度是否为零」的实现脚本</strong>，从而简化页面开发步骤。"
+    },
+    {
+      "type": "codebullets",
+      "title": "autofocus 与 pattern：会聚焦，也会挑错",
+      "subtitle": "autofocus 自动获得焦点；pattern 用正则表达式验证输入内容的有效性",
+      "nav": "autofocus 与 pattern",
+      "items": [
+        "HTML5 表单的 <code>textarea</code> 和<strong>所有 input 标签</strong>都具有 <code>autofocus</code> 属性，属性值是一个<strong>布尔值，默认值是 false</strong>。",
+        "一旦设置，<strong>页面加载完成后该标签将自动获得焦点</strong>。",
+        "<strong>注意：</strong>在一个页面中，<strong>最多只能对一个表单标签设置该属性</strong>，否则该功能将失效；教材建议对<strong>第一个 input 标签</strong>设置。",
+        "<code>pattern</code> 的属性值是一个<strong>正则表达式</strong>；配合 <code>title</code> 属性，可在用户输入不符合规则时<strong>显示 title 的内容作为错误提示</strong>。"
+      ],
+      "lang": "html",
+      "file": "代码6-13（教材原文）",
+      "code": "<form action=\"\">\n    学号: <input type=\"text\" name=\"id\" id=\"id\" required pattern=\"\\d{8}\"\n        title=\"请输入8 位学号\"/>\n    用户名:<input type=\"text\" name=\"username\" id=\"username\" required\n        pattern=\"^[a-zA-Z]\\w{2,7}\" title=\"请输入用户名，必须以字母开始，字母与数字的组合，长度为3~8 位\"/>\n    <button type=\"submit\">提交</button>\n</form>"
+    },
+    {
+      "type": "codebullets",
+      "title": "读得懂的正则表达式",
+      "subtitle": "教材讲解要点：把 \\d{8} 与 ^[a-zA-Z]\\w{2,7} 拆开看",
+      "nav": "正则解读",
+      "items": [
+        "正则表达式是一种高效的、用于<strong>匹配字符串中字符组合的模式</strong>，广泛用于 Word、Excel 以及 JavaScript、Python 等程序语言中。",
+        "<strong>8 位学号 <code>\\d{8}</code>：</strong><code>\\d</code> 表示所有数字符号，<code>{8}</code> 表示多重性，即出现 8 次数字符号——只有输入 8 位数字才符合要求。",
+        "<strong>用户名 <code>^[a-zA-Z]\\w{2,7}</code>：</strong><code>^[a-zA-Z]</code> 表示以大写或小写字母<strong>开始</strong>。",
+        "<code>\\w</code> 表示<strong>字母和数字的组合</strong>；<code>{2,7}</code> 表示<strong>最少 2 个、最多 7 个</strong>。",
+        "合起来：用户名<strong>最少 3 位、最多 8 位</strong>，且必须是以字母开始的字母与数字的组合。",
+        "<strong>教材问答：</strong>title 属性是用来显示错误提示的吧？——没错，当用户输入不符合正则表达式时，将显示 <code>title</code> 属性值。"
+      ],
+      "lang": "text",
+      "file": "正则拆解",
+      "code": "学号   \\d{8}\n         │   └── {8}  出现 8 次\n         └────── \\d   任意数字\n\n用户名 ^[a-zA-Z]\\w{2,7}\n        │  │       │   └── {2,7} 最少 2 个、最多 7 个\n        │  │       └────── \\w    字母与数字的组合\n        │  └────────────── [a-zA-Z] 大写或小写字母\n        └───────────────── ^  以……开始\n\n合计长度：1 + (2~7) = 3~8 位"
+    },
+    {
+      "type": "section",
+      "no": "6.5.6",
+      "title": "表单美化",
+      "text": "先重置、再定制——这是所有 UI 组件美化的通用套路。",
+      "nav": "6.5.6 表单美化"
+    },
+    {
+      "type": "bullets",
+      "title": "为什么要重置表单默认样式",
+      "subtitle": "教材原文：不同浏览器渲染默认表单标签的效果是不一样的",
+      "nav": "为何要重置",
+      "items": [
+        "在默认情况下，<strong>表单标签都具有一些自带样式</strong>；使用不同的浏览器调试可以发现，它们渲染默认表单标签的效果<strong>也是不一样的</strong>。",
+        "这些默认样式的差异会导致<strong>显示效果不一致</strong>，严重时还会<strong>对网页布局造成影响</strong>，从而影响用户的浏览体验。",
+        "通常的做法是：<strong>先重置表单标签的默认样式</strong>，确保各浏览器起点一致，然后再添加自定义样式。",
+        "<strong>如何查看默认样式：</strong>利用浏览器自带的<strong>开发者工具</strong>找到要查看的表单标签，即可查看对应的样式及盒子模型信息（呼应项目5 的任务5-1）。",
+        "<strong>outline 小知识：</strong>它是描述控件范围的一圈<strong>轮廓线</strong>，通常位于元素的边缘；按 <strong>Tab</strong> 键切换表单控件时，当前控件会被一圈轮廓线围绕。",
+        "<strong>outline 与 border 的区别：</strong>① <strong>outline 在 border 的外围，不会占据元素空间，也不会影响布局</strong>；② border 应用于几乎所有 HTML 元素，而 <strong>outline 仅针对链接、表单控件等少量元素</strong>；③ outline 随焦点 <code>focus</code> 自动出现、失去焦点 <code>blur</code> 自动消失。"
+      ]
+    },
+    {
+      "type": "table",
+      "title": "表6-10 常见表单标签的默认样式和样式重置（教材完整还原）",
+      "subtitle": "教材原文：重置时使用了类似 input[type=text] 的属性选择器",
+      "nav": "默认样式与重置",
+      "head": [
+        "表单标签",
+        "默认样式",
+        "样式重置"
+      ],
+      "rows": [
+        [
+          "<code>form</code>",
+          "在 IE6 浏览器中，form 标签有一个 <strong>margin</strong> 属性值",
+          "<code>form{<br>&nbsp;&nbsp;margin:0;<br>}</code>"
+        ],
+        [
+          "<code>input</code>",
+          "文本框：有<strong>内填充、边框</strong><br>单选框：有<strong>外边距</strong><br>复选框：有<strong>外边距</strong><br>各 input 控件默认都有 <strong>outline 轮廓线</strong>",
+          "<code>input[type=text]{<br>&nbsp;&nbsp;border:none;<br>&nbsp;&nbsp;padding:0;<br>&nbsp;&nbsp;outline:0;<br>}</code><br>单选框、复选框：<code>margin:0; outline:0;</code>"
+        ],
+        [
+          "<code>textarea</code>",
+          "不同浏览器略有不同，通常具有<strong>上外边距、下外边距、内边距和边框</strong>。有些浏览器右下角有倒三角图标可拉伸文本域，需用 <strong>resize</strong> 属性；IE6 下内容没超出时也会有滚动条，需用 <strong>overflow</strong> 属性",
+          "<code>textarea{<br>&nbsp;&nbsp;margin:0;<br>&nbsp;&nbsp;padding:0;<br>&nbsp;&nbsp;outline:0;<br>&nbsp;&nbsp;resize:0;<br>&nbsp;&nbsp;overflow:auto;<br>}</code>"
+        ],
+        [
+          "<code>select</code>",
+          "默认有边框，某些浏览器还有<strong>内边距</strong>",
+          "<code>select{<br>&nbsp;&nbsp;padding:0;<br>}</code>"
+        ],
+        [
+          "<code>option</code>",
+          "默认有<strong>左内边距、右内边距</strong>",
+          "<code>option{<br>&nbsp;&nbsp;padding:0px npx;<br>}</code><br>这里的 n 根据需要设定"
+        ]
+      ]
+    },
+    {
+      "type": "task",
+      "title": "任务6-4｜个性化表单控件美化",
+      "subtitle": "目标：使用表单控件美化和重置语法，配合素材实现图6-37 的表单控件美化效果",
+      "nav": "任务6-4 控件美化",
+      "goal": "学会了表单控件的重置，再添加一些自定义样式，就可以个性化地设计出表单元素。",
+      "steps": [
+        "先<strong>重置</strong>：用属性选择器 <code>input[type=text]</code> 清掉边框、内填充与 outline。",
+        "再<strong>定制文本框</strong>：重新给出 width、height、border、border-radius、padding-left。",
+        "把单选/复选框<strong>隐藏</strong>（<code>display:none</code>），改用后面 <code>span</code> 包裹的文字来显示可点击的样式。",
+        "用 <code>:checked</code> 伪类配合<strong>相邻兄弟选择器 <code>+</code></strong>改变选中态：<code>.frm_radio:checked+span</code>。",
+        "复选框用背景图片：<code>.frm_chkbox+span</code> 与 <code>.frm_chkbox:checked+span</code> 分别指定未选中与选中的图标，并用 <code>background-size</code> 控制大小。",
+        "上传文件控件：用 <code>a</code> 标签包裹 <code>input[type=file]</code>，再用<strong>绝对定位 + <code>opacity:0</code></strong>把原生控件覆盖在超链接之上。"
+      ],
+      "lang": "css",
+      "code": ".frm_txt{\n    width: 150px;  height: 30px;\n    outline: none;  border: 1px solid #ccc;\n    padding-left: 8px;  border-radius: 5px;  margin-left: 6px;\n}\n.frm_radio, .frm_chkbox{ display: none; }\n.frm_radio+span, .frm_chkbox+span {\n    width: 50px;  height: 30px;\n    display: inline-block;\n    background-color: #ccc;\n    border-radius: 5px;\n    font: 16px/30px \"微软雅黑\";\n    text-align: center;\n}\n.frm_radio:checked+span{ color:#fff; background-color: darkblue; }\n.frm_chkbox+span{ background: url(\"image/unchecked.png\") no-repeat;\n    background-size: 30px 30px; padding-left: 35px; }\n.frm_chkbox:checked+span{ background: url(\"image/checked.png\") no-repeat;\n    background-size: 30px 30px; }\n.file{ position: relative; display: inline-block; }\n.frm_file{ position: absolute; right:0; top:0;\n    opacity: 0; width: 100%; height: 100%; }"
+    },
+    {
+      "type": "demo",
+      "title": "效果演示｜会发光、会渐变的登录表单",
+      "subtitle": "把重置、定制、:checked、:focus、transition 串成一条完整的美化流水线",
+      "nav": "美化登录表单演示",
+      "items": [
+        "先看<strong>聚焦发光</strong>：用 <code>input:focus</code> 配合 <code>box-shadow</code> 与 <code>transition</code>，让光标所在处「亮起来」。",
+        "再看<strong>按钮渐变过渡</strong>：<code>linear-gradient</code> 打底，<code>transition</code> 让背景与阴影的变化平滑发生。",
+        "自定义<strong>单选/复选</strong>：原生控件 <code>display:none</code>，用 <code>:checked+span</code> 切换选中态样式。",
+        "这些效果全部建立在「<strong>先重置默认样式，再添加自定义样式</strong>」的基础上。"
+      ],
+      "hint": "把鼠标点进用户名输入框再点出来，观察 outline 被 box-shadow 取代后的差别——这就是「重置 + 定制」的价值。",
+      "html": "<style>*{box-sizing:border-box}body{margin:0;font-family:'PingFang SC',system-ui,sans-serif;background:linear-gradient(135deg,#1d46b8,#2f6bff 55%,#0fb5c9);padding:14px;display:flex;justify-content:center}.u17{width:340px;background:#fff;border-radius:16px;padding:20px 24px 22px;box-shadow:0 26px 60px -26px rgba(10,30,80,.6);animation:u17r .6s both}.u17 h3{margin:0 0 4px;font-size:17px;color:#12306f;text-align:center}.u17 .sub{margin:0 0 14px;font-size:11.5px;color:#8c9bb1;text-align:center}.u17 .row{margin-bottom:12px}.u17 label{display:block;font-size:11.5px;color:#5a6c85;margin-bottom:5px}.u17 input[type=text],.u17 input[type=password]{width:100%;height:36px;border:1px solid #dbe3ef;border-radius:8px;outline:0;padding:0 12px;font-size:13px;color:#23324a;transition:border-color .3s,box-shadow .3s}.u17 input[type=text]:focus,.u17 input[type=password]:focus{border-color:#2f6bff;box-shadow:0 0 0 4px rgba(47,107,255,.18)}.u17 .opts{display:flex;gap:8px;margin-bottom:12px}.u17 .opts input{display:none}.u17 .opts span{font-size:12px;padding:5px 12px;border:1px solid #dbe3ef;border-radius:20px;color:#6b7c94;cursor:pointer;transition:all .28s}.u17 .opts input:checked+span{background:#2f6bff;border-color:#2f6bff;color:#fff;box-shadow:0 4px 12px -4px rgba(47,107,255,.7)}.u17 .u17btn{display:block;width:100%;height:40px;line-height:40px;text-align:center;border:0;border-radius:8px;font-size:15px;font-weight:700;color:#fff;background:linear-gradient(90deg,#ff7a45,#e83632 55%,#c60023);background-size:200% 100%;cursor:pointer;transition:background-position .5s,box-shadow .3s,transform .15s}.u17 .u17btn:hover{background-position:100% 0;box-shadow:0 12px 26px -12px rgba(230,54,50,.9)}.u17 .u17btn:active{transform:translateY(1px)}.u17 .links{display:flex;justify-content:space-between;margin-top:11px;font-size:11.5px;color:#98a5b8}.u17 .tip{margin:12px 0 0;font-size:11px;color:#8c9bb1;text-align:center;animation:u17r .6s .3s both}@keyframes u17r{from{opacity:0;transform:translateY(14px)}}</style>\n<div class='u17'>\n<h3>城院商城 · 用户登录</h3>\n<p class='sub'>先重置默认样式，再添加自定义样式</p>\n<div class='row'><label>用户名</label><input type='text' placeholder='请输入用户名'></div>\n<div class='row'><label>密码</label><input type='password' placeholder='请输入密码'></div>\n<div class='opts'><label><input type='radio' name='u17r' checked><span>学生</span></label><label><input type='radio' name='u17r'><span>教师</span></label><label><input type='checkbox' checked><span>记住我</span></label></div>\n<button class='u17btn'>登　录</button>\n<div class='links'><span>忘记密码</span><span>免费注册</span></div>\n<p class='tip'>:focus 聚焦发光 · :checked 自定义选中 · transition 渐变过渡</p>\n</div>"
+    },
+    {
+      "type": "task",
+      "title": "任务6-5｜制作登录表单",
+      "subtitle": "目标：根据图6-38 的效果，制作一个城院商城页面登录表单",
+      "nav": "任务6-5 登录表单",
+      "goal": "教材提示：有时候 HTML5 自带的表单标签样式不好修改，可以通过对其他标签进行创意组合来制作想要的效果。",
+      "steps": [
+        "用 <code>.nav-simple</code> 搭建顶部简约导航，内部用 <code>.w</code>（width:1080px; margin:0 auto）实现居中版心。",
+        "用 <code>.page-wrap</code> 包裹登录区域，给出红色背景与上下 padding。",
+        "登录卡片 <code>.user-con</code> 宽 400px、白色背景、<code>margin:0 auto</code> 水平居中。",
+        "输入框组 <code>.user-item</code> 设置为 <strong>position:relative</strong>，图标 <code>.user-label</code> 设置为 <strong>position:absolute</strong> 压在输入框左侧——这正是<strong>「父相子绝」</strong>的经典用法。",
+        "输入框用 <code>padding-left:50px</code> 为图标留出空间，并去掉 <code>outline</code>。",
+        "登录按钮用 <code>.btn</code> + <code>.btn-submit</code> 组合：行内块、100% 宽、红底白字加粗。"
+      ],
+      "lang": "html",
+      "code": "<div class=\"nav-simple\">\n    <div class=\"w\"><a href=\"\" class=\"logo\">城院商城</a></div>\n</div>\n<div class=\"page-wrap\">\n  <div class=\"w\">\n    <div class=\"user-con\">\n      <div class=\"user-title\">用户登录</div>\n      <div class=\"user-box\">\n        <div class=\"user-item\">\n          <label class=\"user-label\"><i></i></label>\n          <input type=\"text\" id=\"username\" name=\"username\" class=\"user-content\" placeholder=\"请输入用户名\">\n        </div>\n        <div class=\"user-item\">\n          <label class=\"user-label\"><i></i></label>\n          <input type=\"text\" id=\"password\" name=\"password\" class=\"user-content\" placeholder=\"请输入密码\">\n        </div>\n        <a href=\"#\" class=\"btn btn-submit\" id=\"submit\">登录</a>\n        <div class=\"link-item\">\n          <a href=\"#\" class=\"link\">忘记密码</a>\n          <a href=\"\" class=\"link\">免费注册</a>\n        </div>\n      </div>\n    </div>\n  </div>\n</div>"
+    },
+    {
+      "type": "code",
+      "title": "代码6-16｜登录表单的相关 CSS 代码（教材节选）",
+      "subtitle": "通用选择器重置 → 版心居中 → 父相子绝放图标 → 按钮组合",
+      "nav": "代码6-16 登录 CSS",
+      "lang": "css",
+      "file": "css/login-style.css",
+      "code": "*{ margin:0px; padding:0px; }\nbody{ background: #f6f6f6; font:12px/1.5 tahoma,Microsoft YaHei,sans-serif; }\nli{ list-style: none; }\na{ text-decoration: none; }\n.w{ width: 1080px; margin:0 auto; }\n.nav-simple{ height: 60px; line-height: 60px; background-color: #Fff; }\n.nav-simple .logo{ font-size: 26px; font-weight: bold; color:#c60023; }\n.page-wrap{ background-color: #e72955; padding: 40px 0; }\n.user-con{ width: 400px; background-color: #fff; margin:0 auto; }\n.user-con .user-title{ text-align: center; font-size: 18px; font-weight: bold;\n    color:#666; padding:10px 0px; }\n.user-con .user-box{ padding:20px; }\n.user-con .user-item{ position: relative; margin-bottom: 20px; }\n.user-item .user-label{ position: absolute; left:1px; bottom:1px; width: 40px;\n    line-height: 36px; font-size: 18px; color:#d3d3d3; text-align: center;\n    border-right:1px solid #bdbdbd; }\n.user-item .user-content{ padding:10px 0 10px 50px; width: 308px; height: 18px;\n    line-height: 18px; font-size: 15px; border:1px solid #bdbdbd; outline:none; }\n.btn{ display: inline-block; height: 40px; line-height: 40px; font-size: 17px;\n    font-weight: bold; padding:0 20px; background-color: #c60023; color:#fff; }\n.btn-submit{ width: 100%; padding:6px 0px; text-align: center; font-size: 20px; }\n.user-con .link-item{ text-align: right; margin-top: 10px; }\n.link-item .link{ color:#999; margin-left: 10px; }",
+      "caption": "教材讲解要点：<code>.user-item</code> 设置 <strong>position:relative</strong> 成为「已定位元素」，<code>.user-label</code> 再以 <strong>position:absolute</strong> 相对它定位——这就是「<strong>父元素的相对定位 + 子元素的绝对定位</strong>」技巧，详细原理见项目7。"
+    },
+    {
+      "type": "ai",
+      "title": "AI 前沿：让 AI 写出「既聪明又好看」的表单",
+      "subtitle": "校验规则与美化样式，是大模型最擅长的两类确定性输出",
+      "nav": "AI 前沿",
+      "text": "表单美化与校验规则属于「模式清晰、规则明确」的任务，恰好落在 <strong>DeepSeek、通义千问、文心一言</strong> 等国产大模型的能力甜区。你可以直接描述需求：「做一个聚焦时发光、按钮渐变过渡的登录表单」，几秒钟就能拿到可用的 HTML 与 CSS。但 AI 常犯的错也很典型：<strong>忘记重置默认样式、把 outline 一删了之而不给替代的焦点提示</strong>——后者会直接损害键盘用户与视障用户的可用性。",
+      "items": [
+        "AI 生成校验规则：让 AI 为手机号、身份证号、学号生成 <code>pattern</code> 正则表达式，并同时给出友好的 <code>title</code> 提示文案。",
+        "AI 辅助编码：<strong>通义灵码、文心快码、GitHub Copilot</strong> 可根据注释补全整套「隐藏原生控件 + :checked + span」的美化写法。",
+        "AI 一致性检查：让 AI 审查不同浏览器下的默认样式差异，并生成对应的重置代码。",
+        "职业提醒：<strong>删除 outline 而不给替代方案，是无障碍设计的红线</strong>。AI 不会主动提醒你这一点，但专业课必须讲、工程师必须守。"
+      ]
+    },
+    {
+      "type": "quiz",
+      "title": "随堂检测",
+      "subtitle": "结合教材要点自编，检验你对新属性与美化的掌握",
+      "nav": "随堂检测",
+      "items": [
+        {
+          "q": "下列关于 autofocus 属性的说法，正确的是（　　）。",
+          "options": [
+            "A. 一个页面中可以对任意多个表单标签设置该属性",
+            "B. 页面加载完成后该标签自动获得焦点，一个页面最多只能对一个标签设置",
+            "C. 该属性只能用于 textarea，不能用于 input",
+            "D. 该属性需要配合 JavaScript 才能生效"
+          ],
+          "answer": "B",
+          "tip": "教材明确提示：在一个页面中最多只能对一个表单标签设置 autofocus，否则该功能将失效；建议对第一个 input 设置。",
+          "type": "single"
+        },
+        {
+          "q": "一个表单中包含「新增」「修改」「删除」三个提交按钮，最恰当的实现方式是（　　）。",
+          "options": [
+            "A. 给每个按钮写不同的 name",
+            "B. 用 JavaScript 动态修改 form 的 action 属性",
+            "C. 给每个提交按钮设置 formaction 属性",
+            "D. 写成三个独立的 form 表单"
+          ],
+          "answer": "C",
+          "tip": "HTML5 中只需在每个提交按钮上使用 formaction 指定处理逻辑；动态修改 action 是 HTML5 之前的做法。",
+          "type": "single"
+        },
+        {
+          "q": "关于 outline 与 border，下列说法正确的是（　　）。",
+          "options": [
+            "A. outline 会占据元素空间并影响布局",
+            "B. border 仅针对链接和表单控件等少量元素",
+            "C. outline 在 border 的外围，不占据元素空间，也不影响布局",
+            "D. outline 一旦出现就不会消失"
+          ],
+          "answer": "C",
+          "tip": "教材原文：outline 在 border 的外围，不会占据元素空间，也不会影响布局；它随焦点 focus 出现、blur 消失。",
+          "type": "single"
+        },
+        {
+          "q": "重置表单默认样式时，选择「所有 type 为 text 的 input」应使用（　　）。",
+          "options": [
+            "A. input.text{ }",
+            "B. input[type=text]{ }",
+            "C. input#text{ }",
+            "D. input:text{ }"
+          ],
+          "answer": "B",
+          "tip": "这是项目4 4.1.6 节讲过的属性选择器，教材表6-10 中正是用它来选择复杂多变的 input 标签。",
+          "type": "single"
+        },
+        {
+          "q": "关于 HTML5 表单新属性与表单美化，下列说法正确的有（　　）。",
+          "options": [
+            "A. required 可实现非空校验，required 与 required=\"true\" 两种写法等价",
+            "B. pattern 的属性值是正则表达式，可配合 title 显示错误提示",
+            "C. 一个页面中可以对多个标签设置 autofocus，让用户依次快速输入",
+            "D. outline 位于 border 外围，不占据元素空间，也不影响布局"
+          ],
+          "answer": "ABD",
+          "tip": "一个页面<strong>最多只能对一个标签</strong>设置 autofocus；outline 随 focus 出现、blur 消失，且不占空间。",
+          "type": "multi"
+        }
+      ]
+    },
+    {
+      "type": "summary",
+      "title": "本课小结",
+      "subtitle": "五句话，串起「变聪明」与「变好看」两条线",
+      "nav": "本课小结",
+      "items": [
+        "HTML5 五大新属性：<code>form</code> 定从属、<code>formaction</code> 定去向、<code>required</code> 做非空、<code>autofocus</code> 自动聚焦、<code>pattern</code> 正则校验——它们<strong>共同替代了早期的实现脚本</strong>。",
+        "<code>pattern</code> 的属性值是正则表达式：<code>\\d{8}</code> 表示 8 位数字，<code>^[a-zA-Z]\\w{2,7}</code> 表示以字母开头、共 3～8 位的字母数字组合；<code>title</code> 负责显示错误提示。",
+        "美化的第一步是<strong>重置</strong>：不同浏览器对表单标签的默认渲染不同，统一起点才能保证布局与观感一致。",
+        "<code>outline</code> 是位于 border 外围的<strong>轮廓线</strong>，<strong>不占空间、不影响布局</strong>；它随 focus 出现、blur 消失，删除它必须给出替代的焦点提示。",
+        "个性化控件的通用套路：<strong>隐藏原生控件 + <code>:checked</code> 伪类 + 相邻兄弟选择器 <code>+</code></strong> 定制 span；上传文件则用 <code>a</code> 包裹 + 绝对定位 + <code>opacity:0</code>。"
+      ]
+    },
+    {
+      "type": "homework",
+      "title": "课后作业",
+      "nav": "课后作业",
+      "items": [
+        "<strong>操作题：</strong>完成教材任务6-4 与任务6-5，实现图6-37 的个性化表单控件与图6-38 的城院商城登录表单，要求写出完整的重置代码。",
+        "<strong>操作题：</strong>正确使用表单标签，制作教材图6-40 所示的表单效果，并为学号、手机号字段加上 <code>pattern</code> 与 <code>title</code> 提示。",
+        "<strong>思考题：</strong>为什么教材强调「删除 outline 前要先想清楚」？请从键盘用户与视障用户的角度给出你的理解。",
+        "<strong>项目讨论：</strong>北京于 2008 年成功举办夏季奥运会，又于 2022 年成功举办冬季奥运会，成为世界上唯一举办过夏、冬两季奥运会的城市。请结合自身专业，讲述我国成功举办奥运会带给你的感受。",
+        "<strong>预习：</strong>阅读教材项目7 的 7.1.1～7.1.2，思考：什么是标准流？浮动又会打破它的什么规则？"
+      ]
+    },
+    {
+      "type": "refs",
+      "title": "出处与参考",
+      "subtitle": "本课件内容依据教材，并核对以下权威技术文档",
+      "nav": "出处与参考",
+      "items": [
+        {
+          "t": "教材《网页制作（HTML5+CSS3）》项目6 表格和表单（6.5.5～6.5.6）",
+          "u": "郑哲、傅冬 主编 · 电子工业出版社 · 2025 年 1 月第 1 版"
+        },
+        {
+          "t": "MDN Web Docs · HTML 属性：required",
+          "u": "https://developer.mozilla.org/zh-CN/docs/Web/HTML/Attributes/required"
+        },
+        {
+          "t": "MDN Web Docs · HTML 属性：pattern",
+          "u": "https://developer.mozilla.org/zh-CN/docs/Web/HTML/Attributes/pattern"
+        },
+        {
+          "t": "MDN Web Docs · 客户端表单验证",
+          "u": "https://developer.mozilla.org/zh-CN/docs/Learn/Forms/Form_validation"
+        },
+        {
+          "t": "MDN Web Docs · outline",
+          "u": "https://developer.mozilla.org/zh-CN/docs/Web/CSS/outline"
+        },
+        {
+          "t": "MDN Web Docs · input：输入（表单输入）元素",
+          "u": "https://developer.mozilla.org/zh-CN/docs/Web/HTML/Element/input"
+        }
+      ]
+    },
+    {
+      "type": "end",
+      "title": "第 17 单元 · 结束",
+      "text": "项目6 收官，下一单元进入项目7：标准流与浮动",
+      "nav": "结束"
+    }
+  ]
+}

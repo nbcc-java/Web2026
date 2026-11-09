@@ -1,0 +1,490 @@
+{
+  "id": "U12",
+  "project": "项目5",
+  "project_name": "盒子模型",
+  "unit": "第 12 单元",
+  "title": "盒子模型的组成、值复制与内边距",
+  "subtitle": "网页上的一切都是盒子：content、padding、border、margin 四层同心矩形，构成所有布局的地基",
+  "duration": 40,
+  "cover_tags": [
+    "content 盒",
+    "padding 盒",
+    "border 盒",
+    "margin 盒",
+    "值复制原则"
+  ],
+  "ref_book": "电子工业出版社 · 2025 年 1 月第 1 版",
+  "objectives": {
+    "knowledge": [
+      "了解盒子模型的组成",
+      "掌握值复制原则的含义",
+      "理解并掌握内边距特性",
+      "知道 width / height 描述的到底是哪个盒子"
+    ],
+    "skill": [
+      "能正确使用盒子模型",
+      "能使用内边距及其相关样式属性",
+      "能用开发者工具查看与核对盒子模型",
+      "能按值复制原则简写四方向取值"
+    ],
+    "literacy": [
+      "培养高尚的审美情操",
+      "培养严谨求实的学习态度",
+      "培养勇于探索、崇尚科学的劳动意识"
+    ]
+  },
+  "slides": [
+    {
+      "type": "objectives",
+      "title": "本单元我们要达成什么",
+      "subtitle": "对照教材《项目5》5.1 盒子模型简介（5.1.1～5.1.3）",
+      "objectives": {
+        "knowledge": [
+          "了解盒子模型的组成",
+          "理解并掌握内边距特性",
+          "掌握值复制原则的具体含义",
+          "知道默认情况下 width 和 height 描述的是 content 盒"
+        ],
+        "skill": [
+          "能正确使用盒子模型",
+          "能使用内边距及其相关样式属性",
+          "能使用开发者工具查看盒子模型",
+          "能计算元素在页面上的实际占位尺寸"
+        ],
+        "literacy": [
+          "培养高尚的审美情操",
+          "培养严谨求实的学习态度",
+          "培养勇于探索、崇尚科学的劳动意识"
+        ]
+      }
+    },
+    {
+      "type": "ideology",
+      "title": "数字化生活：每一个界面背后都是盒子",
+      "subtitle": "教材《项目5》思政课堂",
+      "nav": "思政课堂",
+      "text": "在数字化生活场景中，网页制作的影响十分深远。作为信息传递的重要载体，网页让各类资讯、服务触手可及，满足了人们多元化的需求。它不仅提供了丰富的视听效果，还通过<strong>个性化设计</strong>提升了用户体验。此外，网页制作推动了传统媒体的数字化转型，催生了新的商业模式，为现代生活带来了极大的便利。<strong>支付宝、Keep、京东、淘宝</strong>等各式应用影响着人们生活的方方面面，丰富了人们的数字化生活，为人们带来了诸多便利。",
+      "topic": "打开你最常用的一个 App，试着指出其中 3 个「盒子」（卡片、按钮、列表项）。想一想：如果它们的间距、留白被随意改动，用户体验会发生什么变化？"
+    },
+    {
+      "type": "outline",
+      "title": "本单元导览",
+      "subtitle": "四个问题，搞懂 CSS 布局的第一块基石",
+      "nav": "导览",
+      "items": [
+        "什么是盒子模型？它由哪四层组成？",
+        "width / height 说的究竟是哪个盒子的尺寸？",
+        "值复制原则：1～4 个值分别代表什么？",
+        "内边距的两个特性：影响尺寸、可以显示背景（任务5-2）"
+      ]
+    },
+    {
+      "type": "section",
+      "no": "5.1",
+      "title": "盒子模型简介",
+      "text": "CSS 假定所有 HTML 文档元素都生成了一个矩形元素框，人们形象地将其看作一个盒子。",
+      "nav": "5.1 盒子模型简介"
+    },
+    {
+      "type": "bullets",
+      "title": "为什么要有盒子模型",
+      "subtitle": "教材原文改写：围绕这些盒子，产生了「盒子模型」（box model）概念",
+      "nav": "盒子模型的由来",
+      "items": [
+        "CSS 假定所有 HTML 文档元素都生成了一个<strong>描述其在布局中所占空间的矩形元素框</strong>。",
+        "人们形象地把它看成一个盒子，也称「框」；有些书上也称<strong>框模型</strong>。",
+        "一个网页由许多<strong>大大小小的盒子</strong>通过不同排列方式组合而成——布局的本质就是摆盒子。",
+        "<code>body</code>、<code>html</code>、<code>div</code>、<code>p</code> 等元素都会生成矩形盒子。"
+      ]
+    },
+    {
+      "type": "cards",
+      "title": "盒子从内到外的四层结构",
+      "subtitle": "每层都形成一个矩形盒子，可形象区分为 content 盒、padding 盒、border 盒、margin 盒",
+      "nav": "四层结构",
+      "cols": 2,
+      "items": [
+        {
+          "title": "① 元素内容 content",
+          "text": "盒子的核心，显示文字、图片等主体内容。默认情况下 <code>width</code>、<code>height</code> 描述的就是<strong>它的尺寸</strong>。"
+        },
+        {
+          "title": "② 内边距 padding",
+          "text": "定义<strong>边框与元素内容之间</strong>的空白区域。绝大多数盒子默认为 0；<code>ul</code>、<code>ol</code> 等标签自带一定内边距。"
+        },
+        {
+          "title": "③ 边框 border",
+          "text": "包裹内边距和内容的边界，包含<strong>风格、宽度、颜色</strong>三个要素——下一单元的主角。"
+        },
+        {
+          "title": "④ 外边距 margin",
+          "text": "定义盒子<strong>与其他盒子之间</strong>的空白区域，也称「透明区域」，因为在外边距中无法显示背景。"
+        }
+      ]
+    },
+    {
+      "type": "bullets",
+      "title": "常见编程错误：width / height 到底量的是谁",
+      "subtitle": "教材原文提示，初学者几乎人人踩过",
+      "nav": "width 量的是谁",
+      "items": [
+        "在默认情况下，<code>width</code> 和 <code>height</code> 是用于描述 <strong>content 盒</strong>尺寸的。",
+        "错误地把 width、height 当作<strong>整个盒子模型</strong>的宽高，是最常见的编程错误。",
+        "正确的算法：<strong>元素实际占位 = content + padding×2 + border×2</strong>（外边距不算在元素尺寸内，但占据布局空间）。",
+        "想要 width 直接等于最终看到的宽度，可以设置 <code>box-sizing:border-box</code>（MDN 推荐做法）。",
+        "方向命名规律：padding、border、margin 都有<strong>上右下左</strong> 4 个方向，统一用 <code>xxx-top</code>、<code>xxx-right</code>、<code>xxx-bottom</code>、<code>xxx-left</code> 表示。"
+      ]
+    },
+    {
+      "type": "task",
+      "title": "任务5-1｜使用开发者工具查看盒子模型",
+      "subtitle": "目标：输入代码5-1，按步骤用 Google Chrome 查看盒子模型",
+      "nav": "任务5-1",
+      "goal": "学会用浏览器开发者工具核对每一层的实际取值",
+      "steps": [
+        "打开 Google Chrome 运行 HTML 文件，在浏览器窗口中<strong>右击</strong>，选择「<strong>检查</strong>」命令。",
+        "技巧：也可按 <code>Ctrl+Shift+I</code>（Windows）或 <code>Opt+Cmd+I</code>（macOS）直接打开开发者工具。",
+        "依次观察「元素」选项卡、「样式」选项卡，以及最关键的<strong>盒子模型图</strong>。",
+        "核对结论：<code>width:100px</code>、<code>height:50px</code> 对应的是 <strong>content 盒</strong>尺寸。",
+        "<code>padding:5px</code> 表示上右下左四个方向均为 5px；<code>margin:10px 20px</code> 表示上下 10px、左右 20px。"
+      ],
+      "lang": "html",
+      "file": "代码5-1 关键片段",
+      "code": "<style>\n.box{                       /* #007-#014 */\n    width: 100px;\n    height: 50px;\n    background-color: darkkhaki;\n    padding:5px;\n    margin:10px 20px;\n    border:3px solid #ccc;\n}\n</style>\n\n<div class=\"box\">\n    盒子模型\n</div>"
+    },
+    {
+      "type": "table",
+      "title": "表5-1 内边距属性",
+      "subtitle": "综合属性 + 四个方向属性，共 5 个",
+      "nav": "内边距属性",
+      "head": [
+        "属性名",
+        "描述"
+      ],
+      "rows": [
+        [
+          "<code>padding</code>",
+          "综合样式属性，同时设置 4 个方向的内边距"
+        ],
+        [
+          "<code>padding-top</code>",
+          "设置上内边距"
+        ],
+        [
+          "<code>padding-right</code>",
+          "设置右内边距"
+        ],
+        [
+          "<code>padding-bottom</code>",
+          "设置下内边距"
+        ],
+        [
+          "<code>padding-left</code>",
+          "设置左内边距"
+        ]
+      ]
+    },
+    {
+      "type": "table",
+      "title": "语法5-2 值复制原则",
+      "subtitle": "值复制原则在 margin、padding 等很多基于盒子模型的属性中都有广泛应用，务必牢记",
+      "nav": "值复制原则",
+      "head": [
+        "定义值",
+        "示例",
+        "含义"
+      ],
+      "rows": [
+        [
+          "定义 1 个值",
+          "<code>padding:5px;</code>",
+          "上、右、下、左 4 个方向的内边距都是 5px"
+        ],
+        [
+          "定义 2 个值",
+          "<code>padding:5px 10px;</code>",
+          "上、下内边距均为 5px，左、右内边距均为 10px"
+        ],
+        [
+          "定义 3 个值",
+          "<code>padding:5px 10px 6px;</code>",
+          "上内边距 5px，左、右内边距均为 10px，下内边距 6px"
+        ],
+        [
+          "定义 4 个值",
+          "<code>padding:5px 10px 6px 7px;</code>",
+          "上、右、下、左内边距分别为 5px、10px、6px、7px"
+        ]
+      ]
+    },
+    {
+      "type": "bullets",
+      "title": "记住顺序：永远从上开始，顺时针绕一圈",
+      "subtitle": "缺哪个方向，就找它对面的值来补",
+      "nav": "记忆口诀",
+      "items": [
+        "四值：<strong>上 → 右 → 下 → 左</strong>，顺时针一圈，永不变。",
+        "三值：缺省的是<strong>左</strong>，左复制右的值。",
+        "二值：缺省的是<strong>下、左</strong>，下复制上、左复制右。",
+        "一值：四个方向<strong>全部相同</strong>。",
+        "简化示例：写 4 条 <code>padding-方向:5px;</code>，不如直接写一句 <code>padding:5px;</code>。"
+      ]
+    },
+    {
+      "type": "table",
+      "title": "表5-2 内边距参数取值",
+      "subtitle": "语法：padding:padding_value [padding_value] [padding_value] [padding_value]",
+      "nav": "内边距取值",
+      "head": [
+        "参数值",
+        "描述"
+      ],
+      "rows": [
+        [
+          "<code>auto</code>",
+          "浏览器计算内边距"
+        ],
+        [
+          "<code>length</code>",
+          "以 px、em、cm 等为单位的某个具体<strong>正值</strong>作为内边距，默认为 0"
+        ],
+        [
+          "<code>%</code>",
+          "基于<strong>父元素的宽度</strong>计算内边距"
+        ],
+        [
+          "<code>inherit</code>",
+          "继承父元素的内边距"
+        ]
+      ]
+    },
+    {
+      "type": "demo",
+      "title": "效果演示｜一个盒子，四层同心的世界",
+      "subtitle": "以代码5-1 为例：content 100×50 → padding 5 → border 3 → margin 10/20",
+      "nav": "四层结构演示",
+      "items": [
+        "四层由内向外依次出现：<strong>content → padding → border → margin</strong>。",
+        "content 盒始终保持 100×50，可见的就是 <code>width</code>、<code>height</code> 描述的那一块。",
+        "padding 盒被<strong>背景色覆盖</strong>——这是内边距的第二个重要特性。",
+        "margin 盒在最外层，<strong>不显示背景</strong>，只负责把别的盒子推开。"
+      ],
+      "hint": "把 padding 改成 5px 10px 6px 7px，然后对照值复制原则，说出四个方向各自是多少像素。",
+      "html": "<style>*{box-sizing:border-box}body{margin:0;padding:12px;font-family:'PingFang SC',system-ui,sans-serif;background:linear-gradient(160deg,#f2f6ff,#eafafd)}.wrap{display:flex;gap:12px}.stage{flex:1.25;background:#fff;border:1px solid #e6ecf7;border-radius:11px;display:grid;place-items:center;min-height:300px;overflow:hidden}.mg{padding:10px 20px;background:repeating-linear-gradient(45deg,#fff6e5,#fff6e5 6px,#ffefd1 6px,#ffefd1 12px);border-radius:6px;animation:ap 7s infinite both}.bd{border:3px solid #8b9ab2;border-radius:4px;background:#cdd6e6;animation:ap 7s .9s infinite both}.pd{padding:5px;background:darkkhaki;animation:ap 7s 1.8s infinite both}.ct{width:100px;height:50px;background:#fff8e1;display:grid;place-items:center;font-size:11.5px;color:#6b5a24;animation:ap 7s 2.7s infinite both}@keyframes ap{0%{opacity:0;transform:scale(.86)}8%,86%{opacity:1;transform:none}94%,100%{opacity:0;transform:scale(.86)}}.info{flex:1}.row{border:1px solid #e6ecf7;border-radius:9px;background:#fff;padding:8px 10px;margin-bottom:7px;animation:hi 7s infinite both}.r2{animation-delay:1.2s}.r3{animation-delay:2.1s}.r4{animation-delay:3s}@keyframes hi{0%,12%{opacity:1;border-color:#2f6bff;background:#eaf1ff;transform:translateX(5px)}18%,88%{opacity:.4;border-color:#e6ecf7;background:#fff;transform:none}94%,100%{opacity:0}}.t{font:600 11.5px/1.5 Menlo,monospace;color:#0e1b2e}.d{font-size:10.5px;color:#6b7c96}.calc{margin-top:4px;background:#0e1b2e;border-radius:9px;padding:9px 11px}.cl{font:11.5px/1.9 Menlo,monospace;color:#cbd5e6}.hl{color:#ffb300}.res{font-size:11px;color:#7ee787}</style><div class='wrap'><div class='stage'><div class='mg'><div class='bd'><div class='pd'><div class='ct'>content 100×50</div></div></div></div></div><div class='info'><div class='row'><div class='t'>content 盒</div><div class='d'>width:100px; height:50px 描述的就是它</div></div><div class='row r2'><div class='t'>padding 盒</div><div class='d'>padding:5px → 上右下左均为 5px，背景延伸到这里</div></div><div class='row r3'><div class='t'>border 盒</div><div class='d'>border:3px solid #ccc → 占据额外空间</div></div><div class='row r4'><div class='t'>margin 盒</div><div class='d'>margin:10px 20px → 上下 10px、左右 20px，不显示背景</div></div><div class='calc'><div class='cl'>实际占位宽 = <span class='hl'>100</span> + <span class='hl'>5×2</span> + <span class='hl'>3×2</span> = <span class='hl'>116px</span></div><div class='res'>外边距不计入元素自身尺寸，但占据布局空间</div></div></div></div>"
+    },
+    {
+      "type": "section",
+      "no": "5.1.3",
+      "title": "内边距特性",
+      "text": "盒子的内边距定义了边框和元素内容之间的空白区域——它有两个必须掌握的特性。",
+      "nav": "5.1.3 内边距特性"
+    },
+    {
+      "type": "compare",
+      "title": "内边距的两个特性",
+      "subtitle": "一个改变尺寸，一个决定背景画到哪儿",
+      "nav": "两个特性",
+      "a": {
+        "title": "特性 1：padding 影响元素尺寸",
+        "items": [
+          "默认情况下 width 指的是 <strong>content 盒</strong>宽度",
+          "因此<strong>增加 padding 会影响整个元素的尺寸</strong>",
+          "任务5-2 实例：width 150px + padding 左右各 10px = 实际 170px",
+          "算尺寸时千万不要漏了这一层"
+        ]
+      },
+      "b": {
+        "title": "特性 2：padding 可以显示背景",
+        "items": [
+          "背景不仅对 content 盒有效，<strong>还对 padding 盒有效</strong>",
+          "给盒子添加 padding 时，padding 会撑开盒子，<strong>背景效果随之延伸</strong>",
+          "反之，margin 区域<strong>无法显示背景</strong>",
+          "这一点是后面学习 background-clip 的伏笔"
+        ]
+      }
+    },
+    {
+      "type": "codebullets",
+      "title": "算一算：150px 的盒子为什么变成 170px",
+      "subtitle": "任务5-2 的核心计算（图5-6）",
+      "nav": "尺寸计算",
+      "items": [
+        "第 008 行设置盒子宽度 <code>width:150px</code>——这是 content 盒的宽度。",
+        "第 014 行设置 <code>padding:5px 10px</code>：按值复制原则，上下 5px、左右 10px。",
+        "用户看到的矩形宽度 = <strong>150 + 10 + 10 = 170px</strong>。",
+        "同理，高度方向也要把 padding 的 5px×2 计算进去。",
+        "验证方式：打开开发者工具的盒子模型面板，逐层核对数字。"
+      ],
+      "lang": "css",
+      "file": "代码5-2 中的关键声明",
+      "code": ".box {\n    width: 150px;              /* #008 content 盒宽度 */\n    display: flex;\n    justify-content:center;\n    align-items:center;\n    background-color: #F6F9FC;\n    padding:5px 10px;           /* #014 上下 5px、左右 10px */\n    margin-bottom:10px;\n    border-radius: 5px;\n}\n/* 用户看到的宽度 = 150 + 10 + 10 = 170px */"
+    },
+    {
+      "type": "task",
+      "title": "任务5-2｜设置支付宝小程序中的 padding",
+      "subtitle": "素材：宁波城市职业技术学院支付宝小程序功能项",
+      "nav": "任务5-2",
+      "goal": "利用盒子模型制作图5-4 所示的功能项（图标 + 文字，装在容器盒中）",
+      "steps": [
+        "任务素材：图5-4 有「学生优惠指南」「学生特价机票」「校园兼职指南」「更多服务」4 个主要功能项。",
+        "每个功能项由<strong>图标 + 文字</strong>组成，装载在一个容器盒中，素材为 nbcc-icon1.png、nbcc-icon2.png。",
+        "用 <code>display:flex</code> + <code>align-items:center</code> 让图标与文字垂直居中对齐。",
+        "用 <code>padding:5px 10px</code> 拉开内容与边框的距离，用 <code>margin-bottom:10px</code> 分隔上下两个功能项。",
+        "最后加 <code>border-radius:5px</code> 圆角，效果见图5-5。"
+      ],
+      "lang": "html",
+      "file": "代码5-2 关键片段",
+      "code": "<style>\n.box {                      /* #007-#019 */\n    width: 150px;\n    display: flex;\n    justify-content:center;\n    align-items:center;\n    line-height: 30px;\n    background-color: #F6F9FC;\n    padding:5px 10px;\n    margin-bottom:10px;\n    border-radius: 5px;\n    color:#666;\n    overflow: hidden;\n}\n.box img{                   /* #020-#023 */\n    width: 20px;\n    margin-right: 5px;\n}\n</style>\n\n<div class=\"box\">\n    <img src=\"images/nbcc-icon1.png\"/>学生优惠指南\n</div>\n<div class=\"box\">\n    <img src=\"images/nbcc-icon2.png\"/>学生特价机票\n</div>"
+    },
+    {
+      "type": "bullets",
+      "title": "易错与提示",
+      "subtitle": "写 padding 之前，先在脑子里问这三个问题",
+      "nav": "易错提示",
+      "items": [
+        "<strong>padding 不能取负值</strong>（与之相对，后面要学的 margin 可以取负值）。",
+        "绝大多数盒子默认 padding 为 0，但 <code>&lt;ul&gt;</code>、<code>&lt;ol&gt;</code> 等标签<strong>自带一定的内边距</strong>，做列表前常先清零。",
+        "用百分比设置 padding 时，计算基准是<strong>父元素的宽度</strong>，包括上下方向也用宽度算——这是 CSS 的经典规定。",
+        "想让 width 直接代表最终看到的宽度，可设置 <code>box-sizing:border-box</code>（详见 MDN）。"
+      ]
+    },
+    {
+      "type": "ai",
+      "title": "AI 前沿：设计稿里的留白，正在被自动算出来",
+      "subtitle": "padding / margin 的提取，是 AI 辅助前端最成熟的场景之一",
+      "nav": "AI 前沿",
+      "text": "设计师给的稿子里没有写 padding，只有「看起来舒服」的视觉间距。过去前端要用开发者工具一个个量；现在多模态模型可以直接读取设计稿，反推出每个盒子的内边距、外边距与层级关系，并生成带注释的 CSS。",
+      "items": [
+        "设计稿转代码：通义灵码、文心快码、GitHub Copilot 等已支持根据描述生成带合理 padding 的卡片布局。",
+        "视觉还原校对：让 DeepSeek、通义千问核对「这张卡片的 content 宽度与 padding 值」，可快速发现 8px / 10px 这类差量。",
+        "现代 CSS 的替代方案：MDN 推荐的 <code>gap</code> 属性配合 flex / grid 布局，可以减少大量手写的 margin 微调。",
+        "提醒：AI 给出的留白往往是「看起来差不多」，<strong>是否符合栅格与倍率规范，仍要你来把关</strong>。"
+      ]
+    },
+    {
+      "type": "quiz",
+      "title": "随堂检测",
+      "subtitle": "含教材 5.6 作业选择题，并补充自编题",
+      "nav": "随堂检测",
+      "items": [
+        {
+          "q": "关于 margin 和 padding，说法正确的是（　　）。（教材 5.6 选择题第 4 题）",
+          "options": [
+            "A. inline 元素可以通过 width 和 height 分别指定宽度和高度",
+            "B. 当相邻行内元素均设置 padding 时会发生合并",
+            "C. 当相邻块级元素均设置 margin 时会发生合并",
+            "D. 当相邻行内元素均设置 margin 时会发生合并"
+          ],
+          "answer": "C",
+          "tip": "相邻块级元素在垂直方向会发生外边距合并；行内元素的水平 margin 不会合并。",
+          "type": "single"
+        },
+        {
+          "q": "盒子 box 设置为 width:150px; padding:5px 10px;，它在页面上占的可见矩形宽度为（　　）。",
+          "options": [
+            "A. 150px",
+            "B. 160px",
+            "C. 170px",
+            "D. 180px"
+          ],
+          "answer": "C",
+          "tip": "150 + 左 10 + 右 10 = 170px，width 描述的是 content 盒。",
+          "type": "single"
+        },
+        {
+          "q": "声明 padding:5px 10px 6px; 对应的上下左右内边距依次是（　　）。",
+          "options": [
+            "A. 5 10 6 10",
+            "B. 5 10 6 6",
+            "C. 5 6 10 10",
+            "D. 10 5 10 6"
+          ],
+          "answer": "A",
+          "tip": "三值写法时缺少的是左边，左复制右的值 10px。",
+          "type": "single"
+        },
+        {
+          "q": "关于盒子模型的组成与尺寸，下列说法正确的有（　　）。",
+          "options": [
+            "A. 盒子模型从内到外由 content、padding、border、margin 四层组成",
+            "B. 默认情况下，width 和 height 描述的是 content 盒的尺寸",
+            "C. 设置 padding:5px 10px; 后，盒子可见宽度 = width + 20px",
+            "D. margin 区域与 padding 区域一样，都可以显示背景颜色"
+          ],
+          "answer": "ABC",
+          "tip": "四层由内到外依次是 content→padding→border→margin；<code>width</code> 指 content 盒，左右 padding 共 20px；<strong>margin 区域无法显示背景</strong>。",
+          "type": "multi"
+        },
+        {
+          "q": "关于值复制原则与内边距，下列说法正确的有（　　）。",
+          "options": [
+            "A. padding:10px; 表示上、右、下、左四个方向的内边距都是 10px",
+            "B. padding:10px 20px; 表示上下内边距 10px、左右内边距 20px",
+            "C. padding:10px 20px 30px; 中缺少的是下内边距，它复制上内边距的值",
+            "D. padding 与 margin 一样可以取负值，用来让内容溢出到边框之外"
+          ],
+          "answer": "AB",
+          "tip": "三值写法缺的是<strong>左边</strong>，左复制右的值 20px；<code>padding</code> 不能为负值，只有 margin 可以。",
+          "type": "multi"
+        }
+      ]
+    },
+    {
+      "type": "summary",
+      "title": "本课小结",
+      "nav": "本课小结",
+      "items": [
+        "盒子模型从内到外四层：<strong>content → padding → border → margin</strong>，每层都是一个矩形盒子。",
+        "默认情况下 <code>width</code>、<code>height</code> 描述的是 <strong>content 盒</strong>的尺寸，这是个高频编程错误。",
+        "值复制原则：<strong>上右下左顺时针</strong>，缺哪个方向就找对面的值来补。",
+        "内边距两特性：<strong>影响元素尺寸</strong>、<strong>背景可延伸到 padding 区域</strong>。",
+        "任务 5-1、5-2 分别训练了「用开发者工具核对盒子」与「用 padding 做功能项卡片」两项基本功。"
+      ]
+    },
+    {
+      "type": "homework",
+      "title": "课后作业",
+      "nav": "课后作业",
+      "items": [
+        "<strong>操作题：</strong>复现教材任务5-1，用开发者工具截图盒子模型面板，标出四层各自的数值。",
+        "<strong>操作题：</strong>完成教材任务5-2，用 4 个功能项还原支付宝小程序卡片，并记录每个卡片的实际宽高。",
+        "<strong>计算题：</strong>写出 padding 的 4 种值复制写法，每种配一个例子并说明四个方向的取值。",
+        "<strong>思考题：</strong>为什么 margin 区域无法显示背景，而 padding 区域可以？这对做卡片阴影、卡片背景有什么影响？"
+      ]
+    },
+    {
+      "type": "refs",
+      "title": "出处与参考",
+      "subtitle": "本课件内容依据教材，并核对以下权威技术文档",
+      "nav": "出处与参考",
+      "items": [
+        {
+          "t": "教材《网页制作（HTML5+CSS3）》项目5 盒子模型（5.1 盒子模型简介）",
+          "u": "郑哲、傅冬 主编 · 电子工业出版社 · 2025 年 1 月第 1 版"
+        },
+        {
+          "t": "MDN Web Docs · CSS 盒模型简介",
+          "u": "https://developer.mozilla.org/zh-CN/docs/Web/CSS/CSS_box_model/Introduction_to_the_CSS_box_model"
+        },
+        {
+          "t": "MDN Web Docs · padding 属性",
+          "u": "https://developer.mozilla.org/zh-CN/docs/Web/CSS/padding"
+        },
+        {
+          "t": "MDN Web Docs · box-sizing（改变 width 的计算对象）",
+          "u": "https://developer.mozilla.org/zh-CN/docs/Web/CSS/box-sizing"
+        },
+        {
+          "t": "Chrome DevTools 官方文档 · 查看与编辑 CSS 盒模型",
+          "u": "https://developer.chrome.com/docs/devtools/css/reference"
+        }
+      ]
+    },
+    {
+      "type": "end",
+      "title": "第 12 单元 · 结束",
+      "text": "下一单元：边框与外边距——做出指示气泡与可读的间距",
+      "nav": "结束"
+    }
+  ]
+}

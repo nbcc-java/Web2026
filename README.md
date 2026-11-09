@@ -1,0 +1,103 @@
+# Web2026 · 《网页制作（HTML5+CSS3）》教学课件
+
+2026 学年高职《网页制作（HTML5+CSS3）》课程全套课件。依据教材《网页制作（HTML5+CSS3）》（郑哲、傅冬 主编，电子工业出版社 2025 年 1 月第 1 版）编写，按 **1 个教学单元（40 分钟）= 1 个课件** 拆解，共 **26 个单元**。
+
+- **26 个教学单元**，覆盖教材全部 10 个项目
+- 每单元两个版本：**HTML 动效版**（课堂放映）+ **PPTX 版**（平台上传 / 学生复习）
+- 总计 **629 页**、**129 道随堂检测题**（含多选）、**36 页实时效果演示**
+- 配套：教学计划、课件总览、备课笔记、可复用的课件生成器
+
+## 快速开始
+
+直接用浏览器打开仓库根目录的 **`index.html`**（本地或 Pages 均可），即为课堂导航总目录：按项目分组、支持搜索与筛选、可「继续上次」。每讲最后一页有「下一讲」按钮直达下一单元。
+
+> 也可直接点下表的 HTML / PPTX 链接打开对应课件。
+
+## 单元清单
+
+| 项目 | 单元 | 教学课题 | 页数 | 题数 | 演示 | 课件 |
+|---|---|---|---|---|---|---|
+| **项目1**<br>开发前的准备 | U01 | Web 前端技术概览与网站工作原理 | 25 | 5 | 1 | [HTML](decks/%E9%A1%B9%E7%9B%AE1-%E5%BC%80%E5%8F%91%E5%89%8D%E7%9A%84%E5%87%86%E5%A4%87/U01%20Web%20%E5%89%8D%E7%AB%AF%E6%8A%80%E6%9C%AF%E6%A6%82%E8%A7%88%E4%B8%8E%E7%BD%91%E7%AB%99%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86.html) · [PPTX](pptx/%E9%A1%B9%E7%9B%AE1-%E5%BC%80%E5%8F%91%E5%89%8D%E7%9A%84%E5%87%86%E5%A4%87/U01%20Web%20%E5%89%8D%E7%AB%AF%E6%8A%80%E6%9C%AF%E6%A6%82%E8%A7%88%E4%B8%8E%E7%BD%91%E7%AB%99%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86.pptx) |
+|  | U02 | 开发工具与创建第一个 HTML 页面 | 21 | 5 | 1 | [HTML](decks/%E9%A1%B9%E7%9B%AE1-%E5%BC%80%E5%8F%91%E5%89%8D%E7%9A%84%E5%87%86%E5%A4%87/U02%20%E5%BC%80%E5%8F%91%E5%B7%A5%E5%85%B7%E4%B8%8E%E5%88%9B%E5%BB%BA%E7%AC%AC%E4%B8%80%E4%B8%AA%20HTML%20%E9%A1%B5%E9%9D%A2.html) · [PPTX](pptx/%E9%A1%B9%E7%9B%AE1-%E5%BC%80%E5%8F%91%E5%89%8D%E7%9A%84%E5%87%86%E5%A4%87/U02%20%E5%BC%80%E5%8F%91%E5%B7%A5%E5%85%B7%E4%B8%8E%E5%88%9B%E5%BB%BA%E7%AC%AC%E4%B8%80%E4%B8%AA%20HTML%20%E9%A1%B5%E9%9D%A2.pptx) |
+| **项目2**<br>HTML 基础 | U03 | HTML 简介、页面基本结构与语法规则 | 25 | 5 | 2 | [HTML](decks/%E9%A1%B9%E7%9B%AE2-HTML%20%E5%9F%BA%E7%A1%80/U03%20HTML%20%E7%AE%80%E4%BB%8B%E3%80%81%E9%A1%B5%E9%9D%A2%E5%9F%BA%E6%9C%AC%E7%BB%93%E6%9E%84%E4%B8%8E%E8%AF%AD%E6%B3%95%E8%A7%84%E5%88%99.html) · [PPTX](pptx/%E9%A1%B9%E7%9B%AE2-HTML%20%E5%9F%BA%E7%A1%80/U03%20HTML%20%E7%AE%80%E4%BB%8B%E3%80%81%E9%A1%B5%E9%9D%A2%E5%9F%BA%E6%9C%AC%E7%BB%93%E6%9E%84%E4%B8%8E%E8%AF%AD%E6%B3%95%E8%A7%84%E5%88%99.pptx) |
+|  | U04 | 语义化标签与常用文本标签 | 25 | 5 | 2 | [HTML](decks/%E9%A1%B9%E7%9B%AE2-HTML%20%E5%9F%BA%E7%A1%80/U04%20%E8%AF%AD%E4%B9%89%E5%8C%96%E6%A0%87%E7%AD%BE%E4%B8%8E%E5%B8%B8%E7%94%A8%E6%96%87%E6%9C%AC%E6%A0%87%E7%AD%BE.html) · [PPTX](pptx/%E9%A1%B9%E7%9B%AE2-HTML%20%E5%9F%BA%E7%A1%80/U04%20%E8%AF%AD%E4%B9%89%E5%8C%96%E6%A0%87%E7%AD%BE%E4%B8%8E%E5%B8%B8%E7%94%A8%E6%96%87%E6%9C%AC%E6%A0%87%E7%AD%BE.pptx) |
+|  | U05 | 链接与锚点 | 25 | 5 | 2 | [HTML](decks/%E9%A1%B9%E7%9B%AE2-HTML%20%E5%9F%BA%E7%A1%80/U05%20%E9%93%BE%E6%8E%A5%E4%B8%8E%E9%94%9A%E7%82%B9.html) · [PPTX](pptx/%E9%A1%B9%E7%9B%AE2-HTML%20%E5%9F%BA%E7%A1%80/U05%20%E9%93%BE%E6%8E%A5%E4%B8%8E%E9%94%9A%E7%82%B9.pptx) |
+| **项目3**<br>使用CSS基本选择器美化页面 | U06 | CSS 简介、基本语法与标签 / id / 类选择器 | 25 | 5 | 2 | [HTML](decks/%E9%A1%B9%E7%9B%AE3-%E4%BD%BF%E7%94%A8CSS%E5%9F%BA%E6%9C%AC%E9%80%89%E6%8B%A9%E5%99%A8%E7%BE%8E%E5%8C%96%E9%A1%B5%E9%9D%A2/U06%20CSS%20%E7%AE%80%E4%BB%8B%E3%80%81%E5%9F%BA%E6%9C%AC%E8%AF%AD%E6%B3%95%E4%B8%8E%E6%A0%87%E7%AD%BE%20/%20id%20/%20%E7%B1%BB%E9%80%89%E6%8B%A9%E5%99%A8.html) · [PPTX](pptx/%E9%A1%B9%E7%9B%AE3-%E4%BD%BF%E7%94%A8CSS%E5%9F%BA%E6%9C%AC%E9%80%89%E6%8B%A9%E5%99%A8%E7%BE%8E%E5%8C%96%E9%A1%B5%E9%9D%A2/U06%20CSS%20%E7%AE%80%E4%BB%8B%E3%80%81%E5%9F%BA%E6%9C%AC%E8%AF%AD%E6%B3%95%E4%B8%8E%E6%A0%87%E7%AD%BE%20/%20id%20/%20%E7%B1%BB%E9%80%89%E6%8B%A9%E5%99%A8.pptx) |
+|  | U07 | 字体属性、文本排版与自定义字体 | 25 | 5 | 3 | [HTML](decks/%E9%A1%B9%E7%9B%AE3-%E4%BD%BF%E7%94%A8CSS%E5%9F%BA%E6%9C%AC%E9%80%89%E6%8B%A9%E5%99%A8%E7%BE%8E%E5%8C%96%E9%A1%B5%E9%9D%A2/U07%20%E5%AD%97%E4%BD%93%E5%B1%9E%E6%80%A7%E3%80%81%E6%96%87%E6%9C%AC%E6%8E%92%E7%89%88%E4%B8%8E%E8%87%AA%E5%AE%9A%E4%B9%89%E5%AD%97%E4%BD%93.html) · [PPTX](pptx/%E9%A1%B9%E7%9B%AE3-%E4%BD%BF%E7%94%A8CSS%E5%9F%BA%E6%9C%AC%E9%80%89%E6%8B%A9%E5%99%A8%E7%BE%8E%E5%8C%96%E9%A1%B5%E9%9D%A2/U07%20%E5%AD%97%E4%BD%93%E5%B1%9E%E6%80%A7%E3%80%81%E6%96%87%E6%9C%AC%E6%8E%92%E7%89%88%E4%B8%8E%E8%87%AA%E5%AE%9A%E4%B9%89%E5%AD%97%E4%BD%93.pptx) |
+|  | U08 | 伪类、伪元素与通用选择器 | 23 | 4 | 3 | [HTML](decks/%E9%A1%B9%E7%9B%AE3-%E4%BD%BF%E7%94%A8CSS%E5%9F%BA%E6%9C%AC%E9%80%89%E6%8B%A9%E5%99%A8%E7%BE%8E%E5%8C%96%E9%A1%B5%E9%9D%A2/U08%20%E4%BC%AA%E7%B1%BB%E3%80%81%E4%BC%AA%E5%85%83%E7%B4%A0%E4%B8%8E%E9%80%9A%E7%94%A8%E9%80%89%E6%8B%A9%E5%99%A8.html) · [PPTX](pptx/%E9%A1%B9%E7%9B%AE3-%E4%BD%BF%E7%94%A8CSS%E5%9F%BA%E6%9C%AC%E9%80%89%E6%8B%A9%E5%99%A8%E7%BE%8E%E5%8C%96%E9%A1%B5%E9%9D%A2/U08%20%E4%BC%AA%E7%B1%BB%E3%80%81%E4%BC%AA%E5%85%83%E7%B4%A0%E4%B8%8E%E9%80%9A%E7%94%A8%E9%80%89%E6%8B%A9%E5%99%A8.pptx) |
+| **项目4**<br>使用CSS高级选择器美化页面 | U09 | 复合选择器：让 CSS 精准命中目标 | 24 | 5 | 1 | [HTML](decks/%E9%A1%B9%E7%9B%AE4-%E4%BD%BF%E7%94%A8CSS%E9%AB%98%E7%BA%A7%E9%80%89%E6%8B%A9%E5%99%A8%E7%BE%8E%E5%8C%96%E9%A1%B5%E9%9D%A2/U09%20%E5%A4%8D%E5%90%88%E9%80%89%E6%8B%A9%E5%99%A8%EF%BC%9A%E8%AE%A9%20CSS%20%E7%B2%BE%E5%87%86%E5%91%BD%E4%B8%AD%E7%9B%AE%E6%A0%87.html) · [PPTX](pptx/%E9%A1%B9%E7%9B%AE4-%E4%BD%BF%E7%94%A8CSS%E9%AB%98%E7%BA%A7%E9%80%89%E6%8B%A9%E5%99%A8%E7%BE%8E%E5%8C%96%E9%A1%B5%E9%9D%A2/U09%20%E5%A4%8D%E5%90%88%E9%80%89%E6%8B%A9%E5%99%A8%EF%BC%9A%E8%AE%A9%20CSS%20%E7%B2%BE%E5%87%86%E5%91%BD%E4%B8%AD%E7%9B%AE%E6%A0%87.pptx) |
+|  | U10 | 应用样式的三种方式与 CSS 冲突解决 | 25 | 5 | 1 | [HTML](decks/%E9%A1%B9%E7%9B%AE4-%E4%BD%BF%E7%94%A8CSS%E9%AB%98%E7%BA%A7%E9%80%89%E6%8B%A9%E5%99%A8%E7%BE%8E%E5%8C%96%E9%A1%B5%E9%9D%A2/U10%20%E5%BA%94%E7%94%A8%E6%A0%B7%E5%BC%8F%E7%9A%84%E4%B8%89%E7%A7%8D%E6%96%B9%E5%BC%8F%E4%B8%8E%20CSS%20%E5%86%B2%E7%AA%81%E8%A7%A3%E5%86%B3.html) · [PPTX](pptx/%E9%A1%B9%E7%9B%AE4-%E4%BD%BF%E7%94%A8CSS%E9%AB%98%E7%BA%A7%E9%80%89%E6%8B%A9%E5%99%A8%E7%BE%8E%E5%8C%96%E9%A1%B5%E9%9D%A2/U10%20%E5%BA%94%E7%94%A8%E6%A0%B7%E5%BC%8F%E7%9A%84%E4%B8%89%E7%A7%8D%E6%96%B9%E5%BC%8F%E4%B8%8E%20CSS%20%E5%86%B2%E7%AA%81%E8%A7%A3%E5%86%B3.pptx) |
+|  | U11 | Emmet 语法与 CSS 预处理器 | 25 | 5 | 1 | [HTML](decks/%E9%A1%B9%E7%9B%AE4-%E4%BD%BF%E7%94%A8CSS%E9%AB%98%E7%BA%A7%E9%80%89%E6%8B%A9%E5%99%A8%E7%BE%8E%E5%8C%96%E9%A1%B5%E9%9D%A2/U11%20Emmet%20%E8%AF%AD%E6%B3%95%E4%B8%8E%20CSS%20%E9%A2%84%E5%A4%84%E7%90%86%E5%99%A8.html) · [PPTX](pptx/%E9%A1%B9%E7%9B%AE4-%E4%BD%BF%E7%94%A8CSS%E9%AB%98%E7%BA%A7%E9%80%89%E6%8B%A9%E5%99%A8%E7%BE%8E%E5%8C%96%E9%A1%B5%E9%9D%A2/U11%20Emmet%20%E8%AF%AD%E6%B3%95%E4%B8%8E%20CSS%20%E9%A2%84%E5%A4%84%E7%90%86%E5%99%A8.pptx) |
+| **项目5**<br>盒子模型 | U12 | 盒子模型的组成、值复制与内边距 | 25 | 5 | 1 | [HTML](decks/%E9%A1%B9%E7%9B%AE5-%E7%9B%92%E5%AD%90%E6%A8%A1%E5%9E%8B/U12%20%E7%9B%92%E5%AD%90%E6%A8%A1%E5%9E%8B%E7%9A%84%E7%BB%84%E6%88%90%E3%80%81%E5%80%BC%E5%A4%8D%E5%88%B6%E4%B8%8E%E5%86%85%E8%BE%B9%E8%B7%9D.html) · [PPTX](pptx/%E9%A1%B9%E7%9B%AE5-%E7%9B%92%E5%AD%90%E6%A8%A1%E5%9E%8B/U12%20%E7%9B%92%E5%AD%90%E6%A8%A1%E5%9E%8B%E7%9A%84%E7%BB%84%E6%88%90%E3%80%81%E5%80%BC%E5%A4%8D%E5%88%B6%E4%B8%8E%E5%86%85%E8%BE%B9%E8%B7%9D.pptx) |
+|  | U13 | 边框与外边距 | 25 | 5 | 1 | [HTML](decks/%E9%A1%B9%E7%9B%AE5-%E7%9B%92%E5%AD%90%E6%A8%A1%E5%9E%8B/U13%20%E8%BE%B9%E6%A1%86%E4%B8%8E%E5%A4%96%E8%BE%B9%E8%B7%9D.html) · [PPTX](pptx/%E9%A1%B9%E7%9B%AE5-%E7%9B%92%E5%AD%90%E6%A8%A1%E5%9E%8B/U13%20%E8%BE%B9%E6%A1%86%E4%B8%8E%E5%A4%96%E8%BE%B9%E8%B7%9D.pptx) |
+|  | U14 | 背景：颜色、图片、渐变与精灵图 | 25 | 5 | 1 | [HTML](decks/%E9%A1%B9%E7%9B%AE5-%E7%9B%92%E5%AD%90%E6%A8%A1%E5%9E%8B/U14%20%E8%83%8C%E6%99%AF%EF%BC%9A%E9%A2%9C%E8%89%B2%E3%80%81%E5%9B%BE%E7%89%87%E3%80%81%E6%B8%90%E5%8F%98%E4%B8%8E%E7%B2%BE%E7%81%B5%E5%9B%BE.html) · [PPTX](pptx/%E9%A1%B9%E7%9B%AE5-%E7%9B%92%E5%AD%90%E6%A8%A1%E5%9E%8B/U14%20%E8%83%8C%E6%99%AF%EF%BC%9A%E9%A2%9C%E8%89%B2%E3%80%81%E5%9B%BE%E7%89%87%E3%80%81%E6%B8%90%E5%8F%98%E4%B8%8E%E7%B2%BE%E7%81%B5%E5%9B%BE.pptx) |
+| **项目6**<br>表格和表单 | U15 | 表格标签与 CSS 表格样式 | 25 | 5 | 1 | [HTML](decks/%E9%A1%B9%E7%9B%AE6-%E8%A1%A8%E6%A0%BC%E5%92%8C%E8%A1%A8%E5%8D%95/U15%20%E8%A1%A8%E6%A0%BC%E6%A0%87%E7%AD%BE%E4%B8%8E%20CSS%20%E8%A1%A8%E6%A0%BC%E6%A0%B7%E5%BC%8F.html) · [PPTX](pptx/%E9%A1%B9%E7%9B%AE6-%E8%A1%A8%E6%A0%BC%E5%92%8C%E8%A1%A8%E5%8D%95/U15%20%E8%A1%A8%E6%A0%BC%E6%A0%87%E7%AD%BE%E4%B8%8E%20CSS%20%E8%A1%A8%E6%A0%BC%E6%A0%B7%E5%BC%8F.pptx) |
+|  | U16 | 表单与常用表单标签 | 24 | 5 | 1 | [HTML](decks/%E9%A1%B9%E7%9B%AE6-%E8%A1%A8%E6%A0%BC%E5%92%8C%E8%A1%A8%E5%8D%95/U16%20%E8%A1%A8%E5%8D%95%E4%B8%8E%E5%B8%B8%E7%94%A8%E8%A1%A8%E5%8D%95%E6%A0%87%E7%AD%BE.html) · [PPTX](pptx/%E9%A1%B9%E7%9B%AE6-%E8%A1%A8%E6%A0%BC%E5%92%8C%E8%A1%A8%E5%8D%95/U16%20%E8%A1%A8%E5%8D%95%E4%B8%8E%E5%B8%B8%E7%94%A8%E8%A1%A8%E5%8D%95%E6%A0%87%E7%AD%BE.pptx) |
+|  | U17 | 表单新属性与表单美化 | 24 | 5 | 1 | [HTML](decks/%E9%A1%B9%E7%9B%AE6-%E8%A1%A8%E6%A0%BC%E5%92%8C%E8%A1%A8%E5%8D%95/U17%20%E8%A1%A8%E5%8D%95%E6%96%B0%E5%B1%9E%E6%80%A7%E4%B8%8E%E8%A1%A8%E5%8D%95%E7%BE%8E%E5%8C%96.html) · [PPTX](pptx/%E9%A1%B9%E7%9B%AE6-%E8%A1%A8%E6%A0%BC%E5%92%8C%E8%A1%A8%E5%8D%95/U17%20%E8%A1%A8%E5%8D%95%E6%96%B0%E5%B1%9E%E6%80%A7%E4%B8%8E%E8%A1%A8%E5%8D%95%E7%BE%8E%E5%8C%96.pptx) |
+| **项目7**<br>浮动和定位 | U18 | 标准流、浮动与清除浮动 | 25 | 5 | 1 | [HTML](decks/%E9%A1%B9%E7%9B%AE7-%E6%B5%AE%E5%8A%A8%E5%92%8C%E5%AE%9A%E4%BD%8D/U18%20%E6%A0%87%E5%87%86%E6%B5%81%E3%80%81%E6%B5%AE%E5%8A%A8%E4%B8%8E%E6%B8%85%E9%99%A4%E6%B5%AE%E5%8A%A8.html) · [PPTX](pptx/%E9%A1%B9%E7%9B%AE7-%E6%B5%AE%E5%8A%A8%E5%92%8C%E5%AE%9A%E4%BD%8D/U18%20%E6%A0%87%E5%87%86%E6%B5%81%E3%80%81%E6%B5%AE%E5%8A%A8%E4%B8%8E%E6%B8%85%E9%99%A4%E6%B5%AE%E5%8A%A8.pptx) |
+|  | U19 | 定位：静态、固定、绝对与相对 | 25 | 5 | 1 | [HTML](decks/%E9%A1%B9%E7%9B%AE7-%E6%B5%AE%E5%8A%A8%E5%92%8C%E5%AE%9A%E4%BD%8D/U19%20%E5%AE%9A%E4%BD%8D%EF%BC%9A%E9%9D%99%E6%80%81%E3%80%81%E5%9B%BA%E5%AE%9A%E3%80%81%E7%BB%9D%E5%AF%B9%E4%B8%8E%E7%9B%B8%E5%AF%B9.html) · [PPTX](pptx/%E9%A1%B9%E7%9B%AE7-%E6%B5%AE%E5%8A%A8%E5%92%8C%E5%AE%9A%E4%BD%8D/U19%20%E5%AE%9A%E4%BD%8D%EF%BC%9A%E9%9D%99%E6%80%81%E3%80%81%E5%9B%BA%E5%AE%9A%E3%80%81%E7%BB%9D%E5%AF%B9%E4%B8%8E%E7%9B%B8%E5%AF%B9.pptx) |
+|  | U20 | 布局综合案例 | 22 | 5 | 1 | [HTML](decks/%E9%A1%B9%E7%9B%AE7-%E6%B5%AE%E5%8A%A8%E5%92%8C%E5%AE%9A%E4%BD%8D/U20%20%E5%B8%83%E5%B1%80%E7%BB%BC%E5%90%88%E6%A1%88%E4%BE%8B.html) · [PPTX](pptx/%E9%A1%B9%E7%9B%AE7-%E6%B5%AE%E5%8A%A8%E5%92%8C%E5%AE%9A%E4%BD%8D/U20%20%E5%B8%83%E5%B1%80%E7%BB%BC%E5%90%88%E6%A1%88%E4%BE%8B.pptx) |
+| **项目8**<br>Flex 布局 | U21 | Flex 布局简介、术语与容器属性 | 25 | 5 | 2 | [HTML](decks/%E9%A1%B9%E7%9B%AE8-Flex%20%E5%B8%83%E5%B1%80/U21%20Flex%20%E5%B8%83%E5%B1%80%E7%AE%80%E4%BB%8B%E3%80%81%E6%9C%AF%E8%AF%AD%E4%B8%8E%E5%AE%B9%E5%99%A8%E5%B1%9E%E6%80%A7.html) · [PPTX](pptx/%E9%A1%B9%E7%9B%AE8-Flex%20%E5%B8%83%E5%B1%80/U21%20Flex%20%E5%B8%83%E5%B1%80%E7%AE%80%E4%BB%8B%E3%80%81%E6%9C%AF%E8%AF%AD%E4%B8%8E%E5%AE%B9%E5%99%A8%E5%B1%9E%E6%80%A7.pptx) |
+|  | U22 | Flex 布局案例：居中、均分、嵌套与轮播图 | 24 | 5 | 1 | [HTML](decks/%E9%A1%B9%E7%9B%AE8-Flex%20%E5%B8%83%E5%B1%80/U22%20Flex%20%E5%B8%83%E5%B1%80%E6%A1%88%E4%BE%8B%EF%BC%9A%E5%B1%85%E4%B8%AD%E3%80%81%E5%9D%87%E5%88%86%E3%80%81%E5%B5%8C%E5%A5%97%E4%B8%8E%E8%BD%AE%E6%92%AD%E5%9B%BE.html) · [PPTX](pptx/%E9%A1%B9%E7%9B%AE8-Flex%20%E5%B8%83%E5%B1%80/U22%20Flex%20%E5%B8%83%E5%B1%80%E6%A1%88%E4%BE%8B%EF%BC%9A%E5%B1%85%E4%B8%AD%E3%80%81%E5%9D%87%E5%88%86%E3%80%81%E5%B5%8C%E5%A5%97%E4%B8%8E%E8%BD%AE%E6%92%AD%E5%9B%BE.pptx) |
+| **项目9**<br>过渡和动画 | U23 | 变换：2D 变换与 3D 变换 | 25 | 5 | 2 | [HTML](decks/%E9%A1%B9%E7%9B%AE9-%E8%BF%87%E6%B8%A1%E5%92%8C%E5%8A%A8%E7%94%BB/U23%20%E5%8F%98%E6%8D%A2%EF%BC%9A2D%20%E5%8F%98%E6%8D%A2%E4%B8%8E%203D%20%E5%8F%98%E6%8D%A2.html) · [PPTX](pptx/%E9%A1%B9%E7%9B%AE9-%E8%BF%87%E6%B8%A1%E5%92%8C%E5%8A%A8%E7%94%BB/U23%20%E5%8F%98%E6%8D%A2%EF%BC%9A2D%20%E5%8F%98%E6%8D%A2%E4%B8%8E%203D%20%E5%8F%98%E6%8D%A2.pptx) |
+|  | U24 | 过渡与动画：transition 与 @keyframes | 22 | 5 | 1 | [HTML](decks/%E9%A1%B9%E7%9B%AE9-%E8%BF%87%E6%B8%A1%E5%92%8C%E5%8A%A8%E7%94%BB/U24%20%E8%BF%87%E6%B8%A1%E4%B8%8E%E5%8A%A8%E7%94%BB%EF%BC%9Atransition%20%E4%B8%8E%20%40keyframes.html) · [PPTX](pptx/%E9%A1%B9%E7%9B%AE9-%E8%BF%87%E6%B8%A1%E5%92%8C%E5%8A%A8%E7%94%BB/U24%20%E8%BF%87%E6%B8%A1%E4%B8%8E%E5%8A%A8%E7%94%BB%EF%BC%9Atransition%20%E4%B8%8E%20%40keyframes.pptx) |
+|  | U25 | 动画综合案例：呼吸灯与卡片翻转 | 20 | 5 | 1 | [HTML](decks/%E9%A1%B9%E7%9B%AE9-%E8%BF%87%E6%B8%A1%E5%92%8C%E5%8A%A8%E7%94%BB/U25%20%E5%8A%A8%E7%94%BB%E7%BB%BC%E5%90%88%E6%A1%88%E4%BE%8B%EF%BC%9A%E5%91%BC%E5%90%B8%E7%81%AF%E4%B8%8E%E5%8D%A1%E7%89%87%E7%BF%BB%E8%BD%AC.html) · [PPTX](pptx/%E9%A1%B9%E7%9B%AE9-%E8%BF%87%E6%B8%A1%E5%92%8C%E5%8A%A8%E7%94%BB/U25%20%E5%8A%A8%E7%94%BB%E7%BB%BC%E5%90%88%E6%A1%88%E4%BE%8B%EF%BC%9A%E5%91%BC%E5%90%B8%E7%81%AF%E4%B8%8E%E5%8D%A1%E7%89%87%E7%BF%BB%E8%BD%AC.pptx) |
+| **项目10**<br>多媒体应用 | U26 | 多媒体标签与应用：object、embed、video、audio | 25 | 5 | 1 | [HTML](decks/%E9%A1%B9%E7%9B%AE10-%E5%A4%9A%E5%AA%92%E4%BD%93%E5%BA%94%E7%94%A8/U26%20%E5%A4%9A%E5%AA%92%E4%BD%93%E6%A0%87%E7%AD%BE%E4%B8%8E%E5%BA%94%E7%94%A8%EF%BC%9Aobject%E3%80%81embed%E3%80%81video%E3%80%81audio.html) · [PPTX](pptx/%E9%A1%B9%E7%9B%AE10-%E5%A4%9A%E5%AA%92%E4%BD%93%E5%BA%94%E7%94%A8/U26%20%E5%A4%9A%E5%AA%92%E4%BD%93%E6%A0%87%E7%AD%BE%E4%B8%8E%E5%BA%94%E7%94%A8%EF%BC%9Aobject%E3%80%81embed%E3%80%81video%E3%80%81audio.pptx) |
+
+## 目录结构
+
+```
+Web2026/
+├── index.html          课堂导航总目录（上课入口）
+├── decks/              HTML 动效版课件（26 个，按项目分目录）
+├── pptx/               PPTX 版课件（26 个，与 HTML 版同源同配色）
+├── docs/
+│   ├── 课程教学计划.md   学时分配、40 分钟标准节奏、考核建议
+│   ├── 课件总览.md       单元清单、课堂操作说明、二次修改指引
+│   └── notes_*.md       教材逐页备课笔记（项目1-3 / 4-6 / 7-10）
+└── 生成器/              课件生成引擎（内容与样式分离，可一键重建）
+    ├── content/U01-U26.json + SPEC.md   单元内容源（内容规范见 SPEC.md）
+    ├── deck_core.py     HTML 渲染引擎（配色/动效/交互）
+    ├── pptx_core.py     PPTX 渲染引擎
+    ├── index_core.py    总目录生成器
+    └── build.py         构建入口
+```
+
+## 课件特性
+
+**HTML 动效版**
+
+- 入场动画、渐变视觉、深色代码块；键盘 ← → / 空格翻页，`O` 目录、`F` 全屏、`P` 打印为 PDF
+- **实时效果演示**：内嵌真实运行的网页，学生当场看到「代码 → 效果」的对应关系
+- **随堂检测可交互**：每单元 5 题（含 1~2 道多选），点选判分、错题标红、展开解析，支持单题重做与全部重做
+- **屏幕自适应**：16:9 / 4:3 投影 / 超宽屏等比适配；手机平板竖握自动转为纵向流式阅读
+- **点击翻页开关**：右下角可关闭鼠标点击翻页（快捷键 `C`），方便课堂上圈选讲解；状态记忆
+- 圈选文字、双击选词时页面保持静止，不误触翻页
+
+**PPTX 版**
+
+- 与 HTML 版同源同配色，16:9；演示页内嵌真实渲染截图
+- 检测页每题带「单选 / 多选」标签，**答案与解析写入该页演讲者备注**
+
+**每个单元的固定闭环**
+
+学习目标 → 思政课堂（教材原文）→ 导览 → 知识讲解（含教材任务编号）→ AI 前沿 → 随堂检测 → 小结 → 作业 → 权威出处（MDN / W3C 真实链接）
+
+## 二次开发
+
+内容与样式分离：改 `生成器/content/UXX.json` 后重跑构建脚本即可重建对应单元；改 `deck_core.py` 中的 THEME / CSS 一处，26 个单元可一键统一换风格。
+
+```bash
+python3 -m venv .venv && source .venv/bin/activate
+pip install python-pptx
+cd 生成器
+python build.py          # 重建全部单元 + 总目录
+python build.py U01      # 只重建 U01
+```
+
+> PPTX 生成需要本机安装 Chrome（用于对 HTML 页面截图并嵌入）。
+
+## 说明
+
+- 技术表述以 [MDN 中文文档](https://developer.mozilla.org/zh-CN/) 为准；教材印刷疑误已按标准表述更正并在课件中加注。
+- 课件内容仅供教学使用，教材原文版权归电子工业出版社所有，教材 PDF 未纳入本仓库。

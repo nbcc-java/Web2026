@@ -1,0 +1,491 @@
+{
+  "id": "U05",
+  "project": "项目2",
+  "project_name": "HTML 基础",
+  "unit": "第 5 单元",
+  "title": "链接与锚点",
+  "subtitle": "从一个 a 标签出发，掌握路径、目标窗口与页面内跳转的完整写法",
+  "duration": 40,
+  "cover_tags": [
+    "a 标签",
+    "相对路径",
+    "锚点链接",
+    "mailto",
+    "target"
+  ],
+  "ref_book": "电子工业出版社 · 2025 年 1 月第 1 版",
+  "objectives": {
+    "knowledge": [
+      "掌握 a 标签的语法与常用属性",
+      "理解相对路径与绝对路径的区别",
+      "掌握锚点链接的实现方法与 id 属性的用法"
+    ],
+    "skill": [
+      "能正确使用链接和锚点实现页面跳转",
+      "能编写内部、外部、邮件等多种常见链接",
+      "能按相对路径规范组织站点资源引用"
+    ],
+    "literacy": [
+      "提高网络安全意识，做遵法守规的 Web 前端工程师",
+      "培养严谨务实的劳动态度",
+      "树立不制作、不传播恶意链接的职业底线"
+    ]
+  },
+  "slides": [
+    {
+      "type": "objectives",
+      "title": "本单元我们要达成什么",
+      "subtitle": "对照教材《项目2》HTML 基础 2.4.4 的学习目标",
+      "objectives": {
+        "knowledge": [
+          "了解 HTML 页面的基本结构",
+          "掌握 HTML 标签的写法",
+          "掌握常见 HTML 标签的语法和语义",
+          "使用 HTML5 中的标签语义化页面"
+        ],
+        "skill": [
+          "能使用符合语义的 HTML 标签描述文档结构",
+          "能使用符合语义的 HTML 标签表达文档内容",
+          "能正确使用链接和锚点",
+          "能使用图片标签引入图片"
+        ],
+        "literacy": [
+          "培养严谨务实的劳动态度",
+          "培养精益求精的工匠精神",
+          "培养勇于探索、敢于尝试的创新精神",
+          "培养网络安全意识，做遵法守规的 Web 前端工程师"
+        ]
+      }
+    },
+    {
+      "type": "ideology",
+      "title": "网络安全意识：从一条链接做起",
+      "subtitle": "教材《项目2》思政课堂与 2.6 项目讨论",
+      "nav": "思政课堂",
+      "text": "「十四五」以来，我国数字经济取得了显著成就，新业态新模式日新月异；但同时，不同行业、区域、群体间的<strong>「数字鸿沟」尚未弥合</strong>，<strong>数字经济治理体系亟待完善</strong>。教材在项目讨论中提醒我们：<strong>采用短信链接、盗链实施电信网络诈骗是一种常见的诈骗手段</strong>。迫切需要补齐短板，推动<strong>数字经济高质量发展</strong>——而作为未来的 Web 前端工程师，守住链接背后的安全底线，正是我们的岗位责任。",
+      "topic": "教材 2.6 项目讨论：请结合身边发生的真实案例，描述一次典型的短信链接或盗链诈骗事件，并说明作为 Web 前端开发工程师应如何合理利用技术知识、确保网络空间安全，做一个遵法守规的从业者。"
+    },
+    {
+      "type": "outline",
+      "title": "本单元导览",
+      "subtitle": "围绕一个 a 标签，回答四个问题",
+      "nav": "导览",
+      "items": [
+        "链接怎么定义？href、target、title 三个属性各管什么？",
+        "相对路径和绝对路径有什么不同？为什么教材推荐使用相对路径？",
+        "内部、外部、邮件、锚点等链接分别怎么写？",
+        "任务2-2、任务2-3：动手做出可用的链接与浮动目录"
+      ]
+    },
+    {
+      "type": "section",
+      "no": "2.4.4-1",
+      "title": "链接语法与目标窗口",
+      "text": "链接的本质很简单：谁被点（源点），跳到哪（目标点）。",
+      "nav": "链接语法与目标窗口"
+    },
+    {
+      "type": "codebullets",
+      "title": "链接的基本语法：a 标签与它的三个常用属性",
+      "subtitle": "教材：链接的主要功能是实现从一个源点到目标点的跳转",
+      "nav": "链接基本语法",
+      "items": [
+        "<strong>源点：</strong>页面中被单击的对象，也就是需要实现跳转的<strong>文字或图片</strong>——用 <code>a</code> 标签把它包起来即可。",
+        "<strong>目标点：</strong>链接跳转后到达的<strong>位置或页面</strong>（某个锚点位置，或另一个网址），由 <code>href</code> 属性指定。",
+        "<code>href</code>：<strong>必设属性</strong>，用于指定目标点，需要保证<strong>路径可达</strong>；除资源定位外，还可取 <code>#</code>、<code>JavaScript:…</code> 等值。",
+        "<code>target</code>：定义<strong>目标窗口</strong>，即跳转的页面在哪个窗口中打开；<code>title</code>：<strong>鼠标悬停</strong>时弹出的提示信息。",
+        "<strong>哑链接：</strong><code>href</code> 值为 <code>#</code> 相当于设置一个空链接，<strong>不会发生任何跳转行为</strong>。",
+        "<strong>URL</strong>（uniform resource locator）：把<strong>包含协议和你要访问的资源地址</strong>的部分统称为 URL 地址。"
+      ],
+      "lang": "html",
+      "file": "链接的示例语法",
+      "code": "<!-- 最基本的链接：源点 + 目标点 -->\n<a href=\"http://www.nbcc.cn\">单击跳转</a>\n\n<!-- 带 target 与 title 属性 -->\n<a href=\"http://www.nbcc.cn\" target=\"_blank\" title=\"宁波城市职业技术学院\">单击跳转</a>\n\n<!-- 哑链接：不会发生跳转行为 -->\n<a href=\"#\">空链接（哑链接）</a>",
+      "caption": "教材示例中的 <code>www.nb**.cn</code> 为脱敏域名，实际为宁波城市职业技术学院域名 <code>nbcc.cn</code>。"
+    },
+    {
+      "type": "table",
+      "title": "target 属性值及其描述（教材表2-5）",
+      "subtitle": "默认情况下单击链接后，当前页面会发生跳转",
+      "nav": "表2-5 target 属性",
+      "head": [
+        "属性值",
+        "描述"
+      ],
+      "rows": [
+        [
+          "<code>_blank</code>",
+          "开启一个<strong>新窗口</strong>，显示目标内容"
+        ],
+        [
+          "<code>_self</code>",
+          "<strong>默认属性值</strong>，在链接所在的<strong>当前窗口</strong>中打开目标内容"
+        ],
+        [
+          "<code>_parent</code>",
+          "在<strong>上一级窗口</strong>中打开目标内容，一般用在<strong>框架结构</strong>中"
+        ],
+        [
+          "<code>_top</code>",
+          "在浏览器的<strong>整个窗口</strong>中打开目标内容，<strong>忽略任何框架</strong>"
+        ],
+        [
+          "框架名称",
+          "在<strong>指定的框架窗口</strong>中打开目标内容"
+        ]
+      ]
+    },
+    {
+      "type": "code",
+      "title": "链接和目标窗口（教材代码2-6）",
+      "subtitle": "把默认打开、_blank 与 _self 放在一起对照",
+      "nav": "代码2-6 链接与目标窗口",
+      "lang": "html",
+      "file": "2-4-6.html",
+      "code": "<!DOCTYPE html>\n<html>\n  <head>\n    <meta charset=\"utf-8\">\n    <title>链接和目标窗口</title>\n  </head>\n  <body>\n        <p><a href=\"http://www.nbcc.cn\">默认打开目标窗口</a></p>\n        <p><a href=\"http://www.nbcc.cn\" target=\"_blank\">_blank 打开目标窗口</a></p>\n        <p><a href=\"http://www.nbcc.cn\" target=\"_self\">_self 打开目标窗口</a></p>\n  </body>\n</html>",
+      "caption": "<strong>易错点：</strong>使用 <code>_blank</code> 打开目标窗口后，当前浏览器<strong>无法使用「后退」按钮进行返回</strong>。"
+    },
+    {
+      "type": "section",
+      "no": "2.4.4-2",
+      "title": "路径与链接类型",
+      "text": "路径写错，链接就废：这一页是整个 2.4.4 小节最容易出错的地方。",
+      "nav": "路径与链接类型"
+    },
+    {
+      "type": "codebullets",
+      "title": "相对路径与绝对路径",
+      "subtitle": "教材：链接能否实现正确的跳转，路径的描述至关重要",
+      "nav": "相对路径与绝对路径",
+      "items": [
+        "<strong>相对路径：</strong>基于<strong>某个参照对象（通常是链接所在的当前文档）</strong>的路径，以参照对象所在位置为起点查找目标文件，<strong>必须有参照</strong>。",
+        "链接路径通常分 3 类：① 两个文件<strong>同属一个目录</strong>；② 目标文件在当前文件的<strong>某个下级目录</strong>中；③ 目标文件在当前文件的<strong>某个上级目录</strong>中。",
+        "<strong>路径符号（表2-6）：</strong><code>.</code> 或 <code>./</code> 表示<strong>当前目录</strong>；<code>..</code> 表示<strong>上一级目录</strong>；<code>/</code> 表示<strong>进入下一级目录</strong>；<code>../</code> 表示<strong>进入上一级目录</strong>。",
+        "<strong>绝对路径：</strong>文件的<strong>完整路径</strong>，<strong>不需要参照对象</strong>；既可以是<strong>从磁盘根目录出发的完整路径</strong>，也可以是一个<strong>网页的完整 URL 地址</strong>。",
+        "URL 地址通常由<strong>协议头 + 磁盘路径 + 资源名称</strong>构成；常见协议头有 <code>https://</code>、<code>files://</code>、<code>http://</code>、<code>ftp://</code>、<code>ed2k://</code> 等。",
+        "所有<strong>需要引用资源</strong>的地方（图片、字体、音频、视频、文件下载）都会用到这两种路径。"
+      ],
+      "lang": "html",
+      "file": "路径示例",
+      "code": "<!-- 示例1：目标文件在当前文件的下级目录 -->\n│  2-4-7.html\n└─sub\n        target.html\n<a href=\"./sub/target.html\">下级目录中的文件</a>\n\n<!-- 示例2：两个文档同属一个目录 -->\n│  2-4-7.html\n│  target.html\n<a href=\"./target.html\">相同目录下的文件</a>\n<!-- 简化写法：同属一个目录时，可直接书写目标文件名 -->\n<a href=\"target.html\">相同目录下的文件</a>\n\n<!-- 绝对路径：磁盘路径形式的完整路径 -->\nfiles://N:\\cn.nbcc.web.book\\ch02\\sub\\target.html\n\n<!-- 绝对路径：一个网页的完整 URL 地址 -->\n<a href=\"https://www.nbcc.cn/2022/0505/c121a14741/page.htm\">城院校训</a>"
+    },
+    {
+      "type": "bullets",
+      "title": "为什么教材推荐使用相对路径",
+      "subtitle": "一条重要结论，也是项目部署的基本素养",
+      "nav": "推荐使用相对路径",
+      "items": [
+        "绝对路径<strong>不便于书写</strong>，一旦文件或磁盘位置发生变化，将导致<strong>工作无法正常运行</strong>。",
+        "在本地计算机中正常工作的页面，<strong>将来要上传到服务器中运行</strong>；真正部署的<strong>服务器环境跟本地完全不同，甚至操作系统也不同</strong>。",
+        "只要源文件和目标文件的<strong>相对位置不变</strong>，把它们整体上传到服务器后<strong>同样能够正常工作</strong>——这是网站正确部署的关键。",
+        "出于安全考虑，<strong>很多服务器根本不支持绝对路径的地址访问</strong>。",
+        "因此：<strong>应优先考虑使用相对路径</strong>。这也是 1+X 初级考试中的常见考点。"
+      ]
+    },
+    {
+      "type": "table",
+      "title": "链接的 5 种类型",
+      "subtitle": "先认清类型，再决定 href 里该写什么",
+      "nav": "链接的 5 种类型",
+      "head": [
+        "类型",
+        "定义"
+      ],
+      "rows": [
+        [
+          "内部链接",
+          "<strong>同一个网站内部</strong>，不同页面之间的链接关系；通常由相对路径表达"
+        ],
+        [
+          "外部链接",
+          "跳转到<strong>网站外部</strong>，和其他网站元素之间的链接关系；通常以网址形式的绝对路径书写"
+        ],
+        [
+          "锚点链接",
+          "在<strong>当前或外部页面的特定位置</strong>进行跳转，类似 PDF / Word 的书签功能"
+        ],
+        [
+          "脚本链接",
+          "将<strong>脚本作为链接目标</strong>，实现 HTML 无法完成的功能"
+        ],
+        [
+          "资源链接",
+          "实现<strong>站点资源、文件的下载</strong>"
+        ]
+      ]
+    },
+    {
+      "type": "codebullets",
+      "title": "外部链接、URL 协议与 mailto 邮件链接",
+      "subtitle": "教材表2-7 常用 URL 协议 + mailto 协议语法",
+      "nav": "URL 协议与 mailto",
+      "items": [
+        "<strong>常用 URL 协议（表2-7）：</strong><code>http://</code> 超文本传输协议；<code>mailto:</code> 邮件发送协议；<code>ftp://</code> 文件传输协议；<code>telnet://</code> 远程上机协议；<code>news://</code> 新闻讨论组协议。",
+        "mailto 语法中，<strong>收件人邮箱地址是必选项</strong>；<code>subject</code> 指定<strong>邮件主题</strong>，<code>cc</code> 设置<strong>抄送邮箱</strong>，<code>bcc</code> 设置<strong>暗抄送邮箱</strong>，其余均为可选项。",
+        "<strong>多个参数之间使用「&amp;」分隔；参数和收件人邮箱地址之间使用「?」分隔。</strong>",
+        "<strong>常见的编程错误：</strong><code>?</code>、<code>&amp;</code> <strong>后面出现空格</strong>会导致链接失效，书写后务必检查。",
+        "技巧：使用 mailto 协议启用邮件发送程序时，需要在本地计算机中<strong>事先安装并配置好邮件收发软件（如 Outlook）</strong>。"
+      ],
+      "lang": "html",
+      "file": "mailto 协议语法",
+      "code": "<!-- mailto 协议的完整语法 -->\n<a href=\"mailto:邮箱地址1?subject=主题&cc=抄送邮箱地址&bcc=暗抄送邮箱地址\">文本/图片</a>\n\n<!-- 教材示例 -->\n<a href=\"mailto:support@126.com?subject=help\">请求课程帮助</a>"
+    },
+    {
+      "type": "task",
+      "title": "任务2-2｜制作常用链接",
+      "subtitle": "目标：相对路径内部跳转 + 外部链接绝对路径跳转 + 邮件链接发送邮件",
+      "nav": "任务2-2 常用链接",
+      "goal": "根据链接的相关知识，在一个页面中同时实现相对路径跳转、外部链接跳转和邮件链接。",
+      "steps": [
+        {
+          "title": "准备素材",
+          "text": "在站点根目录新建 index.html，并在同级与下级目录 sub 中各放一个 target.html。"
+        },
+        {
+          "title": "写内部链接",
+          "text": "使用相对路径：<code>./sub/target.html</code> 指向下级目录，<code>target.html</code> 指向同级目录。"
+        },
+        {
+          "title": "写外部链接",
+          "text": "使用以网址形式表示的绝对路径，如 https 开头的完整 URL 地址。"
+        },
+        {
+          "title": "写邮件链接",
+          "text": "使用 mailto 协议，问号后接 subject 主题，注意 <code>?</code> 与 <code>&amp;</code> 后面不要留空格。"
+        },
+        {
+          "title": "保存并预览",
+          "text": "在浏览器中逐个单击测试，检查是否能正确跳转或被邮件客户端接管。"
+        }
+      ],
+      "lang": "html",
+      "code": "<!DOCTYPE html>\n<html>\n  <head>\n    <meta charset=\"utf-8\">\n    <title>相对路径和绝对路径</title>\n  </head>\n  <body>\n     <p><a href=\"./sub/target.html\">相对路径</a></p>\n     <p><a href=\"target.html\">相同目录下的文件</a></p>\n     <p><a href=\"N:\\ cn.nbcc.web.book\\ch02\\target.html\">绝对路径</a></p>\n     <p><a href=\"http://www.nbcc.cn\">宁波城市职业技术学院</a></p>\n     <p><a href=\"mailto:support@126.com?subject=help\">请求课程帮助</a></p>\n  </body>\n</html>"
+    },
+    {
+      "type": "demo",
+      "title": "效果演示｜相对路径是怎么找到目标文件的",
+      "subtitle": "以当前文件为参照：先 / 进下级目录，再定位 target.html",
+      "nav": "相对路径演示",
+      "items": [
+        "先找到<strong>参照对象</strong>：当前文件 <code>2-4-7.html</code>。",
+        "遇到 <code>./</code>：表示<strong>当前目录</strong>，从这里出发。",
+        "遇到 <code>sub/</code>：用「/」<strong>进入下一级目录</strong> sub。",
+        "最后写上文件名 <code>target.html</code>，拼接成 <code>./sub/target.html</code>。",
+        "换成 <code>../</code> 则是<strong>进入上一级目录</strong>——三种情况就是这么来的。"
+      ],
+      "hint": "练一练：如果目标文件在当前文件的上一级目录，href 应该怎么写？（答案：<code>../target.html</code>）",
+      "html": "<style>*{box-sizing:border-box}body{margin:0;font-family:'PingFang SC',system-ui,sans-serif;background:#f5f8fd}.wrap{width:660px;padding:6px;background:#fff;border:1px solid #e2e8f2;border-radius:12px;box-shadow:0 14px 30px -22px rgba(20,40,90,.45)}.top{display:flex;gap:12px;padding:12px}.tree{flex:0 0 46%;background:#f7f9fd;border:1px solid #e2e8f2;border-radius:10px;padding:10px 12px;font-family:Menlo,Consolas,monospace;font-size:12px;line-height:2.1;color:#33456b}.row{border-radius:6px;padding:1px 6px;opacity:.35}.tree .row{animation:hl 4.5s infinite}.r2{animation-delay:1.2s}.r3{animation-delay:2.4s}@keyframes hl{0%,10%{opacity:.35}16%,34%{opacity:1;background:#e7f7ef;color:#177a4a}40%,100%{opacity:.35}}.diag{flex:1;background:#f7f9fd;border:1px dashed #cfdcf2;border-radius:10px;padding:10px 12px;font-size:12.5px;color:#41506b;line-height:1.9}.step{opacity:.35;animation:hl2 4.5s infinite}.s2{animation-delay:1.2s}.s3{animation-delay:2.4s}@keyframes hl2{0%,10%{opacity:.35}16%,34%{opacity:1}40%,100%{opacity:.35}}.code{margin:0 10px 12px;background:#0f2138;color:#e8eefc;border-radius:10px;padding:10px 12px;font-family:Menlo,Consolas,monospace;font-size:12.5px;line-height:1.8}.cur{background:#ffe9a8;color:#7a4e00;border-radius:4px;padding:1px 4px}.note{margin:0 10px 12px;font-size:12.5px;color:#c2601a;background:#fff3e7;border-radius:8px;padding:8px 12px;line-height:1.7}</style><div class='wrap'><div class='top'><div class='tree'><div class='row'>│  <span class='cur'>2-4-7.html</span>（当前文件）</div><div class='row r2'>└─sub</div><div class='row r3'>　　　target.html</div></div><div class='diag'><div class='step'>① 参照对象 = 当前文件 2-4-7.html</div><div class='step s2'>② <code>./sub/</code> 进入下一级目录 sub</div><div class='step s3'>③ 拼接文件名 → target.html</div></div></div><div class='code'>当前目录　上级目录　下级目录<br>./ 　　　　../ 　　　　/<br><br>&lt;a href=\"./sub/target.html\"&gt;下级目录中的文件&lt;/a&gt;<br>&lt;a href=\"target.html\"&gt;相同目录下的文件&lt;/a&gt;<br>&lt;a href=\"../target.html\"&gt;上级目录中的文件&lt;/a&gt;</div><div class='note'>教材结论：优先使用<strong>相对路径</strong>——只要源文件和目标文件的相对位置不变，整体上传服务器后依然能正常工作。</div></div>"
+    },
+    {
+      "type": "section",
+      "no": "2.4.4-3",
+      "title": "锚点链接",
+      "text": "两步操作：先设锚点（建书签），再做跳转。",
+      "nav": "2.4.4-3 锚点链接"
+    },
+    {
+      "type": "codebullets",
+      "title": "锚点链接的两步操作",
+      "subtitle": "类似 PDF / Word 的书签功能，常用于「回到顶部」与「文档大纲」",
+      "nav": "锚点的两步操作",
+      "items": [
+        "<strong>第 1 步 · 设置锚点（创建书签）：</strong>在 HTML5 中可以使用<strong>任意标签的 <code>id</code> 属性</strong>设置锚点，其 <code>id</code> 属性值就是<strong>锚点名称（书签名）</strong>。",
+        "<code>id</code> 属性犹如身份证，<strong>可以唯一标识标签元素</strong>，因此<strong>同一个页面中要求 id 属性值必须唯一</strong>。",
+        "<strong>第 2 步 · 设置链接跳转：</strong>把 <code>href</code> 写成 <code>#锚点名</code> 即可跳转到当前页面的特定位置。",
+        "<strong>外部锚点链接：</strong>如果要跳转到其他页面的特定锚点位置，<strong>必须在「#」前面加上该页面的页面路径</strong>。",
+        "<strong>师生问答：</strong>能否把 <code>id</code> 加到 <code>section</code> 上？——<strong>当然可以</strong>。每个 section 正好对应一个章节，网页实现过程中做法往往不是唯一的。"
+      ],
+      "lang": "html",
+      "file": "锚点链接语法",
+      "code": "<!-- 设置锚点（创建书签） -->\n<p id=\"ch02\">第二节</p>\n\n<!-- 内部锚点链接：链接到当前页面的特定锚点位置 -->\n<a href=\"#ch02\">跳到第二节</a>\n\n<!-- 外部锚点链接：链接到其他页面的特定锚点位置 -->\n<a href=\"02.html#ch01\">第二章第一节</a>"
+    },
+    {
+      "type": "task",
+      "title": "任务2-3｜使用锚点链接",
+      "subtitle": "以教学项目源文件 T02-02.html 为模板，实现浮动目录的章节定位效果",
+      "nav": "任务2-3 锚点链接",
+      "goal": "用户单击浮动目录中的相应章节链接，浏览器自动定位到对应章节的位置（教材图2-17）。",
+      "steps": [
+        {
+          "title": "搭主结构",
+          "text": "用 <code>main</code> 承载正文，内部用 10 个 <code>section</code> 章节，每个章节由一个 <code>h2</code> 标题加一段 <code>p</code> 正文构成。"
+        },
+        {
+          "title": "给章节加锚点",
+          "text": "在每个章节的 <code>h2</code> 标签上添加 <code>id</code> 属性，取唯一值 <code>ch01</code>～<code>ch10</code> 对应各章节。"
+        },
+        {
+          "title": "做浮动目录",
+          "text": "用 <code>div</code> 承载一个 <code>ul</code> 无序列表，每个 <code>li</code> 中放一个章节链接。"
+        },
+        {
+          "title": "写目录样式",
+          "text": "在 <code>head</code> 中用 <code>style</code> 定义 <code>#outline</code>：<code>position: fixed</code> 配合宽高与背景色实现浮动效果。"
+        },
+        {
+          "title": "连起来",
+          "text": "把目录里的 <code>href</code> 分别指向 <code>#ch01</code>～<code>#ch10</code>，预览时单击即可跳转到对应章节。"
+        }
+      ],
+      "lang": "html",
+      "code": "<!DOCTYPE html>\n<html>\n<head>\n<meta charset=\"UTF-8\">\n<title>锚点链接</title>\n<style type=\"text/css\">\n  #outline{\n        width: 200px;\n        height: 300px;\n        border: 1px solid #ccc;\n        position: fixed;\n        top: 50%;\n        right: 10px;\n        background: #ECCF91;\n    }\n</style>\n</head>\n\n<body>\n    <div id=\"outline\">\n        <ul>\n            <li><a href=\"#ch01\">第1 章</a></li>\n            <li><a href=\"#ch02\">第2 章</a></li>\n            <!-- 第3～9 章同构：#ch03 … #ch09 -->\n            <li><a href=\"#ch10\">第10 章</a></li>\n        </ul>\n    </div>\n    <main>\n        <section>\n            <h2 id=\"ch01\">第1 章</h2>\n            <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. …</p>\n        </section>\n        <section>\n            <h2 id=\"ch02\">第2 章</h2>\n            <p>Alias reprehenderit possimus veritatis repellat id officiis provident, …</p>\n        </section>\n        <!-- 第3～10 章同构：h2 id=\"ch03\" … id=\"ch10\" -->\n    </main>\n</body>\n</html>"
+    },
+    {
+      "type": "demo",
+      "title": "效果演示｜浮动目录与锚点定位",
+      "subtitle": "教材代码说明：021～034 行浮动目录，035～076 行 10 个 section 正文",
+      "nav": "锚点定位演示",
+      "items": [
+        "右侧<strong>浮动目录</strong>由 <code>div</code> + <code>ul</code> 构成，用 <code>position: fixed</code> 固定在窗口右侧。",
+        "每个章节标题 <code>h2</code> 都带<strong>唯一</strong>的 <code>id</code>：<code>ch01</code>、<code>ch02</code>……这就是锚点名。",
+        "目录里的 <code>href</code> 写成 <code>#ch01</code>，单击即<strong>定位到对应章节</strong>。",
+        "演示效果：左侧正文滚动的同时，右侧目录同步高亮——这就是锚点链接起作用的过程。"
+      ],
+      "hint": "课后操作题：在页面最后添加一个「返回」链接，用锚点链接的方法实现跳转到当前页面的开始位置。",
+      "html": "<style>*{box-sizing:border-box}body{margin:0;font-family:'PingFang SC',system-ui,sans-serif;background:#f5f8fd}.wrap{width:660px;display:flex;gap:12px;padding:6px}.win{flex:1;height:300px;overflow:hidden;background:#fff;border:1px solid #e2e8f2;border-radius:12px;box-shadow:0 14px 30px -22px rgba(20,40,90,.45);position:relative}.win .bar{position:absolute;top:0;left:0;right:0;height:26px;background:#eef3fb;border-bottom:1px solid #e2e8f2;display:flex;align-items:center;padding:0 10px;font-size:11.5px;color:#8892a6;z-index:2}.con{padding:32px 14px 14px;animation:sc 9s infinite}@keyframes sc{0%,4%{transform:translateY(0)}30%,34%{transform:translateY(-88px)}60%,64%{transform:translateY(-176px)}92%,100%{transform:translateY(0)}}.sec{padding:10px 0;border-bottom:1px dashed #e6ecf6}.on h3{margin:0 0 6px;font-size:14px;color:#0e1b2e}.sec h3{margin:0 0 6px;font-size:14px;color:#41506b;font-weight:600}.sec p{margin:0;font-size:11.5px;color:#8892a6;line-height:1.8}.sec.on h3{color:#177a4a}.out{flex:0 0 150px;height:300px;background:#fff6e5;border:1px solid #f0d9a8;border-radius:12px;padding:10px 12px;box-shadow:0 14px 30px -22px rgba(20,40,90,.45)}.out b{display:block;font-size:11.5px;color:#b7791f;margin-bottom:8px}ul{margin:0;padding-left:0;list-style:none}li{font-size:12.5px;color:#6b7688;border-radius:6px;padding:4px 8px;margin-bottom:4px}.n1{animation:act 9s infinite}.n2{animation:act 9s 2.7s infinite}.n3{animation:act 9s 5.4s infinite}@keyframes act{0%,4%{background:#ffe9a8;color:#7a4e00;font-weight:700}28%,100%{background:transparent;color:#6b7688;font-weight:400}}.foot{margin-top:10px;font-size:11.5px;color:#b7791f;line-height:1.7}</style><div class='wrap'><div class='win'><div class='bar'>T02-02.html · 锚点链接效果</div><div class='con'><div class='sec on'><h3>第1 章 HTML 简介</h3><p>单击右侧浮动目录中的章节，浏览器将自动定位到对应章节的位置……</p></div><div class='sec'><h3>第2 章 页面基本结构</h3><p>每个章节标题 h2 都设置了唯一的 id 属性，它就是锚点名称（书签名）。</p></div><div class='sec'><h3>第3 章 语法规则</h3><p>目录链接写 href=\"#锚点名\"，即可跳转到当前页面的特定锚点位置。</p></div><div class='sec'><h3>第4 章 语义化标签</h3><p>id 属性如同身份证，可以唯一标识标签元素，同一页面中 id 值必须唯一。</p></div></div></div><div class='out'><b>浮动目录 #outline</b><ul><li class='n1'>第1 章</li><li class='n2'>第2 章</li><li class='n3'>第3 章</li><li>第4 章</li></ul><div class='foot'>position: fixed;<br>top: 50%; right: 10px;</div></div></div>"
+    },
+    {
+      "type": "ai",
+      "title": "AI 前沿：当 AI 帮你「找链接」",
+      "subtitle": "路径能自动生成，安全却必须由人来把关",
+      "nav": "AI 前沿",
+      "text": "大语言模型可以根据站点目录清单，自动生成导航菜单与锚点目录，也能批量校对链接是否有效。但<strong>链接安全、钓鱼与盗链的判断必须由人把关</strong>——教材的项目讨论正提醒我们要警惕利用短信链接、盗链实施的电信网络诈骗。AI 负责「写得快」，我们负责「用得正」。",
+      "items": [
+        "批量生成：把站点文件清单交给 GitHub Copilot、文心快码等，自动生成相对路径链接，减少手写错误。",
+        "智能校对：用 DeepSeek、通义千问等国产大模型批量检查<strong>锚点名与 id 是否一一对应</strong>。",
+        "安全提醒：使用 <code>target=\"_blank\"</code> 打开外部链接时，应参照 MDN 建议补充 <code>rel</code> 属性，防范新窗口带来的安全风险。",
+        "职业底线：<strong>不制作、不传播钓鱼页面</strong>，发现盗链、恶意跳转要及时报告——做遵法守规的 Web 前端工程师。"
+      ]
+    },
+    {
+      "type": "quiz",
+      "title": "随堂检测",
+      "subtitle": "第 1 题选自教材项目2 课后选择题，其余为配套自测",
+      "nav": "随堂检测",
+      "items": [
+        {
+          "q": "在 HTML 标签中，<code>a</code> 标签的（　　）属性用于指定跳转地址。",
+          "options": [
+            "A. id",
+            "B. name",
+            "C. href",
+            "D. target"
+          ],
+          "answer": "C",
+          "tip": "教材 2.6 作业第 5 题。<code>href</code> 用于指定目标点；<code>target</code> 指定目标窗口，<code>id</code> 用于唯一标识元素（也用作锚点名）。",
+          "type": "single"
+        },
+        {
+          "q": "下列关于 <code>target=\"_blank\"</code> 的说法，正确的是（　　）。",
+          "options": [
+            "A. 在当前窗口中打开目标内容",
+            "B. 打开新窗口后可用「后退」按钮返回",
+            "C. 打开新窗口，无法使用「后退」按钮返回",
+            "D. 与 _self 完全等价"
+          ],
+          "answer": "C",
+          "tip": "教材易错点：用 <code>_blank</code> 打开目标窗口后，<strong>当前浏览器无法使用「后退」按钮进行返回</strong>。",
+          "type": "single"
+        },
+        {
+          "q": "下列做法符合教材推荐的是（　　）。",
+          "options": [
+            "A. 站点内的页面互相跳转使用磁盘绝对路径",
+            "B. 站点内的资源引用优先使用相对路径",
+            "C. 给 href 写成 <code>#</code> 即可跳转到页面顶部",
+            "D. 锚点必须使用 <code>a</code> 标签的 name 属性"
+          ],
+          "answer": "B",
+          "tip": "相对路径便于整体部署上传且相对位置不变即可正常工作；<code>href=\"#\"</code> 是<strong>哑链接</strong>，不发生跳转；HTML5 中<strong>任意标签的 id 属性</strong>都能设置锚点。",
+          "type": "single"
+        },
+        {
+          "type": "multi",
+          "q": "关于 <code>target</code> 属性的取值，下列说法正确的有（　　）。",
+          "options": [
+            "A. <code>_blank</code> 开启一个新窗口显示目标内容",
+            "B. <code>_self</code> 是默认属性值，在链接所在的当前窗口中打开",
+            "C. <code>_top</code> 在上一级窗口中打开目标内容，一般用在框架结构中",
+            "D. 也可以直接使用框架名称作为取值，在指定的框架窗口中打开"
+          ],
+          "answer": "ABD",
+          "tip": "在上一级窗口打开的是 <code>_parent</code>；<code>_top</code> 是在浏览器整个窗口中打开并忽略框架。"
+        },
+        {
+          "type": "multi",
+          "q": "关于路径与锚点链接，下列说法正确的有（　　）。",
+          "options": [
+            "A. 相对路径以当前文档为参照，<code>../</code> 表示进入上一级目录",
+            "B. 教材推荐优先使用相对路径，整体上传服务器后相对位置不变即可正常工作",
+            "C. 同一个页面中 <code>id</code> 属性值必须唯一，它唯一标识标签元素",
+            "D. 跳转到其他页面的锚点，直接写 <code>#锚点名</code> 即可，不必写页面路径"
+          ],
+          "answer": "ABC",
+          "tip": "外部锚点链接必须在「#」前加上该页面的路径，如 <code>02.html#ch01</code>。"
+        }
+      ]
+    },
+    {
+      "type": "summary",
+      "title": "本课小结",
+      "subtitle": "五句话，牢牢抓住链接与锚点",
+      "nav": "本课小结",
+      "items": [
+        "链接本质：<code>a</code> 标签包裹源点，<code>href</code> 指定目标点（必设属性）；<code>target</code> 决定目标窗口，<code>title</code> 提供悬停提示。",
+        "target 取值：<code>_blank</code> 开新窗口（<strong>无法后退</strong>）、<code>_self</code> 当前窗口（默认）、<code>_parent</code> 上一级窗口、<code>_top</code> 整个窗口、框架名称。",
+        "路径：相对路径以<strong>当前文件</strong>为参照，<code>./</code> 当前目录、<code>../</code> 上一级目录、<code>/</code> 进入下一级目录；绝对路径是完整路径，<strong>教材推荐使用相对路径</strong>。",
+        "链接类型：内部、外部、锚点、脚本、资源链接五类；外部链接常用 http://、mailto:、ftp:// 等协议，mailto 用 <code>?</code> 起参、<code>&amp;</code> 分隔参数。",
+        "锚点两步：<strong>任意标签加唯一 <code>id</code> 设置锚点</strong> → <code>href=\"#锚点名\"</code> 跳转；跨页面则写成 <code>页面路径#锚点名</code>。"
+      ]
+    },
+    {
+      "type": "homework",
+      "title": "课后作业",
+      "nav": "课后作业",
+      "items": [
+        "<strong>选择题：</strong>完成教材项目2「一、选择题」第 5 题，并说明 <code>href</code> 与 <code>target</code> 的区别。",
+        "<strong>操作题（教材原题）：</strong>请在任务2-3 的基础上，在页面最后添加一个「返回」链接，使用锚点链接的制作方法，实现单击该链接跳转到当前页面的开始位置。",
+        "<strong>操作题 2：</strong>完善任务2-2 的页面，新增一个 mailto 邮件链接，要求含主题 subject 与抄送 cc，并验证链接能正确唤起邮件客户端。",
+        "<strong>项目讨论（教材原题）：</strong>采用短信链接、盗链实施电信网络诈骗是一种常见的诈骗手段，请结合身边的类似事件描述一个典型案例，并谈谈如何做一名遵法守规的 Web 前端开发工程师。",
+        "<strong>预习：</strong>阅读教材项目3，预习 CSS 基本选择器的写法。"
+      ]
+    },
+    {
+      "type": "refs",
+      "title": "出处与参考",
+      "subtitle": "本课件内容依据教材，并核对以下权威技术文档",
+      "nav": "出处与参考",
+      "items": [
+        {
+          "t": "教材《网页制作（HTML5+CSS3）》项目2 HTML 基础（2.4.4）",
+          "u": "郑哲、傅冬 主编 · 电子工业出版社 · 2025 年 1 月第 1 版"
+        },
+        {
+          "t": "MDN Web Docs · a 元素（超链接）",
+          "u": "https://developer.mozilla.org/zh-CN/docs/Web/HTML/Element/a"
+        },
+        {
+          "t": "MDN Web Docs · 创建超链接",
+          "u": "https://developer.mozilla.org/zh-CN/docs/Learn/HTML/Introduction_to_HTML/Creating_hyperlinks"
+        },
+        {
+          "t": "MDN Web Docs · 什么是 URL（相对路径与绝对路径）",
+          "u": "https://developer.mozilla.org/zh-CN/docs/Learn/Common_questions/Web_mechanics/What_is_a_URL"
+        },
+        {
+          "t": "MDN Web Docs · 电子邮件链接（mailto）",
+          "u": "https://developer.mozilla.org/zh-CN/docs/Learn/HTML/Introduction_to_HTML/Creating_hyperlinks#%E7%94%B5%E5%AD%90%E9%82%AE%E4%BB%B6%E9%93%BE%E6%8E%A5"
+        },
+        {
+          "t": "MDN Web Docs · HTML 元素参考",
+          "u": "https://developer.mozilla.org/zh-CN/docs/Web/HTML/Element"
+        }
+      ]
+    },
+    {
+      "type": "end",
+      "title": "第 5 单元 · 结束",
+      "text": "下一单元：为页面引入图片与多媒体，让网页真正「有画面」",
+      "nav": "结束"
+    }
+  ]
+}

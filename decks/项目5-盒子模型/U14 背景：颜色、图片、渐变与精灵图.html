@@ -1,0 +1,1368 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>背景：颜色、图片、渐变与精灵图 · 网页制作课件</title>
+<style>
+:root{
+  --bg:#EEF3FB; --bg2:#F7FAFF; --surface:#fff; --ink:#0E1B2E; --muted:#5A6C85;
+  --brand:#2F6BFF; --brand-dk:#1D46B8; --brand2:#0FB5C9; --violet:#7C5CFF; --accent:#FF8A3D;
+  --ok:#12A150; --line:#E1E8F4; --code-bg:#0D1A2B; --code-ink:#DCE7F8;
+  --font:'PingFang SC','Microsoft YaHei','Hiragino Sans GB','Source Han Sans SC',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --mono:'JetBrains Mono','SF Mono',Menlo,Consolas,'Courier New',monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+.slide{user-select:text;-webkit-user-select:text}
+.hud,.legend,.drawer,.kicker,.topbar{user-select:none;-webkit-user-select:none}
+::selection{background:rgba(47,107,255,.22)}
+html,body{height:100%}
+body{background:radial-gradient(1200px 800px at 12% 0%,#e6efff 0%,transparent 55%),
+             radial-gradient(1000px 700px at 100% 100%,#e9fbfd 0%,transparent 50%),var(--bg);
+     font-family:var(--font);color:var(--ink);overflow:hidden;-webkit-font-smoothing:antialiased}
+.wrap{height:100%;display:grid;place-items:center;padding:2.2vh 2.2vh}
+.stage{position:relative;width:100%;height:100%;max-width:calc(100vh * 16 / 9);max-height:calc(100vw * 9 / 16);
+       aspect-ratio:16/9;background:var(--bg2);border-radius:20px;overflow:hidden;
+       box-shadow:0 34px 80px -30px rgba(18,42,92,.42),0 0 0 1px rgba(255,255,255,.7) inset;
+       container-type:size}
+/* 背景装饰 */
+.bgfx{position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:0}
+.blob{position:absolute;border-radius:50%;filter:blur(46px);opacity:.5}
+.b1{width:38cqw;height:38cqw;left:-10cqw;top:-14cqw;background:linear-gradient(135deg,#bcd4ff,#8fb6ff);animation:float1 18s ease-in-out infinite}
+.b2{width:30cqw;height:30cqw;right:-8cqw;top:6cqw;background:linear-gradient(135deg,#b8f0f6,#7fe3ef);animation:float2 22s ease-in-out infinite}
+.b3{width:26cqw;height:26cqw;left:22cqw;bottom:-14cqw;background:linear-gradient(135deg,#d9ccff,#b9a6ff);animation:float3 26s ease-in-out infinite}
+@keyframes float1{50%{transform:translate(4cqw,3cqw) scale(1.06)}}
+@keyframes float2{50%{transform:translate(-4cqw,4cqw) scale(1.08)}}
+@keyframes float3{50%{transform:translate(3cqw,-4cqw) scale(1.05)}}
+.grid-lines{position:absolute;inset:0;background-image:linear-gradient(rgba(47,107,255,.05) 1px,transparent 1px),
+   linear-gradient(90deg,rgba(47,107,255,.05) 1px,transparent 1px);background-size:4cqw 4cqw;opacity:.7}
+
+/* 幻灯片 */
+.slide{position:absolute;inset:0;z-index:2;padding:4.4cqw 5cqw 4cqw;display:flex;flex-direction:column;gap:1.9cqw;
+  opacity:0;visibility:hidden;transform:translateY(1.4cqw) scale(.99);
+  transition:opacity .52s ease,transform .52s cubic-bezier(.2,.7,.2,1),visibility .52s}
+.slide.is-active{opacity:1;visibility:visible;transform:none}
+.slide.prev{transform:translateY(-1.4cqw) scale(.99)}
+.s-head{display:flex;justify-content:space-between;align-items:flex-start;gap:2cqw;flex:0 0 auto}
+.kicker{display:inline-block;font-size:1.16cqw;font-weight:700;letter-spacing:.16em;color:var(--brand);
+  background:linear-gradient(90deg,rgba(47,107,255,.12),rgba(15,181,201,.12));padding:.42cqw 1cqw;border-radius:999px;margin-bottom:.75cqw}
+.s-title{font-size:2.86cqw;font-weight:800;letter-spacing:.01em;line-height:1.2}
+.s-sub{margin-top:.6cqw;font-size:1.32cqw;color:var(--muted);line-height:1.55}
+.s-body{flex:1;min-height:0;display:flex;flex-direction:column;justify-content:center;gap:1.5cqw}
+.s-body.two{flex-direction:row;align-items:stretch;gap:2.2cqw}
+.s-body.two>*{flex:1;min-width:0}
+.s-body.col{justify-content:center}
+.col-l,.col-r{min-width:0;display:flex;flex-direction:column;justify-content:center;gap:1.2cqw}
+
+/* 入场动画 */
+.an{opacity:0}
+.is-active .an{animation:rise .66s cubic-bezier(.2,.75,.2,1) both;animation-delay:calc(var(--i,0)*95ms + 120ms)}
+@keyframes rise{from{opacity:0;transform:translateY(1.5cqw)}to{opacity:1;transform:none}}
+
+/* 封面 */
+.s-cover{flex-direction:row;align-items:center;gap:3cqw;padding:6cqw 6cqw}
+.cover-left{flex:1.15;min-width:0;z-index:2}
+.brandrow{display:flex;align-items:baseline;gap:.9cqw;margin-bottom:2.1cqw}
+.brandmark{font-size:1.7cqw;font-weight:800;color:var(--brand);letter-spacing:.08em}
+.brandsub{font-size:1.1cqw;font-weight:700;color:var(--brand2);letter-spacing:.2em}
+.cover-title{font-size:4.5cqw;font-weight:900;line-height:1.14;letter-spacing:-.01em;
+  background:linear-gradient(120deg,#12306f,#2f6bff 45%,#0fb5c9);-webkit-background-clip:text;background-clip:text;color:transparent}
+.cover-sub{margin-top:1.2cqw;font-size:1.55cqw;color:var(--muted);line-height:1.7;max-width:34cqw}
+.pills{display:flex;flex-wrap:wrap;gap:.7cqw;margin-top:1.9cqw}
+.pill{font-size:1.03cqw;font-weight:700;color:var(--brand-dk);background:rgba(47,107,255,.1);
+  border:1px solid rgba(47,107,255,.2);padding:.4cqw 1cqw;border-radius:999px}
+.pill{opacity:0}
+.is-active .pill{animation:rise .6s both;animation-delay:calc(var(--i)*95ms + 120ms)}
+.cover-meta{margin-top:2.3cqw;display:flex;align-items:center;gap:.9cqw;flex-wrap:wrap;font-size:1.02cqw;color:var(--muted)}
+.cover-meta b{color:var(--brand);font-size:1.2cqw}
+.cover-meta .dot{width:.34cqw;height:.34cqw;border-radius:50%;background:#c3cfe2}
+.cover-art{flex:.85;position:relative;min-width:0;display:grid;place-items:center}
+.orb{position:absolute;border-radius:50%;filter:blur(10px);opacity:.75}
+.o1{width:15cqw;height:15cqw;right:-1cqw;top:2cqw;background:radial-gradient(circle at 30% 30%,#9dc2ff,#4f83ff)}
+.o2{width:8cqw;height:8cqw;right:12cqw;bottom:4cqw;background:radial-gradient(circle at 30% 30%,#a9f0f7,#1fc2d6)}
+.o3{width:5cqw;height:5cqw;right:3cqw;bottom:12cqw;background:radial-gradient(circle at 30% 30%,#d5c7ff,#8a63ff)}
+.orb{animation:orb 9s ease-in-out infinite}
+.o2{animation-duration:11s}.o3{animation-duration:13s}
+@keyframes orb{50%{transform:translateY(-1.6cqw) scale(1.06)}}
+.codewin{position:relative;z-index:2;width:100%;max-width:32cqw;background:var(--code-bg);border-radius:1.2cqw;
+  box-shadow:0 30px 60px -22px rgba(13,26,43,.7);overflow:hidden;transform:rotate(-1.5deg);
+  animation:rise .8s cubic-bezier(.2,.75,.2,1) .35s both}
+.cw-bar{display:flex;gap:.5cqw;padding:.85cqw 1.1cqw;background:rgba(255,255,255,.06)}
+.cw-bar i{width:.72cqw;height:.72cqw;border-radius:50%;background:#ff5f57}
+.cw-bar i:nth-child(2){background:#febc2e}.cw-bar i:nth-child(3){background:#28c840}
+.cw-body{padding:1.3cqw 1.5cqw;font-family:var(--mono);font-size:1.06cqw;line-height:1.85;color:var(--code-ink);white-space:pre;overflow:auto}
+
+/* 章节过渡 */
+.s-section{align-items:center;justify-content:center;text-align:center}
+.sec-inner{display:flex;flex-direction:column;align-items:center}
+.sec-num{font-size:7.6cqw;font-weight:900;line-height:1;
+  background:linear-gradient(120deg,#2f6bff,#0fb5c9);-webkit-background-clip:text;background-clip:text;color:transparent;letter-spacing:-.03em}
+.sec-title{margin-top:1.2cqw;font-size:3.1cqw;font-weight:800}
+.sec-line{width:0;height:.4cqw;border-radius:99px;background:linear-gradient(90deg,var(--brand),var(--brand2));margin:1.4cqw 0}
+.is-active .sec-line{animation:draw .8s ease .5s both}
+@keyframes draw{from{width:0}to{width:11cqw}}
+.sec-sub{font-size:1.4cqw;color:var(--muted);max-width:44cqw;line-height:1.7}
+
+/* 要点列表 */
+.blist{list-style:none;display:flex;flex-direction:column;gap:1.05cqw}
+.blist li{display:flex;gap:.95cqw;align-items:flex-start;font-size:1.42cqw;line-height:1.6;
+  background:var(--surface);border:1px solid var(--line);border-radius:.85cqw;padding:1.05cqw 1.3cqw;
+  box-shadow:0 8px 22px -16px rgba(20,40,90,.5);transition:transform .25s,box-shadow .25s}
+.blist li:hover{transform:translateX(.4cqw);box-shadow:0 12px 26px -16px rgba(47,107,255,.55)}
+.blist.small li{font-size:1.24cqw;padding:.85cqw 1.1cqw}
+.blist.dense{gap:.68cqw}
+.blist.dense li{font-size:1.18cqw;padding:.72cqw 1.1cqw;line-height:1.55}
+.outline.dense{gap:.62cqw}
+.outline.dense li{padding:.72cqw 1.15cqw}
+.outline.dense .ot{font-size:1.16cqw}
+.grid.dense{gap:.95cqw}
+.card.dense{padding:1.1cqw}
+.card.dense .card-t{font-size:1.26cqw;margin-bottom:.4cqw}
+.card.dense .card-d{font-size:1.03cqw;line-height:1.55}
+.bl-dot{flex:0 0 auto;width:.62cqw;height:.62cqw;border-radius:50%;margin-top:.62cqw;
+  background:linear-gradient(135deg,var(--brand),var(--brand2));box-shadow:0 0 0 .28cqw rgba(47,107,255,.12)}
+.blist b,.blist strong{color:var(--brand-dk)}
+.blist code{font-family:var(--mono);font-size:.92em;background:#eef3ff;color:#1d46b8;padding:.1em .42em;border-radius:.35em}
+.hw li{background:linear-gradient(180deg,#fbfcff,#f3f7ff)}
+
+/* 卡片 */
+.grid{display:grid;gap:1.3cqw}
+.grid.cols-2{grid-template-columns:repeat(2,1fr)}
+.grid.cols-3{grid-template-columns:repeat(3,1fr)}
+.grid.cols-4{grid-template-columns:repeat(2,1fr)}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:1.1cqw;padding:1.5cqw;position:relative;overflow:hidden;
+  box-shadow:0 14px 32px -22px rgba(20,40,90,.55);transition:transform .28s,box-shadow .28s,border-color .28s}
+.card:hover{transform:translateY(-.5cqw);box-shadow:0 22px 40px -22px rgba(47,107,255,.5);border-color:rgba(47,107,255,.35)}
+.card::before{content:"";position:absolute;left:0;top:0;height:100%;width:.3cqw;background:linear-gradient(180deg,var(--brand),var(--brand2))}
+.card-ico{font-size:1.75cqw;margin-bottom:.6cqw}
+.card-t{font-size:1.42cqw;font-weight:800;margin-bottom:.55cqw}
+.card-d{font-size:1.14cqw;color:var(--muted);line-height:1.62}
+
+/* 表格 */
+.tbl-wrap{background:var(--surface);border:1px solid var(--line);border-radius:1.1cqw;overflow:hidden;
+  box-shadow:0 16px 36px -26px rgba(20,40,90,.6)}
+.tbl{width:100%;border-collapse:collapse;font-size:1.16cqw}
+.tbl th{background:linear-gradient(180deg,#eef4ff,#e4edff);color:var(--brand-dk);font-weight:800;text-align:left;
+  padding:.95cqw 1.2cqw;border-bottom:1px solid #d8e3f7;font-size:1.12cqw;letter-spacing:.02em}
+.tbl td{padding:.85cqw 1.2cqw;border-bottom:1px solid var(--line);line-height:1.55}
+.tbl tbody tr:last-child td{border-bottom:0}
+.tbl tbody tr:hover{background:#f7faff}
+.tbl code{font-family:var(--mono);font-size:.92em;background:#eef3ff;color:#1d46b8;padding:.08em .4em;border-radius:.35em}
+
+/* 对比 */
+.cmp-wrap{display:grid;grid-template-columns:1fr 1fr;gap:1.8cqw}
+.cmp{border-radius:1.1cqw;padding:1.4cqw;border:1px solid var(--line);background:var(--surface)}
+.cmp-h{font-size:1.4cqw;font-weight:800;margin-bottom:.9cqw;display:flex;align-items:center;gap:.6cqw}
+.cmp-a .cmp-h{color:var(--brand-dk)}
+.cmp-b .cmp-h{color:#b8730f}
+.cmp ul{list-style:none;display:flex;flex-direction:column;gap:.7cqw}
+.cmp li{font-size:1.16cqw;line-height:1.6;color:var(--muted);padding-left:1.3cqw;position:relative}
+.cmp li::before{content:"";position:absolute;left:0;top:.62cqw;width:.5cqw;height:.5cqw;border-radius:2px;background:var(--brand)}
+.cmp-b li::before{background:var(--accent)}
+.cmp-a{background:linear-gradient(180deg,#f6f9ff,#fff)}
+
+/* 步骤 */
+.steps{display:flex;flex-direction:column;gap:1cqw}
+.step{display:flex;gap:1.2cqw;align-items:flex-start;background:var(--surface);border:1px solid var(--line);
+  border-radius:.9cqw;padding:1cqw 1.25cqw}
+.step-n{flex:0 0 auto;width:2.3cqw;height:2.3cqw;border-radius:50%;display:grid;place-items:center;font-weight:800;font-size:1.15cqw;color:#fff;
+  background:linear-gradient(135deg,var(--brand),var(--brand2))}
+.step-t{font-size:1.3cqw;font-weight:800}
+.step-d{font-size:1.12cqw;color:var(--muted);line-height:1.6;margin-top:.25cqw}
+
+/* 流程图 */
+.flow{display:flex;align-items:stretch;justify-content:center;gap:0;flex-wrap:nowrap}
+.fl{flex:1;min-width:0;background:var(--surface);border:1px solid var(--line);border-radius:1cqw;padding:1.3cqw 1cqw;text-align:center;
+  box-shadow:0 12px 28px -22px rgba(20,40,90,.55)}
+.fl-ico{font-size:1.9cqw;margin-bottom:.5cqw}
+.fl-t{font-size:1.24cqw;font-weight:800;margin-bottom:.35cqw;color:var(--brand-dk)}
+.fl-d{font-size:1.02cqw;color:var(--muted);line-height:1.55}
+.fl-arrow{flex:0 0 auto;width:2.2cqw;position:relative;display:grid;place-items:center}
+.fl-arrow::after{content:"";width:1.4cqw;height:.22cqw;background:linear-gradient(90deg,var(--brand),var(--brand2));border-radius:99px;position:relative}
+.fl-arrow::before{content:"";position:absolute;right:.35cqw;width:.6cqw;height:.6cqw;border-top:.2cqw solid var(--brand2);border-right:.2cqw solid var(--brand2);transform:rotate(45deg)}
+.flow-note{margin-top:1.3cqw;font-size:1.1cqw;color:var(--muted);text-align:center;background:rgba(47,107,255,.06);border-radius:.8cqw;padding:.8cqw 1.2cqw}
+
+/* 代码 */
+.codebox{background:var(--code-bg);border-radius:1.1cqw;overflow:hidden;box-shadow:0 26px 54px -26px rgba(13,26,43,.75)}
+.cb-bar{display:flex;align-items:center;gap:.8cqw;padding:.8cqw 1.2cqw;background:rgba(255,255,255,.06);border-bottom:1px solid rgba(255,255,255,.07)}
+.cb-lang{font-family:var(--mono);font-size:.92cqw;font-weight:700;color:#7fd7e4;letter-spacing:.12em}
+.cb-file{font-family:var(--mono);font-size:.92cqw;color:#7f93ad}
+.cb-code{padding:1.25cqw 1.5cqw;font-family:var(--mono);font-size:1.06cqw;line-height:1.78;color:var(--code-ink);white-space:pre;overflow:auto;max-height:100%}
+.cb-code .pn{color:#7f93ad}.cb-code .tg{color:#6fd6ff}.cb-code .at{color:#ffcf7a}.cb-code .st{color:#a5e88a}
+.cb-code .c{color:#6b8099;font-style:italic}.cb-code .sel{color:#ffb3c8}.cb-code .cls{color:#ffd479}
+.cb-code .id{color:#9fe8ff}.cb-code .pc{color:#c8a2ff}.cb-code .prop{color:#8fd3ff}.cb-code .num{color:#f7c774}
+.cb-code .fn{color:#d0b0ff}.cb-code .imp{color:#ff8a8a}.cb-code .at-rules{color:#ff9f6b}
+.caption{margin-top:1cqw;font-size:1.08cqw;color:var(--muted);line-height:1.6}
+.caption b{color:var(--brand-dk)}
+
+/* 任务 */
+.task-goal{background:linear-gradient(180deg,#f4f8ff,#eef4ff);border:1px solid #dbe6fb;border-radius:.9cqw;padding:1.05cqw 1.25cqw;
+  font-size:1.22cqw;line-height:1.62}
+.tg-label{display:inline-block;font-weight:800;color:#fff;background:var(--brand);border-radius:.45cqw;
+  font-size:.98cqw;padding:.16cqw .6cqw;margin-right:.6cqw;vertical-align:.08cqw}
+.task-steps{list-style:none;counter-reset:ts;display:flex;flex-direction:column;gap:.75cqw}
+.task-steps li{counter-increment:ts;position:relative;padding-left:2.3cqw;font-size:1.14cqw;line-height:1.6}
+.task-steps li::before{content:counter(ts);position:absolute;left:0;top:.08cqw;width:1.55cqw;height:1.55cqw;border-radius:50%;
+  background:rgba(47,107,255,.12);color:var(--brand-dk);font-size:.92cqw;font-weight:800;display:grid;place-items:center}
+.task-code{background:var(--code-bg);border-radius:.9cqw;overflow:hidden;box-shadow:0 20px 44px -26px rgba(13,26,43,.7)}
+
+/* 演示 */
+.demo-right{display:flex;flex-direction:column;gap:1cqw;height:100%}
+.demo-frame{flex:1;width:100%;min-height:0;border:1px solid var(--line);border-radius:1cqw;background:#fff;
+  box-shadow:0 22px 46px -26px rgba(20,40,90,.6)}
+.demo-code{background:var(--code-bg);border-radius:.9cqw;overflow:hidden}
+.demo-code summary{cursor:pointer;color:#9fb6d4;font-size:1.02cqw;padding:.7cqw 1.1cqw;font-family:var(--mono);user-select:none}
+.demo-code .cb-code{padding:0 1.2cqw 1.1cqw;font-size:.96cqw}
+.hint{margin-top:1cqw;font-size:1.08cqw;color:var(--muted);background:rgba(255,138,61,.1);border-left:.3cqw solid var(--accent);
+  border-radius:.6cqw;padding:.8cqw 1.1cqw;line-height:1.6}
+.hint b{color:#c2601a}
+
+/* AI */
+.ai-card{background:linear-gradient(160deg,#171a3a,#2b2a5e 55%,#3a2a6a);border-radius:1.1cqw;padding:1.7cqw;color:#e8e6ff;
+  position:relative;overflow:hidden;box-shadow:0 24px 52px -26px rgba(40,30,90,.8)}
+.ai-card::after{content:"";position:absolute;right:-6cqw;top:-6cqw;width:14cqw;height:14cqw;border-radius:50%;
+  background:radial-gradient(circle,rgba(124,92,255,.6),transparent 65%);animation:float1 12s ease-in-out infinite}
+.ai-badge{display:inline-grid;place-items:center;width:2.6cqw;height:2.6cqw;border-radius:.7cqw;font-weight:900;font-size:1.1cqw;
+  background:linear-gradient(135deg,#7c5cff,#0fb5c9);color:#fff;margin-bottom:.9cqw;letter-spacing:.04em}
+.ai-card p{font-size:1.22cqw;line-height:1.72;position:relative;z-index:2}
+.ai-list li{border-color:rgba(124,92,255,.25);background:linear-gradient(180deg,#fbf9ff,#f5f2ff)}
+.ai-list .bl-dot{background:linear-gradient(135deg,#7c5cff,#0fb5c9)}
+
+/* 检测（可交互：点选 → 判分 → 显示解析） */
+.quiz-body{justify-content:flex-start;gap:1.1cqw}
+.quiz-top{display:flex;align-items:center;justify-content:space-between;gap:1.2cqw;flex:0 0 auto}
+.quiz-meta{font-size:1.02cqw;color:var(--muted)}
+.quiz-meta b{color:var(--brand);font-size:1.1cqw}
+.q-reveal{cursor:pointer;font-family:inherit;font-size:.98cqw;font-weight:700;color:var(--brand-dk);
+  background:#eef4ff;border:1px solid #d6e3fb;border-radius:.5cqw;padding:.4cqw .95cqw;transition:.18s}
+.q-reveal:hover{background:#e2ecff;border-color:var(--brand)}
+.quiz-acts{display:flex;align-items:center;gap:.6cqw;flex:0 0 auto}
+.q-reset-all{cursor:pointer;font-family:inherit;font-size:.98cqw;font-weight:700;color:var(--muted);
+  background:#fff;border:1px solid var(--line);border-radius:.5cqw;padding:.4cqw .9cqw;transition:.18s}
+.q-reset-all:hover{color:var(--accent);border-color:#ffd0a8;background:#fff8f2}
+.quiz{list-style:none;display:flex;flex-direction:column;gap:1cqw;overflow:auto;padding-right:.3cqw}
+.quiz.dense{gap:.55cqw}
+.quiz-body:has(.quiz.dense){gap:.7cqw}
+.quiz-item{background:var(--surface);border:1px solid var(--line);border-radius:.9cqw;padding:1cqw 1.2cqw;
+  transition:border-color .2s,box-shadow .2s}
+.quiz-item.ok{border-color:rgba(18,161,80,.45);box-shadow:0 10px 26px -20px rgba(18,161,80,.7)}
+.quiz-item.bad{border-color:rgba(214,83,79,.45);box-shadow:0 10px 26px -20px rgba(214,83,79,.6)}
+.quiz.dense .quiz-item{padding:.6cqw .95cqw}
+.quiz.dense .q{font-size:1.08cqw}
+.quiz.dense .opts{margin-top:.4cqw;gap:.45cqw}
+.quiz.dense .opt{font-size:.94cqw;padding:.22cqw .62cqw}
+.quiz.dense .q-foot{margin-top:.4cqw;min-height:1.15cqw}
+.quiz.dense .q-check{font-size:.88cqw;padding:.16cqw .6cqw}
+.quiz.dense .q-verdict{font-size:.9cqw}
+.quiz.dense .q-ans{margin-top:.4cqw;font-size:.92cqw;padding:.4cqw .7cqw}
+.q{display:flex;gap:.55cqw;align-items:baseline;font-size:1.22cqw;font-weight:700;line-height:1.5}
+.quiz.dense .q{font-size:1.12cqw}
+.q-no{font-family:var(--mono);font-size:.92cqw;font-weight:800;color:var(--brand);flex:0 0 auto}
+.q-tag{flex:0 0 auto;font-size:.8cqw;font-weight:700;color:#fff;background:var(--brand2);
+  border-radius:.32cqw;padding:.08cqw .42cqw;letter-spacing:.04em}
+.q-tag.multi{background:var(--violet)}
+.q-txt{flex:1;min-width:0}
+.opts{display:flex;flex-wrap:wrap;gap:.55cqw;margin-top:.62cqw}
+.opt{cursor:pointer;display:inline-flex;gap:.42cqw;align-items:center;font-family:inherit;text-align:left;
+  font-size:1.02cqw;line-height:1.45;color:#33456b;background:#f5f8ff;border:1px solid #e0e9fb;
+  border-radius:.55cqw;padding:.36cqw .8cqw;transition:background .16s,border-color .16s,box-shadow .16s}
+.quiz.dense .opt{font-size:.96cqw;padding:.28cqw .7cqw}
+.opt:hover{border-color:var(--brand);background:#eef4ff}
+.opt i{font-style:normal;font-family:var(--mono);font-weight:800;font-size:.88em;color:var(--brand)}
+.opt.sel{background:#e6efff;border-color:var(--brand);box-shadow:0 0 0 .16cqw rgba(47,107,255,.16)}
+.opt.right{background:rgba(18,161,80,.1);border-color:#12A150;color:#0b5f2f}
+.opt.right i{color:#0b5f2f}
+.q-foot{display:flex;align-items:center;gap:.8cqw;margin-top:.6cqw;min-height:1.5cqw}
+.q-check{cursor:pointer;font-family:inherit;font-size:.94cqw;font-weight:700;color:var(--brand);
+  background:#fff;border:1px solid #c9daff;border-radius:.45cqw;padding:.26cqw .75cqw;transition:.16s}
+.q-check:hover{background:#eef4ff}
+.q-reset{cursor:pointer;font-family:inherit;font-size:.94cqw;font-weight:700;color:var(--muted);
+  background:#fff;border:1px solid var(--line);border-radius:.45cqw;padding:.26cqw .7cqw;transition:.16s}
+.q-reset:hover{color:var(--accent);border-color:#ffd0a8;background:#fff8f2}
+.q-reset:disabled{opacity:.38;cursor:default}
+.q-reset:disabled:hover{color:var(--muted);border-color:var(--line);background:#fff}
+.quiz.dense .q-reset{font-size:.88cqw;padding:.16cqw .55cqw}
+.q-verdict{font-size:.96cqw;font-weight:700}
+.quiz-item.ok .q-verdict{color:var(--ok)}
+.quiz-item.bad .q-verdict{color:#d9534f}
+.q-ans{display:none;margin-top:.6cqw;font-size:.98cqw;line-height:1.6;color:#0f7a3d;
+  background:rgba(18,161,80,.08);border-radius:.5cqw;padding:.5cqw .8cqw}
+.quiz-item.revealed .q-ans{display:block;animation:rise .3s both}
+.q-ans b{color:#0b5f2f;margin-right:.45cqw}
+.ans-key{font-family:var(--mono);font-weight:800;margin-right:.6cqw}
+.ans-tip{color:var(--muted)}
+
+/* 目标 */
+.objs{display:grid;grid-template-columns:repeat(3,1fr);gap:1.4cqw}
+.obj{border-radius:1.1cqw;padding:1.4cqw;border:1px solid var(--line);background:var(--surface)}
+.obj-h{font-size:1.3cqw;font-weight:800;margin-bottom:.85cqw;display:flex;align-items:center;gap:.55cqw}
+.obj-h::before{content:"";width:.55cqw;height:1.35cqw;border-radius:99px}
+.obj ul{list-style:none;display:flex;flex-direction:column;gap:.62cqw}
+.obj li{font-size:1.1cqw;line-height:1.58;color:var(--muted);padding-left:1.15cqw;position:relative}
+.obj li::before{content:"";position:absolute;left:0;top:.6cqw;width:.42cqw;height:.42cqw;border-radius:50%;background:#9db4d6}
+.obj-1 .obj-h::before{background:var(--brand)}.obj-2 .obj-h::before{background:var(--brand2)}.obj-3 .obj-h::before{background:var(--accent)}
+.obj-1 .obj-h{color:var(--brand-dk)}.obj-2 .obj-h{color:#0a7b87}.obj-3 .obj-h{color:#b8730f}
+
+/* 思政 */
+.s-ideo .s-body{justify-content:center}
+.ideo-wrap{display:flex;flex-direction:column;gap:1.3cqw}
+.ideo-quote{position:relative;background:linear-gradient(180deg,#fff8f0,#fffbf6);border:1px solid #ffe3c8;border-left:.42cqw solid var(--accent);
+  border-radius:.95cqw;padding:1.6cqw 1.8cqw 1.6cqw 2.2cqw;font-size:1.3cqw;line-height:1.85;color:#4a3a28}
+.ideo-quote strong{color:#a3510a}
+.ideo-topic{font-size:1.16cqw;color:var(--muted);background:rgba(47,107,255,.06);border-radius:.8cqw;padding:.9cqw 1.2cqw;line-height:1.6}
+.it-label{display:inline-block;font-weight:800;color:#fff;background:var(--brand);border-radius:.45cqw;font-size:.96cqw;padding:.16cqw .6cqw;margin-right:.6cqw}
+
+/* 大纲 */
+.outline{list-style:none;display:flex;flex-direction:column;gap:.95cqw;counter-reset:none}
+.outline li{display:flex;align-items:center;gap:1.2cqw;background:var(--surface);border:1px solid var(--line);border-radius:.9cqw;padding:1.05cqw 1.35cqw;
+  box-shadow:0 10px 26px -22px rgba(20,40,90,.55)}
+.oi{font-family:var(--mono);font-size:1.1cqw;font-weight:800;color:var(--brand);background:rgba(47,107,255,.1);border-radius:.5cqw;padding:.28cqw .7cqw}
+.ot{font-size:1.34cqw;font-weight:700}
+
+/* 参考 */
+.refs{list-style:none;display:flex;flex-direction:column;gap:.85cqw}
+.refs li{display:flex;align-items:baseline;gap:.9cqw;background:var(--surface);border:1px solid var(--line);border-radius:.8cqw;padding:.9cqw 1.15cqw}
+.ref-idx{font-family:var(--mono);font-size:1cqw;font-weight:800;color:var(--brand)}
+.ref-t{font-size:1.16cqw;font-weight:600}
+.ref-u{font-family:var(--mono);font-size:.92cqw;color:var(--muted);word-break:break-all}
+
+/* 结束 */
+.s-end{align-items:center;justify-content:center;text-align:center;background:linear-gradient(140deg,#12203b,#1d3a78 55%,#0e6f88);}
+.s-end .end-t{color:#fff}
+.end-mark{font-size:2.4cqw;color:#7fd7e4;margin-bottom:.6cqw}
+.end-t{font-size:3.4cqw;font-weight:900;letter-spacing:.02em}
+.end-s{margin-top:1.2cqw;font-size:1.35cqw;color:#a9c4e8}
+/* 结束页导航：下一讲 / 返回总目录 */
+.end-inner{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.9cqw;max-width:74%}
+.end-next{margin-top:2.6cqw;display:inline-flex;align-items:center;gap:1cqw;text-decoration:none;
+  background:rgba(255,255,255,.09);border:1px solid rgba(140,200,235,.42);border-radius:.9cqw;
+  padding:1cqw 1.5cqw;transition:.22s;backdrop-filter:blur(6px);max-width:100%}
+.end-next:hover{background:rgba(255,255,255,.16);border-color:#7fd7e4;transform:translateY(-2px);
+  box-shadow:0 18px 40px -26px rgba(0,0,0,.9)}
+.en-lab{flex:0 0 auto;font-size:.92cqw;font-weight:800;letter-spacing:.06em;color:#0c2036;
+  background:linear-gradient(135deg,#7fd7e4,#4fc3d9);border-radius:.4cqw;padding:.2cqw .62cqw}
+.en-t{color:#eaf4ff;font-size:1.18cqw;font-weight:700;line-height:1.5}
+.en-ar{color:#7fd7e4;font-size:1.3cqw;font-weight:800}
+.end-next.is-final{cursor:default;box-shadow:none}
+.end-next.is-final:hover{transform:none;background:rgba(255,255,255,.09);border-color:rgba(140,200,235,.42);box-shadow:none}
+.end-back{margin-top:.5cqw;display:inline-flex;align-items:center;gap:.35cqw;text-decoration:none;
+  font-size:1.02cqw;color:#9fbde0;border-bottom:1px dashed rgba(159,189,224,.45);padding-bottom:.12cqw;transition:.2s}
+.end-back:hover{color:#fff;border-bottom-color:#7fd7e4}
+
+/* 进度 & HUD */
+.topbar{position:absolute;left:0;top:0;height:.42cqw;width:100%;background:rgba(47,107,255,.1);z-index:6}
+.topbar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--brand),var(--brand2),var(--violet));
+  transition:width .45s cubic-bezier(.2,.7,.2,1)}
+.hud{position:absolute;right:2.2cqw;bottom:1.5cqw;z-index:6;display:flex;align-items:center;gap:1cqw;
+  font-size:1cqw;color:var(--muted);font-family:var(--mono)}
+.hud .btn{cursor:pointer;background:rgba(255,255,255,.82);border:1px solid var(--line);border-radius:.55cqw;padding:.32cqw .7cqw;
+  transition:.2s}
+.hud .btn:hover{border-color:var(--brand);color:var(--brand)}
+.hud .btn[data-on="0"]{color:#a8b6cc;background:rgba(255,255,255,.5);border-style:dashed}
+.hud .btn[data-on="0"]:hover{color:var(--accent);border-color:#ffd0a8;border-style:solid;background:#fff8f2}
+.hud .btn[data-on="1"]{color:#0a7b87;border-color:#bfe6ea;background:rgba(15,181,201,.09)}
+.hud .btn[data-on="1"]:hover{border-color:var(--brand2);background:rgba(15,181,201,.16)}
+.pageno b{color:var(--ink)}
+.legend{position:absolute;left:2.2cqw;bottom:1.5cqw;z-index:6;font-size:.96cqw;color:#9aabc4;font-family:var(--mono)}
+.flip-toast{position:absolute;left:50%;bottom:9%;z-index:9;transform:translate(-50%,10px);
+  background:rgba(16,29,50,.9);color:#fff;font-family:var(--mono);font-size:1.02cqw;letter-spacing:.02em;
+  padding:.62cqw 1.25cqw;border-radius:999px;opacity:0;pointer-events:none;white-space:nowrap;
+  transition:opacity .22s,transform .22s;box-shadow:0 18px 40px -22px rgba(0,0,0,.8)}
+.flip-toast.show{opacity:1;transform:translate(-50%,0)}
+/* 导航抽屉 */
+.drawer{position:absolute;inset:0;z-index:8;background:rgba(12,22,40,.55);backdrop-filter:blur(6px);display:none;padding:4cqw}
+.drawer.open{display:block}
+.drawer-panel{background:var(--surface);border-radius:1.2cqw;height:100%;padding:2cqw;overflow:auto;box-shadow:0 40px 80px -30px rgba(0,0,0,.5)}
+.drawer-h{font-size:1.5cqw;font-weight:800;margin-bottom:1.2cqw;display:flex;justify-content:space-between}
+.drawer-h span{cursor:pointer;color:var(--muted);font-weight:600;font-size:1.1cqw}
+.drawer ul{list-style:none;display:grid;grid-template-columns:1fr 1fr;gap:.55cqw}
+.drawer li{display:flex;gap:.7cqw;align-items:center;padding:.6cqw .8cqw;border-radius:.6cqw;cursor:pointer;border:1px solid transparent}
+.drawer li:hover{background:#f2f6ff;border-color:#dbe6fb}
+.drawer li.cur{background:#eaf1ff;border-color:#c9daff}
+.nv-idx{font-family:var(--mono);font-size:.92cqw;color:var(--brand);font-weight:800}
+.nv-t{font-size:1.06cqw;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+/* ───────── 屏幕自适应 ─────────
+   1) 16:9 / 16:10 笔记本与投影：等比缩放（默认）
+   2) 4:3 老投影 / 上下更紧：压缩留白与圆角
+   3) 超宽屏：仍按高度定宽，不拉伸变形
+   4) 竖屏（手机、平板竖握）：改为纵向流式阅读，单列重排
+   5) 系统开启「减弱动效」时关闭所有动画
+*/
+@media (max-aspect-ratio: 4/3) and (orientation: landscape){
+  .wrap{padding:1.2vh}
+  .stage{border-radius:14px}
+  .slide{padding:3.4cqw 4.2cqw 3.2cqw;gap:1.5cqw}
+  .s-title{font-size:2.62cqw}
+  .blist{gap:.85cqw}
+  .blist li{font-size:1.32cqw;padding:.9cqw 1.15cqw}
+  .legend{display:none}
+}
+@media (min-aspect-ratio: 21/9){
+  .stage{max-width:calc(100vh * 16 / 9);max-height:calc(100vw * 9 / 16)}
+}
+@media (prefers-reduced-motion: reduce){
+  .an{opacity:1!important;animation:none!important}
+  .blob,.orb,.codewin{animation:none!important}
+  .slide{transition:none}
+}
+/* —— 竖屏：纵向流式阅读 —— */
+@media (orientation: portrait){
+  html,body{height:auto;overflow-x:hidden;overflow-y:auto}
+  html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+  body{overflow:visible;background:var(--bg)}
+  .wrap{display:block;height:auto;padding:0}
+  .stage{width:100%;height:auto;max-width:none;max-height:none;aspect-ratio:auto;border-radius:0;
+    overflow:visible;box-shadow:none;container-type:inline-size;background:transparent}
+  .bgfx{display:none}
+  .slide{position:relative;inset:auto;opacity:1!important;visibility:visible!important;transform:none!important;
+    padding:8vw 6vw 9vw;gap:5vw;min-height:auto;background:var(--bg2);border-bottom:1px solid var(--line)}
+  .slide.prev{transform:none!important}
+  .an{opacity:1!important;animation:none!important;transform:none!important}
+  .s-head{flex-direction:column;gap:0}
+  .kicker{font-size:2.6vw;padding:1vw 2.6vw;margin-bottom:2.2vw;letter-spacing:.1em}
+  .s-title{font-size:6.4vw;line-height:1.3}
+  .s-sub{margin-top:2vw;font-size:3.4vw}
+  .s-body{gap:4vw;justify-content:flex-start}
+  .s-body.two{flex-direction:column;gap:4.4vw}
+  .col-l,.col-r{gap:3.4vw}
+  /* 封面 */
+  .s-cover{flex-direction:column;align-items:flex-start;gap:5vw;padding:12vw 6vw 10vw}
+  .cover-art{display:none}
+  .brandrow{margin-bottom:4vw;gap:2vw}
+  .brandmark{font-size:4.4vw}.brandsub{font-size:3vw}
+  .cover-title{font-size:9.6vw;line-height:1.22}
+  .cover-sub{font-size:3.8vw;max-width:none;margin-top:2.6vw}
+  .pills{gap:2vw;margin-top:4vw}
+  .pill{font-size:2.8vw;padding:1.2vw 2.8vw}
+  .cover-meta{font-size:2.9vw;gap:2vw;margin-top:4vw}
+  .cover-meta b{font-size:3.4vw}
+  /* 章节页 */
+  .sec-num{font-size:17vw}
+  .sec-title{font-size:7.2vw;margin-top:3vw}
+  .sec-sub{font-size:3.6vw;max-width:none;margin-top:3vw}
+  .is-active .sec-line{animation:none;width:26vw}
+  .sec-line{margin:4vw 0}
+  /* 列表 / 卡片 */
+  .blist{gap:2.6vw}
+  .blist li{font-size:3.7vw;padding:2.8vw 3.4vw;border-radius:2.4vw;gap:2.4vw;line-height:1.62}
+  .blist.small li{font-size:3.4vw;padding:2.4vw 3vw}
+  .blist.dense li{font-size:3.3vw;padding:2.2vw 3vw}
+  .bl-dot{width:1.8vw;height:1.8vw;margin-top:1.8vw;box-shadow:0 0 0 .8vw rgba(47,107,255,.12)}
+  .outline{gap:2.4vw}
+  .outline li{padding:2.8vw 3.4vw;border-radius:2.2vw;gap:3vw}
+  .oi{font-size:2.8vw;padding:.8vw 2vw}
+  .ot{font-size:3.9vw}
+  .grid{gap:3vw}
+  .grid.cols-2,.grid.cols-3,.grid.cols-4{grid-template-columns:1fr}
+  .card{padding:4.2vw;border-radius:2.6vw}
+  .card-t{font-size:4.1vw;margin-bottom:1.6vw}
+  .card-d{font-size:3.3vw}
+  .card-ico{font-size:5.6vw;margin-bottom:1.6vw}
+  .card::before{width:.8vw}
+  /* 表格 */
+  .tbl-wrap{overflow-x:auto;border-radius:2.4vw;-webkit-overflow-scrolling:touch}
+  .tbl{font-size:3.1vw;min-width:110vw}
+  .tbl th{font-size:3vw;padding:2.4vw 2.8vw;white-space:nowrap}
+  .tbl td{padding:2.2vw 2.8vw}
+  /* 对比 */
+  .cmp-wrap{grid-template-columns:1fr;gap:3.4vw}
+  .cmp{padding:3.6vw;border-radius:2.4vw}
+  .cmp-h{font-size:3.8vw;margin-bottom:2.4vw}
+  .cmp ul{gap:2vw}
+  .cmp li{font-size:3.2vw;padding-left:3.6vw}
+  .cmp li::before{width:1.4vw;height:1.4vw;top:1.7vw}
+  /* 步骤 / 流程 */
+  .steps{gap:2.6vw}
+  .step{padding:3vw 3.4vw;border-radius:2.2vw;gap:3vw}
+  .step-n{width:7.4vw;height:7.4vw;font-size:3.2vw}
+  .step-t{font-size:3.7vw}
+  .step-d{font-size:3.2vw;margin-top:.8vw}
+  .flow{flex-direction:column;gap:1.6vw}
+  .fl{padding:3.6vw;border-radius:2.4vw}
+  .fl-ico{font-size:6.4vw}
+  .fl-t{font-size:3.9vw}
+  .fl-d{font-size:3.1vw}
+  .fl-arrow{width:100%;height:6vw;transform:rotate(90deg)}
+  .flow-note{font-size:3.1vw;padding:2.4vw 3vw;border-radius:2vw;margin-top:2.6vw}
+  /* 代码 */
+  .codebox,.task-code{border-radius:2.4vw}
+  .cb-bar{padding:2.2vw 3vw;gap:2.4vw}
+  .cb-lang,.cb-file{font-size:2.7vw}
+  .cb-code{font-size:3.1vw;line-height:1.62;padding:3vw 3.4vw}
+  .caption{font-size:3vw;margin-top:2.4vw}
+  .demo-code summary{font-size:2.9vw;padding:2.2vw 3vw}
+  .demo-code .cb-code{font-size:2.9vw}
+  /* 任务 / 演示 */
+  .task-goal{font-size:3.4vw;padding:3.2vw;border-radius:2.2vw}
+  .tg-label{font-size:2.6vw;padding:.5vw 1.8vw;margin-right:1.6vw;border-radius:1.2vw}
+  .task-steps{gap:2.4vw}
+  .task-steps li{font-size:3.3vw;padding-left:6.4vw}
+  .task-steps li::before{width:4.6vw;height:4.6vw;font-size:2.8vw}
+  .demo-right{height:auto;gap:2.6vw}
+  .demo-frame{height:66vw;min-height:190px;border-radius:2.4vw}
+  .hint{font-size:3.1vw;padding:2.6vw 3vw;border-radius:2vw;margin-top:2.6vw}
+  /* AI */
+  .ai-card{padding:4.4vw;border-radius:2.6vw}
+  .ai-card p{font-size:3.5vw}
+  .ai-badge{width:8.4vw;height:8.4vw;font-size:3.2vw;border-radius:2vw;margin-bottom:2.4vw}
+  /* 检测（!important：压过横屏 dense 的 cqw 规则，否则竖屏字号塌缩） */
+  .quiz-body{gap:3.4vw}
+  .quiz-top{flex-direction:column;align-items:flex-start;gap:2.4vw}
+  .quiz-meta{font-size:3vw}
+  .quiz-meta b{font-size:3.4vw}
+  .quiz-acts{gap:2vw}
+  .q-reveal,.q-reset-all{font-size:3vw;padding:1.6vw 3.4vw;border-radius:2vw}
+  .quiz{gap:3vw;overflow:visible}
+  .quiz.dense{gap:2.6vw}
+  .quiz-item,.quiz.dense .quiz-item{padding:3.4vw 3.6vw;border-radius:2.4vw}
+  .quiz.dense .q{font-size:3.6vw;gap:1.6vw;line-height:1.55}
+  .q-no{font-size:2.9vw}
+  .q-tag{font-size:2.4vw;padding:.3vw 1.4vw;border-radius:1.2vw}
+  .opts,.quiz.dense .opts{gap:1.8vw;margin-top:2.2vw}
+  .opt,.quiz.dense .opt{font-size:3.2vw;padding:1.4vw 2.8vw;border-radius:2vw;gap:1.4vw}
+  .q-foot,.quiz.dense .q-foot{margin-top:2vw;gap:2.4vw;min-height:0}
+  .q-check,.quiz.dense .q-check{font-size:2.9vw;padding:1.2vw 2.8vw;border-radius:1.6vw}
+  .q-reset,.quiz.dense .q-reset{font-size:2.9vw;padding:1.2vw 2.6vw;border-radius:1.6vw}
+  .q-verdict,.quiz.dense .q-verdict{font-size:2.9vw}
+  .q-ans,.quiz.dense .q-ans{font-size:3vw;padding:2.2vw 3vw;border-radius:1.8vw;margin-top:2vw}
+  /* 目标 / 思政 */
+  .objs{grid-template-columns:1fr;gap:3vw}
+  .obj{padding:4vw;border-radius:2.4vw}
+  .obj-h{font-size:3.9vw;margin-bottom:2.4vw}
+  .obj-h::before{width:1.4vw;height:4vw}
+  .obj ul{gap:2vw}
+  .obj li{font-size:3.2vw;padding-left:3.4vw}
+  .obj li::before{width:1.2vw;height:1.2vw;top:1.6vw}
+  .ideo-wrap{gap:3.4vw}
+  .ideo-quote{font-size:3.6vw;padding:4vw 4.4vw;border-radius:2.4vw;line-height:1.8}
+  .ideo-topic{font-size:3.2vw;padding:2.8vw 3.2vw;border-radius:2.2vw}
+  .it-label{font-size:2.6vw;padding:.5vw 1.6vw;border-radius:1.2vw;margin-right:1.4vw}
+  /* 参考 / 结束 */
+  .refs{gap:2.2vw}
+  .refs li{padding:2.8vw 3.2vw;border-radius:2vw;gap:2.4vw}
+  .ref-idx{font-size:2.8vw}
+  .ref-t{font-size:3.3vw}
+  .ref-u{font-size:2.7vw}
+  .s-end{align-items:center;justify-content:center;min-height:60vh}
+  .end-t{font-size:8.4vw}
+  .end-s{font-size:3.6vw;margin-top:3vw}
+  .end-mark{font-size:6vw}
+  .end-inner{max-width:none;width:100%;gap:2vw}
+  .end-next{margin-top:5vw;gap:2.2vw;padding:3vw 3.6vw;border-radius:2.4vw;flex-wrap:wrap;justify-content:center}
+  .en-lab{font-size:2.6vw;padding:.8vw 2vw;border-radius:1.2vw}
+  .en-t{font-size:3.4vw}
+  .en-ar{font-size:3.6vw}
+  .end-back{font-size:3vw;margin-top:2.6vw}
+  /* HUD / 目录：固定悬浮 */
+  .topbar{position:fixed;height:1.2vw;z-index:20}
+  .hud{position:fixed;right:3vw;bottom:calc(3vw + env(safe-area-inset-bottom));z-index:20;
+    background:rgba(255,255,255,.94);border:1px solid var(--line);border-radius:999px;
+    padding:2.2vw 3.4vw;gap:3vw;font-size:3vw;box-shadow:0 10px 30px -12px rgba(16,34,74,.35)}
+  .hud .btn{font-size:2.9vw;padding:1vw 2.4vw;border-radius:1.6vw}
+  .flip-toast{position:fixed;bottom:calc(16vw + env(safe-area-inset-bottom));z-index:21;
+    font-size:3vw;padding:2.2vw 4vw;max-width:84vw;white-space:normal;text-align:center;line-height:1.5}
+  .legend{display:none}
+  .drawer{position:fixed;padding:4vw}
+  .drawer-panel{padding:5vw;border-radius:3vw}
+  .drawer-h{font-size:4.2vw;margin-bottom:3vw}
+  .drawer-h span{font-size:3.2vw}
+  .drawer ul{grid-template-columns:1fr;gap:1.6vw}
+  .drawer li{padding:2.4vw 3vw;border-radius:2vw;gap:2.4vw}
+  .nv-idx{font-size:2.8vw}
+  .nv-t{font-size:3.2vw;white-space:normal}
+}
+/* 打印 */
+@media print{
+  body{overflow:visible}
+  .wrap{padding:0;display:block}
+  .stage{width:100%;max-width:none;height:auto;aspect-ratio:auto;border-radius:0;box-shadow:none}
+  .slide{position:relative;opacity:1!important;visibility:visible!important;transform:none!important;
+    page-break-after:always;height:100vh;width:100%}
+  .an{opacity:1!important;animation:none!important}
+  .topbar,.hud,.legend,.drawer{display:none!important}
+}
+</style>
+</head>
+<body>
+<div class="wrap"><div class="stage" id="stage">
+  <div class="bgfx"><div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div><div class="grid-lines"></div></div>
+  <div class="topbar"><i id="bar"></i></div>
+
+<section class="slide s-cover is-active" data-kind="cover">
+  <div class="cover-left">
+    <div class="brandrow an" style="--i:0">
+      <span class="brandmark">网页制作</span>
+      <span class="brandsub">HTML5 + CSS3</span>
+    </div>
+    <div class="kicker an" style="--i:1">项目5 · 第 14 单元</div>
+    <h1 class="cover-title an" style="--i:2">背景：颜色、图片、渐变与精灵图</h1>
+    <p class="cover-sub an" style="--i:3">content 盒不仅能放内容，还能铺底色、贴图、拉渐变——再用精灵图把十次请求压成一次</p>
+    <div class="pills"><span class="pill" style="--i:3">background-color</span><span class="pill" style="--i:4">background-image</span><span class="pill" style="--i:5">repeat / position / size</span><span class="pill" style="--i:6">linear-gradient</span><span class="pill" style="--i:7">background-clip / origin</span><span class="pill" style="--i:8">精灵图</span></div>
+    <div class="cover-meta an" style="--i:10">
+      <span class="m-item"><b>40</b> 分钟</span>
+      <span class="dot"></span>
+      <span class="m-item">教材《网页制作（HTML5+CSS3）》项目5</span>
+      <span class="dot"></span>
+      <span class="m-item">电子工业出版社 · 2025 年 1 月第 1 版</span>
+    </div>
+  </div>
+  <div class="cover-art" aria-hidden="true">
+    <div class="orb o1"></div><div class="orb o2"></div><div class="orb o3"></div>
+    <div class="codewin">
+      <div class="cw-bar"><i></i><i></i><i></i></div>
+      <pre class="cw-body"><span class="pn">&lt;!</span><span class="tg">DOCTYPE</span> <span class="at">html</span><span class="pn">&gt;</span>
+<span class="pn">&lt;</span><span class="tg">html</span> <span class="at">lang</span>=<span class="st">"zh-CN"</span><span class="pn">&gt;</span>
+  <span class="pn">&lt;</span><span class="tg">head</span><span class="pn">&gt;</span> <span class="pn">&lt;</span><span class="tg">meta</span> <span class="at">charset</span>=<span class="st">"UTF-8"</span><span class="pn">&gt;</span> <span class="pn">&lt;/</span><span class="tg">head</span><span class="pn">&gt;</span>
+  <span class="pn">&lt;</span><span class="tg">body</span><span class="pn">&gt;</span>
+    <span class="pn">&lt;</span><span class="tg">h1</span><span class="pn">&gt;</span>Hello, Web<span class="pn">&lt;/</span><span class="tg">h1</span><span class="pn">&gt;</span>
+  <span class="pn">&lt;/</span><span class="tg">body</span><span class="pn">&gt;</span>
+<span class="pn">&lt;/</span><span class="tg">html</span><span class="pn">&gt;</span></pre>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-kind="objectives">
+  
+  <header class="s-head">
+    <div class="s-head-left">
+      
+      <h2 class="s-title an" style="--i:1">本单元我们要达成什么</h2>
+      <p class="s-sub an" style="--i:2">对照教材《项目5》5.4 背景（5.4.1～5.4.3）</p>
+    </div>
+  </header>
+  <div class="s-body"><div class="objs"><div class="obj obj-1" class="an " style="--i:1">
+          <div class="obj-h">知识目标</div><ul><li>掌握 background-color 的语法与取值</li><li>掌握 background-image、repeat、position、size 的语法与作用</li><li>掌握 linear-gradient() 渐变函数的语法</li><li>理解 background-clip、background-origin 与精灵图的用法</li></ul></div><div class="obj obj-2" class="an " style="--i:2">
+          <div class="obj-h">技能目标</div><ul><li>能使用背景颜色与背景图片美化盒子</li><li>能用 background-position 精确定位背景图</li><li>能制作渐变背景与圆形、三横图标</li><li>能使用精灵图完成多个图标的展示</li></ul></div><div class="obj obj-3" class="an " style="--i:3">
+          <div class="obj-h">素养目标</div><ul><li>培养高尚的审美情操</li><li>培养严谨求实的学习态度</li><li>培养勇于探索、崇尚科学的劳动意识</li></ul></div></div></div>
+</section>
+
+<section class="slide s-ideo" data-kind="ideology">
+  
+  <header class="s-head">
+    <div class="s-head-left">
+      
+      <h2 class="s-title an" style="--i:1">看得懂的界面，配得上好的产品</h2>
+      <p class="s-sub an" style="--i:2">教材《项目5》思政课堂延伸讨论</p>
+    </div>
+  </header>
+  <div class="s-body"><div class="ideo-wrap">
+    <div class="ideo-quote an" style="--i:1">在数字化生活场景中，网页制作的影响十分深远。作为信息传递的重要载体，网页让各类资讯、服务触手可及。它不仅提供了丰富的视听效果，还通过<strong>个性化设计</strong>提升了用户体验；此外，网页制作推动了传统媒体的数字化转型，催生了新的商业模式。<strong>支付宝、Keep、京东、淘宝</strong>等各式应用影响着人们生活的方方面面，丰富了人们的数字化生活，为人们带来了诸多便利。</div>
+    <div class="ideo-topic an" style="--i:2"><span class="it-label">课堂讨论</span>Keep 的打卡卡片用渐变背景传递「坚持」的情绪，京东的图标用一张精灵图完成加载。请结合岗位谈一谈：视觉细节与性能优化，哪一个更能体现工程师的价值？</div>
+  </div></div>
+</section>
+
+<section class="slide" data-kind="outline">
+  
+  <header class="s-head">
+    <div class="s-head-left">
+      
+      <h2 class="s-title an" style="--i:1">本单元导览</h2>
+      <p class="s-sub an" style="--i:2">八组属性 + 三个任务，串起「盒子表面」这门学问</p>
+    </div>
+  </header>
+  <div class="s-body"><ol class="outline dense"><li class="an " style="--i:1"><span class="oi">01</span><span class="ot">background-color 与 background-image：给盒子穿上衣服</span></li><li class="an " style="--i:2"><span class="oi">02</span><span class="ot">repeat / position / size：让贴图听话地铺、准确地落、合适地缩</span></li><li class="an " style="--i:3"><span class="oi">03</span><span class="ot">linear-gradient()：不依赖切图也能做出渐变（任务5-7）</span></li><li class="an " style="--i:4"><span class="oi">04</span><span class="ot">attachment / clip / origin：墙纸与窗帘、背景画到哪儿</span></li><li class="an " style="--i:5"><span class="oi">05</span><span class="ot">background 综合样式 + 图标、精灵图实战（任务5-8、5-9）</span></li></ol></div>
+</section>
+
+<section class="slide s-section" data-kind="section">
+  <div class="sec-inner">
+    <div class="sec-num an" style="--i:0">5.4</div>
+    <h2 class="sec-title an" style="--i:1">背景</h2>
+    <div class="sec-line an" style="--i:2"></div>
+    <p class="sec-sub an" style="--i:3">在盒子模型中，content 盒不仅可以呈现主体内容，还可以添加背景颜色或图片。</p>
+  </div>
+</section>
+
+<section class="slide" data-kind="codebullets">
+  
+  <header class="s-head">
+    <div class="s-head-left">
+      <div class="kicker an" style="--i:0">代码与要点</div>
+      <h2 class="s-title an" style="--i:1">5.4.1 背景颜色 与 5.4.2 背景图片</h2>
+      <p class="s-sub an" style="--i:2">语法5-3：background-color；语法5-4：background-image</p>
+    </div>
+  </header>
+  <div class="s-body two">
+    <div class="col-l"><ul class="blist small dense"><li class="an " style="--i:1"><span class="bl-dot"></span><span><code>background-color</code> 的取值：颜色预设值、十六进制值、RGB 值，以及 <code>transparent</code>（透明）、<code>inherit</code>（继承）。</span></li><li class="an " style="--i:2"><span class="bl-dot"></span><span><code>background-image:url(image_file_path)</code> 把指定图片作为盒子的背景。</span></li><li class="an " style="--i:3"><span class="bl-dot"></span><span>教材比喻：就像<strong>计算机桌面</strong>——背景图不够大时，桌面上只会显示它的<strong>局部</strong>。</span></li><li class="an " style="--i:4"><span class="bl-dot"></span><span>局限：单纯使用该语法时，必须保证图片大小与盒子尺寸恰好匹配才能达到理想效果。</span></li><li class="an " style="--i:5"><span class="bl-dot"></span><span>属性 vs 标签：<code>background-image</code> 是装饰性内容，可被背景色覆盖；<code>&lt;img&gt;</code> 是内容本身，可被搜索引擎与读屏软件识别。</span></li></ul></div>
+    <div class="col-r"><div class="codebox" class="an " style="--i:1">
+      <div class="cb-bar"><span class="cb-lang">CSS</span>
+      <span class="cb-file">语法5-3 / 5-4</span></div>
+      <pre class="cb-code"><span class="prop">background-color</span>:颜色预设值 | 十六进制值 | RGB 值 | transparent | inherit<span class="pn">;</span>
+<span class="prop">background-color</span>:<span class="num">#ccc</span><span class="pn">;</span>
+
+<span class="prop">background-image</span>:<span class="fn">url</span>(image_file_path) | inherit<span class="pn">;</span>
+<span class="prop">background-image</span>:<span class="fn">url</span>(images/<span class="num">01</span>.jpg)<span class="pn">;</span></pre></div></div>
+  </div>
+</section>
+
+<section class="slide" data-kind="codebullets">
+  
+  <header class="s-head">
+    <div class="s-head-left">
+      <div class="kicker an" style="--i:0">代码与要点</div>
+      <h2 class="s-title an" style="--i:1">background-repeat：让贴图铺起来</h2>
+      <p class="s-sub an" style="--i:2">语法5-5：repeat | repeat-x | repeat-y | no-repeat | inherit</p>
+    </div>
+  </header>
+  <div class="s-body two">
+    <div class="col-l"><ul class="blist small dense"><li class="an " style="--i:1"><span class="bl-dot"></span><span>素材：容器 300px×300px，背景图 hotel-wallpaper.png 尺寸仅 29px×40px。</span></li><li class="an " style="--i:2"><span class="bl-dot"></span><span><code>repeat</code>：x、y 双向平铺（<strong>默认值</strong>）；<code>no-repeat</code>：只显示一张。</span></li><li class="an " style="--i:3"><span class="bl-dot"></span><span><code>repeat-x</code>：只在水平方向平铺；<code>repeat-y</code>：只在垂直方向平铺。</span></li><li class="an " style="--i:4"><span class="bl-dot"></span><span>配合 <code>float:left</code> + <code>margin-right</code> 可把四个盒子并排，横向对比四种效果。</span></li><li class="an " style="--i:5"><span class="bl-dot"></span><span>典型用途：小图案平铺做页面底纹，能显著减小图片体积。</span></li></ul></div>
+    <div class="col-r"><div class="codebox" class="an " style="--i:1">
+      <div class="cb-bar"><span class="cb-lang">HTML</span>
+      <span class="cb-file">代码5-11 关键片段</span></div>
+      <pre class="cb-code"><span class="pn">&lt;</span><span class="tg">style</span><span class="pn">&gt;</span>
+.box{                       /* #007-#014 */
+    width: 300px;
+    height: 300px;
+    border:1px solid #666;
+    float:left;
+    margin-right: 20px;
+    background-image:url(&quot;image/hotel-wallpaper.png&quot;);
+}
+.rpt-both{background-repeat: repeat;}   /* #015 */
+.rpt-no{background-repeat: no-repeat;}  /* #016 */
+.rpt-x{background-repeat: repeat-x;}    /* #017 */
+.rpt-y{background-repeat: repeat-y;}    /* #018 */
+<span class="pn">&lt;/</span><span class="tg">style</span><span class="pn">&gt;</span>
+
+<span class="pn">&lt;</span><span class="tg">div</span> class=&quot;box rpt-no&quot;<span class="pn">&gt;</span><span class="pn">&lt;/</span><span class="tg">div</span><span class="pn">&gt;</span>
+<span class="pn">&lt;</span><span class="tg">div</span> class=&quot;box rpt-both&quot;<span class="pn">&gt;</span><span class="pn">&lt;/</span><span class="tg">div</span><span class="pn">&gt;</span>
+<span class="pn">&lt;</span><span class="tg">div</span> class=&quot;box rpt-x&quot;<span class="pn">&gt;</span><span class="pn">&lt;/</span><span class="tg">div</span><span class="pn">&gt;</span>
+<span class="pn">&lt;</span><span class="tg">div</span> class=&quot;box rpt-y&quot;<span class="pn">&gt;</span><span class="pn">&lt;/</span><span class="tg">div</span><span class="pn">&gt;</span></pre></div></div>
+  </div>
+</section>
+
+<section class="slide" data-kind="table">
+  
+  <header class="s-head">
+    <div class="s-head-left">
+      <div class="kicker an" style="--i:0">对照表</div>
+      <h2 class="s-title an" style="--i:1">表5-11 background-position 属性值</h2>
+      <p class="s-sub an" style="--i:2">引出问题：为什么 no-repeat 时背景图默认出现在左上角？因为容器左上角为原点 (0,0)</p>
+    </div>
+  </header>
+  <div class="s-body"><div class="tbl-wrap">
+    <table class="tbl"><thead><tr><th>属性值</th><th>描述</th></tr></thead><tbody><tr class="an " style="--i:1"><td>表示位置的预设关键字</td><td><code>left top</code>（<strong>默认值</strong>，左上角）、<code>center top</code>、<code>right top</code>、<code>left center</code>、<code>center center</code>、<code>right center</code>、<code>left bottom</code>、<code>center bottom</code>、<code>right bottom</code>。<br>第一个值表示水平位置，第二个值表示垂直位置；<strong>只规定一个值时另一个值默认为 center</strong></td></tr><tr class="an " style="--i:2"><td>偏移量 xpos ypos</td><td>第一个值水平、第二个值垂直，默认值为 <code>0 0</code>，单位为 px 或 em。xpos 为正从左向右移动，ypos 为正从上向下移动；<strong>只规定一个值时另一个值是 50%（或 center）</strong></td></tr><tr class="an " style="--i:3"><td>x% y%</td><td>第一个值水平、第二个值垂直，偏移量为<strong>相对于元素宽度与背景图片宽度之差的百分数</strong>。默认值 <code>0% 0%</code>，右下角为 <code>100% 100%</code>；<strong>只规定一个值时另一个值是 50%</strong></td></tr></tbody></table>
+  </div></div>
+</section>
+
+<section class="slide" data-kind="bullets">
+  
+  <header class="s-head">
+    <div class="s-head-left">
+      <div class="kicker an" style="--i:0">知识要点</div>
+      <h2 class="s-title an" style="--i:1">定位其实很好理解：移动的是背景图本身</h2>
+      <p class="s-sub an" style="--i:2">配合代码5-12 的五个位置类名一起看</p>
+    </div>
+  </header>
+  <div class="s-body"><ul class="blist"><li class="an " style="--i:1"><span class="bl-dot"></span><span>五个对比值：<code>left top</code>、<code>100% 0%</code>、<code>100% 100%</code>、<code>left bottom</code>、<code>50% 50%</code>。</span></li><li class="an " style="--i:2"><span class="bl-dot"></span><span>记住：正数表示<strong>向右 / 向下</strong>移动图片；想要显示右侧部分，就要写<strong>负值</strong>——这是精灵图的理论基础。</span></li><li class="an " style="--i:3"><span class="bl-dot"></span><span>素材说明：HTML5-LOGO.png 实际 2048px×2048px，容器 300px×300px，故先用 <code>background-size:50%</code> 缩小一半便于观察。</span></li><li class="an " style="--i:4"><span class="bl-dot"></span><span>口诀：<code>background-position</code> 描述的不是「图放哪儿」，而是「图的哪一点对准哪里」。</span></li></ul></div>
+</section>
+
+<section class="slide" data-kind="table">
+  
+  <header class="s-head">
+    <div class="s-head-left">
+      <div class="kicker an" style="--i:0">对照表</div>
+      <h2 class="s-title an" style="--i:1">表5-12 background-size 属性值（CSS3 新特性）</h2>
+      <p class="s-sub an" style="--i:2">为什么需要它？高分屏时代普遍使用 2 倍图甚至 3 倍图</p>
+    </div>
+  </header>
+  <div class="s-body"><div class="tbl-wrap">
+    <table class="tbl"><thead><tr><th>属性值</th><th>描述</th></tr></thead><tbody><tr class="an " style="--i:1"><td><code>length</code></td><td>设置背景图片的高度和宽度。第一个值表示宽度，第二个值表示高度；<strong>只给出一个值时第二个值为 auto</strong></td></tr><tr class="an " style="--i:2"><td><code>percentage</code></td><td>计算相对于<strong>背景定位区域</strong>的百分比。以空格隔开宽度和高度，以逗号隔开多重背景；只给出一个值时第二个值为 auto</td></tr><tr class="an " style="--i:3"><td><code>cover</code></td><td>保持图片纵横比，缩放成能<strong>完全覆盖</strong>背景定位区域的最小大小</td></tr><tr class="an " style="--i:4"><td><code>contain</code></td><td>保持图片纵横比，缩放成<strong>适合</strong>背景定位区域的最大大小</td></tr></tbody></table>
+  </div></div>
+</section>
+
+<section class="slide" data-kind="compare">
+  
+  <header class="s-head">
+    <div class="s-head-left">
+      <div class="kicker an" style="--i:0">对比辨析</div>
+      <h2 class="s-title an" style="--i:1">contain 与 cover，到底差在哪</h2>
+      <p class="s-sub an" style="--i:2">教材对比结论（图5-26）</p>
+    </div>
+  </header>
+  <div class="s-body"><div class="cmp-wrap"><div class="cmp cmp-a">
+          <div class="cmp-h">background-size:contain</div>
+          <ul><li class="an " style="--i:1">contain 有<strong>包含</strong>的意思</li><li class="an " style="--i:2">把背景图尽可能包含在容器中</li><li class="an " style="--i:3"><strong>没有任何裁剪</strong></li><li class="an " style="--i:4">代价：容器多余的地方会<strong>留出大量空白</strong></li><li class="an " style="--i:5">适合：logo、图表、必须完整展示的图</li></ul></div><div class="cmp cmp-b">
+          <div class="cmp-h">background-size:cover</div>
+          <ul><li class="an " style="--i:3">cover 意为<strong>覆盖</strong></li><li class="an " style="--i:4">用背景图<strong>尽可能覆盖</strong>当前容器</li><li class="an " style="--i:5">必要时<strong>裁剪</strong>背景图</li><li class="an " style="--i:6">优点：<strong>不留任何空白</strong></li><li class="an " style="--i:7">适合：banner、卡片封面、全屏背景</li></ul></div></div></div>
+</section>
+
+<section class="slide" data-kind="compare">
+  
+  <header class="s-head">
+    <div class="s-head-left">
+      <div class="kicker an" style="--i:0">对比辨析</div>
+      <h2 class="s-title an" style="--i:1">background-attachment：墙纸与窗帘</h2>
+      <p class="s-sub an" style="--i:2">教材比喻：scroll 时背景与文字像一个整体；fixed 时背景像墙纸不动，文字像窗帘照常滚动</p>
+    </div>
+  </header>
+  <div class="s-body"><div class="cmp-wrap"><div class="cmp cmp-a">
+          <div class="cmp-h">scroll（默认值）</div>
+          <ul><li class="an " style="--i:1">背景图片随<strong>元素内容一起滚动</strong></li><li class="an " style="--i:2">背景与前景文字像一个<strong>整体</strong></li><li class="an " style="--i:3">素材同为 hotel-wallpaper.png</li><li class="an " style="--i:4">图5-29 为 scroll 的对照效果</li></ul></div><div class="cmp cmp-b">
+          <div class="cmp-h">fixed</div>
+          <ul><li class="an " style="--i:3">背景图片相对于<strong>视口固定</strong>，不随内容滚动</li><li class="an " style="--i:4">背景像<strong>墙纸</strong>固定不动，文字像<strong>窗帘</strong>照常拉动</li><li class="an " style="--i:5">常用于整页背景、视差效果的简单实现</li><li class="an " style="--i:6">图5-30 为 fixed 的对照效果</li></ul></div></div></div>
+</section>
+
+<section class="slide" data-kind="compare">
+  
+  <header class="s-head">
+    <div class="s-head-left">
+      <div class="kicker an" style="--i:0">对比辨析</div>
+      <h2 class="s-title an" style="--i:1">background-clip 与 background-origin：画到哪 vs 从哪起</h2>
+      <p class="s-sub an" style="--i:2">两者取值都是 border-box / padding-box / content-box，极易混淆</p>
+    </div>
+  </header>
+  <div class="s-body"><div class="cmp-wrap"><div class="cmp cmp-a">
+          <div class="cmp-h">background-clip：背景&lt;strong&gt;裁剪&lt;/strong&gt;</div>
+          <ul><li class="an " style="--i:1"><code>border-box</code>：背景覆盖 border 盒（默认值）</li><li class="an " style="--i:2"><code>padding-box</code>：背景覆盖整个 padding 盒，<strong>不含边框线</strong></li><li class="an " style="--i:3"><code>content-box</code>：背景仅覆盖 content 盒</li><li class="an " style="--i:4">作用于<strong>背景颜色与背景图片</strong>，回答「画到哪为止」</li></ul></div><div class="cmp cmp-b">
+          <div class="cmp-h">background-origin：背景&lt;strong&gt;起始定位&lt;/strong&gt;</div>
+          <ul><li class="an " style="--i:3"><code>border-box</code>：背景图起始于 border 盒左上角</li><li class="an " style="--i:4"><code>padding-box</code>：起始于 padding 盒左上角（默认值）</li><li class="an " style="--i:5"><code>content-box</code>：起始于 content 盒左上角</li><li class="an " style="--i:6">两者区别：origin <strong>需要有背景图片的参与</strong>，回答「从哪开始画」</li></ul></div></div></div>
+</section>
+
+<section class="slide" data-kind="codebullets">
+  
+  <header class="s-head">
+    <div class="s-head-left">
+      <div class="kicker an" style="--i:0">代码与要点</div>
+      <h2 class="s-title an" style="--i:1">5.4.3 背景综合样式</h2>
+      <p class="s-sub an" style="--i:2">语法5-12：一条 background 写完所有背景相关声明</p>
+    </div>
+  </header>
+  <div class="s-body two">
+    <div class="col-l"><ul class="blist small dense"><li class="an " style="--i:1"><span class="bl-dot"></span><span>书写顺序：<code>bg-color bg-image position/bg-size bg-repeat bg-origin bg-clip bg-attachment</code>。</span></li><li class="an " style="--i:2"><span class="bl-dot"></span><span>各属性值之间使用<strong>空格</strong>分隔；后续参数有需要时才添加，否则使用默认值。</span></li><li class="an " style="--i:3"><span class="bl-dot"></span><span><strong>必须设置背景颜色或背景图片</strong>，两者都不指定是常见的编程错误。</span></li><li class="an " style="--i:4"><span class="bl-dot"></span><span>技巧一：<code>bg-size</code> 只能<strong>紧接着 position</strong> 出现，两者以「/」分隔，如 <code>center/80%</code>。</span></li><li class="an " style="--i:5"><span class="bl-dot"></span><span>技巧二：origin 与 clip 取值同为 <code>&lt;box&gt;</code> 类型，出现 1 次时同时设置两者，出现 2 次时依次设置。</span></li></ul></div>
+    <div class="col-r"><div class="codebox" class="an " style="--i:1">
+      <div class="cb-bar"><span class="cb-lang">CSS</span>
+      <span class="cb-file">语法5-12 示例</span></div>
+      <pre class="cb-code"><span class="prop">background</span>:bg-color bg-image position/bg-size bg-repeat bg-origin bg-clip bg-attachment initial|inherit<span class="pn">;</span>
+
+<span class="prop">background</span>:red <span class="fn">url</span>(&quot<span class="pn">;</span>images/bg.png&quot<span class="pn">;</span>) repeat-y<span class="pn">;</span>
+<span class="prop">background</span>:<span class="num">#fff</span> center/<span class="num">80</span>% no-repeat<span class="pn">;</span>
+<span class="prop">background</span>:<span class="fn">url</span>(&quot<span class="pn">;</span>images/bg.png&quot<span class="pn">;</span>) left top/cover no-repeat content-box<span class="pn">;</span></pre></div></div>
+  </div>
+</section>
+
+<section class="slide" data-kind="task">
+  
+  <header class="s-head">
+    <div class="s-head-left">
+      <div class="kicker an" style="--i:0">任务驱动</div>
+      <h2 class="s-title an" style="--i:1">任务5-7｜制作健康打卡功能的渐变背景</h2>
+      <p class="s-sub an" style="--i:2">目标：根据图5-27 健康 App 打卡卡片效果，用渐变函数实现（图5-28）</p>
+    </div>
+  </header>
+  <div class="s-body two">
+    <div class="col-l">
+      <div class="task-goal an" style="--i:1"><span class="tg-label">任务目标</span>掌握 linear-gradient() 的语法与三条常见编程错误</div>
+      <ol class="task-steps"><li class="an " style="--i:2"><code>linear-gradient()</code> 是一个<strong>函数</strong>，参数 direction 表示渐变的角度和方向，其后接若干 CSS 颜色作为过渡起止色。</li><li class="an " style="--i:3">示例：<code>background-image: linear-gradient(45deg,#7ca9f0,#82d695);</code>，配 <code>border-radius:5px</code> 做圆角卡片。</li><li class="an " style="--i:4">常见编程错误①：想在网页中显示「&gt;」字符，却<strong>不使用实体引用</strong>，应写成 <code>&amp;gt;</code>。</li><li class="an " style="--i:5">常见编程错误②：缺少函数<strong>括号</strong>，或参数之间没有用<strong>逗号</strong>分隔。</li><li class="an " style="--i:6">常见编程错误③：把渐变函数错误地应用到 <code>background-color</code> 属性中——渐变是<strong>图片</strong>，应写在 <code>background-image</code> 里。</li></ol>
+    </div>
+    <div class="col-r"><div class="task-code" class="an " style="--i:7">
+          <pre class="cb-code"><span class="pn">&lt;</span><span class="tg">style</span><span class="pn">&gt;</span>
+.box{                       /* #007-#016 */
+    width: 200px;
+    height: 150px;
+    background-image: linear-gradient(45deg,#7ca9f0,#82d695);
+    border-radius: 5px;
+    line-height: 150px;
+    color:white;
+    font-size: 30px;
+    text-align: center;
+}
+<span class="pn">&lt;/</span><span class="tg">style</span><span class="pn">&gt;</span>
+
+<span class="pn">&lt;</span><span class="tg">div</span> class=&quot;box&quot;<span class="pn">&gt;</span>
+    &amp;gt;7 天跳绳打卡      <span class="c">&lt;!-- #021 注意 &gt; 需用实体引用 --&gt</span>;
+<span class="pn">&lt;/</span><span class="tg">div</span><span class="pn">&gt;</span></pre></div></div>
+  </div>
+</section>
+
+<section class="slide" data-kind="demo">
+  
+  <header class="s-head">
+    <div class="s-head-left">
+      <div class="kicker an" style="--i:0">效果演示</div>
+      <h2 class="s-title an" style="--i:1">效果演示｜渐变背景流光 + 精灵图位移取图标</h2>
+      <p class="s-sub an" style="--i:2">左侧：linear-gradient(45deg,...)；右侧：视窗不动、背景图移动，就像放大镜</p>
+    </div>
+  </header>
+  <div class="s-body two demo">
+    <div class="col-l"><ul class="blist small"><li class="an " style="--i:1"><span class="bl-dot"></span><span>左侧卡片的背景色在两个色值之间平滑过渡，<strong>不需要任何图片文件</strong>。</span></li><li class="an " style="--i:2"><span class="bl-dot"></span><span>右侧是一张 3×3 精灵图：素材只有一张图，却被复用成 9 个图标。</span></li><li class="an " style="--i:3"><span class="bl-dot"></span><span>橙色视窗是目标盒子，真正变化的是 <code>background-position</code> 的<strong>负值</strong>位移。</span></li><li class="an " style="--i:4"><span class="bl-dot"></span><span>坐标规律：向右第 2 列是 <code>-60px 0</code>，向下第 2 行是 <code>0 -60px</code>。</span></li></ul>
+      <div class="hint an" style="--i:5"><b>动手试试：</b>把每次移动想成「把放大镜在整张图上滑动」，请求次数始终是 1 次。</div>
+    </div>
+    <div class="col-r"><iframe class="demo-frame" title="效果预览" srcdoc="&lt;style&gt;*{box-sizing:border-box}body{margin:0;padding:12px;font-family:&#x27;PingFang SC&#x27;,system-ui,sans-serif;background:linear-gradient(160deg,#f2f6ff,#eafafd)}.wrap{display:flex;gap:14px}.left{width:200px}.card{width:200px;height:140px;border-radius:8px;display:grid;place-items:center;color:#fff;font-size:22px;font-weight:600;text-align:center;background-image:linear-gradient(45deg,#7ca9f0,#0fb5c9,#82d695,#7ca9f0);background-size:400% 400%;animation:flow 7s linear infinite;box-shadow:0 16px 34px -18px rgba(20,40,90,.55)}@keyframes flow{from{background-position:0% 50%}to{background-position:100% 50%}}.note{margin-top:9px;font:10.5px/1.8 Menlo,monospace;color:#33456b}.note b{color:#1d46b8}.right{flex:1}.ttl{font-size:10.5px;color:#8b9ab2;margin-bottom:5px}.sheet{position:relative;width:180px;height:180px;display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(3,1fr);border:1px solid #b9c6dc;border-radius:6px;overflow:hidden}.cell{display:grid;place-items:center;font-size:10px;color:#fff}.win{position:absolute;width:33.333%;height:33.333%;border:2px solid #ff9800;border-radius:3px;animation:win 9s steps(1) infinite}@keyframes win{0%{left:0;top:0}11.11%{left:33.333%;top:0}22.22%{left:66.666%;top:0}33.33%{left:0;top:33.333%}44.44%{left:33.333%;top:33.333%}55.55%{left:66.666%;top:33.333%}66.66%{left:0;top:66.666%}77.77%{left:33.333%;top:66.666%}88.88%{left:66.666%;top:66.666%}100%{left:66.666%;top:66.666%}}.row2{margin-top:10px;display:flex;gap:10px;align-items:center}.box60{width:60px;height:60px;border:1px solid #b9c6dc;border-radius:6px;position:relative;overflow:hidden;flex:none}.tile{position:absolute;inset:0;display:grid;place-items:center;font-size:10px;color:#fff;opacity:0}.coord{font:11px/1.95 Menlo,monospace;color:#33456b}.pos{position:relative;display:inline-block;width:118px;height:20px}.cr{position:absolute;left:0;top:0;color:#c2185b;opacity:0;white-space:nowrap}.o1{animation:o1 9s infinite}.o2{animation:o2 9s infinite}.o3{animation:o3 9s infinite}.o4{animation:o4 9s infinite}.o5{animation:o5 9s infinite}.o6{animation:o6 9s infinite}.o7{animation:o7 9s infinite}.o8{animation:o8 9s infinite}.o9{animation:o9 9s infinite}@keyframes o1{0%,11.1%{opacity:1}11.2%,100%{opacity:0}}@keyframes o2{0%,11.1%{opacity:0}11.2%,22.2%{opacity:1}22.3%,100%{opacity:0}}@keyframes o3{0%,22.2%{opacity:0}22.3%,33.3%{opacity:1}33.4%,100%{opacity:0}}@keyframes o4{0%,33.3%{opacity:0}33.4%,44.4%{opacity:1}44.5%,100%{opacity:0}}@keyframes o5{0%,44.4%{opacity:0}44.5%,55.5%{opacity:1}55.6%,100%{opacity:0}}@keyframes o6{0%,55.5%{opacity:0}55.6%,66.6%{opacity:1}66.7%,100%{opacity:0}}@keyframes o7{0%,66.6%{opacity:0}66.7%,77.7%{opacity:1}77.8%,100%{opacity:0}}@keyframes o8{0%,77.7%{opacity:0}77.8%,88.8%{opacity:1}88.9%,100%{opacity:0}}@keyframes o9{0%,88.8%{opacity:0}88.9%,100%{opacity:1}}&lt;/style&gt;&lt;div class=&#x27;wrap&#x27;&gt;&lt;div class=&#x27;left&#x27;&gt;&lt;div class=&#x27;card&#x27;&gt;&amp;gt;7 天跳绳打卡&lt;/div&gt;&lt;div class=&#x27;note&#x27;&gt;background-image:&lt;br&gt;&lt;b&gt;linear-gradient(45deg,&lt;br&gt;#7ca9f0,#82d695)&lt;/b&gt;;&lt;br&gt;无需图片资源，改色值即可换肤&lt;/div&gt;&lt;/div&gt;&lt;div class=&#x27;right&#x27;&gt;&lt;div class=&#x27;ttl&#x27;&gt;精灵图 Sprite · 一张图承载 9 个图标&lt;/div&gt;&lt;div class=&#x27;sheet&#x27;&gt;&lt;div class=&#x27;cell&#x27; style=&#x27;background:#e2574c&#x27;&gt;苹果&lt;/div&gt;&lt;div class=&#x27;cell&#x27; style=&#x27;background:#e8a33d&#x27;&gt;香蕉&lt;/div&gt;&lt;div class=&#x27;cell&#x27; style=&#x27;background:#8fbf3f&#x27;&gt;西瓜&lt;/div&gt;&lt;div class=&#x27;cell&#x27; style=&#x27;background:#4aa3c7&#x27;&gt;葡萄&lt;/div&gt;&lt;div class=&#x27;cell&#x27; style=&#x27;background:#9b6ec2&#x27;&gt;芒果&lt;/div&gt;&lt;div class=&#x27;cell&#x27; style=&#x27;background:#d7609a&#x27;&gt;蜜桃&lt;/div&gt;&lt;div class=&#x27;cell&#x27; style=&#x27;background:#3fa89b&#x27;&gt;香梨&lt;/div&gt;&lt;div class=&#x27;cell&#x27; style=&#x27;background:#c98a2e&#x27;&gt;菠萝&lt;/div&gt;&lt;div class=&#x27;cell&#x27; style=&#x27;background:#6f8fd0&#x27;&gt;荔枝&lt;/div&gt;&lt;div class=&#x27;win&#x27;&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class=&#x27;row2&#x27;&gt;&lt;div class=&#x27;box60&#x27;&gt;&lt;div class=&#x27;tile o1&#x27; style=&#x27;background:#e2574c&#x27;&gt;苹果&lt;/div&gt;&lt;div class=&#x27;tile o2&#x27; style=&#x27;background:#e8a33d&#x27;&gt;香蕉&lt;/div&gt;&lt;div class=&#x27;tile o3&#x27; style=&#x27;background:#8fbf3f&#x27;&gt;西瓜&lt;/div&gt;&lt;div class=&#x27;tile o4&#x27; style=&#x27;background:#4aa3c7&#x27;&gt;葡萄&lt;/div&gt;&lt;div class=&#x27;tile o5&#x27; style=&#x27;background:#9b6ec2&#x27;&gt;芒果&lt;/div&gt;&lt;div class=&#x27;tile o6&#x27; style=&#x27;background:#d7609a&#x27;&gt;蜜桃&lt;/div&gt;&lt;div class=&#x27;tile o7&#x27; style=&#x27;background:#3fa89b&#x27;&gt;香梨&lt;/div&gt;&lt;div class=&#x27;tile o8&#x27; style=&#x27;background:#c98a2e&#x27;&gt;菠萝&lt;/div&gt;&lt;div class=&#x27;tile o9&#x27; style=&#x27;background:#6f8fd0&#x27;&gt;荔枝&lt;/div&gt;&lt;/div&gt;&lt;div class=&#x27;coord&#x27;&gt;background-position: &lt;span class=&#x27;pos&#x27;&gt;&lt;span class=&#x27;cr o1&#x27;&gt;0 0&lt;/span&gt;&lt;span class=&#x27;cr o2&#x27;&gt;-60px 0&lt;/span&gt;&lt;span class=&#x27;cr o3&#x27;&gt;-120px 0&lt;/span&gt;&lt;span class=&#x27;cr o4&#x27;&gt;0 -60px&lt;/span&gt;&lt;span class=&#x27;cr o5&#x27;&gt;-60px -60px&lt;/span&gt;&lt;span class=&#x27;cr o6&#x27;&gt;-120px -60px&lt;/span&gt;&lt;span class=&#x27;cr o7&#x27;&gt;0 -120px&lt;/span&gt;&lt;span class=&#x27;cr o8&#x27;&gt;-60px -120px&lt;/span&gt;&lt;span class=&#x27;cr o9&#x27;&gt;-120px -120px&lt;/span&gt;&lt;/span&gt;&lt;br&gt;background-repeat: no-repeat&lt;br&gt;9 个图标 → 只发送 1 次请求&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;"></iframe></div>
+  </div>
+</section>
+
+<section class="slide" data-kind="task">
+  
+  <header class="s-head">
+    <div class="s-head-left">
+      <div class="kicker an" style="--i:0">任务驱动</div>
+      <h2 class="s-title an" style="--i:1">任务5-8｜用背景属性制作图标</h2>
+      <p class="s-sub an" style="--i:2">目标：icon-dot（实心圆）与 icon-menu（三横图标）两个移动应用常见图标</p>
+    </div>
+  </header>
+  <div class="s-body two">
+    <div class="col-l">
+      <div class="task-goal an" style="--i:1"><span class="tg-label">任务目标</span>掌握 currentColor 与 background-clip 的组合用法</div>
+      <ol class="task-steps"><li class="an " style="--i:2">技巧：<code>currentColor</code> 是 CSS3 中的变量，表示<strong>当前标签所继承的文字颜色</strong>，可与 color 保持同步。</li><li class="an " style="--i:3">共同思路：把前景色设为 lightgrey，用 <code>currentColor</code> 让背景色同步，再用 <code>background-clip:content-box</code> 把绘制区域限定为 content 盒。</li><li class="an " style="--i:4"><strong>icon-dot：</strong>content 盒 100×100，配 <code>border-radius:50%</code> 成为实心圆，padding 10px 留白，最外是 10px 边框。</li><li class="an " style="--i:5"><strong>icon-menu：</strong>content 盒高 10px，与上、下边框宽度相等，自然形成「三」字形。</li><li class="an " style="--i:6">关键：别忘了 <code>display:inline-block</code>，否则空的 div 无法体现宽高。</li></ol>
+    </div>
+    <div class="col-r"><div class="task-code" class="an " style="--i:7">
+          <pre class="cb-code"><span class="sel"><span class="cls">.icon-dot</span></span><span class="pn">{</span>                  <span class="c">/* #007-#017 */</span>
+    <span class="prop">display</span>: inline-block<span class="pn">;</span>
+    <span class="prop">width</span>: <span class="num">100px</span><span class="pn">;</span>
+    <span class="prop">height</span>: <span class="num">100px</span><span class="pn">;</span>
+    <span class="prop">padding</span>:<span class="num">10px</span><span class="pn">;</span>
+    <span class="prop">border</span>:<span class="num">10px</span> solid<span class="pn">;</span>
+    <span class="prop">background-color</span>: currentColor<span class="pn">;</span>
+    <span class="prop">background-clip</span>:content-box<span class="pn">;</span>
+    <span class="prop">color</span>:lightgrey<span class="pn">;</span>
+    <span class="prop">border-radius</span>: <span class="num">50</span>%<span class="pn">;</span><span class="pn">}</span><span class="sel">
+<span class="cls">.icon-menu</span></span><span class="pn">{</span>                 <span class="c">/* #018-#028 */</span>
+    <span class="prop">display</span>: inline-block<span class="pn">;</span>
+    <span class="prop">width</span>: <span class="num">140px</span><span class="pn">;</span>
+    <span class="prop">height</span>: <span class="num">10px</span><span class="pn">;</span>
+    <span class="prop">padding</span>:<span class="num">35px</span> <span class="num">0</span><span class="pn">;</span>
+    <span class="prop">border-top</span>:<span class="num">10px</span> solid<span class="pn">;</span>
+    <span class="prop">border-bottom</span>:<span class="num">10px</span> solid<span class="pn">;</span>
+    <span class="prop">color</span>:lightgrey<span class="pn">;</span>
+    <span class="prop">background-color</span>: currentColor<span class="pn">;</span>
+    <span class="prop">background-clip</span>: content-box<span class="pn">;</span><span class="pn">}</span></pre></div></div>
+  </div>
+</section>
+
+<section class="slide" data-kind="task">
+  
+  <header class="s-head">
+    <div class="s-head-left">
+      <div class="kicker an" style="--i:0">任务驱动</div>
+      <h2 class="s-title an" style="--i:1">任务5-9｜使用精灵图</h2>
+      <p class="s-sub an" style="--i:2">素材：某水果企业为北京奥运会提供新鲜水果产品的展示框，精灵图 image/bdd.png</p>
+    </div>
+  </header>
+  <div class="s-body two">
+    <div class="col-l">
+      <div class="task-goal an" style="--i:1"><span class="tg-label">任务目标</span>用一张精灵图制作多个产品展示框，每个框显示一种水果</div>
+      <ol class="task-steps"><li class="an " style="--i:2">容器 <code>.box</code>：宽 172px、高 200px、<code>border:1px solid #ccc</code>、<code>float:left</code>，并统一写 <code>background:url("image/bdd.png") no-repeat;</code>。</li><li class="an " style="--i:3">每个水果只需<strong>改一行</strong> background-position：<code>.bdd1{background-position:0 0;}</code>、<code>.bdd2{background-position:-172px 0;}</code>。</li><li class="an " style="--i:4">换行时横坐标归零、纵坐标递减：<code>.bdd4{background-position:0px -200px;}</code>。</li><li class="an " style="--i:5">坐标规律：moving right → x 取负增大；moving down → y 取负增大。</li><li class="an " style="--i:6">注意素材尺寸差异：第 7 个框写作 <code>-516px -98px</code>，说明该行图标高度与前面不同，需按实际测量值回填。</li></ol>
+    </div>
+    <div class="col-r"><div class="task-code" class="an " style="--i:7">
+          <pre class="cb-code"><span class="sel"><span class="cls">.box</span></span><span class="pn">{</span>                       <span class="c">/* #007-#014 */</span>
+    <span class="prop">width</span>: <span class="num">172px</span><span class="pn">;</span>
+    <span class="prop">height</span>: <span class="num">200px</span><span class="pn">;</span>
+    <span class="prop">border</span>:<span class="num">1px</span> solid <span class="num">#ccc</span><span class="pn">;</span>
+    <span class="prop">float</span>: left<span class="pn">;</span>
+    <span class="prop">margin-right</span>: <span class="num">10px</span><span class="pn">;</span>
+    <span class="prop">background</span>: <span class="fn">url</span>(&quot<span class="pn">;</span>image/bdd.png&quot<span class="pn">;</span>) no-repeat<span class="pn">;</span><span class="pn">}</span><span class="sel">
+<span class="cls">.bdd1</span></span><span class="pn">{</span><span class="prop">background-position</span>: <span class="num">0</span> <span class="num">0</span><span class="pn">;</span><span class="pn">}</span><span class="sel">            <span class="c">/* #015 */</span>
+<span class="cls">.bdd2</span></span><span class="pn">{</span><span class="prop">background-position</span>: -<span class="num">172px</span> <span class="num">0</span><span class="pn">;</span><span class="pn">}</span><span class="sel">       <span class="c">/* #016 */</span>
+<span class="cls">.bdd3</span></span><span class="pn">{</span><span class="prop">background-position</span>: -<span class="num">344px</span> <span class="num">0</span><span class="pn">;</span><span class="pn">}</span><span class="sel">       <span class="c">/* #017 */</span>
+<span class="cls">.bdd4</span></span><span class="pn">{</span><span class="prop">background-position</span>: <span class="num">0px</span> -<span class="num">200px</span><span class="pn">;</span><span class="pn">}</span><span class="sel">     <span class="c">/* #018 */</span>
+<span class="cls">.bdd5</span></span><span class="pn">{</span><span class="prop">background-position</span>: -<span class="num">172px</span> -<span class="num">200px</span><span class="pn">;</span><span class="pn">}</span><span class="sel">  <span class="c">/* #019 */</span>
+<span class="cls">.bdd6</span></span><span class="pn">{</span><span class="prop">background-position</span>: -<span class="num">344px</span> -<span class="num">200px</span><span class="pn">;</span><span class="pn">}</span><span class="sel">  <span class="c">/* #020 */</span>
+<span class="cls">.bdd7</span></span><span class="pn">{</span><span class="prop">background-position</span>: -<span class="num">516px</span> -<span class="num">98px</span><span class="pn">;</span><span class="pn">}</span>   <span class="c">/* #021 */</span></pre></div></div>
+  </div>
+</section>
+
+<section class="slide" data-kind="bullets">
+  
+  <header class="s-head">
+    <div class="s-head-left">
+      <div class="kicker an" style="--i:0">知识要点</div>
+      <h2 class="s-title an" style="--i:1">精灵图专题问答</h2>
+      <p class="s-sub an" style="--i:2">教材问答中的五个关键知识点</p>
+    </div>
+  </header>
+  <div class="s-body"><ul class="blist dense"><li class="an " style="--i:1"><span class="bl-dot"></span><span><strong>什么是精灵图：</strong>取自英文 <code>Sprite</code> 的翻译；因为「雪碧」英文也是 Sprite，有些书上也叫<strong>雪碧图</strong>。</span></li><li class="an " style="--i:2"><span class="bl-dot"></span><span><strong>为什么用一张大图：</strong>①<strong>加快网页加载速度</strong>——10 张图要发 10 次请求，合成 1 张只需 1 次；②<strong>便于后期维护</strong>。</span></li><li class="an " style="--i:3"><span class="bl-dot"></span><span><strong>怎么用：</strong>配合 <code>background-image</code>、<code>background-repeat</code>、<code>background-position</code>，<strong>类似于放大镜的使用</strong>——看到的是局部，移动靠 background-position 精准定位。</span></li><li class="an " style="--i:4"><span class="bl-dot"></span><span><strong>怎么取坐标：</strong>① 用 Photoshop 等绘图软件打开原稿，用测量工具取坐标；② 用<strong>浏览器开发者工具调试</strong>，满意后回填代码。</span></li><li class="an " style="--i:5"><span class="bl-dot"></span><span><strong>技巧：</strong>绘图软件与开发者工具配合，可以高效获取背景图片的坐标信息。</span></li></ul></div>
+</section>
+
+<section class="slide s-ai" data-kind="ai">
+  
+  <header class="s-head">
+    <div class="s-head-left">
+      <div class="kicker an" style="--i:0">AI 前沿</div>
+      <h2 class="s-title an" style="--i:1">AI 前沿：当图标不再需要「手量坐标」</h2>
+      <p class="s-sub an" style="--i:2">精灵图解决的是请求数问题，AI 正在改变的是「做图」这件事本身</p>
+    </div>
+  </header>
+  <div class="s-body two">
+    <div class="col-l"><div class="ai-card an" style="--i:1">
+      <div class="ai-badge">AI</div>
+      <p>过去做一张精灵图，需要设计师排版、开发者量坐标；现在图标可以直接以 <strong>SVG</strong> 内联或用 icon font 引入，请求数与维护成本同时下降。AI 则进一步参与进来：给它一句话，就能生成成套 SVG 图标，甚至按品牌色自动生成渐变，替代本单元手写的 linear-gradient。</p></div></div>
+    <div class="col-r"><ul class="blist small ai-list"><li class="an " style="--i:2">图标方案演进：精灵图 → icon font（如 iconfont.cn）→ 内联 SVG symbol；现代项目更推荐 <strong>SVG symbol 雪碧（sprite）</strong>。</li><li class="an " style="--i:3">GitHub Copilot、通义灵码可根据 <code>background-position</code> 的取值规律，自动推算下一排图标的坐标。</li><li class="an " style="--i:4">DeepSeek、通义千问可以直接生成满足设计规范的 linear-gradient 色值与色标位置。</li><li class="an " style="--i:5">提醒：AI 生成的 SVG/渐变要检查<strong>体积、对比度与无障碍色值</strong>，好看不等于可用。</li></ul></div>
+  </div>
+</section>
+
+<section class="slide" data-kind="quiz">
+  
+  <header class="s-head">
+    <div class="s-head-left">
+      <div class="kicker an" style="--i:0">随堂检测</div>
+      <h2 class="s-title an" style="--i:1">随堂检测</h2>
+      <p class="s-sub an" style="--i:2">选自教材 5.6 作业选择题，并补充自编题</p>
+    </div>
+  </header>
+  <div class="s-body quiz-body">
+    <div class="quiz-top an" style="--i:0">
+      <span class="quiz-meta">共 <b>5</b> 题　·　先独立作答，再点「查看答案」；误点可「重做」</span>
+      <span class="quiz-acts">
+        <button type="button" class="q-reset-all" id="quizResetAll">全部重做</button>
+        <button type="button" class="q-reveal" id="quizReveal">显示全部答案</button>
+      </span>
+    </div>
+    <ol class="quiz dense"><li class="quiz-item single" class="an " style="--i:1" data-type="single" data-answer="B">
+          <div class="q"><span class="q-no">01</span>
+            <span class="q-tag single">单选</span><span class="q-txt">下列属于 background-repeat 的默认值的是（　　）。（教材 5.6 第 3 题）</span></div>
+          <div class="opts"><button type="button" class="opt" data-k="A"><i>A</i><span>no-repeat</span></button><button type="button" class="opt" data-k="B"><i>B</i><span>repeat</span></button><button type="button" class="opt" data-k="C"><i>C</i><span>repeat-x</span></button><button type="button" class="opt" data-k="D"><i>D</i><span>repeat-y</span></button></div>
+          <div class="q-foot"><button type="button" class="q-check">查看答案</button>
+            <button type="button" class="q-reset" disabled>重做</button>
+            <span class="q-verdict"></span></div>
+          <div class="q-ans"><b>答案</b><span class="ans-key">B</span><span class="ans-tip">repeat 为默认值，即在 x、y 两个方向同时平铺。</span></div>
+        </li><li class="quiz-item single" class="an " style="--i:2" data-type="single" data-answer="A">
+          <div class="q"><span class="q-no">02</span>
+            <span class="q-tag single">单选</span><span class="q-txt">关于背景图片，说法正确的是（　　）。（教材 5.6 第 5 题）</span></div>
+          <div class="opts"><button type="button" class="opt" data-k="A"><i>A</i><span>如果一个图标需要提供单击效果，则应该使用 img 标签而不是背景图片</span></button><button type="button" class="opt" data-k="B"><i>B</i><span>背景图片一旦被指定，将无法移动</span></button><button type="button" class="opt" data-k="C"><i>C</i><span>在同一个元素中，如果同时指定背景图片和背景颜色，则谁先定义，将先显示谁</span></button><button type="button" class="opt" data-k="D"><i>D</i><span>在同一个元素中，只能添加一张背景图片</span></button></div>
+          <div class="q-foot"><button type="button" class="q-check">查看答案</button>
+            <button type="button" class="q-reset" disabled>重做</button>
+            <span class="q-verdict"></span></div>
+          <div class="q-ans"><b>答案</b><span class="ans-key">A</span><span class="ans-tip">背景图片可用 background-position 移动；背景图片显示在背景颜色之上；CSS3 支持多重背景。</span></div>
+        </li><li class="quiz-item single" class="an " style="--i:3" data-type="single" data-answer="B">
+          <div class="q"><span class="q-no">03</span>
+            <span class="q-tag single">单选</span><span class="q-txt">关于 linear-gradient()，下列说法正确的是（　　）。</span></div>
+          <div class="opts"><button type="button" class="opt" data-k="A"><i>A</i><span>它是一个属性值，应写在 background-color 中</span></button><button type="button" class="opt" data-k="B"><i>B</i><span>它是一个函数，第二个参数起为渐变的起止颜色</span></button><button type="button" class="opt" data-k="C"><i>C</i><span>它的第一个参数必须是颜色值</span></button><button type="button" class="opt" data-k="D"><i>D</i><span>它必须配合外部图片使用</span></button></div>
+          <div class="q-foot"><button type="button" class="q-check">查看答案</button>
+            <button type="button" class="q-reset" disabled>重做</button>
+            <span class="q-verdict"></span></div>
+          <div class="q-ans"><b>答案</b><span class="ans-key">B</span><span class="ans-tip">linear-gradient() 是函数，第一个参数 direction 表示角度和方向，其后接若干 CSS 颜色，应写在 background-image 中。</span></div>
+        </li><li class="quiz-item multi" class="an " style="--i:4" data-type="multi" data-answer="ABD">
+          <div class="q"><span class="q-no">04</span>
+            <span class="q-tag multi">多选</span><span class="q-txt">关于 background-size 的取值，下列说法正确的有（　　）。</span></div>
+          <div class="opts"><button type="button" class="opt" data-k="A"><i>A</i><span>contain 保持纵横比，把图片完整装入容器，可能留出空白</span></button><button type="button" class="opt" data-k="B"><i>B</i><span>cover 保持纵横比铺满容器，必要时裁剪图片</span></button><button type="button" class="opt" data-k="C"><i>C</i><span>cover 会拉伸图片使其变形，以保证容器不留空白</span></button><button type="button" class="opt" data-k="D"><i>D</i><span>只给出一个长度值时，第二个值默认为 auto</span></button></div>
+          <div class="q-foot"><button type="button" class="q-check">查看答案</button>
+            <button type="button" class="q-reset" disabled>重做</button>
+            <span class="q-verdict"></span></div>
+          <div class="q-ans"><b>答案</b><span class="ans-key">A、B、D</span><span class="ans-tip">cover 与 contain 都<strong>保持纵横比</strong>，cover 是裁剪而非拉伸变形；只写一个长度值时高度取 <code>auto</code>。</span></div>
+        </li><li class="quiz-item multi" class="an " style="--i:5" data-type="multi" data-answer="AC">
+          <div class="q"><span class="q-no">05</span>
+            <span class="q-tag multi">多选</span><span class="q-txt">关于线性渐变与精灵图，下列说法正确的有（　　）。</span></div>
+          <div class="opts"><button type="button" class="opt" data-k="A"><i>A</i><span>linear-gradient() 是 background-image 的取值，不能写在 background-color 中</span></button><button type="button" class="opt" data-k="B"><i>B</i><span>linear-gradient() 的第一个参数必须是颜色值</span></button><button type="button" class="opt" data-k="C"><i>C</i><span>用精灵图显示图片右侧的图标时，background-position 的 x 偏移量应取负值</span></button><button type="button" class="opt" data-k="D"><i>D</i><span>使用精灵图后，页面中每个图标仍要单独发起一次图片请求</span></button></div>
+          <div class="q-foot"><button type="button" class="q-check">查看答案</button>
+            <button type="button" class="q-reset" disabled>重做</button>
+            <span class="q-verdict"></span></div>
+          <div class="q-ans"><b>答案</b><span class="ans-key">A、C</span><span class="ans-tip">渐变属于图片，必须写在 <code>background-image</code>；第一个参数是方向或角度；精灵图<strong>一张图只请求一次</strong>，靠负值位移取图。</span></div>
+        </li></ol>
+  </div>
+</section>
+
+<section class="slide" data-kind="summary">
+  
+  <header class="s-head">
+    <div class="s-head-left">
+      
+      <h2 class="s-title an" style="--i:1">本课小结</h2>
+      
+    </div>
+  </header>
+  <div class="s-body"><ul class="blist"><li class="an " style="--i:1"><span class="bl-dot"></span><span>背景八件套：<code>color</code>、<code>image</code>、<code>repeat</code>、<code>position</code>、<code>size</code>、<code>attachment</code>、<code>clip</code>、<code>origin</code>。</span></li><li class="an " style="--i:2"><span class="bl-dot"></span><span>平铺四值：<code>repeat</code>（默认）、<code>no-repeat</code>、<code>repeat-x</code>、<code>repeat-y</code>。</span></li><li class="an " style="--i:3"><span class="bl-dot"></span><span>尺寸两策略：<code>contain</code> 完整无损但留白，<code>cover</code> 铺满无白但会裁剪。</span></li><li class="an " style="--i:4"><span class="bl-dot"></span><span>渐变是<strong>图片</strong>：<code>linear-gradient(角度, 色1, 色2)</code> 必须写在 <code>background-image</code> 中。</span></li><li class="an " style="--i:5"><span class="bl-dot"></span><span>精灵图：<strong>一张图 + 负值位移</strong>，把多次请求压成一次，坐标可用 Photoshop 或开发者工具量取。</span></li></ul></div>
+</section>
+
+<section class="slide" data-kind="homework">
+  
+  <header class="s-head">
+    <div class="s-head-left">
+      
+      <h2 class="s-title an" style="--i:1">课后作业</h2>
+      <p class="s-sub an" style="--i:2">教材 5.6 作业</p>
+    </div>
+  </header>
+  <div class="s-body"><ul class="blist hw"><li class="an " style="--i:1"><span class="bl-dot"></span><span><strong>选择题：</strong>完成教材项目5「一、选择题」第 1～5 题，并写出每题的判断依据。</span></li><li class="an " style="--i:2"><span class="bl-dot"></span><span><strong>操作题：</strong>使用教学项目源文件中的 <code>ch05/images/all_bg.gif</code> 精灵图，结合<strong>链接伪类</strong>实现鼠标指针悬停后高亮的效果（图5-38）。</span></li><li class="an " style="--i:3"><span class="bl-dot"></span><span><strong>拓展题：</strong>用 <code>linear-gradient()</code> 制作一张属于自己的打卡卡片，至少使用 3 个色标，并说明角度选择的理由。</span></li><li class="an " style="--i:4"><span class="bl-dot"></span><span><strong>项目讨论：</strong>精灵图在早期游戏制作中经常使用。请查找资料列举一个游戏案例，对比精灵图在游戏与网页中的使用原理，并讨论它的优点。</span></li></ul></div>
+</section>
+
+<section class="slide" data-kind="refs">
+  
+  <header class="s-head">
+    <div class="s-head-left">
+      
+      <h2 class="s-title an" style="--i:1">出处与参考</h2>
+      <p class="s-sub an" style="--i:2">本课件内容依据教材，并核对以下权威技术文档</p>
+    </div>
+  </header>
+  <div class="s-body"><ol class="refs"><li class="an " style="--i:1"><span class="ref-idx">01</span><span class="ref-t">教材《网页制作（HTML5+CSS3）》项目5 盒子模型（5.4 背景）</span><span class="ref-u">郑哲、傅冬 主编 · 电子工业出版社 · 2025 年 1 月第 1 版</span></li><li class="an " style="--i:2"><span class="ref-idx">02</span><span class="ref-t">MDN Web Docs · background 属性</span><span class="ref-u">https://developer.mozilla.org/zh-CN/docs/Web/CSS/background</span></li><li class="an " style="--i:3"><span class="ref-idx">03</span><span class="ref-t">MDN Web Docs · background-position / background-size</span><span class="ref-u">https://developer.mozilla.org/zh-CN/docs/Web/CSS/background-position</span></li><li class="an " style="--i:4"><span class="ref-idx">04</span><span class="ref-t">MDN Web Docs · 使用 CSS 渐变（linear-gradient）</span><span class="ref-u">https://developer.mozilla.org/zh-CN/docs/Web/CSS/CSS_images/Using_CSS_gradients</span></li><li class="an " style="--i:5"><span class="ref-idx">05</span><span class="ref-t">MDN Web Docs · background-clip 与 background-origin</span><span class="ref-u">https://developer.mozilla.org/zh-CN/docs/Web/CSS/background-clip</span></li></ol></div>
+</section>
+
+<section class="slide s-end" data-kind="end">
+  <div class="end-inner">
+    <div class="end-mark an" style="--i:0">·</div>
+    <h2 class="end-t an" style="--i:1">第 14 单元 · 结束</h2>
+    <p class="end-s an" style="--i:2">项目5 收官：盒子模型 + 边框 / 外边距 / 背景，构成了 CSS 布局的完整地基</p>
+    <a class="end-next an" style="--i:3" href="../%E9%A1%B9%E7%9B%AE6-%E8%A1%A8%E6%A0%BC%E5%92%8C%E8%A1%A8%E5%8D%95/U15%20%E8%A1%A8%E6%A0%BC%E6%A0%87%E7%AD%BE%E4%B8%8E%20CSS%20%E8%A1%A8%E6%A0%BC%E6%A0%B7%E5%BC%8F.html"><span class="en-lab">下一讲</span><span class="en-t">U15 表格标签与 CSS 表格样式</span><span class="en-ar">→</span></a>
+    <a class="end-back an" style="--i:4" href="../../index.html"><span>←</span> 返回总目录</a>
+  </div>
+</section>
+  <div class="legend">← → 翻页　·　C 点击翻页开关　·　O 目录　·　F 全屏　·　P 打印　·　拖动圈选不翻页</div>
+  <div class="hud">
+    <span class="btn" id="btnClick" data-on="1" title="开启 / 关闭「点击鼠标切换页面」（快捷键 C）">点击翻页 开</span>
+    <span class="btn" id="btnNav">目录</span>
+    <span class="btn" id="btnFull">全屏</span>
+    <span class="pageno"><b id="cur">1</b> / 25</span>
+  </div>
+  <div class="flip-toast" id="flipToast"></div>
+  <div class="drawer" id="drawer">
+    <div class="drawer-panel">
+      <div class="drawer-h">本单元目录 <span id="drawerClose">关闭 ✕</span></div>
+      <ul id="drawerList"><li data-go="0"><span class="nv-idx">01</span><span class="nv-t">背景：颜色、图片、渐变与精灵图</span></li><li data-go="1"><span class="nv-idx">02</span><span class="nv-t">本单元我们要达成什么</span></li><li data-go="2"><span class="nv-idx">03</span><span class="nv-t">思政课堂</span></li><li data-go="3"><span class="nv-idx">04</span><span class="nv-t">导览</span></li><li data-go="4"><span class="nv-idx">05</span><span class="nv-t">5.4 背景</span></li><li data-go="5"><span class="nv-idx">06</span><span class="nv-t">背景颜色与图片</span></li><li data-go="6"><span class="nv-idx">07</span><span class="nv-t">背景平铺</span></li><li data-go="7"><span class="nv-idx">08</span><span class="nv-t">背景定位</span></li><li data-go="8"><span class="nv-idx">09</span><span class="nv-t">定位要点</span></li><li data-go="9"><span class="nv-idx">10</span><span class="nv-t">背景尺寸</span></li><li data-go="10"><span class="nv-idx">11</span><span class="nv-t">contain vs cover</span></li><li data-go="11"><span class="nv-idx">12</span><span class="nv-t">背景滚动</span></li><li data-go="12"><span class="nv-idx">13</span><span class="nv-t">clip vs origin</span></li><li data-go="13"><span class="nv-idx">14</span><span class="nv-t">背景综合样式</span></li><li data-go="14"><span class="nv-idx">15</span><span class="nv-t">任务5-7 渐变背景</span></li><li data-go="15"><span class="nv-idx">16</span><span class="nv-t">渐变与精灵图演示</span></li><li data-go="16"><span class="nv-idx">17</span><span class="nv-t">任务5-8 制作图标</span></li><li data-go="17"><span class="nv-idx">18</span><span class="nv-t">任务5-9 精灵图</span></li><li data-go="18"><span class="nv-idx">19</span><span class="nv-t">精灵图专题</span></li><li data-go="19"><span class="nv-idx">20</span><span class="nv-t">AI 前沿</span></li><li data-go="20"><span class="nv-idx">21</span><span class="nv-t">随堂检测</span></li><li data-go="21"><span class="nv-idx">22</span><span class="nv-t">本课小结</span></li><li data-go="22"><span class="nv-idx">23</span><span class="nv-t">课后作业</span></li><li data-go="23"><span class="nv-idx">24</span><span class="nv-t">出处与参考</span></li><li data-go="24"><span class="nv-idx">25</span><span class="nv-t">结束</span></li></ul>
+    </div>
+  </div>
+</div></div>
+<script>
+(function(){
+  var slides = Array.prototype.slice.call(document.querySelectorAll('.slide'));
+  var total = slides.length, cur = 0;
+  var stage = document.getElementById('stage');
+  var bar = document.getElementById('bar'), curEl = document.getElementById('cur');
+  var drawer = document.getElementById('drawer');
+  var mqPortrait = window.matchMedia('(orientation: portrait)');
+  var flow = mqPortrait.matches;
+
+  /* ---- 点击翻页开关（记忆教师偏好，跨课件生效） ---- */
+  var clickOn = true;
+  try{ clickOn = localStorage.getItem('deck_clickflip') !== '0'; }catch(e){}
+  var btnClick = document.getElementById('btnClick');
+  var toastEl = document.getElementById('flipToast'), toastTimer = null;
+  function tip(msg){
+    if(!toastEl) return;
+    toastEl.textContent = msg;
+    toastEl.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function(){ toastEl.classList.remove('show'); }, 1500);
+  }
+  function syncClickBtn(){
+    if(!btnClick) return;
+    if(flow){                                   // 竖屏为滚屏阅读，点击翻页天然不生效
+      btnClick.textContent = '竖屏阅读';
+      btnClick.setAttribute('data-on', '0');
+      btnClick.setAttribute('title', '竖屏为纵向阅读模式，上下滚动即可；旋转为横屏后可用点击翻页');
+      return;
+    }
+    btnClick.textContent = '点击翻页 ' + (clickOn ? '开' : '关');
+    btnClick.setAttribute('data-on', clickOn ? '1' : '0');
+    btnClick.setAttribute('title', clickOn
+      ? '当前：点击鼠标可切换页面。点此关闭（快捷键 C）'
+      : '当前：点击鼠标不翻页，方便圈选讲解。点此开启（快捷键 C）');
+  }
+  function toggleClickFlip(silent){
+    clickOn = !clickOn;
+    try{ localStorage.setItem('deck_clickflip', clickOn ? '1' : '0'); }catch(e){}
+    syncClickBtn();
+    if(!silent) tip(clickOn ? '点击翻页已开启' : '点击翻页已关闭 · 仍可用 ← → 或滑动翻页');
+  }
+  syncClickBtn();
+
+  function hasSelection(){
+    var s = window.getSelection && window.getSelection();
+    return !!(s && String(s.text || s).length > 0);
+  }
+  function setIndex(n){
+    cur = Math.max(0, Math.min(total-1, n));
+    slides.forEach(function(s,i){ s.classList.toggle('is-active', i===cur); });
+    var act = slides[cur];
+    if(act && !flow) act.querySelectorAll('.an').forEach(function(el){ void el.offsetWidth; });
+    bar.style.width = (total>1 ? (cur/(total-1)*100) : 100)+'%';
+    curEl.textContent = cur+1;
+    document.querySelectorAll('#drawerList li').forEach(function(li,i){ li.classList.toggle('cur', i===cur); });
+  }
+  function go(n, instant){
+    n = Math.max(0, Math.min(total-1, n));
+    var same = (n===cur && slides[cur] && slides[cur].classList.contains('is-active'));
+    slides.forEach(function(s,i){
+      s.classList.remove('prev');
+      if(i<n) s.classList.add('prev');
+      if(i===n) s.classList.add('is-active');
+    });
+    setIndex(n);
+    if(flow){
+      var el = slides[n];
+      if(el && el.scrollIntoView) el.scrollIntoView({behavior: instant ? 'auto' : 'smooth', block:'start'});
+    } else if(same){
+      var a = slides[n]; if(a) a.querySelectorAll('.an').forEach(function(el){ void el.offsetWidth; });
+    }
+    try{ history.replaceState(null,'','#'+(n+1)); }catch(e){}
+  }
+
+  /* 键盘 */
+  document.addEventListener('keydown', function(e){
+    var k = e.key;
+    if(k==='ArrowRight'||k==='ArrowDown'||k===' '||k==='PageDown'||k==='Enter'){ e.preventDefault(); go(cur+1); }
+    else if(k==='ArrowLeft'||k==='ArrowUp'||k==='PageUp'){ e.preventDefault(); go(cur-1); }
+    else if(k==='Home'){ go(0); } else if(k==='End'){ go(total-1); }
+    else if(k==='o'||k==='O'){ drawer.classList.toggle('open'); }
+    else if(k==='f'||k==='F'){ toggleFull(); }
+    else if(k==='c'||k==='C'){ toggleClickFlip(); }
+    else if(k==='Escape'){ drawer.classList.remove('open'); }
+    else if(k==='p'||k==='P'){ window.print(); }
+  });
+  function toggleFull(){
+    if(!document.fullscreenElement){ (document.documentElement.requestFullscreen||function(){}).call(document.documentElement); }
+    else { document.exitFullscreen(); }
+  }
+
+  /* 点击翻页：拖动圈选文字、双击选词、点按钮/选项一律不翻页 */
+  var down = null, clickTimer = null;
+  function isInteractive(el){
+    return !!(el.closest('.hud')||el.closest('.drawer')||el.closest('iframe')||el.closest('summary')||
+              el.closest('details')||el.closest('.quiz')||el.closest('a')||el.closest('button')||
+              el.closest('input')||el.closest('select')||el.closest('textarea')||el.closest('label'));
+  }
+  stage.addEventListener('mousedown', function(e){ down = {x:e.clientX, y:e.clientY, t:Date.now()}; });
+  stage.addEventListener('click', function(e){
+    if(flow) return;
+    clearTimeout(clickTimer);
+    if(!clickOn) return;                           // 开关关闭：点击不翻页
+    if(e.detail > 1) return;                       // 双击 / 三击 = 选词，不翻页
+    if(isInteractive(e.target)) return;
+    if(hasSelection()) return;                     // 已有选中内容，不翻页
+    if(down && (Math.abs(e.clientX-down.x)>6 || Math.abs(e.clientY-down.y)>6)) return;  // 拖动圈选
+    if(down && (Date.now()-down.t > 800)) return;  // 长按
+    var r = stage.getBoundingClientRect();
+    var dir = (e.clientX - r.left) > r.width*0.5 ? 1 : -1;
+    clickTimer = setTimeout(function(){
+      if(hasSelection()) return;                   // 圈选期间保持静止
+      go(cur+dir);
+    }, 220);
+  });
+  document.addEventListener('dblclick', function(){ clearTimeout(clickTimer); });
+  document.addEventListener('selectionchange', function(){ if(hasSelection()) clearTimeout(clickTimer); });
+
+  /* 触摸：仅在横向滑动时翻页；竖屏交给页面滚动 */
+  var sx=null, sy=null, st=0;
+  stage.addEventListener('touchstart', function(e){
+    if(e.touches.length>1){ sx=null; return; }
+    sx=e.touches[0].clientX; sy=e.touches[0].clientY; st=Date.now();
+  }, {passive:true});
+  stage.addEventListener('touchend', function(e){
+    if(sx===null) return;
+    var dx=e.changedTouches[0].clientX-sx, dy=e.changedTouches[0].clientY-sy;
+    sx=null;
+    if(flow) return;
+    if(Date.now()-st>900) return;                  // 长按选词
+    if(hasSelection()) return;
+    if(Math.abs(dx)>55 && Math.abs(dy)<Math.abs(dx)*0.75) go(dx<0?cur+1:cur-1);
+  }, {passive:true});
+
+  /* 竖屏：滚动时同步页码与进度 */
+  if('IntersectionObserver' in window){
+    var io = new IntersectionObserver(function(entries){
+      if(!flow) return;
+      var best=null;
+      entries.forEach(function(en){
+        if(en.isIntersecting && (!best || en.intersectionRatio > best.intersectionRatio)) best = en;
+      });
+      if(best){
+        var i = slides.indexOf(best.target);
+        if(i>=0 && i!==cur) setIndex(i);
+      }
+    }, {threshold:[0.2,0.5,0.8]});
+    slides.forEach(function(s){ io.observe(s); });
+  }
+  function onOrient(){
+    flow = mqPortrait.matches;
+    syncClickBtn();
+    clearTimeout(clickTimer);
+  }
+  mqPortrait.addEventListener ? mqPortrait.addEventListener('change', onOrient) : mqPortrait.addListener(onOrient);
+
+  /* 目录 / HUD */
+  if(btnClick) btnClick.addEventListener('click', function(e){ e.stopPropagation(); toggleClickFlip(); });
+  document.getElementById('btnNav').addEventListener('click', function(e){ e.stopPropagation(); drawer.classList.add('open'); });
+  document.getElementById('btnFull').addEventListener('click', function(e){ e.stopPropagation(); toggleFull(); });
+  document.getElementById('drawerClose').addEventListener('click', function(){ drawer.classList.remove('open'); });
+  drawer.addEventListener('click', function(e){ if(e.target===drawer) drawer.classList.remove('open'); });
+  document.querySelectorAll('#drawerList li').forEach(function(li){
+    li.addEventListener('click', function(){ go(parseInt(li.dataset.go,10)); drawer.classList.remove('open'); });
+  });
+
+  /* 随堂检测：点选选项 → 判分 → 显示答案与解析 → 单选/全量重做 */
+  function keysOf(item){
+    return (item.getAttribute('data-answer')||'').toUpperCase().replace(/[^A-Z]/g,'').split('');
+  }
+  function reveal(item){
+    var ans = keysOf(item);
+    item.querySelectorAll('.opt').forEach(function(b){
+      if(ans.indexOf(b.getAttribute('data-k'))>=0) b.classList.add('right');
+    });
+    item.classList.add('revealed');
+  }
+  function resetItem(item){
+    item.classList.remove('revealed','ok','bad');
+    item.querySelectorAll('.opt').forEach(function(b){ b.classList.remove('right','sel'); });
+    var v = item.querySelector('.q-verdict'); if(v) v.textContent='';
+    var rs = item.querySelector('.q-reset'); if(rs) rs.disabled = true;
+  }
+  document.querySelectorAll('.quiz-item').forEach(function(item){
+    var qtype = item.getAttribute('data-type')||'single';
+    var btnReset = item.querySelector('.q-reset');
+    item.querySelectorAll('.opt').forEach(function(btn){
+      btn.addEventListener('click', function(ev){
+        ev.stopPropagation();
+        /* 已揭示答案后再点选项 = 重新作答，自动收起答案 */
+        if(item.classList.contains('revealed')){
+          item.classList.remove('revealed','ok','bad');
+          item.querySelectorAll('.opt').forEach(function(b){ b.classList.remove('right'); });
+          var v0 = item.querySelector('.q-verdict'); if(v0) v0.textContent='';
+        }
+        if(qtype==='single'){
+          item.querySelectorAll('.opt').forEach(function(b){ b.classList.remove('sel'); });
+          btn.classList.add('sel');
+        } else {
+          btn.classList.toggle('sel');
+        }
+        item.classList.remove('ok','bad');
+        var v = item.querySelector('.q-verdict'); if(v) v.textContent='';
+        if(btnReset) btnReset.disabled = false;
+      });
+    });
+    var chk = item.querySelector('.q-check');
+    if(chk) chk.addEventListener('click', function(ev){
+      ev.stopPropagation();
+      var ans = keysOf(item);
+      var sel = Array.prototype.slice.call(item.querySelectorAll('.opt.sel')).map(function(b){ return b.getAttribute('data-k'); });
+      var ok = sel.length>0 && sel.length===ans.length && sel.filter(function(k){ return ans.indexOf(k)>=0; }).length===ans.length;
+      reveal(item);
+      if(btnReset) btnReset.disabled = false;
+      item.classList.remove('ok','bad'); item.classList.add(ok?'ok':'bad');
+      var v = item.querySelector('.q-verdict');
+      if(v) v.textContent = ok ? '✓ 回答正确' : (sel.length ? '✗ 再想一想，正确项已标绿' : '请先选择答案');
+    });
+    if(btnReset) btnReset.addEventListener('click', function(ev){
+      ev.stopPropagation();
+      resetItem(item);
+      tip('本题已重置，可重新作答');
+    });
+  });
+  var btnReveal = document.getElementById('quizReveal');
+  if(btnReveal) btnReveal.addEventListener('click', function(ev){
+    ev.stopPropagation();
+    var on = btnReveal.getAttribute('data-on')==='1';
+    var next = !on;
+    document.querySelectorAll('.quiz-item').forEach(function(item){
+      if(next){
+        reveal(item);
+        var rs = item.querySelector('.q-reset'); if(rs) rs.disabled = false;
+      } else {
+        resetItem(item);
+      }
+    });
+    btnReveal.setAttribute('data-on', next ? '1':'0');
+    btnReveal.textContent = next ? '隐藏答案' : '显示全部答案';
+  });
+  var btnResetAll = document.getElementById('quizResetAll');
+  if(btnResetAll) btnResetAll.addEventListener('click', function(ev){
+    ev.stopPropagation();
+    document.querySelectorAll('.quiz-item').forEach(resetItem);
+    if(btnReveal){ btnReveal.setAttribute('data-on','0'); btnReveal.textContent = '显示全部答案'; }
+    tip('已清空本题全部作答，可重新开始');
+  });
+
+  var h = parseInt((location.hash||'').replace('#',''),10);
+  go(isNaN(h)?0:h-1, true);
+})();
+</script>
+</body>
+</html>

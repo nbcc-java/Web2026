@@ -1,0 +1,483 @@
+{
+  "id": "U19",
+  "project": "项目7",
+  "project_name": "浮动和定位",
+  "unit": "第 19 单元",
+  "title": "定位：静态、固定、绝对与相对",
+  "subtitle": "让元素向纵深方向（z 轴）发展，掌握 position 四兄弟与「父相子绝」技巧",
+  "duration": 40,
+  "cover_tags": [
+    "position",
+    "fixed",
+    "absolute",
+    "relative",
+    "z-index"
+  ],
+  "ref_book": "电子工业出版社 · 2025 年 1 月第 1 版",
+  "objectives": {
+    "knowledge": [
+      "掌握 position 属性及其取值",
+      "掌握固定定位、绝对定位、相对定位的特性",
+      "理解 left / right / top / bottom 与 z-index 的作用",
+      "熟练应用定位技巧实现网页布局特效"
+    ],
+    "skill": [
+      "能正确使用固定定位",
+      "能正确使用绝对定位",
+      "能正确使用相对定位",
+      "能使用「父相子绝」实现局部快速定位"
+    ],
+    "literacy": [
+      "培养正确的审美观念",
+      "培养严谨求实的劳动作风",
+      "培养精益求精的工匠精神"
+    ]
+  },
+  "slides": [
+    {
+      "type": "objectives",
+      "title": "本单元我们要达成什么",
+      "subtitle": "对照教材《项目7》7.2 的学习目标 / 技能目标 / 素养目标",
+      "objectives": {
+        "knowledge": [
+          "掌握 position 属性及其取值",
+          "掌握固定定位、绝对定位、相对定位的特性",
+          "理解 left / right / top / bottom 与 z-index 的作用",
+          "熟练应用定位技巧实现网页布局特效"
+        ],
+        "skill": [
+          "能正确使用固定定位",
+          "能正确使用绝对定位",
+          "能正确使用相对定位",
+          "能使用「父相子绝」实现局部快速定位"
+        ],
+        "literacy": [
+          "培养正确的审美观念",
+          "培养严谨求实的劳动作风",
+          "培养精益求精的工匠精神"
+        ]
+      }
+    },
+    {
+      "type": "ideology",
+      "title": "让技术服务于生活：定位不只是「把元素放对地方」",
+      "subtitle": "教材《项目7》思政课堂",
+      "nav": "思政课堂",
+      "text": "以 Web 前端技术为代表的网页应用技术可以帮助乡村地区宣传本地特色和文化，吸引游客前来观光旅游，促进经济发展。同时，网页应用技术还可以为乡村地区提供数字化服务，如<strong>在线教育、医疗</strong>等，提高乡村地区居民的生活质量。未来，随着互联网技术的不断发展，网页应用技术将更加深入地应用于<strong>美丽乡村建设</strong>中，为乡村地区带来更多发展机遇和可能性。",
+      "topic": "固定导航、悬浮客服、弹窗提示——这些由定位实现的交互效果已无处不在。请结合岗位讨论：一个「始终挡住正文」的悬浮元素，是便利还是打扰？好设计的边界在哪里？"
+    },
+    {
+      "type": "outline",
+      "title": "本单元导览",
+      "subtitle": "四种定位，一条纵轴，两个核心技巧",
+      "nav": "导览",
+      "items": [
+        "定位要解决的问题是什么？（从平面排版走向纵深叠加）",
+        "position 的四个取值与四个偏移属性，各有什么用？",
+        "固定定位：为什么它不随滚动条移动？",
+        "绝对定位与相对定位：脱不脱离标准流，是分水岭",
+        "「父相子绝」：局部坐标系与精品课程封面"
+      ]
+    },
+    {
+      "type": "section",
+      "no": "7.2.1",
+      "title": "定位属性",
+      "text": "position 定方式，left/right/top/bottom 定坐标，z-index 定层级。",
+      "nav": "7.2.1 定位属性"
+    },
+    {
+      "type": "table",
+      "title": "表7-4 position 属性值及描述（教材完整还原）",
+      "subtitle": "教材原文：常用的定位有 static、fixed、absolute、relative 4 种",
+      "nav": "position 取值",
+      "head": [
+        "属性值",
+        "描述"
+      ],
+      "rows": [
+        [
+          "<code>static</code>",
+          "默认值，<strong>静态定位</strong>，元素按照标准流进行布局"
+        ],
+        [
+          "<code>fixed</code>",
+          "<strong>固定定位</strong>，依据<strong>浏览器视口</strong>进行偏移"
+        ],
+        [
+          "<code>absolute</code>",
+          "<strong>绝对定位</strong>，将对象<strong>从标准流中脱离出来</strong>，相对于其<strong>最近的一个已定位元素</strong>（相对/绝对的祖先元素）进行绝对定位；<strong>如果不存在这样的祖先元素，则相对于最外层的包含框（body）进行定位</strong>"
+        ],
+        [
+          "<code>relative</code>",
+          "<strong>相对定位</strong>，相对于<strong>自身位置</strong>进行偏移"
+        ]
+      ]
+    },
+    {
+      "type": "table",
+      "title": "四个偏移属性与 z-index（教材表7-5、表7-6 合并）",
+      "subtitle": "left、right、bottom、top 是 4 个 CSS 属性，也被称为定位属性，取值均可为负值",
+      "nav": "偏移与层级",
+      "head": [
+        "属性",
+        "取值",
+        "描述"
+      ],
+      "rows": [
+        [
+          "<code>left</code>",
+          "长度值",
+          "元素<strong>左边</strong>的偏移量，可取负值"
+        ],
+        [
+          "<code>right</code>",
+          "长度值",
+          "元素<strong>右边</strong>的偏移量，可取负值"
+        ],
+        [
+          "<code>bottom</code>",
+          "长度值",
+          "元素<strong>下边</strong>的偏移量，可取负值"
+        ],
+        [
+          "<code>top</code>",
+          "长度值",
+          "元素<strong>上边</strong>的偏移量，可取负值"
+        ],
+        [
+          "<code>z-index</code>",
+          "auto<br>number<br>inherit",
+          "<strong>auto</strong> 为默认值，层级与父元素相等；<strong>number</strong> 指定元素的层级高低，<strong>数值越大，层级越高</strong>；inherit 继承父元素的 z-index"
+        ]
+      ]
+    },
+    {
+      "type": "bullets",
+      "title": "必须记住的 3 点（教材原文）",
+      "subtitle": "外加教材启发问答：要用定位属性定位，至少需要几个定位属性？",
+      "nav": "记住这三点",
+      "items": [
+        "① 常用的定位有 <strong>static 静态定位、fixed 固定定位、absolute 绝对定位、relative 相对定位</strong> 4 种。",
+        "② <code>left</code>、<code>right</code>、<code>bottom</code>、<code>top</code> 是 4 个 CSS 属性，也被称为<strong>定位属性</strong>，可以和 <code>relative</code>、<code>absolute</code>、<code>fixed</code> 配合使用，实现坐标定位的效果。",
+        "③ 如果定位的元素发生空间上的重叠，则可以通过 <code>z-index</code> 实现层级的切换，<strong>数值越大，层级越高</strong>——如同 PPT「排列」选项中「前移一层」的效果。",
+        "<strong>启发问答：</strong>要用定位属性定位，至少需要几个定位属性？——由于元素基于盒子模型，<strong>在水平方向和垂直方向上至少各需要一个定位属性</strong>。",
+        "教材引子：如果说浮动解决了<strong>平面空间</strong>的排版问题，那么定位则可以让元素向<strong>纵深方向（z 轴）</strong>发展，形成层级叠加，支撑弹窗、对话框等交互效果。"
+      ]
+    },
+    {
+      "type": "cards",
+      "title": "四种定位速览",
+      "subtitle": "一句话分清：谁动、谁来定、动完还占不占位置",
+      "nav": "四种定位速览",
+      "cols": 2,
+      "items": [
+        {
+          "title": "static · 静态定位",
+          "text": "<code>position:static</code> 或不设置 position 时的<strong>默认状态</strong>。块级元素从上往下依次排列，行内元素与行内块元素从左往右依次排列，<strong>各元素没有任何移动效果</strong>——之前课程中的示例代码都使用静态定位。"
+        },
+        {
+          "title": "fixed · 固定定位",
+          "text": "相对于<strong>浏览器视口（可视窗口）</strong>定位，位置固定，<strong>不会随着网页滚动条的滚动而移动</strong>。典型应用：京东商城的<strong>固定侧边栏</strong>、回到顶部按钮。"
+        },
+        {
+          "title": "absolute · 绝对定位",
+          "text": "相对于<strong>距离最近的已定位祖先元素</strong>定位；没有已定位祖先元素时，相对于<strong>浏览器</strong>定位。<strong>完全脱离标准流</strong>，并提升层级。"
+        },
+        {
+          "title": "relative · 相对定位",
+          "text": "相对于<strong>自身原始位置</strong>偏移，偏移量由 top、right、bottom、left 实现，未指定时<strong>默认值为 0</strong>。<strong>不脱离标准流</strong>，仍占据原有空间。"
+        }
+      ]
+    },
+    {
+      "type": "task",
+      "title": "任务7-6｜使用固定定位实现导航悬停",
+      "subtitle": "目标：根据固定定位语法和链接锚点知识，实现页面导航悬停效果（图7-22）",
+      "nav": "任务7-6 固定导航",
+      "goal": "对 .toolbar 使用 position:fixed，配合 right 与 top 定位到页面相应位置，使其脱离普通标准流并悬停在视口上。",
+      "steps": [
+        "① <strong>修改定位属性</strong>：给 <code>.toolbar</code> 设置 <code>position:fixed</code>。",
+        "② <strong>固定位置</strong>：通过 <code>right:10px; top:100px</code> 把它钉在视口的右上方。",
+        "正文部分用 <code>.outer</code> 容器包裹报道内容，并给出 <code>#top</code>、<code>#sec01</code>、<code>#sec02</code>、<code>#sec03</code> 等锚点 id。",
+        "工具栏内放置「回到顶部 / 建什么 / 怎么建 / 建成什么样」四个链接，href 分别指向对应锚点。",
+        "给链接加上 <code>:hover</code> 下划线，提升可点击感。",
+        "<strong>效果：</strong>无论怎么滚动滚动条，该导航都脱离普通标准流，<strong>悬停在视口的相应位置</strong>上。"
+      ],
+      "lang": "css",
+      "code": ".outer{ width:512px; border:1px solid #ccc; margin:0 auto;\n    padding:20px; background-color:#fafbfc; }\n.outer img{ width:100%; }\n.toolbar{\n    position:fixed;\n    right:10px;\n    top:100px;\n}\n.toolbarItem{ background-color:bisque; border-top:1px dashed #ccc; }\n.toolbarItem>a{ text-decoration:none; display:inline-block;\n    padding:5px 10px; color:#F8534D; }\n.toolbarItem>a:hover{ text-decoration:underline; }"
+    },
+    {
+      "type": "code",
+      "title": "代码7-10｜固定定位导航的 HTML 结构（教材节选）",
+      "subtitle": "锚点链接 + 固定定位容器，两者配合完成「随滚随在」的导航",
+      "nav": "代码7-10 HTML",
+      "lang": "html",
+      "file": "任务7-6 结构",
+      "code": "<div class=\"outer\" id=\"top\">\n  <h2>建设宜居宜业美丽乡村——权威解读《乡村建设行动实施方案》</h2>\n  <img src=\"./images/meili01.jpeg\" alt=\"\">\n  …\n  <h3 id=\"sec01\">建什么？加强重点领域农村基础设施建设</h3>\n  …\n  <h3 id=\"sec02\">怎么建？坚持乡村建设是为农民而建</h3>\n  …\n  <h3 id=\"sec03\">建成什么样？不搞大拆大建，保留乡村风貌</h3>\n  …\n</div>\n<div class=\"toolbar\">\n  <div class=\"toolbarItem\"><a href=\"#top\">回到顶部</a></div>\n  <div class=\"toolbarItem\"><a href=\"#sec01\">建什么</a></div>\n  <div class=\"toolbarItem\"><a href=\"#sec02\">怎么建</a></div>\n  <div class=\"toolbarItem\"><a href=\"#sec03\">建成什么样</a></div>\n</div>",
+      "caption": "教材素材：正文为新华社报道《建设宜居宜业美丽乡村——权威解读〈乡村建设行动实施方案〉》，配图 <code>meili01.jpeg</code>～<code>meili06.jpg</code>。"
+    },
+    {
+      "type": "section",
+      "no": "7.2.4",
+      "title": "绝对定位",
+      "text": "找最近的「已定位祖先」，找不到就找浏览器——这是绝对定位的核心规则。",
+      "nav": "7.2.4 绝对定位"
+    },
+    {
+      "type": "codebullets",
+      "title": "绝对定位：就近找「坐标系」",
+      "subtitle": "教材代码7-11：不存在已定位祖先元素的情况",
+      "nav": "绝对定位特性",
+      "items": [
+        "定义：绝对定位是指<strong>相对于距离最近的已定位祖先元素</strong>进行的定位。如果元素<strong>没有已定位祖先元素</strong>，那么它的位置相对于<strong>浏览器</strong>进行定位。",
+        "本例中 <code>div.outer</code> 与 <code>body</code> 均未加定位，属于「不存在已定位祖先元素」的情况：div2 被定位到<strong>距离浏览器左边界 20px、上边界 40px</strong> 的位置。",
+        "<strong>特性①：</strong>脱离原来的标准流，并<strong>提升层级</strong>。",
+        "<strong>特性②：</strong>祖先中有已定位元素则<strong>就近绝对定位</strong>，否则根据浏览器定位。",
+        "<strong>特性③：</strong>可以使<strong>行内元素</strong>支持宽度、高度和内边距、外边距等样式效果。",
+        "<strong>特性④：</strong>当块级元素<strong>不设置宽度</strong>时，其宽度<strong>由内容撑开</strong>。",
+        "<strong>特性⑤：可以触发 BFC</strong>（呼应上一单元）。",
+        "补充实验：如果只设置绝对定位而<strong>没有 left、top 配合</strong>，元素会<strong>在原来的位置上，但会脱离标准流</strong>。"
+      ],
+      "lang": "css",
+      "file": "代码7-11（教材原文）",
+      "code": ".outer{ background-color:#01FFFF; }\n.box{ width:100px; height:50px; background-color:#FFE4C4;\n      border:1px dashed #518F93; }\n.box2{ position:absolute; left:20px; top:40px; }\n\n/* 结构 */\n/* <div class=\"outer\"> */\n/*   <div class=\"box\">div1</div> */\n/*   <div class=\"box box2\">div2</div> */\n/*   <div class=\"box\">div3</div> */\n/* </div> */"
+    },
+    {
+      "type": "compare",
+      "title": "fixed 与 absolute，滚动条一拉就见分晓",
+      "subtitle": "教材技巧原文：这是初学者最容易混淆的一对",
+      "nav": "fixed vs absolute",
+      "a": {
+        "title": "fixed · 固定定位",
+        "items": [
+          "相对于<strong>浏览器视口</strong>进行定位",
+          "<strong>即使滚动页面，元素也会固定保持在同一个位置上</strong>",
+          "常用于固定侧边栏、回到顶部、悬浮客服",
+          "偏移参照物<strong>永远是视口</strong>，与祖先是否定位无关"
+        ]
+      },
+      "b": {
+        "title": "absolute · 绝对定位",
+        "items": [
+          "相对于<strong>最近的已定位祖先元素</strong>（没有则相对浏览器窗口）",
+          "<strong>拖动滚动条时，绝对定位元素会随着文档一起滚动</strong>",
+          "常用于弹窗、角标、局部坐标系内的精确定位",
+          "教材判定口诀：<strong>页面垂直方向超过一个屏幕时，两者差别最明显</strong>"
+        ]
+      }
+    },
+    {
+      "type": "section",
+      "no": "7.2.5",
+      "title": "相对定位",
+      "text": "它不脱离标准流，却悄悄给自己建立了一套「局部坐标系」。",
+      "nav": "7.2.5 相对定位"
+    },
+    {
+      "type": "codebullets",
+      "title": "相对定位：以自己为原点",
+      "subtitle": "教材代码7-12：不设置偏移量时，和静态定位似乎没区别（图7-26）",
+      "nav": "相对定位特性",
+      "items": [
+        "定义：相对定位是指元素<strong>相对于自身原始位置</strong>进行偏移的定位，偏移量由 <code>top</code>、<code>right</code>、<code>bottom</code>、<code>left</code> 实现；<strong>未指定时默认值为 0</strong>。",
+        "<strong>特性①：</strong>如果只设置相对定位，<strong>不设置偏移量，则元素的位置不会有任何变化</strong>。",
+        "<strong>特性②：</strong>元素设置相对定位后<strong>仍然占据其原有空间，不会脱离标准流</strong>——这是它与绝对定位最大的区别。",
+        "<strong>特性③：</strong>元素设置相对定位后会<strong>提升其层级</strong>，与原有标准流元素形成<strong>遮挡关系</strong>（div2 会遮住 div3）。",
+        "<strong>特性④：</strong>在配合定位属性时，元素的偏移位置<strong>相对于原来元素在标准中的位置</strong>。"
+      ],
+      "lang": "css",
+      "file": "代码7-12（教材原文）",
+      "code": ".outer{ background-color:#01FFFF; }\n.box{ width:100px; height:50px; display:inline-block; margin:5px;\n      background-color:#FFE4C4; border:1px dashed #518F93; }\n.box2{\n    position:relative;\n    /* left:20px;\n       top:40px; */\n}"
+    },
+    {
+      "type": "bullets",
+      "title": "「已定位元素」与「父相子绝」",
+      "subtitle": "教材技巧原文：利用「父元素的相对定位 + 子元素的绝对定位」实现局部坐标系内的快速定位",
+      "nav": "已定位元素",
+      "items": [
+        "相对定位<strong>不脱离标准流</strong>，其他元素不受影响，仍按原位置排列；同时它会<strong>提升一个层级</strong>，并具有<strong>由自身偏移量计算的参考系</strong>。",
+        "这就使它成为一个<strong>「已定位元素」</strong>——教材比喻：<strong>就好像拥有一个局部坐标系来定义它的子元素，其所有子元素在定位时将参考这个局部坐标系。</strong>",
+        "<strong>启发问答：</strong>除了相对定位，还有哪些元素属于已定位元素？——<strong>除了默认的静态定位，父元素使用绝对定位、相对定位、固定定位都属于已定位情况</strong>。",
+        "此时子元素使用绝对定位，使用的是<strong>父元素的局部坐标系</strong>——这就是「<strong>父相子绝</strong>」：父元素 relative 建系，子元素 absolute 落点。",
+        "记忆口诀：<strong>子绝父相</strong>。父级不设定位，子级就会一路找到浏览器去。"
+      ]
+    },
+    {
+      "type": "task",
+      "title": "任务7-7｜精品课程封面的制作",
+      "subtitle": "目标：使用「父元素的相对定位 + 子元素的绝对定位」技巧，完成精品课程封面（图7-28）",
+      "nav": "任务7-7 课程封面",
+      "goal": "素材文件名 JavaCourse；外层 .outer 宽 300px，封面区高 162px，右上角旋转 45° 的「省级精品」标签。",
+      "steps": [
+        "① <strong>父相</strong>：给 <code>.course</code> 设置 <code>position:relative</code>，构建已定位祖先元素，并加 <code>overflow:hidden</code> 裁切溢出。",
+        "② <strong>子绝</strong>：右上角标签 <code>div.tag</code> 设置 <code>position:absolute; right:-22px; top:26px</code>。",
+        "③ 用 <code>transform:rotate(45deg)</code> 让标签旋转 45 度，形成经典的「绶带」效果。",
+        "④ 图片容器 <code>.img-wrap</code> 高 162px 并 <code>overflow:hidden</code>，配合 <code>.course img:hover{ transform:scale(1.3) }</code> 与 <code>transition:all 0.6s</code> 实现放大动效。",
+        "⑤ 课程名、开课状态、教师与学校信息使用 <code>display:flex; justify-content:space-between</code> 两端对齐。",
+        "<strong>启发问答：</strong><code>scale()</code>、<code>transition</code> 是什么？——transform 是变形属性，提供 <code>scale()</code>、<code>rotate()</code>、<code>translate()</code> 等函数；transition 用于实现过渡效果，<strong>将在项目9 中讲述，这里先模仿代码</strong>。"
+      ],
+      "lang": "css",
+      "code": ".outer{ width:300px; }\n.course{ width:100%; position:relative; overflow:hidden; }   /* ① 父相 */\n.course:hover{ box-shadow:0 1px 5px 1px rgb(62,62,62,0.3); }\n.course .img-wrap{ height:162px; overflow:hidden; }\n.course img{ max-width:100%; transition:all 0.6s; }\n.course img:hover{ transform:scale(1.3); }\n\ndiv.tag{\n    width:120px; background-color:#4c98ff; color:#fff; text-align:center;\n    position:absolute; right:-22px; top:26px;                 /* ② 子绝 */\n    transform:rotate(45deg); font-size:14px;\n}\n.course-term,.course-status,.teacher-school{\n    font-size:13px; color:#333; padding:0px 15px;\n    display:flex; justify-content:space-between;\n}"
+    },
+    {
+      "type": "demo",
+      "title": "效果演示｜固定导航 + 绝对定位徽标",
+      "subtitle": "模拟页面滚动：正文一路向上，右侧导航纹丝不动，卡片角标始终钉在右上角",
+      "nav": "定位滚动演示",
+      "items": [
+        "中间窗口模拟一次<strong>向下滚动</strong>：正文内容持续上移。",
+        "右侧的「回到顶部 / 建什么 / 怎么建 / 建成什么样」使用 <strong>position:fixed</strong>，<strong>始终停在视口的同一位置</strong>。",
+        "卡片右上角的「省级精品」徽标使用 <strong>position:absolute</strong>，相对<strong>已定位的父元素</strong>定位，因此跟着卡片一起走。",
+        "这就是 fixed 与 absolute 最直观的区别：<strong>一个跟视口，一个跟祖先</strong>。"
+      ],
+      "hint": "盯住右侧导航条：它一次都没有动过。再盯住卡片角标：它跟着卡片一起上移——这就是「父相子绝」的落点规则。",
+      "html": "<style>*{box-sizing:border-box}body{margin:0;font-family:'PingFang SC',system-ui,sans-serif;background:linear-gradient(150deg,#eef4ff,#f7fbff);padding:12px}.u19{position:relative;width:100%;height:290px;background:#fff;border:1px solid #dbe3ef;border-radius:12px;overflow:hidden;box-shadow:0 18px 40px -24px rgba(20,40,90,.5)}.u19 .bar{position:absolute;left:0;top:0;right:0;height:24px;background:#f1f5fb;border-bottom:1px solid #e2e8f2;display:flex;align-items:center;gap:5px;padding:0 9px;z-index:5}.u19 .bar i{width:8px;height:8px;border-radius:50%;background:#ff5f57}.u19 .bar i:nth-child(2){background:#febc2e}.u19 .bar i:nth-child(3){background:#28c840}.u19 .bar em{font-style:normal;font-size:10px;color:#7b8ba1;margin-left:6px}.u19 .scroll{position:absolute;left:0;right:0;top:24px;bottom:0;overflow:hidden;padding:12px 16px}.u19 .doc{animation:u19scroll 7s infinite}.u19 h5{margin:0 0 8px;font-size:13px;color:#12306f}.u19 .p{height:7px;border-radius:4px;background:#e8edf6;margin-bottom:8px}.u19 .p.w85{width:85%}.u19 .p.w70{width:70%}.u19 .p.w92{width:92%}.u19 .p.w60{width:60%}.u19 .p.w78{width:78%}.u19 .p.w50{width:50%}.u19 .card{position:relative;width:132px;height:78px;margin:10px 0;border:1px solid #e2e8f2;border-radius:8px;overflow:hidden;background:linear-gradient(135deg,#cfe0ff,#8fb4ff)}.u19 .card .info{position:absolute;left:0;right:0;bottom:0;background:rgba(255,255,255,.92);font-size:10px;color:#3d4d64;padding:4px 7px;line-height:1.5}.u19 .tag{position:absolute;right:-24px;top:14px;width:88px;background:#4c98ff;color:#fff;font-size:9.5px;text-align:center;line-height:16px;transform:rotate(45deg);box-shadow:0 2px 6px rgba(0,0,0,.2)}.u19 .nav{position:absolute;right:12px;top:52px;width:104px;z-index:4}.u19 .nav .it{background:bisque;border-top:1px dashed #ccc;font-size:10.5px;color:#F8534D;padding:5px 8px;display:block}.u19 .nav .it:first-child{border-top:0}.u19 .nav .it.on{background:#ffe9e8}.u19 .fixedtip{position:absolute;right:12px;top:34px;font-size:9px;color:#1d46b8;background:#eaf1ff;border:1px solid #c9daff;border-radius:8px;padding:2px 6px;z-index:6}.u19 .legend{position:absolute;left:16px;bottom:8px;font-size:9.5px;color:#7b8ba1;z-index:6}.u19 .legend b{color:#1d46b8}@keyframes u19scroll{0%{transform:translateY(0)}45%,100%{transform:translateY(-96px)}}</style>\n<div class='u19'>\n<div class='bar'><i></i><i></i><i></i><em>美丽乡村 · 定位演示</em></div>\n<div class='fixedtip'>position:fixed</div>\n<div class='nav'>\n<span class='it on'>回到顶部</span><span class='it'>建什么</span><span class='it'>怎么建</span><span class='it'>建成什么样</span>\n</div>\n<div class='scroll'>\n<div class='doc'>\n<h5>建设宜居宜业美丽乡村</h5>\n<div class='p w85'></div><div class='p w70'></div>\n<div class='card'><div class='tag'>省级精品</div><div class='info'>父相子绝：<br>角标相对卡片定位</div></div>\n<div class='p w92'></div><div class='p w60'></div>\n<h5>怎么建？坚持乡村建设是为农民而建</h5>\n<div class='p w78'></div><div class='p w50'></div><div class='p w85'></div>\n<h5>建成什么样？不搞大拆大建</h5>\n<div class='p w70'></div><div class='p w60'></div>\n</div>\n</div>\n<div class='legend'><b>fixed</b> 跟视口（右侧导航不动）　·　<b>absolute</b> 跟已定位祖先（卡片角标随卡片滚动）</div>\n</div>"
+    },
+    {
+      "type": "ai",
+      "title": "AI 前沿：让 AI 帮你定位「元素跑哪儿去了」",
+      "subtitle": "定位类 Bug 的黄金提问法：说清参照物、说清层级、说清脱不脱离标准流",
+      "nav": "AI 前沿",
+      "text": "「我设了 absolute，元素却跑到了页面左上角」——这是初学者最高频的定位问题，根因几乎永远是<strong>祖先里没有已定位元素</strong>。把 HTML 结构与 CSS 一起贴给 <strong>DeepSeek、通义千问、文心一言</strong>，大模型能很快指出缺了哪个 <code>position:relative</code>。同样地，<strong>z-index 失效</strong>多半是因为父级创建了新的层叠上下文——这也是 AI 排查的高频命中项。",
+      "items": [
+        "AI 排错：用<strong>通义灵码、文心快码、GitHub Copilot</strong> 选中出问题的元素，让它列出「参照物是谁、是否脱离标准流、z-index 是否受父级限制」三件事。",
+        "AI 生成特效：描述需求「图片 hover 缓慢放大，容器不撑破」，AI 会给出 <code>overflow:hidden</code> + <code>transform:scale()</code> + <code>transition</code> 的组合方案。",
+        "AI 对比讲解：让 AI 用同一段 HTML 分别演示 fixed 与 absolute 在滚动时的差异，比静态截图更直观。",
+        "职业提醒：<strong>先把「参照物」这个词刻进脑子里</strong>。定位问题问得准不准，取决于你能不能说清元素在相对谁定位。"
+      ]
+    },
+    {
+      "type": "quiz",
+      "title": "随堂检测",
+      "subtitle": "选自教材 7.5 作业选择题，检验你的理解",
+      "nav": "随堂检测",
+      "items": [
+        {
+          "q": "京东商城页面侧边栏不随滚动条滚动而变化，使用了（　　）。",
+          "options": [
+            "A. 固定定位",
+            "B. 相对定位",
+            "C. 绝对定位",
+            "D. 静态定位"
+          ],
+          "answer": "A",
+          "tip": "固定定位相对于浏览器视口定位，不会随滚动条滚动；这正是教材任务7-6 的企业背景。",
+          "type": "single"
+        },
+        {
+          "q": "标准流中的默认定位是（　　）。",
+          "options": [
+            "A. 固定定位",
+            "B. 相对定位",
+            "C. 绝对定位",
+            "D. 静态定位"
+          ],
+          "answer": "D",
+          "tip": "static 是 position 的默认值，元素按照标准流进行布局，各元素没有任何移动效果。",
+          "type": "single"
+        },
+        {
+          "q": "将父容器设置为相对定位，下面关于子元素的说法中正确的是（　　）。",
+          "options": [
+            "A. 如果将子元素设置为绝对定位，则该元素相对于该父容器进行定位",
+            "B. 如果将子元素设置为绝对定位，则该元素始终相对于浏览器窗口进行定位",
+            "C. 只有绝对定位元素才能配合使用 left、right、bottom、top 定位属性",
+            "D. 如果将子元素设置为固定定位，则该元素相对于父容器进行固定"
+          ],
+          "answer": "A",
+          "tip": "相对定位的父元素是「已定位元素」，会建立局部坐标系；B 忽略了「已定位祖先」，C 忽略了 relative 与 fixed 也可用偏移属性，D 混淆了 fixed 的参照物（视口）。",
+          "type": "single"
+        },
+        {
+          "q": "关于相对定位的特性，下列说法错误的是（　　）。",
+          "options": [
+            "A. 不设置偏移量时，元素位置不会有任何变化",
+            "B. 元素仍占据原有空间，不会脱离标准流",
+            "C. 会提升其层级，与原有标准流元素形成遮挡关系",
+            "D. 偏移位置是相对于父元素在标准流中的位置"
+          ],
+          "answer": "D",
+          "tip": "教材原文：相对定位的偏移位置是相对于「原来元素自己在标准流中的位置」，而不是父元素。",
+          "type": "single"
+        },
+        {
+          "type": "multi",
+          "q": "下列关于定位的说法中，正确的有（　　）。",
+          "options": [
+            "A. absolute 相对于最近的已定位祖先元素定位，找不到已定位祖先时相对于浏览器定位",
+            "B. z-index 的数值越小，元素的层级越高，越显示在上层",
+            "C. fixed 相对于浏览器视口定位，滚动页面时元素位置不随之改变",
+            "D. 只设置 position:absolute 而不写 left、top 时，元素留在原位置但已脱离标准流"
+          ],
+          "answer": "ACD",
+          "tip": "z-index <strong>数值越大层级越高</strong>，故 B 错；其余三项均为教材 7.2 的原文结论。"
+        }
+      ]
+    },
+    {
+      "type": "summary",
+      "title": "本课小结",
+      "subtitle": "五句话，把定位这件事彻底说清楚",
+      "nav": "本课小结",
+      "items": [
+        "四种定位：<strong>static</strong>（默认，按标准流排）、<strong>fixed</strong>（跟视口，不随滚动）、<strong>absolute</strong>（跟最近的已定位祖先，脱离标准流）、<strong>relative</strong>（跟自己，不脱离标准流）。",
+        "四个偏移属性 <code>left</code>、<code>right</code>、<code>top</code>、<code>bottom</code> 均<strong>可取负值</strong>；由于元素基于盒子模型，<strong>水平与垂直方向至少各需要一个定位属性</strong>。",
+        "重叠时用 <code>z-index</code> 切换层级，<strong>数值越大层级越高</strong>，如同 PPT 的「前移一层」。",
+        "绝对定位五特性：脱离标准流并提升层级、就近找已定位祖先、行内元素可变块级化、不设宽度时由内容撑开、<strong>可触发 BFC</strong>。",
+        "相对定位四特性：不设偏移量则位置不变、<strong>仍占原空间不脱离标准流</strong>、提升层级形成遮挡、相对自身原位置偏移——它是建立「局部坐标系」的关键，于是有了<strong>「父相子绝」</strong>。"
+      ]
+    },
+    {
+      "type": "homework",
+      "title": "课后作业",
+      "nav": "课后作业",
+      "items": [
+        "<strong>选择题：</strong>完成教材 7.5「一、选择题」第 1、2、5 题，并说明每个选项为何对或错。",
+        "<strong>操作题：</strong>根据图7-44 所示效果，制作一个登录框，并使用定位将其居中显示。",
+        "<strong>操作题：</strong>完成教材任务7-6 与任务7-7，实现固定定位导航悬停与精品课程封面（含 45° 旋转标签与图片悬停放大）。",
+        "<strong>思考题：</strong>用自己的话解释「子绝父相」：如果父元素不设置 relative，子元素的绝对定位会跑到哪里去？请写出验证步骤。",
+        "<strong>项目讨论：</strong>使用所学知识，以<strong>美丽乡村</strong>为主题，帮助你所在的城市设计和规划一个网页。试讨论你的做法、思路及特点！",
+        "<strong>预习：</strong>阅读教材 7.3，思考：圣杯布局为什么要让中间列在 HTML 里排在最前面？"
+      ]
+    },
+    {
+      "type": "refs",
+      "title": "出处与参考",
+      "subtitle": "本课件内容依据教材，并核对以下权威技术文档",
+      "nav": "出处与参考",
+      "items": [
+        {
+          "t": "教材《网页制作（HTML5+CSS3）》项目7 浮动和定位（7.2）",
+          "u": "郑哲、傅冬 主编 · 电子工业出版社 · 2025 年 1 月第 1 版"
+        },
+        {
+          "t": "MDN Web Docs · position",
+          "u": "https://developer.mozilla.org/zh-CN/docs/Web/CSS/position"
+        },
+        {
+          "t": "MDN Web Docs · z-index",
+          "u": "https://developer.mozilla.org/zh-CN/docs/Web/CSS/z-index"
+        },
+        {
+          "t": "MDN Web Docs · 定位（CSS 布局入门教程）",
+          "u": "https://developer.mozilla.org/zh-CN/docs/Learn/CSS/CSS_layout/Positioning"
+        },
+        {
+          "t": "MDN Web Docs · 理解 CSS z-index：层叠上下文",
+          "u": "https://developer.mozilla.org/zh-CN/docs/Web/CSS/CSS_positioned_layout/Understanding_z-index"
+        },
+        {
+          "t": "MDN Web Docs · transform",
+          "u": "https://developer.mozilla.org/zh-CN/docs/Web/CSS/transform"
+        }
+      ]
+    },
+    {
+      "type": "end",
+      "title": "第 19 单元 · 结束",
+      "text": "下一单元：布局综合案例，圣杯、双飞翼与京东秒杀模块",
+      "nav": "结束"
+    }
+  ]
+}

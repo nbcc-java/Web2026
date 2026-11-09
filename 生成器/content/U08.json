@@ -1,0 +1,442 @@
+{
+  "id": "U08",
+  "project": "项目3",
+  "project_name": "使用CSS基本选择器美化页面",
+  "unit": "第 8 单元",
+  "title": "伪类、伪元素与通用选择器",
+  "subtitle": "处理文档树之外的状态与「幽灵」元素，再用通配符抹平浏览器的默认样式差异",
+  "duration": 40,
+  "cover_tags": [
+    "伪类 :hover",
+    "伪元素 ::before",
+    "通用选择器 *",
+    "默认样式重置",
+    "Normalize.css"
+  ],
+  "ref_book": "电子工业出版社 · 2025 年 1 月第 1 版",
+  "objectives": {
+    "knowledge": [
+      "理解伪类与伪元素的概念及主要区别",
+      "掌握常见伪类与伪元素的写法",
+      "理解通用选择器的作用与浏览器默认样式差异"
+    ],
+    "skill": [
+      "能使用伪类选择器为链接等元素设置状态样式",
+      "能使用伪元素选择器实现首字母下沉等效果",
+      "能使用通用选择器重置浏览器默认样式"
+    ],
+    "literacy": [
+      "培养有始有终、精益求精的工匠精神",
+      "培养极致思维、用户思维的互联网思维模式",
+      "具备情趣高尚的审美意识"
+    ]
+  },
+  "slides": [
+    {
+      "type": "objectives",
+      "title": "本单元我们要达成什么",
+      "subtitle": "对照教材《项目3》3.3.6～3.3.8 的学习目标",
+      "nav": "学习目标",
+      "objectives": {
+        "knowledge": [
+          "理解伪类与伪元素的概念及主要区别",
+          "掌握常见伪类与伪元素的写法",
+          "理解通用选择器的作用与浏览器默认样式差异"
+        ],
+        "skill": [
+          "能使用伪类选择器为链接设置默认、悬停、访问后的样式",
+          "能使用伪元素选择器实现首字母下沉与前后插入内容",
+          "能使用通用选择器重置浏览器默认样式"
+        ],
+        "literacy": [
+          "培养有始有终、精益求精的工匠精神",
+          "培养极致思维、用户思维的互联网思维模式",
+          "具备情趣高尚的审美意识"
+        ]
+      }
+    },
+    {
+      "type": "ideology",
+      "title": "工匠精神：用户看不见代码，却看得见你的态度",
+      "subtitle": "教材《项目3》思政课堂",
+      "nav": "思政课堂",
+      "text": "<strong>工匠精神（craftsman's spirit）</strong>是一种职业精神，它是<strong>职业道德、职业能力、职业品质</strong>的体现，是从业者的一种<strong>职业价值取向和行为表现</strong>。2016 年，《政府工作报告》提出：鼓励企业开展<strong>个性化定制、柔性化生产</strong>，培育<strong>精益求精的工匠精神</strong>，<strong>增品种、提品质、创品牌</strong>。「工匠精神」一词迅速流行开来，成为制造业的热词；随后，<strong>除了制造业，各行各业都提倡工匠精神</strong>。",
+      "topic": "一个 hover 效果、一次默认样式重置，用户说不出原理，却能感受到「这个页面很讲究」。请结合岗位谈谈：如何用「有始有终」的态度对待这些细节？"
+    },
+    {
+      "type": "outline",
+      "title": "本单元导览",
+      "subtitle": "三个「特殊」选择器，解决文档树解决不了的问题",
+      "nav": "导览",
+      "items": [
+        "伪类：为链接的 4 种状态分别设定样式（任务3-7）",
+        "伪元素：那些有元素性质、却不在文档树中的「幽灵」元素",
+        "伪类与伪元素到底有什么区别？为什么建议伪元素写两个冒号？",
+        "通用选择器：为什么很多项目开头都要写一句 *{margin:0;padding:0}？",
+        "除了「一刀切」重置，还有没有更温和的方案？（Normalize.css）"
+      ]
+    },
+    {
+      "type": "section",
+      "no": "3.3.6",
+      "title": "伪类选择器",
+      "text": "同一个元素，在不同状态下长得不一样——这就是伪类要解决的问题。",
+      "nav": "3.3.6 伪类选择器"
+    },
+    {
+      "type": "codebullets",
+      "title": "什么是伪类（语法3-15）",
+      "subtitle": "伪类是一种添加到选择器中的关键字，用于选择元素的特殊状态",
+      "nav": "伪类的概念",
+      "items": [
+        "<strong>伪类不会创建新的 HTML 元素</strong>，而是为<strong>已有元素定义不同的样式规则</strong>。",
+        "典型例子：对链接而言，有<strong>未访问（link）、访问过（visited）、悬停（hover）和活动（active）</strong> 4 种状态，它们都可以用伪类选择器选中并设置特定样式。",
+        "语法上<strong>使用冒号分隔选择器和伪类</strong>：<code>选择器:伪类 { … }</code>。",
+        "<strong>教材疑误提示：</strong>语法3-15 的示例写作 <code>button:over</code>，按标准应为 <strong><code>:hover</code></strong>（疑为教材笔误），本课件按标准表述讲解。",
+        "为什么需要伪类：链接的这些<strong>状态在普通的文档树中是无法描述的</strong>，因此 CSS 引入了伪类。"
+      ],
+      "lang": "css",
+      "file": "语法3-15",
+      "code": "/* 定义语法 */\n选择器:伪类{\n  属性1:属性值1;\n  属性2:属性值2;\n}\n/* 示例：鼠标悬停时显示下画线 */\na:hover{\n  text-decoration:underline;\n}"
+    },
+    {
+      "type": "table",
+      "title": "表3-13 常见的伪类类型描述（教材表）",
+      "subtitle": "链接四态是最常用的伪类组合，:focus 常用于表单与无障碍",
+      "nav": "表3-13 常见伪类",
+      "head": [
+        "伪类类型",
+        "描述"
+      ],
+      "rows": [
+        [
+          ":active",
+          "选中<strong>被激活</strong>的元素"
+        ],
+        [
+          ":link",
+          "选中<strong>未访问</strong>的元素"
+        ],
+        [
+          ":hover",
+          "选中<strong>鼠标指针悬停</strong>的元素"
+        ],
+        [
+          ":visited",
+          "选中<strong>访问过</strong>的元素"
+        ],
+        [
+          ":focus",
+          "选中<strong>当前光标所在位置</strong>的元素"
+        ],
+        [
+          ":first-child",
+          "选中元素的<strong>第一个子元素</strong>"
+        ],
+        [
+          ":lang",
+          "选中具有 <strong>lang 属性</strong>的元素"
+        ]
+      ]
+    },
+    {
+      "type": "demo",
+      "title": "现场演示｜伪类的三种状态",
+      "subtitle": "默认 → 悬停（:hover）→ 访问后（:visited），一个链接按钮的三种面孔",
+      "nav": "伪类演示",
+      "items": [
+        "<strong>默认状态</strong>：不显示链接自身的下画线，按钮为浅橙底、深红字（教材图3-17）。",
+        "<strong>:hover</strong>：鼠标指针悬停在按钮上时<strong>显示下画线</strong>（教材图3-18）。",
+        "<strong>:visited</strong>：链接被访问后，按钮背景变深红、文字变白（教材图3-19）。",
+        "按钮样式由 <code>display:inline-block</code>、<code>line-height</code> 与 <code>border-radius</code> 等属性共同塑造；<strong>行高等于高度</strong>让文字垂直居中。"
+      ],
+      "hint": "把鼠标真的移到按钮上试试；再用开发者工具的「:hov」面板强制勾选不同状态来调试。",
+      "html": "<style>*{box-sizing:border-box}body{margin:0;font-family:'PingFang SC',system-ui,sans-serif}.wrap{width:660px;background:#fff;border:1px solid #e5ecf7;border-radius:14px;overflow:hidden;box-shadow:0 20px 44px -22px rgba(20,40,90,.45)}.hd{background:#f6f9ff;border-bottom:1px solid #e5ecf7;padding:9px 16px;font-size:12.5px;color:#5a6c85}.hd b{font-family:Menlo,monospace;color:#1d46b8}.bd{display:flex;gap:18px;align-items:center;padding:16px}.stage{position:relative;flex:1;display:flex;align-items:center;justify-content:center;height:110px;background:#fcfdff;border:1px dashed #dfe8f6;border-radius:10px}.btn{position:relative;display:inline-block;width:120px;height:50px;line-height:50px;border-radius:50px;background-color:#FFE4C4;text-align:center;color:#a20b0b;font-weight:bold;font-size:16px;animation:st 7.5s infinite}.btn i{position:absolute;left:24px;right:24px;bottom:9px;height:2px;background:#a20b0b;opacity:0;animation:ul 7.5s infinite}.cur{position:absolute;left:26px;top:52px;font-size:22px;color:#2f6bff;opacity:0;animation:mv 7.5s infinite}@keyframes st{0%,24%{background-color:#FFE4C4;color:#a20b0b}30%,54%{background-color:#FFE4C4;color:#a20b0b;transform:scale(1.05)}60%,88%{background-color:#a20b0b;color:#fff}94%,100%{background-color:#FFE4C4;color:#a20b0b}}@keyframes ul{0%,24%{opacity:0}30%,54%{opacity:1}60%,100%{opacity:0}}@keyframes mv{0%{left:26px;top:52px;opacity:0}12%{opacity:1}26%{left:150px;top:54px;opacity:1}56%{left:150px;top:54px;opacity:1}66%{left:26px;top:52px;opacity:1}78%{opacity:0}100%{opacity:0}}.states{flex:0 0 250px;display:flex;flex-direction:column;gap:8px}.s{font-size:12.5px;color:#5a6c85;border:1px solid #e8eef8;border-radius:8px;padding:7px 11px;background:#fcfdff;opacity:.35}.s b{font-family:Menlo,monospace;color:#1d46b8}.s1{animation:on 7.5s infinite}.s2{animation:on2 7.5s infinite}.s3{animation:on3 7.5s infinite}@keyframes on{0%,24%{opacity:1;border-color:#c9daff}25%,100%{opacity:.35}}@keyframes on2{0%,29%{opacity:.35}30%,54%{opacity:1;border-color:#c9daff}55%,100%{opacity:.35}}@keyframes on3{0%,59%{opacity:.35}60%,88%{opacity:1;border-color:#c9daff}89%,100%{opacity:.35}}</style><div class='wrap'><div class='hd'>任务3-7 伪类 · <b>a / a:hover / a:visited</b> —— 链接按钮的三种状态</div><div class='bd'><div class='stage'><span class='cur'>&#10148;</span><span class='btn'>精益求精<i></i></span></div><div class='states'><div class='s s1'><b>默认</b>：text-decoration:none</div><div class='s s2'><b>:hover</b>：悬停显示下画线</div><div class='s s3'><b>:visited</b>：访问后深红底白字</div></div></div></div>"
+    },
+    {
+      "type": "task",
+      "title": "任务3-7｜使用伪类",
+      "subtitle": "目标：利用链接制作一个按钮，实现默认、悬停、单击后三种效果",
+      "nav": "任务3-7",
+      "goal": "用 <code>&lt;a&gt;</code> 标签制作按钮：<strong>默认状态不显示链接自身的下画线</strong>；<strong>鼠标悬停时显示下画线</strong>；<strong>单击链接后按钮样式发生改变</strong>。",
+      "steps": [
+        {
+          "title": "把链接变成按钮",
+          "text": "设 <code>display:inline-block</code>、<code>width:100px</code>、<code>height:50px</code>、<code>line-height:50px</code>、<code>border-radius:50px</code> 与背景色，并去掉默认下画线。"
+        },
+        {
+          "title": "设置悬停态",
+          "text": "写 <code>a:hover{ text-decoration:underline; }</code>，鼠标移入即显示下画线。"
+        },
+        {
+          "title": "设置访问后",
+          "text": "写 <code>a:visited{ background-color:#a20b0b; color:#fff; }</code>，链接被访问后按钮换一副面孔。"
+        },
+        {
+          "title": "调试与验证",
+          "text": "访问过就变样式了怎么恢复？打开<strong>浏览器历史记录</strong>删掉该页面的访问记录即可。"
+        }
+      ],
+      "lang": "html",
+      "code": "<!DOCTYPE html>\n<html>\n  <head>\n    <meta charset=\"utf-8\">\n    <title>伪类</title>\n    <style type=\"text/css\">\n      a{\n        display:inline-block;\n        text-decoration: none;\n        width:100px;\n        height:50px;\n        line-height:50px;\n        border-radius:50px;\n        padding:5px 10px;\n        background-color:#FFE4C4;\n        text-align:center;\n        color:#a20b0b;\n        font-weight:bold;\n        font-size: 1.2em;\n      }\n      a:hover{\n        text-decoration: underline;\n      }\n      a:visited{\n        background-color:#a20b0b;\n        color:#fff;\n      }\n    </style>\n  </head>\n  <body>\n    <a href=\"#\">精益求精</a>\n  </body>\n</html>"
+    },
+    {
+      "type": "bullets",
+      "title": "链接四态与伪类调试技巧（师生问答）",
+      "subtitle": "教材里的两个实用调试方法，请写进你的笔记本",
+      "nav": "调试技巧",
+      "items": [
+        "链接的 4 种状态：<strong>未访问 :link、访问过 :visited、悬停 :hover、活动 :active</strong>；它们可以分别选中并设置特定样式。",
+        "<strong>学生问：</strong>访问过的链接如何恢复？<strong>教师答：</strong>打开<strong>浏览器的历史记录</strong>，找到相应页面，<strong>把它的访问记录删除</strong>即可（教材图3-20）。",
+        "<strong>调试利器：</strong>开发者工具提供了<strong>伪类状态查看器</strong>，单击「<strong>:hov</strong>」后，可以<strong>勾选需要强制查看的元素状态</strong>，方便样式的设定查看和调试（教材图3-21）。",
+        "写法提示：多个伪类同时使用时，注意<strong>书写顺序</strong>与<strong>优先级</strong>，避免后写的规则覆盖前面的效果。"
+      ]
+    },
+    {
+      "type": "section",
+      "no": "3.3.7",
+      "title": "伪元素选择器",
+      "text": "与伪类不同，伪元素不是一个状态类名，而是一个「幽灵」元素——它在文档树中并不存在。",
+      "nav": "3.3.7 伪元素"
+    },
+    {
+      "type": "table",
+      "title": "表3-14 常见的伪元素（教材表）",
+      "subtitle": "语法：选择器::伪元素 { … }，建议伪元素写两个单冒号以便与伪类区分",
+      "nav": "表3-14 常见伪元素",
+      "head": [
+        "伪元素",
+        "描述"
+      ],
+      "rows": [
+        [
+          "::first-letter",
+          "选中文本的<strong>第一个字符</strong>（常用于首字母下沉）"
+        ],
+        [
+          "::first-line",
+          "选中文本的<strong>第一行</strong>"
+        ],
+        [
+          "::before",
+          "在选择器选择的元素<strong>之前添加内容</strong>，并可以为其添加样式"
+        ],
+        [
+          "::after",
+          "在选择器选择的元素<strong>之后添加内容</strong>，并可以为其添加样式"
+        ]
+      ]
+    },
+    {
+      "type": "compare",
+      "title": "伪类 vs 伪元素：一张表分清",
+      "subtitle": "教材重点：为什么要有这两个「看起来很古怪」的东西？",
+      "nav": "伪类 vs 伪元素",
+      "a": {
+        "title": "伪类 : （一个冒号）",
+        "items": [
+          "是<strong>添加到选择器中的关键字</strong>，用于<strong>选择元素的特殊状态</strong>",
+          "典型代表是<strong>链接的不同状态</strong>：未访问、悬停、访问过、活动",
+          "会随<strong>用户的行为变化而动态变化</strong>",
+          "这些状态在<strong>普通文档树中无法描述</strong>，故引入伪类",
+          "例：<code>a:hover</code>、<code>:first-child</code>（可用它代替 <code>class=\"first-one\"</code>）"
+        ]
+      },
+      "b": {
+        "title": "伪元素 :: （建议两个冒号）",
+        "items": [
+          "是一个<strong>逻辑上存在、文档树中并不存在</strong>的「幽灵」元素",
+          "具有<strong>元素性质</strong>，可以为其添加内容与样式",
+          "用来处理<strong>文档树之外的信息</strong>，如段落的首字母、元素的首尾插入内容",
+          "例：<code>::first-letter</code> 就是用来<strong>代替包裹首字符的 span 标签</strong>的简化做法（参考任务3-4）",
+          "<strong>良好习惯：</strong>伪元素写<strong>两个单冒号</strong>，如 <code>::before</code>，便于与伪类区分"
+        ]
+      }
+    },
+    {
+      "type": "demo",
+      "title": "现场演示｜伪元素的三种用法",
+      "subtitle": "首字母下沉 ::first-letter、元素前插入 ::before、元素后插入 ::after",
+      "nav": "伪元素演示",
+      "items": [
+        "<strong>::first-letter</strong> 选中文本的第一个字符，常用于<strong>首字母下沉</strong>；任务3-4 中的 <code>p::first-letter{font-size:2em}</code> 就是典型应用。",
+        "没有伪元素时怎么做？只能像 <code>&lt;p&gt;&lt;span&gt;中&lt;/span&gt;国是一个地大物博的国家&lt;/p&gt;</code> 那样<strong>额外包裹一个 span</strong>——伪元素是一种<strong>简化的做法</strong>。",
+        "<strong>::before / ::after</strong> 分别在元素<strong>之前 / 之后添加内容</strong>，并可以为这些添加的内容设置样式。",
+        "HTML 其实就是一个<strong>文档树</strong>，伪类与伪元素的存在，都是为了<strong>格式化并处理文档树之外的信息</strong>。"
+      ],
+      "hint": "把 ::first-letter 改成 ::first-line，观察命中范围从「一个字符」变成「一整行」。",
+      "html": "<style>*{box-sizing:border-box}body{margin:0;font-family:'PingFang SC',system-ui,sans-serif}.wrap{width:660px;background:#fff;border:1px solid #e5ecf7;border-radius:14px;overflow:hidden;box-shadow:0 20px 44px -22px rgba(20,40,90,.45)}.hd{background:#f6f9ff;border-bottom:1px solid #e5ecf7;padding:9px 16px;font-size:12.5px;color:#5a6c85}.hd b{font-family:Menlo,monospace;color:#1d46b8}.bd{padding:14px 16px}.row{border:1px solid #e8eef8;border-radius:10px;background:#fcfdff;padding:10px 14px;margin-bottom:10px}.row .lb{display:block;font:11px Menlo,monospace;color:#8b9ab1;margin-bottom:4px}.fl{font-size:14px;line-height:1.9;color:#333;margin:0}.fl::first-letter{float:left;font-size:2.8em;line-height:1;color:#a20b0b;font-weight:bold;padding-right:6px;animation:pop 2.6s infinite}.bf{font-size:17px;color:#0e1b2e;margin:0}.bf::before{content:'★ ';color:#2f6bff}.af{font-size:17px;color:#0e1b2e;margin:0}.af::after{content:' —— 摘自教材';font-size:12px;color:#8b9ab1}@keyframes pop{0%,100%{transform:scale(1)}50%{transform:scale(1.12)}}</style><div class='wrap'><div class='hd'>伪元素 · <b>::first-letter</b> / <b>::before</b> / <b>::after</b></div><div class='bd'><div class='row'><span class='lb'>p::first-letter（首字母下沉）</span><p class='fl'>精益求精是一种职业精神，它是职业道德、职业能力、职业品质的体现，是从业者的一种职业价值取向和行为表现。</p></div><div class='row'><span class='lb'>::before（元素之前添加内容）</span><p class='bf'>工匠精神</p></div><div class='row'><span class='lb'>::after（元素之后添加内容）</span><p class='af'>有始有终</p></div></div></div>"
+    },
+    {
+      "type": "section",
+      "no": "3.3.8",
+      "title": "通用选择器",
+      "text": "不同浏览器的默认样式并不一致——先把它们「初始化」，再开始自己的设计。",
+      "nav": "3.3.8 通用选择器"
+    },
+    {
+      "type": "codebullets",
+      "title": "通用选择器与默认样式重置（语法3-17）",
+      "subtitle": "通用选择器又称「通配符」选择器，用 * 选择文档中的所有标签元素",
+      "nav": "通用选择器",
+      "items": [
+        "<strong>问题背景：</strong>HTML 标签在浏览器中有<strong>默认的样式</strong>——<code>&lt;p&gt;</code> 有上下边距，<code>&lt;strong&gt;</code> 会加粗，<code>&lt;em&gt;</code> 会倾斜。",
+        "<strong>更麻烦的是浏览器差异：</strong><code>&lt;ul&gt;</code> 默认带缩进，<strong>IE 浏览器用 margin 实现，Firefox 浏览器用 padding 实现</strong>，切换页面时往往会带来麻烦。",
+        "<strong>解决思路：</strong>先用通用选择器把默认样式「覆盖」掉，更准确地说是通过<strong>重新定义标签样式来覆盖浏览器的 CSS 默认样式</strong>。",
+        "<strong>学生类比：</strong>这类似于程序中的<strong>初始化</strong>——把所有标签自带的 margin 和 padding 都初始化为 0px。（margin、padding 详见教材项目5）",
+        "<strong>技巧：</strong>实际开发中也可以不完全重置，而采用<strong>可定制的 CSS 方案</strong>，如 <strong>Normalize.css</strong>——它保留有用的默认样式，并纠正常见错误与浏览器不一致。"
+      ],
+      "lang": "css",
+      "file": "语法3-17",
+      "code": "/* 定义语法 */\n*{\n  属性1:属性值1;\n  属性2:属性值2;\n}\n/* 示例：默认样式重置（初始化） */\n*{\n  margin:0px;\n  padding:0px;\n}"
+    },
+    {
+      "type": "demo",
+      "title": "现场演示｜默认样式 vs 通用选择器重置",
+      "subtitle": "同一个 ul 列表：左边是浏览器默认样式，右边是 *{margin:0;padding:0} 之后",
+      "nav": "重置演示",
+      "items": [
+        "左侧：浏览器为 <code>&lt;ul&gt;</code> 提供了<strong>默认的缩进与外边距</strong>，不同浏览器的实现还不相同。",
+        "右侧：通用选择器 <code>*</code> 命中<strong>文档中的所有标签元素</strong>，把它们的外边距与内边距<strong>初始化为 0</strong>。",
+        "重置之后，页面从「浏览器的样子」变成「你想要的样子」，<strong>布局的起点被统一了</strong>。",
+        "进阶方案：<strong>Normalize.css</strong> 保留有用的默认样式并纠正浏览器不一致，是更温和的可定制方案。"
+      ],
+      "hint": "把右侧的 *{margin:0;padding:0} 删掉再观察一次，体会「一行代码影响全站」的威力。",
+      "html": "<style>*{box-sizing:border-box}body{margin:0;font-family:'PingFang SC',system-ui,sans-serif}.wrap{width:660px;background:#fff;border:1px solid #e5ecf7;border-radius:14px;overflow:hidden;box-shadow:0 20px 44px -22px rgba(20,40,90,.45)}.hd{background:#f6f9ff;border-bottom:1px solid #e5ecf7;padding:9px 16px;font-size:12.5px;color:#5a6c85}.hd b{font-family:Menlo,monospace;color:#1d46b8}.bd{display:flex;gap:14px;padding:14px 16px}.col{flex:1}.lb{display:block;font:11px Menlo,monospace;color:#8b9ab1;margin-bottom:6px}.pane{border:1px solid #dfe8f6;border-radius:10px;background:#fcfdff;padding:10px 12px;min-height:150px;position:relative;overflow:hidden}.pane ul{margin:16px 0;padding-left:40px}.pane li{font-size:13px;color:#33456b;line-height:1.9}.pane p{margin:10px 0 0;font-size:12px;color:#8b9ab1}.rst .pane ul,.rst .pane p{margin:0;padding:0}.rst .pane li{list-style:none;padding-left:14px;position:relative}.rst .pane li::before{content:'›';position:absolute;left:0;color:#2f6bff}.tagd{display:inline-block;margin-top:8px;font-size:10.5px;color:#c2601a;background:#fff3e7;border-radius:6px;padding:2px 8px}.tagr{display:inline-block;margin-top:8px;font-size:10.5px;color:#12a150;background:#e8f8ee;border-radius:6px;padding:2px 8px}.rst .pane:after{content:'';position:absolute;left:0;top:0;height:3px;background:linear-gradient(90deg,#2f6bff,#0fb5c9);width:0;animation:sweep 3s infinite}@keyframes sweep{0%{width:0;opacity:0}20%{opacity:1}70%{width:100%}100%{width:100%;opacity:0}}</style><div class='wrap'><div class='hd'>通用选择器 <b>*{margin:0px;padding:0px;}</b> —— 默认样式重置</div><div class='bd'><div class='col'><span class='lb'>浏览器默认样式</span><div class='pane'><ul><li>首页</li><li>课程介绍</li><li>课堂实验</li></ul><p>IE 用 margin 缩进，Firefox 用 padding 缩进</p></div><span class='tagd'>起点不统一</span></div><div class='col rst'><span class='lb'>*{margin:0;padding:0}</span><div class='pane'><ul><li>首页</li><li>课程介绍</li><li>课堂实验</li></ul><p>所有标签的 margin 与 padding 初始化为 0</p></div><span class='tagr'>布局起点统一</span></div></div></div>"
+    },
+    {
+      "type": "ai",
+      "title": "AI 前沿：让 AI 补齐那些「文档树之外」的样式",
+      "subtitle": "伪类、伪元素与默认样式重置，正是 AI 最容易写漏的地方",
+      "nav": "AI 前沿",
+      "text": "生成式 AI 能很快写出页面的「主干样式」，但<strong>悬停态、焦点态、访问后状态</strong>以及<strong>跨浏览器的默认样式差异</strong>，恰恰是最容易被它忽略的细节。而这些细节，正是用户体验与无障碍（a11y）的分水岭。",
+      "items": [
+        "让 AI 补全状态：给 GitHub Copilot、通义灵码一段链接按钮样式，追加要求「补全 :hover、:focus、:visited」，它会一次性补齐交互状态。",
+        "用 AI 做无障碍检查：把 CSS 交给 DeepSeek、通义千问，询问「是否缺少 :focus 可见样式」，快速发现键盘可访问性问题。",
+        "重置方案对比：让 AI 比较 <code>*{margin:0;padding:0}</code> 与 <strong>Normalize.css</strong> 的优劣，并给出选型建议。",
+        "职业提醒：AI 生成的状态样式常出现<strong>顺序错误导致覆盖</strong>的问题，仍需你在浏览器里逐项验证。"
+      ]
+    },
+    {
+      "type": "quiz",
+      "title": "随堂检测",
+      "subtitle": "第 1 题选自教材 3.5 作业「一、选择题」，第 2～3 题为配套自测",
+      "nav": "随堂检测",
+      "items": [
+        {
+          "q": "下列选项中，不是伪类的是（　　）。",
+          "options": [
+            "A. ::before",
+            "B. :link",
+            "C. :visited",
+            "D. :first-child"
+          ],
+          "answer": "A",
+          "tip": "::before 是伪元素（写两个冒号）；:link、:visited、:first-child 都是伪类。",
+          "type": "single"
+        },
+        {
+          "q": "关于伪元素的书写，推荐的做法是（　　）。",
+          "options": [
+            "A. ::before",
+            "B. :before",
+            "C. .before",
+            "D. #before"
+          ],
+          "answer": "A",
+          "tip": "教材建议：为在代码中更好地区别伪类与伪元素，写伪元素时使用两个单冒号。",
+          "type": "single"
+        },
+        {
+          "q": "关于通用选择器，下列说法正确的是（　　）。",
+          "options": [
+            "A. 用于选中文档中的所有标签元素",
+            "B. 只能选中 body 元素",
+            "C. 只能选中类名为 * 的元素",
+            "D. 用于选中第一个子元素"
+          ],
+          "answer": "A",
+          "tip": "通用选择器又称通配符选择器，用 * 选择文档中的所有标签元素，常用于重置浏览器默认样式。",
+          "type": "single"
+        },
+        {
+          "type": "multi",
+          "q": "关于伪类与伪元素，下列说法中正确的有（　　）。",
+          "options": [
+            "A. 伪类用于选择元素的特殊状态，不会创建新的 HTML 元素",
+            "B. :visited 选中访问过的链接，:hover 选中鼠标指针悬停的元素",
+            "C. ::before 和 ::after 可在元素之前或之后添加内容，并为这些内容设置样式",
+            "D. 伪元素是文档树中真实存在的标签，可以用标签选择器直接选中"
+          ],
+          "answer": "ABC",
+          "tip": "伪元素是<strong>逻辑上存在、文档树中并不存在</strong>的「幽灵」元素，不能用标签选择器选中。"
+        }
+      ]
+    },
+    {
+      "type": "summary",
+      "title": "本课小结",
+      "nav": "本课小结",
+      "items": [
+        "<strong>伪类</strong>是添加到选择器中的关键字，用于<strong>选择元素的特殊状态</strong>；链接有未访问、访问过、悬停、活动 4 种状态，调试可用开发者工具的「<strong>:hov</strong>」面板。",
+        "<strong>伪元素</strong>是具有元素性质、却<strong>不存在于文档树中</strong>的「幽灵」元素：<code>::first-letter</code>、<code>::first-line</code>、<code>::before</code>、<code>::after</code>；<strong>建议写两个冒号</strong>。",
+        "一句话区别：伪类描述<strong>状态</strong>（用户行为驱动），伪元素创建<strong>文档树之外的内容</strong>；两者都为处理文档树之外的信息而生。",
+        "<strong>通用选择器 *</strong> 选中文档中的所有标签元素，常写成 <code>*{margin:0;padding:0}</code> 做<strong>默认样式重置（初始化）</strong>；更温和的方案是 <strong>Normalize.css</strong>。",
+        "回到项目主线：标签、id、类、伪类、伪元素与通用选择器，共同构成了<strong>基本选择器</strong>，也是后续复合选择器与优先级学习的基础。"
+      ]
+    },
+    {
+      "type": "homework",
+      "title": "课后作业",
+      "nav": "课后作业",
+      "items": [
+        "<strong>选择题：</strong>完成教材 3.5 作业「一、选择题」第 1 题，并说明其余三个选项分别属于哪种选择器。",
+        "<strong>操作题：</strong>复现任务3-7，制作一个链接按钮（默认无下画线、悬停显示下画线、访问后换肤），再用 <code>::before</code> 为按钮添加一个图标符号。",
+        "<strong>对比练习：</strong>新建一个含 <code>&lt;ul&gt;</code> 的页面，先观察默认缩进，再加 <code>*{margin:0;padding:0}</code>，截图对比前后差异并说明原理。",
+        "<strong>项目讨论：</strong>简述<strong>伪类与伪元素的区别</strong>，各举 2 个教材中的例子，下节课做 2 分钟分享。"
+      ]
+    },
+    {
+      "type": "refs",
+      "title": "出处与参考",
+      "subtitle": "本课件内容依据教材，并核对以下权威技术文档",
+      "nav": "出处与参考",
+      "items": [
+        {
+          "t": "教材《网页制作（HTML5+CSS3）》项目3 使用CSS基本选择器美化页面（3.3.6～3.3.8）",
+          "u": "郑哲、傅冬 主编 · 电子工业出版社 · 2025 年 1 月第 1 版"
+        },
+        {
+          "t": "MDN Web Docs · 伪类（Pseudo-classes）",
+          "u": "https://developer.mozilla.org/zh-CN/docs/Web/CSS/Pseudo-classes"
+        },
+        {
+          "t": "MDN Web Docs · :hover 伪类",
+          "u": "https://developer.mozilla.org/zh-CN/docs/Web/CSS/:hover"
+        },
+        {
+          "t": "MDN Web Docs · 伪元素（Pseudo-elements）",
+          "u": "https://developer.mozilla.org/zh-CN/docs/Web/CSS/Pseudo-elements"
+        },
+        {
+          "t": "MDN Web Docs · ::first-letter 伪元素",
+          "u": "https://developer.mozilla.org/zh-CN/docs/Web/CSS/::first-letter"
+        },
+        {
+          "t": "MDN Web Docs · 通用选择器（Universal selectors）",
+          "u": "https://developer.mozilla.org/zh-CN/docs/Web/CSS/Universal_selectors"
+        },
+        {
+          "t": "Normalize.css 官方网站（可定制的默认样式方案）",
+          "u": "https://necolas.github.io/normalize.css/"
+        }
+      ]
+    },
+    {
+      "type": "end",
+      "title": "第 8 单元 · 结束",
+      "text": "项目3 到此收官：下一单元进入 CSS 高级选择器与优先级的世界",
+      "nav": "结束"
+    }
+  ]
+}

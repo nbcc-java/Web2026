@@ -1,0 +1,1385 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>表单与常用表单标签 · 网页制作课件</title>
+<style>
+:root{
+  --bg:#EEF3FB; --bg2:#F7FAFF; --surface:#fff; --ink:#0E1B2E; --muted:#5A6C85;
+  --brand:#2F6BFF; --brand-dk:#1D46B8; --brand2:#0FB5C9; --violet:#7C5CFF; --accent:#FF8A3D;
+  --ok:#12A150; --line:#E1E8F4; --code-bg:#0D1A2B; --code-ink:#DCE7F8;
+  --font:'PingFang SC','Microsoft YaHei','Hiragino Sans GB','Source Han Sans SC',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --mono:'JetBrains Mono','SF Mono',Menlo,Consolas,'Courier New',monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+.slide{user-select:text;-webkit-user-select:text}
+.hud,.legend,.drawer,.kicker,.topbar{user-select:none;-webkit-user-select:none}
+::selection{background:rgba(47,107,255,.22)}
+html,body{height:100%}
+body{background:radial-gradient(1200px 800px at 12% 0%,#e6efff 0%,transparent 55%),
+             radial-gradient(1000px 700px at 100% 100%,#e9fbfd 0%,transparent 50%),var(--bg);
+     font-family:var(--font);color:var(--ink);overflow:hidden;-webkit-font-smoothing:antialiased}
+.wrap{height:100%;display:grid;place-items:center;padding:2.2vh 2.2vh}
+.stage{position:relative;width:100%;height:100%;max-width:calc(100vh * 16 / 9);max-height:calc(100vw * 9 / 16);
+       aspect-ratio:16/9;background:var(--bg2);border-radius:20px;overflow:hidden;
+       box-shadow:0 34px 80px -30px rgba(18,42,92,.42),0 0 0 1px rgba(255,255,255,.7) inset;
+       container-type:size}
+/* 背景装饰 */
+.bgfx{position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:0}
+.blob{position:absolute;border-radius:50%;filter:blur(46px);opacity:.5}
+.b1{width:38cqw;height:38cqw;left:-10cqw;top:-14cqw;background:linear-gradient(135deg,#bcd4ff,#8fb6ff);animation:float1 18s ease-in-out infinite}
+.b2{width:30cqw;height:30cqw;right:-8cqw;top:6cqw;background:linear-gradient(135deg,#b8f0f6,#7fe3ef);animation:float2 22s ease-in-out infinite}
+.b3{width:26cqw;height:26cqw;left:22cqw;bottom:-14cqw;background:linear-gradient(135deg,#d9ccff,#b9a6ff);animation:float3 26s ease-in-out infinite}
+@keyframes float1{50%{transform:translate(4cqw,3cqw) scale(1.06)}}
+@keyframes float2{50%{transform:translate(-4cqw,4cqw) scale(1.08)}}
+@keyframes float3{50%{transform:translate(3cqw,-4cqw) scale(1.05)}}
+.grid-lines{position:absolute;inset:0;background-image:linear-gradient(rgba(47,107,255,.05) 1px,transparent 1px),
+   linear-gradient(90deg,rgba(47,107,255,.05) 1px,transparent 1px);background-size:4cqw 4cqw;opacity:.7}
+
+/* 幻灯片 */
+.slide{position:absolute;inset:0;z-index:2;padding:4.4cqw 5cqw 4cqw;display:flex;flex-direction:column;gap:1.9cqw;
+  opacity:0;visibility:hidden;transform:translateY(1.4cqw) scale(.99);
+  transition:opacity .52s ease,transform .52s cubic-bezier(.2,.7,.2,1),visibility .52s}
+.slide.is-active{opacity:1;visibility:visible;transform:none}
+.slide.prev{transform:translateY(-1.4cqw) scale(.99)}
+.s-head{display:flex;justify-content:space-between;align-items:flex-start;gap:2cqw;flex:0 0 auto}
+.kicker{display:inline-block;font-size:1.16cqw;font-weight:700;letter-spacing:.16em;color:var(--brand);
+  background:linear-gradient(90deg,rgba(47,107,255,.12),rgba(15,181,201,.12));padding:.42cqw 1cqw;border-radius:999px;margin-bottom:.75cqw}
+.s-title{font-size:2.86cqw;font-weight:800;letter-spacing:.01em;line-height:1.2}
+.s-sub{margin-top:.6cqw;font-size:1.32cqw;color:var(--muted);line-height:1.55}
+.s-body{flex:1;min-height:0;display:flex;flex-direction:column;justify-content:center;gap:1.5cqw}
+.s-body.two{flex-direction:row;align-items:stretch;gap:2.2cqw}
+.s-body.two>*{flex:1;min-width:0}
+.s-body.col{justify-content:center}
+.col-l,.col-r{min-width:0;display:flex;flex-direction:column;justify-content:center;gap:1.2cqw}
+
+/* 入场动画 */
+.an{opacity:0}
+.is-active .an{animation:rise .66s cubic-bezier(.2,.75,.2,1) both;animation-delay:calc(var(--i,0)*95ms + 120ms)}
+@keyframes rise{from{opacity:0;transform:translateY(1.5cqw)}to{opacity:1;transform:none}}
+
+/* 封面 */
+.s-cover{flex-direction:row;align-items:center;gap:3cqw;padding:6cqw 6cqw}
+.cover-left{flex:1.15;min-width:0;z-index:2}
+.brandrow{display:flex;align-items:baseline;gap:.9cqw;margin-bottom:2.1cqw}
+.brandmark{font-size:1.7cqw;font-weight:800;color:var(--brand);letter-spacing:.08em}
+.brandsub{font-size:1.1cqw;font-weight:700;color:var(--brand2);letter-spacing:.2em}
+.cover-title{font-size:4.5cqw;font-weight:900;line-height:1.14;letter-spacing:-.01em;
+  background:linear-gradient(120deg,#12306f,#2f6bff 45%,#0fb5c9);-webkit-background-clip:text;background-clip:text;color:transparent}
+.cover-sub{margin-top:1.2cqw;font-size:1.55cqw;color:var(--muted);line-height:1.7;max-width:34cqw}
+.pills{display:flex;flex-wrap:wrap;gap:.7cqw;margin-top:1.9cqw}
+.pill{font-size:1.03cqw;font-weight:700;color:var(--brand-dk);background:rgba(47,107,255,.1);
+  border:1px solid rgba(47,107,255,.2);padding:.4cqw 1cqw;border-radius:999px}
+.pill{opacity:0}
+.is-active .pill{animation:rise .6s both;animation-delay:calc(var(--i)*95ms + 120ms)}
+.cover-meta{margin-top:2.3cqw;display:flex;align-items:center;gap:.9cqw;flex-wrap:wrap;font-size:1.02cqw;color:var(--muted)}
+.cover-meta b{color:var(--brand);font-size:1.2cqw}
+.cover-meta .dot{width:.34cqw;height:.34cqw;border-radius:50%;background:#c3cfe2}
+.cover-art{flex:.85;position:relative;min-width:0;display:grid;place-items:center}
+.orb{position:absolute;border-radius:50%;filter:blur(10px);opacity:.75}
+.o1{width:15cqw;height:15cqw;right:-1cqw;top:2cqw;background:radial-gradient(circle at 30% 30%,#9dc2ff,#4f83ff)}
+.o2{width:8cqw;height:8cqw;right:12cqw;bottom:4cqw;background:radial-gradient(circle at 30% 30%,#a9f0f7,#1fc2d6)}
+.o3{width:5cqw;height:5cqw;right:3cqw;bottom:12cqw;background:radial-gradient(circle at 30% 30%,#d5c7ff,#8a63ff)}
+.orb{animation:orb 9s ease-in-out infinite}
+.o2{animation-duration:11s}.o3{animation-duration:13s}
+@keyframes orb{50%{transform:translateY(-1.6cqw) scale(1.06)}}
+.codewin{position:relative;z-index:2;width:100%;max-width:32cqw;background:var(--code-bg);border-radius:1.2cqw;
+  box-shadow:0 30px 60px -22px rgba(13,26,43,.7);overflow:hidden;transform:rotate(-1.5deg);
+  animation:rise .8s cubic-bezier(.2,.75,.2,1) .35s both}
+.cw-bar{display:flex;gap:.5cqw;padding:.85cqw 1.1cqw;background:rgba(255,255,255,.06)}
+.cw-bar i{width:.72cqw;height:.72cqw;border-radius:50%;background:#ff5f57}
+.cw-bar i:nth-child(2){background:#febc2e}.cw-bar i:nth-child(3){background:#28c840}
+.cw-body{padding:1.3cqw 1.5cqw;font-family:var(--mono);font-size:1.06cqw;line-height:1.85;color:var(--code-ink);white-space:pre;overflow:auto}
+
+/* 章节过渡 */
+.s-section{align-items:center;justify-content:center;text-align:center}
+.sec-inner{display:flex;flex-direction:column;align-items:center}
+.sec-num{font-size:7.6cqw;font-weight:900;line-height:1;
+  background:linear-gradient(120deg,#2f6bff,#0fb5c9);-webkit-background-clip:text;background-clip:text;color:transparent;letter-spacing:-.03em}
+.sec-title{margin-top:1.2cqw;font-size:3.1cqw;font-weight:800}
+.sec-line{width:0;height:.4cqw;border-radius:99px;background:linear-gradient(90deg,var(--brand),var(--brand2));margin:1.4cqw 0}
+.is-active .sec-line{animation:draw .8s ease .5s both}
+@keyframes draw{from{width:0}to{width:11cqw}}
+.sec-sub{font-size:1.4cqw;color:var(--muted);max-width:44cqw;line-height:1.7}
+
+/* 要点列表 */
+.blist{list-style:none;display:flex;flex-direction:column;gap:1.05cqw}
+.blist li{display:flex;gap:.95cqw;align-items:flex-start;font-size:1.42cqw;line-height:1.6;
+  background:var(--surface);border:1px solid var(--line);border-radius:.85cqw;padding:1.05cqw 1.3cqw;
+  box-shadow:0 8px 22px -16px rgba(20,40,90,.5);transition:transform .25s,box-shadow .25s}
+.blist li:hover{transform:translateX(.4cqw);box-shadow:0 12px 26px -16px rgba(47,107,255,.55)}
+.blist.small li{font-size:1.24cqw;padding:.85cqw 1.1cqw}
+.blist.dense{gap:.68cqw}
+.blist.dense li{font-size:1.18cqw;padding:.72cqw 1.1cqw;line-height:1.55}
+.outline.dense{gap:.62cqw}
+.outline.dense li{padding:.72cqw 1.15cqw}
+.outline.dense .ot{font-size:1.16cqw}
+.grid.dense{gap:.95cqw}
+.card.dense{padding:1.1cqw}
+.card.dense .card-t{font-size:1.26cqw;margin-bottom:.4cqw}
+.card.dense .card-d{font-size:1.03cqw;line-height:1.55}
+.bl-dot{flex:0 0 auto;width:.62cqw;height:.62cqw;border-radius:50%;margin-top:.62cqw;
+  background:linear-gradient(135deg,var(--brand),var(--brand2));box-shadow:0 0 0 .28cqw rgba(47,107,255,.12)}
+.blist b,.blist strong{color:var(--brand-dk)}
+.blist code{font-family:var(--mono);font-size:.92em;background:#eef3ff;color:#1d46b8;padding:.1em .42em;border-radius:.35em}
+.hw li{background:linear-gradient(180deg,#fbfcff,#f3f7ff)}
+
+/* 卡片 */
+.grid{display:grid;gap:1.3cqw}
+.grid.cols-2{grid-template-columns:repeat(2,1fr)}
+.grid.cols-3{grid-template-columns:repeat(3,1fr)}
+.grid.cols-4{grid-template-columns:repeat(2,1fr)}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:1.1cqw;padding:1.5cqw;position:relative;overflow:hidden;
+  box-shadow:0 14px 32px -22px rgba(20,40,90,.55);transition:transform .28s,box-shadow .28s,border-color .28s}
+.card:hover{transform:translateY(-.5cqw);box-shadow:0 22px 40px -22px rgba(47,107,255,.5);border-color:rgba(47,107,255,.35)}
+.card::before{content:"";position:absolute;left:0;top:0;height:100%;width:.3cqw;background:linear-gradient(180deg,var(--brand),var(--brand2))}
+.card-ico{font-size:1.75cqw;margin-bottom:.6cqw}
+.card-t{font-size:1.42cqw;font-weight:800;margin-bottom:.55cqw}
+.card-d{font-size:1.14cqw;color:var(--muted);line-height:1.62}
+
+/* 表格 */
+.tbl-wrap{background:var(--surface);border:1px solid var(--line);border-radius:1.1cqw;overflow:hidden;
+  box-shadow:0 16px 36px -26px rgba(20,40,90,.6)}
+.tbl{width:100%;border-collapse:collapse;font-size:1.16cqw}
+.tbl th{background:linear-gradient(180deg,#eef4ff,#e4edff);color:var(--brand-dk);font-weight:800;text-align:left;
+  padding:.95cqw 1.2cqw;border-bottom:1px solid #d8e3f7;font-size:1.12cqw;letter-spacing:.02em}
+.tbl td{padding:.85cqw 1.2cqw;border-bottom:1px solid var(--line);line-height:1.55}
+.tbl tbody tr:last-child td{border-bottom:0}
+.tbl tbody tr:hover{background:#f7faff}
+.tbl code{font-family:var(--mono);font-size:.92em;background:#eef3ff;color:#1d46b8;padding:.08em .4em;border-radius:.35em}
+
+/* 对比 */
+.cmp-wrap{display:grid;grid-template-columns:1fr 1fr;gap:1.8cqw}
+.cmp{border-radius:1.1cqw;padding:1.4cqw;border:1px solid var(--line);background:var(--surface)}
+.cmp-h{font-size:1.4cqw;font-weight:800;margin-bottom:.9cqw;display:flex;align-items:center;gap:.6cqw}
+.cmp-a .cmp-h{color:var(--brand-dk)}
+.cmp-b .cmp-h{color:#b8730f}
+.cmp ul{list-style:none;display:flex;flex-direction:column;gap:.7cqw}
+.cmp li{font-size:1.16cqw;line-height:1.6;color:var(--muted);padding-left:1.3cqw;position:relative}
+.cmp li::before{content:"";position:absolute;left:0;top:.62cqw;width:.5cqw;height:.5cqw;border-radius:2px;background:var(--brand)}
+.cmp-b li::before{background:var(--accent)}
+.cmp-a{background:linear-gradient(180deg,#f6f9ff,#fff)}
+
+/* 步骤 */
+.steps{display:flex;flex-direction:column;gap:1cqw}
+.step{display:flex;gap:1.2cqw;align-items:flex-start;background:var(--surface);border:1px solid var(--line);
+  border-radius:.9cqw;padding:1cqw 1.25cqw}
+.step-n{flex:0 0 auto;width:2.3cqw;height:2.3cqw;border-radius:50%;display:grid;place-items:center;font-weight:800;font-size:1.15cqw;color:#fff;
+  background:linear-gradient(135deg,var(--brand),var(--brand2))}
+.step-t{font-size:1.3cqw;font-weight:800}
+.step-d{font-size:1.12cqw;color:var(--muted);line-height:1.6;margin-top:.25cqw}
+
+/* 流程图 */
+.flow{display:flex;align-items:stretch;justify-content:center;gap:0;flex-wrap:nowrap}
+.fl{flex:1;min-width:0;background:var(--surface);border:1px solid var(--line);border-radius:1cqw;padding:1.3cqw 1cqw;text-align:center;
+  box-shadow:0 12px 28px -22px rgba(20,40,90,.55)}
+.fl-ico{font-size:1.9cqw;margin-bottom:.5cqw}
+.fl-t{font-size:1.24cqw;font-weight:800;margin-bottom:.35cqw;color:var(--brand-dk)}
+.fl-d{font-size:1.02cqw;color:var(--muted);line-height:1.55}
+.fl-arrow{flex:0 0 auto;width:2.2cqw;position:relative;display:grid;place-items:center}
+.fl-arrow::after{content:"";width:1.4cqw;height:.22cqw;background:linear-gradient(90deg,var(--brand),var(--brand2));border-radius:99px;position:relative}
+.fl-arrow::before{content:"";position:absolute;right:.35cqw;width:.6cqw;height:.6cqw;border-top:.2cqw solid var(--brand2);border-right:.2cqw solid var(--brand2);transform:rotate(45deg)}
+.flow-note{margin-top:1.3cqw;font-size:1.1cqw;color:var(--muted);text-align:center;background:rgba(47,107,255,.06);border-radius:.8cqw;padding:.8cqw 1.2cqw}
+
+/* 代码 */
+.codebox{background:var(--code-bg);border-radius:1.1cqw;overflow:hidden;box-shadow:0 26px 54px -26px rgba(13,26,43,.75)}
+.cb-bar{display:flex;align-items:center;gap:.8cqw;padding:.8cqw 1.2cqw;background:rgba(255,255,255,.06);border-bottom:1px solid rgba(255,255,255,.07)}
+.cb-lang{font-family:var(--mono);font-size:.92cqw;font-weight:700;color:#7fd7e4;letter-spacing:.12em}
+.cb-file{font-family:var(--mono);font-size:.92cqw;color:#7f93ad}
+.cb-code{padding:1.25cqw 1.5cqw;font-family:var(--mono);font-size:1.06cqw;line-height:1.78;color:var(--code-ink);white-space:pre;overflow:auto;max-height:100%}
+.cb-code .pn{color:#7f93ad}.cb-code .tg{color:#6fd6ff}.cb-code .at{color:#ffcf7a}.cb-code .st{color:#a5e88a}
+.cb-code .c{color:#6b8099;font-style:italic}.cb-code .sel{color:#ffb3c8}.cb-code .cls{color:#ffd479}
+.cb-code .id{color:#9fe8ff}.cb-code .pc{color:#c8a2ff}.cb-code .prop{color:#8fd3ff}.cb-code .num{color:#f7c774}
+.cb-code .fn{color:#d0b0ff}.cb-code .imp{color:#ff8a8a}.cb-code .at-rules{color:#ff9f6b}
+.caption{margin-top:1cqw;font-size:1.08cqw;color:var(--muted);line-height:1.6}
+.caption b{color:var(--brand-dk)}
+
+/* 任务 */
+.task-goal{background:linear-gradient(180deg,#f4f8ff,#eef4ff);border:1px solid #dbe6fb;border-radius:.9cqw;padding:1.05cqw 1.25cqw;
+  font-size:1.22cqw;line-height:1.62}
+.tg-label{display:inline-block;font-weight:800;color:#fff;background:var(--brand);border-radius:.45cqw;
+  font-size:.98cqw;padding:.16cqw .6cqw;margin-right:.6cqw;vertical-align:.08cqw}
+.task-steps{list-style:none;counter-reset:ts;display:flex;flex-direction:column;gap:.75cqw}
+.task-steps li{counter-increment:ts;position:relative;padding-left:2.3cqw;font-size:1.14cqw;line-height:1.6}
+.task-steps li::before{content:counter(ts);position:absolute;left:0;top:.08cqw;width:1.55cqw;height:1.55cqw;border-radius:50%;
+  background:rgba(47,107,255,.12);color:var(--brand-dk);font-size:.92cqw;font-weight:800;display:grid;place-items:center}
+.task-code{background:var(--code-bg);border-radius:.9cqw;overflow:hidden;box-shadow:0 20px 44px -26px rgba(13,26,43,.7)}
+
+/* 演示 */
+.demo-right{display:flex;flex-direction:column;gap:1cqw;height:100%}
+.demo-frame{flex:1;width:100%;min-height:0;border:1px solid var(--line);border-radius:1cqw;background:#fff;
+  box-shadow:0 22px 46px -26px rgba(20,40,90,.6)}
+.demo-code{background:var(--code-bg);border-radius:.9cqw;overflow:hidden}
+.demo-code summary{cursor:pointer;color:#9fb6d4;font-size:1.02cqw;padding:.7cqw 1.1cqw;font-family:var(--mono);user-select:none}
+.demo-code .cb-code{padding:0 1.2cqw 1.1cqw;font-size:.96cqw}
+.hint{margin-top:1cqw;font-size:1.08cqw;color:var(--muted);background:rgba(255,138,61,.1);border-left:.3cqw solid var(--accent);
+  border-radius:.6cqw;padding:.8cqw 1.1cqw;line-height:1.6}
+.hint b{color:#c2601a}
+
+/* AI */
+.ai-card{background:linear-gradient(160deg,#171a3a,#2b2a5e 55%,#3a2a6a);border-radius:1.1cqw;padding:1.7cqw;color:#e8e6ff;
+  position:relative;overflow:hidden;box-shadow:0 24px 52px -26px rgba(40,30,90,.8)}
+.ai-card::after{content:"";position:absolute;right:-6cqw;top:-6cqw;width:14cqw;height:14cqw;border-radius:50%;
+  background:radial-gradient(circle,rgba(124,92,255,.6),transparent 65%);animation:float1 12s ease-in-out infinite}
+.ai-badge{display:inline-grid;place-items:center;width:2.6cqw;height:2.6cqw;border-radius:.7cqw;font-weight:900;font-size:1.1cqw;
+  background:linear-gradient(135deg,#7c5cff,#0fb5c9);color:#fff;margin-bottom:.9cqw;letter-spacing:.04em}
+.ai-card p{font-size:1.22cqw;line-height:1.72;position:relative;z-index:2}
+.ai-list li{border-color:rgba(124,92,255,.25);background:linear-gradient(180deg,#fbf9ff,#f5f2ff)}
+.ai-list .bl-dot{background:linear-gradient(135deg,#7c5cff,#0fb5c9)}
+
+/* 检测（可交互：点选 → 判分 → 显示解析） */
+.quiz-body{justify-content:flex-start;gap:1.1cqw}
+.quiz-top{display:flex;align-items:center;justify-content:space-between;gap:1.2cqw;flex:0 0 auto}
+.quiz-meta{font-size:1.02cqw;color:var(--muted)}
+.quiz-meta b{color:var(--brand);font-size:1.1cqw}
+.q-reveal{cursor:pointer;font-family:inherit;font-size:.98cqw;font-weight:700;color:var(--brand-dk);
+  background:#eef4ff;border:1px solid #d6e3fb;border-radius:.5cqw;padding:.4cqw .95cqw;transition:.18s}
+.q-reveal:hover{background:#e2ecff;border-color:var(--brand)}
+.quiz-acts{display:flex;align-items:center;gap:.6cqw;flex:0 0 auto}
+.q-reset-all{cursor:pointer;font-family:inherit;font-size:.98cqw;font-weight:700;color:var(--muted);
+  background:#fff;border:1px solid var(--line);border-radius:.5cqw;padding:.4cqw .9cqw;transition:.18s}
+.q-reset-all:hover{color:var(--accent);border-color:#ffd0a8;background:#fff8f2}
+.quiz{list-style:none;display:flex;flex-direction:column;gap:1cqw;overflow:auto;padding-right:.3cqw}
+.quiz.dense{gap:.55cqw}
+.quiz-body:has(.quiz.dense){gap:.7cqw}
+.quiz-item{background:var(--surface);border:1px solid var(--line);border-radius:.9cqw;padding:1cqw 1.2cqw;
+  transition:border-color .2s,box-shadow .2s}
+.quiz-item.ok{border-color:rgba(18,161,80,.45);box-shadow:0 10px 26px -20px rgba(18,161,80,.7)}
+.quiz-item.bad{border-color:rgba(214,83,79,.45);box-shadow:0 10px 26px -20px rgba(214,83,79,.6)}
+.quiz.dense .quiz-item{padding:.6cqw .95cqw}
+.quiz.dense .q{font-size:1.08cqw}
+.quiz.dense .opts{margin-top:.4cqw;gap:.45cqw}
+.quiz.dense .opt{font-size:.94cqw;padding:.22cqw .62cqw}
+.quiz.dense .q-foot{margin-top:.4cqw;min-height:1.15cqw}
+.quiz.dense .q-check{font-size:.88cqw;padding:.16cqw .6cqw}
+.quiz.dense .q-verdict{font-size:.9cqw}
+.quiz.dense .q-ans{margin-top:.4cqw;font-size:.92cqw;padding:.4cqw .7cqw}
+.q{display:flex;gap:.55cqw;align-items:baseline;font-size:1.22cqw;font-weight:700;line-height:1.5}
+.quiz.dense .q{font-size:1.12cqw}
+.q-no{font-family:var(--mono);font-size:.92cqw;font-weight:800;color:var(--brand);flex:0 0 auto}
+.q-tag{flex:0 0 auto;font-size:.8cqw;font-weight:700;color:#fff;background:var(--brand2);
+  border-radius:.32cqw;padding:.08cqw .42cqw;letter-spacing:.04em}
+.q-tag.multi{background:var(--violet)}
+.q-txt{flex:1;min-width:0}
+.opts{display:flex;flex-wrap:wrap;gap:.55cqw;margin-top:.62cqw}
+.opt{cursor:pointer;display:inline-flex;gap:.42cqw;align-items:center;font-family:inherit;text-align:left;
+  font-size:1.02cqw;line-height:1.45;color:#33456b;background:#f5f8ff;border:1px solid #e0e9fb;
+  border-radius:.55cqw;padding:.36cqw .8cqw;transition:background .16s,border-color .16s,box-shadow .16s}
+.quiz.dense .opt{font-size:.96cqw;padding:.28cqw .7cqw}
+.opt:hover{border-color:var(--brand);background:#eef4ff}
+.opt i{font-style:normal;font-family:var(--mono);font-weight:800;font-size:.88em;color:var(--brand)}
+.opt.sel{background:#e6efff;border-color:var(--brand);box-shadow:0 0 0 .16cqw rgba(47,107,255,.16)}
+.opt.right{background:rgba(18,161,80,.1);border-color:#12A150;color:#0b5f2f}
+.opt.right i{color:#0b5f2f}
+.q-foot{display:flex;align-items:center;gap:.8cqw;margin-top:.6cqw;min-height:1.5cqw}
+.q-check{cursor:pointer;font-family:inherit;font-size:.94cqw;font-weight:700;color:var(--brand);
+  background:#fff;border:1px solid #c9daff;border-radius:.45cqw;padding:.26cqw .75cqw;transition:.16s}
+.q-check:hover{background:#eef4ff}
+.q-reset{cursor:pointer;font-family:inherit;font-size:.94cqw;font-weight:700;color:var(--muted);
+  background:#fff;border:1px solid var(--line);border-radius:.45cqw;padding:.26cqw .7cqw;transition:.16s}
+.q-reset:hover{color:var(--accent);border-color:#ffd0a8;background:#fff8f2}
+.q-reset:disabled{opacity:.38;cursor:default}
+.q-reset:disabled:hover{color:var(--muted);border-color:var(--line);background:#fff}
+.quiz.dense .q-reset{font-size:.88cqw;padding:.16cqw .55cqw}
+.q-verdict{font-size:.96cqw;font-weight:700}
+.quiz-item.ok .q-verdict{color:var(--ok)}
+.quiz-item.bad .q-verdict{color:#d9534f}
+.q-ans{display:none;margin-top:.6cqw;font-size:.98cqw;line-height:1.6;color:#0f7a3d;
+  background:rgba(18,161,80,.08);border-radius:.5cqw;padding:.5cqw .8cqw}
+.quiz-item.revealed .q-ans{display:block;animation:rise .3s both}
+.q-ans b{color:#0b5f2f;margin-right:.45cqw}
+.ans-key{font-family:var(--mono);font-weight:800;margin-right:.6cqw}
+.ans-tip{color:var(--muted)}
+
+/* 目标 */
+.objs{display:grid;grid-template-columns:repeat(3,1fr);gap:1.4cqw}
+.obj{border-radius:1.1cqw;padding:1.4cqw;border:1px solid var(--line);background:var(--surface)}
+.obj-h{font-size:1.3cqw;font-weight:800;margin-bottom:.85cqw;display:flex;align-items:center;gap:.55cqw}
+.obj-h::before{content:"";width:.55cqw;height:1.35cqw;border-radius:99px}
+.obj ul{list-style:none;display:flex;flex-direction:column;gap:.62cqw}
+.obj li{font-size:1.1cqw;line-height:1.58;color:var(--muted);padding-left:1.15cqw;position:relative}
+.obj li::before{content:"";position:absolute;left:0;top:.6cqw;width:.42cqw;height:.42cqw;border-radius:50%;background:#9db4d6}
+.obj-1 .obj-h::before{background:var(--brand)}.obj-2 .obj-h::before{background:var(--brand2)}.obj-3 .obj-h::before{background:var(--accent)}
+.obj-1 .obj-h{color:var(--brand-dk)}.obj-2 .obj-h{color:#0a7b87}.obj-3 .obj-h{color:#b8730f}
+
+/* 思政 */
+.s-ideo .s-body{justify-content:center}
+.ideo-wrap{display:flex;flex-direction:column;gap:1.3cqw}
+.ideo-quote{position:relative;background:linear-gradient(180deg,#fff8f0,#fffbf6);border:1px solid #ffe3c8;border-left:.42cqw solid var(--accent);
+  border-radius:.95cqw;padding:1.6cqw 1.8cqw 1.6cqw 2.2cqw;font-size:1.3cqw;line-height:1.85;color:#4a3a28}
+.ideo-quote strong{color:#a3510a}
+.ideo-topic{font-size:1.16cqw;color:var(--muted);background:rgba(47,107,255,.06);border-radius:.8cqw;padding:.9cqw 1.2cqw;line-height:1.6}
+.it-label{display:inline-block;font-weight:800;color:#fff;background:var(--brand);border-radius:.45cqw;font-size:.96cqw;padding:.16cqw .6cqw;margin-right:.6cqw}
+
+/* 大纲 */
+.outline{list-style:none;display:flex;flex-direction:column;gap:.95cqw;counter-reset:none}
+.outline li{display:flex;align-items:center;gap:1.2cqw;background:var(--surface);border:1px solid var(--line);border-radius:.9cqw;padding:1.05cqw 1.35cqw;
+  box-shadow:0 10px 26px -22px rgba(20,40,90,.55)}
+.oi{font-family:var(--mono);font-size:1.1cqw;font-weight:800;color:var(--brand);background:rgba(47,107,255,.1);border-radius:.5cqw;padding:.28cqw .7cqw}
+.ot{font-size:1.34cqw;font-weight:700}
+
+/* 参考 */
+.refs{list-style:none;display:flex;flex-direction:column;gap:.85cqw}
+.refs li{display:flex;align-items:baseline;gap:.9cqw;background:var(--surface);border:1px solid var(--line);border-radius:.8cqw;padding:.9cqw 1.15cqw}
+.ref-idx{font-family:var(--mono);font-size:1cqw;font-weight:800;color:var(--brand)}
+.ref-t{font-size:1.16cqw;font-weight:600}
+.ref-u{font-family:var(--mono);font-size:.92cqw;color:var(--muted);word-break:break-all}
+
+/* 结束 */
+.s-end{align-items:center;justify-content:center;text-align:center;background:linear-gradient(140deg,#12203b,#1d3a78 55%,#0e6f88);}
+.s-end .end-t{color:#fff}
+.end-mark{font-size:2.4cqw;color:#7fd7e4;margin-bottom:.6cqw}
+.end-t{font-size:3.4cqw;font-weight:900;letter-spacing:.02em}
+.end-s{margin-top:1.2cqw;font-size:1.35cqw;color:#a9c4e8}
+/* 结束页导航：下一讲 / 返回总目录 */
+.end-inner{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.9cqw;max-width:74%}
+.end-next{margin-top:2.6cqw;display:inline-flex;align-items:center;gap:1cqw;text-decoration:none;
+  background:rgba(255,255,255,.09);border:1px solid rgba(140,200,235,.42);border-radius:.9cqw;
+  padding:1cqw 1.5cqw;transition:.22s;backdrop-filter:blur(6px);max-width:100%}
+.end-next:hover{background:rgba(255,255,255,.16);border-color:#7fd7e4;transform:translateY(-2px);
+  box-shadow:0 18px 40px -26px rgba(0,0,0,.9)}
+.en-lab{flex:0 0 auto;font-size:.92cqw;font-weight:800;letter-spacing:.06em;color:#0c2036;
+  background:linear-gradient(135deg,#7fd7e4,#4fc3d9);border-radius:.4cqw;padding:.2cqw .62cqw}
+.en-t{color:#eaf4ff;font-size:1.18cqw;font-weight:700;line-height:1.5}
+.en-ar{color:#7fd7e4;font-size:1.3cqw;font-weight:800}
+.end-next.is-final{cursor:default;box-shadow:none}
+.end-next.is-final:hover{transform:none;background:rgba(255,255,255,.09);border-color:rgba(140,200,235,.42);box-shadow:none}
+.end-back{margin-top:.5cqw;display:inline-flex;align-items:center;gap:.35cqw;text-decoration:none;
+  font-size:1.02cqw;color:#9fbde0;border-bottom:1px dashed rgba(159,189,224,.45);padding-bottom:.12cqw;transition:.2s}
+.end-back:hover{color:#fff;border-bottom-color:#7fd7e4}
+
+/* 进度 & HUD */
+.topbar{position:absolute;left:0;top:0;height:.42cqw;width:100%;background:rgba(47,107,255,.1);z-index:6}
+.topbar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--brand),var(--brand2),var(--violet));
+  transition:width .45s cubic-bezier(.2,.7,.2,1)}
+.hud{position:absolute;right:2.2cqw;bottom:1.5cqw;z-index:6;display:flex;align-items:center;gap:1cqw;
+  font-size:1cqw;color:var(--muted);font-family:var(--mono)}
+.hud .btn{cursor:pointer;background:rgba(255,255,255,.82);border:1px solid var(--line);border-radius:.55cqw;padding:.32cqw .7cqw;
+  transition:.2s}
+.hud .btn:hover{border-color:var(--brand);color:var(--brand)}
+.hud .btn[data-on="0"]{color:#a8b6cc;background:rgba(255,255,255,.5);border-style:dashed}
+.hud .btn[data-on="0"]:hover{color:var(--accent);border-color:#ffd0a8;border-style:solid;background:#fff8f2}
+.hud .btn[data-on="1"]{color:#0a7b87;border-color:#bfe6ea;background:rgba(15,181,201,.09)}
+.hud .btn[data-on="1"]:hover{border-color:var(--brand2);background:rgba(15,181,201,.16)}
+.pageno b{color:var(--ink)}
+.legend{position:absolute;left:2.2cqw;bottom:1.5cqw;z-index:6;font-size:.96cqw;color:#9aabc4;font-family:var(--mono)}
+.flip-toast{position:absolute;left:50%;bottom:9%;z-index:9;transform:translate(-50%,10px);
+  background:rgba(16,29,50,.9);color:#fff;font-family:var(--mono);font-size:1.02cqw;letter-spacing:.02em;
+  padding:.62cqw 1.25cqw;border-radius:999px;opacity:0;pointer-events:none;white-space:nowrap;
+  transition:opacity .22s,transform .22s;box-shadow:0 18px 40px -22px rgba(0,0,0,.8)}
+.flip-toast.show{opacity:1;transform:translate(-50%,0)}
+/* 导航抽屉 */
+.drawer{position:absolute;inset:0;z-index:8;background:rgba(12,22,40,.55);backdrop-filter:blur(6px);display:none;padding:4cqw}
+.drawer.open{display:block}
+.drawer-panel{background:var(--surface);border-radius:1.2cqw;height:100%;padding:2cqw;overflow:auto;box-shadow:0 40px 80px -30px rgba(0,0,0,.5)}
+.drawer-h{font-size:1.5cqw;font-weight:800;margin-bottom:1.2cqw;display:flex;justify-content:space-between}
+.drawer-h span{cursor:pointer;color:var(--muted);font-weight:600;font-size:1.1cqw}
+.drawer ul{list-style:none;display:grid;grid-template-columns:1fr 1fr;gap:.55cqw}
+.drawer li{display:flex;gap:.7cqw;align-items:center;padding:.6cqw .8cqw;border-radius:.6cqw;cursor:pointer;border:1px solid transparent}
+.drawer li:hover{background:#f2f6ff;border-color:#dbe6fb}
+.drawer li.cur{background:#eaf1ff;border-color:#c9daff}
+.nv-idx{font-family:var(--mono);font-size:.92cqw;color:var(--brand);font-weight:800}
+.nv-t{font-size:1.06cqw;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+/* ───────── 屏幕自适应 ─────────
+   1) 16:9 / 16:10 笔记本与投影：等比缩放（默认）
+   2) 4:3 老投影 / 上下更紧：压缩留白与圆角
+   3) 超宽屏：仍按高度定宽，不拉伸变形
+   4) 竖屏（手机、平板竖握）：改为纵向流式阅读，单列重排
+   5) 系统开启「减弱动效」时关闭所有动画
+*/
+@media (max-aspect-ratio: 4/3) and (orientation: landscape){
+  .wrap{padding:1.2vh}
+  .stage{border-radius:14px}
+  .slide{padding:3.4cqw 4.2cqw 3.2cqw;gap:1.5cqw}
+  .s-title{font-size:2.62cqw}
+  .blist{gap:.85cqw}
+  .blist li{font-size:1.32cqw;padding:.9cqw 1.15cqw}
+  .legend{display:none}
+}
+@media (min-aspect-ratio: 21/9){
+  .stage{max-width:calc(100vh * 16 / 9);max-height:calc(100vw * 9 / 16)}
+}
+@media (prefers-reduced-motion: reduce){
+  .an{opacity:1!important;animation:none!important}
+  .blob,.orb,.codewin{animation:none!important}
+  .slide{transition:none}
+}
+/* —— 竖屏：纵向流式阅读 —— */
+@media (orientation: portrait){
+  html,body{height:auto;overflow-x:hidden;overflow-y:auto}
+  html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+  body{overflow:visible;background:var(--bg)}
+  .wrap{display:block;height:auto;padding:0}
+  .stage{width:100%;height:auto;max-width:none;max-height:none;aspect-ratio:auto;border-radius:0;
+    overflow:visible;box-shadow:none;container-type:inline-size;background:transparent}
+  .bgfx{display:none}
+  .slide{position:relative;inset:auto;opacity:1!important;visibility:visible!important;transform:none!important;
+    padding:8vw 6vw 9vw;gap:5vw;min-height:auto;background:var(--bg2);border-bottom:1px solid var(--line)}
+  .slide.prev{transform:none!important}
+  .an{opacity:1!important;animation:none!important;transform:none!important}
+  .s-head{flex-direction:column;gap:0}
+  .kicker{font-size:2.6vw;padding:1vw 2.6vw;margin-bottom:2.2vw;letter-spacing:.1em}
+  .s-title{font-size:6.4vw;line-height:1.3}
+  .s-sub{margin-top:2vw;font-size:3.4vw}
+  .s-body{gap:4vw;justify-content:flex-start}
+  .s-body.two{flex-direction:column;gap:4.4vw}
+  .col-l,.col-r{gap:3.4vw}
+  /* 封面 */
+  .s-cover{flex-direction:column;align-items:flex-start;gap:5vw;padding:12vw 6vw 10vw}
+  .cover-art{display:none}
+  .brandrow{margin-bottom:4vw;gap:2vw}
+  .brandmark{font-size:4.4vw}.brandsub{font-size:3vw}
+  .cover-title{font-size:9.6vw;line-height:1.22}
+  .cover-sub{font-size:3.8vw;max-width:none;margin-top:2.6vw}
+  .pills{gap:2vw;margin-top:4vw}
+  .pill{font-size:2.8vw;padding:1.2vw 2.8vw}
+  .cover-meta{font-size:2.9vw;gap:2vw;margin-top:4vw}
+  .cover-meta b{font-size:3.4vw}
+  /* 章节页 */
+  .sec-num{font-size:17vw}
+  .sec-title{font-size:7.2vw;margin-top:3vw}
+  .sec-sub{font-size:3.6vw;max-width:none;margin-top:3vw}
+  .is-active .sec-line{animation:none;width:26vw}
+  .sec-line{margin:4vw 0}
+  /* 列表 / 卡片 */
+  .blist{gap:2.6vw}
+  .blist li{font-size:3.7vw;padding:2.8vw 3.4vw;border-radius:2.4vw;gap:2.4vw;line-height:1.62}
+  .blist.small li{font-size:3.4vw;padding:2.4vw 3vw}
+  .blist.dense li{font-size:3.3vw;padding:2.2vw 3vw}
+  .bl-dot{width:1.8vw;height:1.8vw;margin-top:1.8vw;box-shadow:0 0 0 .8vw rgba(47,107,255,.12)}
+  .outline{gap:2.4vw}
+  .outline li{padding:2.8vw 3.4vw;border-radius:2.2vw;gap:3vw}
+  .oi{font-size:2.8vw;padding:.8vw 2vw}
+  .ot{font-size:3.9vw}
+  .grid{gap:3vw}
+  .grid.cols-2,.grid.cols-3,.grid.cols-4{grid-template-columns:1fr}
+  .card{padding:4.2vw;border-radius:2.6vw}
+  .card-t{font-size:4.1vw;margin-bottom:1.6vw}
+  .card-d{font-size:3.3vw}
+  .card-ico{font-size:5.6vw;margin-bottom:1.6vw}
+  .card::before{width:.8vw}
+  /* 表格 */
+  .tbl-wrap{overflow-x:auto;border-radius:2.4vw;-webkit-overflow-scrolling:touch}
+  .tbl{font-size:3.1vw;min-width:110vw}
+  .tbl th{font-size:3vw;padding:2.4vw 2.8vw;white-space:nowrap}
+  .tbl td{padding:2.2vw 2.8vw}
+  /* 对比 */
+  .cmp-wrap{grid-template-columns:1fr;gap:3.4vw}
+  .cmp{padding:3.6vw;border-radius:2.4vw}
+  .cmp-h{font-size:3.8vw;margin-bottom:2.4vw}
+  .cmp ul{gap:2vw}
+  .cmp li{font-size:3.2vw;padding-left:3.6vw}
+  .cmp li::before{width:1.4vw;height:1.4vw;top:1.7vw}
+  /* 步骤 / 流程 */
+  .steps{gap:2.6vw}
+  .step{padding:3vw 3.4vw;border-radius:2.2vw;gap:3vw}
+  .step-n{width:7.4vw;height:7.4vw;font-size:3.2vw}
+  .step-t{font-size:3.7vw}
+  .step-d{font-size:3.2vw;margin-top:.8vw}
+  .flow{flex-direction:column;gap:1.6vw}
+  .fl{padding:3.6vw;border-radius:2.4vw}
+  .fl-ico{font-size:6.4vw}
+  .fl-t{font-size:3.9vw}
+  .fl-d{font-size:3.1vw}
+  .fl-arrow{width:100%;height:6vw;transform:rotate(90deg)}
+  .flow-note{font-size:3.1vw;padding:2.4vw 3vw;border-radius:2vw;margin-top:2.6vw}
+  /* 代码 */
+  .codebox,.task-code{border-radius:2.4vw}
+  .cb-bar{padding:2.2vw 3vw;gap:2.4vw}
+  .cb-lang,.cb-file{font-size:2.7vw}
+  .cb-code{font-size:3.1vw;line-height:1.62;padding:3vw 3.4vw}
+  .caption{font-size:3vw;margin-top:2.4vw}
+  .demo-code summary{font-size:2.9vw;padding:2.2vw 3vw}
+  .demo-code .cb-code{font-size:2.9vw}
+  /* 任务 / 演示 */
+  .task-goal{font-size:3.4vw;padding:3.2vw;border-radius:2.2vw}
+  .tg-label{font-size:2.6vw;padding:.5vw 1.8vw;margin-right:1.6vw;border-radius:1.2vw}
+  .task-steps{gap:2.4vw}
+  .task-steps li{font-size:3.3vw;padding-left:6.4vw}
+  .task-steps li::before{width:4.6vw;height:4.6vw;font-size:2.8vw}
+  .demo-right{height:auto;gap:2.6vw}
+  .demo-frame{height:66vw;min-height:190px;border-radius:2.4vw}
+  .hint{font-size:3.1vw;padding:2.6vw 3vw;border-radius:2vw;margin-top:2.6vw}
+  /* AI */
+  .ai-card{padding:4.4vw;border-radius:2.6vw}
+  .ai-card p{font-size:3.5vw}
+  .ai-badge{width:8.4vw;height:8.4vw;font-size:3.2vw;border-radius:2vw;margin-bottom:2.4vw}
+  /* 检测（!important：压过横屏 dense 的 cqw 规则，否则竖屏字号塌缩） */
+  .quiz-body{gap:3.4vw}
+  .quiz-top{flex-direction:column;align-items:flex-start;gap:2.4vw}
+  .quiz-meta{font-size:3vw}
+  .quiz-meta b{font-size:3.4vw}
+  .quiz-acts{gap:2vw}
+  .q-reveal,.q-reset-all{font-size:3vw;padding:1.6vw 3.4vw;border-radius:2vw}
+  .quiz{gap:3vw;overflow:visible}
+  .quiz.dense{gap:2.6vw}
+  .quiz-item,.quiz.dense .quiz-item{padding:3.4vw 3.6vw;border-radius:2.4vw}
+  .quiz.dense .q{font-size:3.6vw;gap:1.6vw;line-height:1.55}
+  .q-no{font-size:2.9vw}
+  .q-tag{font-size:2.4vw;padding:.3vw 1.4vw;border-radius:1.2vw}
+  .opts,.quiz.dense .opts{gap:1.8vw;margin-top:2.2vw}
+  .opt,.quiz.dense .opt{font-size:3.2vw;padding:1.4vw 2.8vw;border-radius:2vw;gap:1.4vw}
+  .q-foot,.quiz.dense .q-foot{margin-top:2vw;gap:2.4vw;min-height:0}
+  .q-check,.quiz.dense .q-check{font-size:2.9vw;padding:1.2vw 2.8vw;border-radius:1.6vw}
+  .q-reset,.quiz.dense .q-reset{font-size:2.9vw;padding:1.2vw 2.6vw;border-radius:1.6vw}
+  .q-verdict,.quiz.dense .q-verdict{font-size:2.9vw}
+  .q-ans,.quiz.dense .q-ans{font-size:3vw;padding:2.2vw 3vw;border-radius:1.8vw;margin-top:2vw}
+  /* 目标 / 思政 */
+  .objs{grid-template-columns:1fr;gap:3vw}
+  .obj{padding:4vw;border-radius:2.4vw}
+  .obj-h{font-size:3.9vw;margin-bottom:2.4vw}
+  .obj-h::before{width:1.4vw;height:4vw}
+  .obj ul{gap:2vw}
+  .obj li{font-size:3.2vw;padding-left:3.4vw}
+  .obj li::before{width:1.2vw;height:1.2vw;top:1.6vw}
+  .ideo-wrap{gap:3.4vw}
+  .ideo-quote{font-size:3.6vw;padding:4vw 4.4vw;border-radius:2.4vw;line-height:1.8}
+  .ideo-topic{font-size:3.2vw;padding:2.8vw 3.2vw;border-radius:2.2vw}
+  .it-label{font-size:2.6vw;padding:.5vw 1.6vw;border-radius:1.2vw;margin-right:1.4vw}
+  /* 参考 / 结束 */
+  .refs{gap:2.2vw}
+  .refs li{padding:2.8vw 3.2vw;border-radius:2vw;gap:2.4vw}
+  .ref-idx{font-size:2.8vw}
+  .ref-t{font-size:3.3vw}
+  .ref-u{font-size:2.7vw}
+  .s-end{align-items:center;justify-content:center;min-height:60vh}
+  .end-t{font-size:8.4vw}
+  .end-s{font-size:3.6vw;margin-top:3vw}
+  .end-mark{font-size:6vw}
+  .end-inner{max-width:none;width:100%;gap:2vw}
+  .end-next{margin-top:5vw;gap:2.2vw;padding:3vw 3.6vw;border-radius:2.4vw;flex-wrap:wrap;justify-content:center}
+  .en-lab{font-size:2.6vw;padding:.8vw 2vw;border-radius:1.2vw}
+  .en-t{font-size:3.4vw}
+  .en-ar{font-size:3.6vw}
+  .end-back{font-size:3vw;margin-top:2.6vw}
+  /* HUD / 目录：固定悬浮 */
+  .topbar{position:fixed;height:1.2vw;z-index:20}
+  .hud{position:fixed;right:3vw;bottom:calc(3vw + env(safe-area-inset-bottom));z-index:20;
+    background:rgba(255,255,255,.94);border:1px solid var(--line);border-radius:999px;
+    padding:2.2vw 3.4vw;gap:3vw;font-size:3vw;box-shadow:0 10px 30px -12px rgba(16,34,74,.35)}
+  .hud .btn{font-size:2.9vw;padding:1vw 2.4vw;border-radius:1.6vw}
+  .flip-toast{position:fixed;bottom:calc(16vw + env(safe-area-inset-bottom));z-index:21;
+    font-size:3vw;padding:2.2vw 4vw;max-width:84vw;white-space:normal;text-align:center;line-height:1.5}
+  .legend{display:none}
+  .drawer{position:fixed;padding:4vw}
+  .drawer-panel{padding:5vw;border-radius:3vw}
+  .drawer-h{font-size:4.2vw;margin-bottom:3vw}
+  .drawer-h span{font-size:3.2vw}
+  .drawer ul{grid-template-columns:1fr;gap:1.6vw}
+  .drawer li{padding:2.4vw 3vw;border-radius:2vw;gap:2.4vw}
+  .nv-idx{font-size:2.8vw}
+  .nv-t{font-size:3.2vw;white-space:normal}
+}
+/* 打印 */
+@media print{
+  body{overflow:visible}
+  .wrap{padding:0;display:block}
+  .stage{width:100%;max-width:none;height:auto;aspect-ratio:auto;border-radius:0;box-shadow:none}
+  .slide{position:relative;opacity:1!important;visibility:visible!important;transform:none!important;
+    page-break-after:always;height:100vh;width:100%}
+  .an{opacity:1!important;animation:none!important}
+  .topbar,.hud,.legend,.drawer{display:none!important}
+}
+</style>
+</head>
+<body>
+<div class="wrap"><div class="stage" id="stage">
+  <div class="bgfx"><div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div><div class="grid-lines"></div></div>
+  <div class="topbar"><i id="bar"></i></div>
+
+<section class="slide s-cover is-active" data-kind="cover">
+  <div class="cover-left">
+    <div class="brandrow an" style="--i:0">
+      <span class="brandmark">网页制作</span>
+      <span class="brandsub">HTML5 + CSS3</span>
+    </div>
+    <div class="kicker an" style="--i:1">项目6 · 第 16 单元</div>
+    <h1 class="cover-title an" style="--i:2">表单与常用表单标签</h1>
+    <p class="cover-sub an" style="--i:3">从 form 到 input、button、select、textarea，搞清「数据是怎么被收集起来的」</p>
+    <div class="pills"><span class="pill" style="--i:3">form</span><span class="pill" style="--i:4">input type</span><span class="pill" style="--i:5">GET / POST</span><span class="pill" style="--i:6">label 绑定</span></div>
+    <div class="cover-meta an" style="--i:8">
+      <span class="m-item"><b>40</b> 分钟</span>
+      <span class="dot"></span>
+      <span class="m-item">教材《网页制作（HTML5+CSS3）》项目6</span>
+      <span class="dot"></span>
+      <span class="m-item">电子工业出版社 · 2025 年 1 月第 1 版</span>
+    </div>
+  </div>
+  <div class="cover-art" aria-hidden="true">
+    <div class="orb o1"></div><div class="orb o2"></div><div class="orb o3"></div>
+    <div class="codewin">
+      <div class="cw-bar"><i></i><i></i><i></i></div>
+      <pre class="cw-body"><span class="pn">&lt;!</span><span class="tg">DOCTYPE</span> <span class="at">html</span><span class="pn">&gt;</span>
+<span class="pn">&lt;</span><span class="tg">html</span> <span class="at">lang</span>=<span class="st">"zh-CN"</span><span class="pn">&gt;</span>
+  <span class="pn">&lt;</span><span class="tg">head</span><span class="pn">&gt;</span> <span class="pn">&lt;</span><span class="tg">meta</span> <span class="at">charset</span>=<span class="st">"UTF-8"</span><span class="pn">&gt;</span> <span class="pn">&lt;/</span><span class="tg">head</span><span class="pn">&gt;</span>
+  <span class="pn">&lt;</span><span class="tg">body</span><span class="pn">&gt;</span>
+    <span class="pn">&lt;</span><span class="tg">h1</span><span class="pn">&gt;</span>Hello, Web<span class="pn">&lt;/</span><span class="tg">h1</span><span class="pn">&gt;</span>
+  <span class="pn">&lt;/</span><span class="tg">body</span><span class="pn">&gt;</span>
+<span class="pn">&lt;/</span><span class="tg">html</span><span class="pn">&gt;</span></pre>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-kind="objectives">
+  
+  <header class="s-head">
+    <div class="s-head-left">
+      
+      <h2 class="s-title an" style="--i:1">本单元我们要达成什么</h2>
+      <p class="s-sub an" style="--i:2">对照教材《项目6》6.4～6.5.4 的学习目标 / 技能目标 / 素养目标</p>
+    </div>
+  </header>
+  <div class="s-body"><div class="objs"><div class="obj obj-1" class="an " style="--i:1">
+          <div class="obj-h">知识目标</div><ul><li>了解表单的用途</li><li>掌握常用表单标签的使用方法</li><li>掌握 form 标签及其属性的含义</li><li>掌握 input 标签及其变体的使用方法</li></ul></div><div class="obj obj-2" class="an " style="--i:2">
+          <div class="obj-h">技能目标</div><ul><li>能正确使用表单标签创建表单</li><li>能区分 GET 与 POST 提交方式并正确选用</li><li>能使用 label 提升表单的可用性</li></ul></div><div class="obj obj-3" class="an " style="--i:3">
+          <div class="obj-h">素养目标</div><ul><li>培养以用户为中心的产品质量意识</li><li>培养勇于探索、崇尚科学的意志和品德</li><li>遵守网络规范、网络法规</li></ul></div></div></div>
+</section>
+
+<section class="slide s-ideo" data-kind="ideology">
+  
+  <header class="s-head">
+    <div class="s-head-left">
+      
+      <h2 class="s-title an" style="--i:1">以用户为中心：每一个控件背后都是一个人</h2>
+      <p class="s-sub an" style="--i:2">教材《项目6》思政课堂</p>
+    </div>
+  </header>
+  <div class="s-body"><div class="ideo-wrap">
+    <div class="ideo-quote an" style="--i:1">2022 年 2 月 4 日至 20 日，北京冬奥会在我国北京市和张家口市联合举行，它是一次全球性的体育盛会。在这次冬奥会上，展现出了<strong>胸怀大局、自信开放、迎难而上、追求卓越、共创未来</strong>的“<strong>北京冬奥精神</strong>”。它激励着我们这代人坚持理想信念，坚定不移地为社会主义伟大事业而奋斗；坚持实事求是，脚踏实地地去创造。我们要把爱国之情、报国之志转化为实际行动，努力拼搏，为祖国争光！</div>
+    <div class="ideo-topic an" style="--i:2"><span class="it-label">课堂讨论</span>教材把「培养以用户为中心的产品质量意识」写进了素养目标。请结合岗位讨论：一个少写了一个 label、一个忘了加 required 的表单，会给真实用户带来怎样的困扰？</div>
+  </div></div>
+</section>
+
+<section class="slide" data-kind="outline">
+  
+  <header class="s-head">
+    <div class="s-head-left">
+      
+      <h2 class="s-title an" style="--i:1">本单元导览</h2>
+      <p class="s-sub an" style="--i:2">沿着「数据从哪来、到哪去」这条主线走一遍</p>
+    </div>
+  </header>
+  <div class="s-body"><ol class="outline"><li class="an " style="--i:1"><span class="oi">01</span><span class="ot">表单是干什么的？（收集、发送、处理用户提供的数据）</span></li><li class="an " style="--i:2"><span class="oi">02</span><span class="ot">form 标签如何限定范围、指定提交方式与后台程序？</span></li><li class="an " style="--i:3"><span class="oi">03</span><span class="ot">GET 与 POST 到底差在哪？什么时候必须二选一？</span></li><li class="an " style="--i:4"><span class="oi">04</span><span class="ot">input 家族：文本、密码、文件、隐藏、单选、复选、按钮……</span></li></ol></div>
+</section>
+
+<section class="slide s-section" data-kind="section">
+  <div class="sec-inner">
+    <div class="sec-num an" style="--i:0">6.4</div>
+    <h2 class="sec-title an" style="--i:1">认识表单</h2>
+    <div class="sec-line an" style="--i:2"></div>
+    <p class="sec-sub an" style="--i:3">没有表单，网页就只有「看」而没有「用」。</p>
+  </div>
+</section>
+
+<section class="slide" data-kind="flow">
+  
+  <header class="s-head">
+    <div class="s-head-left">
+      <div class="kicker an" style="--i:0">原理图解</div>
+      <h2 class="s-title an" style="--i:1">表单的基本原理：一次数据的往返</h2>
+      <p class="s-sub an" style="--i:2">教材原文：表单负责收集、发送和处理用户提供的数据，为 Web 应用提供更多的功能</p>
+    </div>
+  </header>
+  <div class="s-body"><div class="flow"><div class="fl" class="an " style="--i:1">
+          <div class="fl-ico"></div>
+          <div class="fl-t">① 用户输入并提交</div>
+          <div class="fl-d">用户在表单中输入想要提交的信息，这些信息会通过 HTTP 的 <strong>POST 方法或 GET 方法</strong>在服务器和客户端之间传递。</div>
+        </div><div class="fl-arrow" class="an fl-arrow" style="--i:1"></div><div class="fl" class="an " style="--i:2">
+          <div class="fl-ico"></div>
+          <div class="fl-t">② 服务器接收并检查</div>
+          <div class="fl-d">服务器接收并处理，检查信息是否符合要求，例如<strong>检查用户名是否存在、密码是否符合要求</strong>等。</div>
+        </div><div class="fl-arrow" class="an fl-arrow" style="--i:2"></div><div class="fl" class="an " style="--i:3">
+          <div class="fl-ico"></div>
+          <div class="fl-t">③ 分叉处理</div>
+          <div class="fl-d">检查通过 → 将数据<strong>存入数据库</strong>并反馈成功或失败；未通过 → <strong>发送错误消息</strong>，要求用户重新输入。</div>
+        </div><div class="fl-arrow" class="an fl-arrow" style="--i:3"></div><div class="fl" class="an " style="--i:4">
+          <div class="fl-ico"></div>
+          <div class="fl-t">④ 安全兜底</div>
+          <div class="fl-d">有时使用<strong>验证码</strong>防止机器人或恶意程序通过表单提交大量无效内容；还可借助 cookie 控制等手段<strong>防范 XSS 攻击</strong>。</div>
+        </div></div>
+  <div class="flow-note an" style="--i:5">教材图6-19 商品搜索表单用于搜集用户浏览的商品，图6-20 登录表单用于搜集用户的账号信息——这就是表单最典型的两类用途。</div>
+  </div>
+</section>
+
+<section class="slide s-section" data-kind="section">
+  <div class="sec-inner">
+    <div class="sec-num an" style="--i:0">6.5</div>
+    <h2 class="sec-title an" style="--i:1">表单标签</h2>
+    <div class="sec-line an" style="--i:2"></div>
+    <p class="sec-sub an" style="--i:3">form 定范围，input、button、select、textarea 各司其职。</p>
+  </div>
+</section>
+
+<section class="slide" data-kind="codebullets">
+  
+  <header class="s-head">
+    <div class="s-head-left">
+      <div class="kicker an" style="--i:0">代码与要点</div>
+      <h2 class="s-title an" style="--i:1">form 标签：给数据划一个「围墙」</h2>
+      <p class="s-sub an" style="--i:2">教材原文：form 标签有两个作用——限定表单范围、定义提交方式与后台处理程序</p>
+    </div>
+  </header>
+  <div class="s-body two">
+    <div class="col-l"><ul class="blist small dense"><li class="an " style="--i:1"><span class="bl-dot"></span><span>作用一：<strong>限定表单的范围</strong>，定义一个特定区域容纳表单的相关控件；单击提交按钮时，<strong>该区域内的所有数据都将被提交给服务器</strong>。</span></li><li class="an " style="--i:2"><span class="bl-dot"></span><span>作用二：利用该标签的相关属性<strong>定义提交方式、指定后台处理程序</strong>。</span></li><li class="an " style="--i:3"><span class="bl-dot"></span><span><code>name</code>：指定表单名称，该名称<strong>同时作为表单的变量</strong>。</span></li><li class="an " style="--i:4"><span class="bl-dot"></span><span><code>method</code>：定义表单数据从客户端传送到服务器的方法，主要包括 GET 与 POST，<strong>默认使用 GET 方法</strong>。</span></li><li class="an " style="--i:5"><span class="bl-dot"></span><span><code>action</code>：指定<strong>处理表单的服务端程序</strong>；<code>onsubmit</code>：指定处理表单的脚本函数。</span></li><li class="an " style="--i:6"><span class="bl-dot"></span><span><code>enctype</code>：设置 MIME 类型，默认值为 <code>application/x-www-form-urlencoded</code>；<strong>上传文件时必须改为 multipart/form-data</strong>。</span></li><li class="an " style="--i:7"><span class="bl-dot"></span><span><code>target</code>：与 <code>a</code> 标签的 target 类似，规定在何处打开 action URL。</span></li></ul></div>
+    <div class="col-r"><div class="codebox" class="an " style="--i:1">
+      <div class="cb-bar"><span class="cb-lang">HTML</span>
+      <span class="cb-file">form 语法</span></div>
+      <pre class="cb-code"><span class="pn">&lt;</span><span class="tg">form</span> name=&quot;表单名称&quot; method=&quot;提交方式&quot; action=&quot;服务端程序&quot;<span class="pn">&gt;</span>
+…
+<span class="pn">&lt;/</span><span class="tg">form</span><span class="pn">&gt;</span></pre></div></div>
+  </div>
+</section>
+
+<section class="slide" data-kind="compare">
+  
+  <header class="s-head">
+    <div class="s-head-left">
+      <div class="kicker an" style="--i:0">对比辨析</div>
+      <h2 class="s-title an" style="--i:1">GET 与 POST，别选错</h2>
+      <p class="s-sub an" style="--i:2">教材问答要点 + 技巧：什么情况下必须用、什么时候建议用</p>
+    </div>
+  </header>
+  <div class="s-body"><div class="cmp-wrap"><div class="cmp cmp-a">
+          <div class="cmp-h">GET 方法</div>
+          <ul><li class="an " style="--i:1">把表单内容<strong>附加到 URL 后面</strong>传送</li><li class="an " style="--i:2">浏览器厂商对 URL 长度有限制，例如 <strong>IE 浏览器最大限制 2083 个字符</strong>，超出则提交按钮没有任何反应</li><li class="an " style="--i:3"><strong>不具有保密性</strong>，不适合处理密码、银行卡卡号等保密内容</li><li class="an " style="--i:4"><strong>不能传送非 ASCII 码的字符</strong></li><li class="an " style="--i:5">教材建议：<strong>执行搜索操作时，建议使用 GET 方法</strong></li></ul></div><div class="cmp cmp-b">
+          <div class="cmp-h">POST 方法</div>
+          <ul><li class="an " style="--i:3">把用户填写的数据<strong>包含在表单的主体中</strong>传送给处理程序</li><li class="an " style="--i:4"><strong>没有字符数和字符类型的限制</strong>，包含了 ISO 10646 中的所有字符</li><li class="an " style="--i:5">所传送的数据<strong>不会显示在浏览器的地址栏中</strong></li><li class="an " style="--i:6">教材要求：当数据涉及<strong>保密内容时，必须使用 POST 方法</strong></li><li class="an " style="--i:7">教材建议：<strong>执行插入或更新数据库操作时，建议使用 POST 方法</strong></li></ul></div></div></div>
+</section>
+
+<section class="slide" data-kind="demo">
+  
+  <header class="s-head">
+    <div class="s-head-left">
+      <div class="kicker an" style="--i:0">效果演示</div>
+      <h2 class="s-title an" style="--i:1">效果演示｜input 控件的真实可交互形态</h2>
+      <p class="s-sub an" style="--i:2">把教材表6-8 的 10 种 type 取值全部摆到桌面上，亲手点一点</p>
+    </div>
+  </header>
+  <div class="s-body two demo">
+    <div class="col-l"><ul class="blist small"><li class="an " style="--i:1"><span class="bl-dot"></span><span>左侧一列是<strong>文本类</strong>控件：<code>text</code>、<code>password</code>，以及 <code>readonly</code>、<code>disabled</code> 两种状态。</span></li><li class="an " style="--i:2"><span class="bl-dot"></span><span>中间一列是<strong>选择类</strong>控件：<code>radio</code> 靠同名 name 互斥，<code>checkbox</code> 可多选，<code>file</code> 用于上传。</span></li><li class="an " style="--i:3"><span class="bl-dot"></span><span>右侧一列是<strong>按钮类</strong>控件与文本域：<code>submit</code> / <code>reset</code> / <code>button</code>，以及 <code>button</code> 标签与 <code>textarea</code>。</span></li><li class="an " style="--i:4"><span class="bl-dot"></span><span>底部的滑块 <code>range</code> 是 HTML5 新增类型，<strong>教材表6-8 未列出</strong>，实际项目中很常用。</span></li></ul>
+      <div class="hint an" style="--i:5"><b>动手试试：</b>点击中间一列的文字（而不是圆圈或方框）试试看——这正是本单元后面要讲的 label 标签带来的体验提升。</div>
+    </div>
+    <div class="col-r"><iframe class="demo-frame" title="效果预览" srcdoc="&lt;style&gt;*{box-sizing:border-box}body{margin:0;font-family:&#x27;PingFang SC&#x27;,system-ui,sans-serif;background:linear-gradient(150deg,#eef4ff,#f6fbff);padding:12px 14px;font-size:12px;color:#3d4d64}.u16{display:flex;gap:12px}.u16 .col{flex:1;background:#fff;border:1px solid #e2e8f2;border-radius:12px;padding:10px 12px;box-shadow:0 14px 30px -20px rgba(20,40,90,.45);animation:u16r .5s both}.u16 .col:nth-child(2){animation-delay:.12s}.u16 .col:nth-child(3){animation-delay:.24s}.u16 h4{margin:0 0 8px;font-size:12.5px;color:#1d46b8;border-left:3px solid #2f6bff;padding-left:6px}.u16 p{margin:0 0 9px;line-height:1.9}.u16 .k{display:inline-block;min-width:56px;color:#7b8ba1}.u16 input[type=text],.u16 input[type=password]{width:120px;padding:4px 6px;border:1px solid #cfd9e8;border-radius:5px;outline:0;font-size:12px;transition:border-color .25s,box-shadow .25s}.u16 input[type=text]:focus,.u16 input[type=password]:focus{border-color:#2f6bff;box-shadow:0 0 0 3px rgba(47,107,255,.16)}.u16 input[type=text][readonly],.u16 input[disabled]{background:#f2f5fa;color:#9aa7b8}.u16 .btnrow{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px}.u16 .btnrow input,.u16 .btnrow button{padding:5px 10px;font-size:11.5px;border-radius:5px;border:1px solid #c9d6e8;background:#f7f9fd;color:#3d4d64;cursor:pointer;transition:background .25s,color .25s}.u16 .btnrow input[type=submit],.u16 .btnrow button[type=submit]{background:#2f6bff;border-color:#2f6bff;color:#fff}.u16 .btnrow input:hover,.u16 .btnrow button:hover{background:#eaf1ff}.u16 textarea{width:100%;height:46px;padding:4px 6px;border:1px solid #cfd9e8;border-radius:5px;resize:none;font-size:11.5px;outline:0;font-family:inherit}.u16 select{padding:3px 5px;border:1px solid #cfd9e8;border-radius:5px;font-size:11.5px}.u16 input[type=range]{width:100%;accent-color:#2f6bff}.u16 .lb{margin-right:8px;cursor:pointer}.u16 .tip{width:100%;margin-top:9px;font-size:11px;color:#7b8ba1;text-align:center;animation:u16r .5s .4s both}.u16 code{background:#eef3fb;padding:1px 4px;border-radius:4px;color:#1d46b8}@keyframes u16r{from{opacity:0;transform:translateY(12px)}}&lt;/style&gt;
+&lt;div class=&#x27;u16&#x27;&gt;
+&lt;div class=&#x27;col&#x27;&gt;
+&lt;h4&gt;文本类&lt;/h4&gt;
+&lt;p&gt;&lt;span class=&#x27;k&#x27;&gt;文本框&lt;/span&gt;&lt;input type=&#x27;text&#x27; placeholder=&#x27;请输入用户名&#x27;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;span class=&#x27;k&#x27;&gt;密码框&lt;/span&gt;&lt;input type=&#x27;password&#x27; value=&#x27;123456&#x27;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;span class=&#x27;k&#x27;&gt;只读&lt;/span&gt;&lt;input type=&#x27;text&#x27; value=&#x27;不可修改&#x27; readonly&gt;&lt;/p&gt;
+&lt;p&gt;&lt;span class=&#x27;k&#x27;&gt;禁用&lt;/span&gt;&lt;input type=&#x27;text&#x27; value=&#x27;已禁用&#x27; disabled&gt;&lt;/p&gt;
+&lt;p&gt;&lt;span class=&#x27;k&#x27;&gt;滑块&lt;/span&gt;&lt;input type=&#x27;range&#x27; min=&#x27;0&#x27; max=&#x27;100&#x27; value=&#x27;65&#x27;&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&#x27;col&#x27;&gt;
+&lt;h4&gt;选择类&lt;/h4&gt;
+&lt;p&gt;&lt;span class=&#x27;k&#x27;&gt;单选&lt;/span&gt;&lt;label class=&#x27;lb&#x27;&gt;&lt;input type=&#x27;radio&#x27; name=&#x27;u16g&#x27; checked&gt;男&lt;/label&gt;&lt;label class=&#x27;lb&#x27;&gt;&lt;input type=&#x27;radio&#x27; name=&#x27;u16g&#x27;&gt;女&lt;/label&gt;&lt;/p&gt;
+&lt;p&gt;&lt;span class=&#x27;k&#x27;&gt;复选&lt;/span&gt;&lt;label class=&#x27;lb&#x27;&gt;&lt;input type=&#x27;checkbox&#x27; checked&gt;HTML&lt;/label&gt;&lt;label class=&#x27;lb&#x27;&gt;&lt;input type=&#x27;checkbox&#x27; checked&gt;CSS&lt;/label&gt;&lt;/p&gt;
+&lt;p&gt;&lt;span class=&#x27;k&#x27;&gt;文件域&lt;/span&gt;&lt;input type=&#x27;file&#x27;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;span class=&#x27;k&#x27;&gt;下拉&lt;/span&gt;&lt;select&gt;&lt;option&gt;上海&lt;/option&gt;&lt;option selected&gt;北京&lt;/option&gt;&lt;option&gt;东京&lt;/option&gt;&lt;/select&gt;&lt;/p&gt;
+&lt;p&gt;&lt;span class=&#x27;k&#x27;&gt;文本域&lt;/span&gt;&lt;textarea placeholder=&#x27;有什么新鲜事想跟大家分享？&#x27;&gt;&lt;/textarea&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&#x27;col&#x27;&gt;
+&lt;h4&gt;按钮类&lt;/h4&gt;
+&lt;div class=&#x27;btnrow&#x27;&gt;&lt;input type=&#x27;submit&#x27; value=&#x27;submit&#x27;&gt;&lt;input type=&#x27;reset&#x27; value=&#x27;reset&#x27;&gt;&lt;input type=&#x27;button&#x27; value=&#x27;button&#x27;&gt;&lt;/div&gt;
+&lt;div class=&#x27;btnrow&#x27;&gt;&lt;button type=&#x27;submit&#x27;&gt;button 提交&lt;/button&gt;&lt;button type=&#x27;reset&#x27;&gt;button 重置&lt;/button&gt;&lt;/div&gt;
+&lt;p style=&#x27;margin-top:8px;line-height:1.8&#x27;&gt;要点：&lt;br&gt;· &lt;code&gt;radio&lt;/code&gt; 靠&lt;strong&gt;相同的 name&lt;/strong&gt; 实现互斥&lt;br&gt;· 提交的值是 &lt;code&gt;value&lt;/code&gt;，不是显示文本&lt;br&gt;· 文件域需配合 &lt;code&gt;enctype&lt;/code&gt; 与 POST&lt;/p&gt;
+&lt;/div&gt;
+&lt;p class=&#x27;tip&#x27;&gt;教材表6-8 共 10 种 type 取值：text / password / file / hidden / radio / checkbox / submit / button / reset / image&lt;/p&gt;
+&lt;/div&gt;"></iframe></div>
+  </div>
+</section>
+
+<section class="slide" data-kind="table">
+  
+  <header class="s-head">
+    <div class="s-head-left">
+      <div class="kicker an" style="--i:0">对照表</div>
+      <h2 class="s-title an" style="--i:1">表6-8 input 标签 type 属性值（教材完整还原）</h2>
+      <p class="s-sub an" style="--i:2">type 用于设置不同类型的输入元素；name 是服务端程序访问表单元素的变量标识</p>
+    </div>
+  </header>
+  <div class="s-body"><div class="tbl-wrap">
+    <table class="tbl"><thead><tr><th>属性值</th><th>描述</th><th>关键提示</th></tr></thead><tbody><tr class="an " style="--i:1"><td><code>text</code></td><td>文本框</td><td>创建<strong>单行</strong>输入文本框，输入内容以<strong>明文</strong>形式显示</td></tr><tr class="an " style="--i:2"><td><code>password</code></td><td>密码框</td><td>使用 <strong>* 符号或 ● 符号</strong>回显输入的字符，起到保密作用</td></tr><tr class="an " style="--i:3"><td><code>file</code></td><td>文件域</td><td>上传本地文件；<strong>必须</strong>给 form 加 <code>enctype='multipart/form-data'</code> 并用 <strong>POST</strong> 提交</td></tr><tr class="an " style="--i:4"><td><code>hidden</code></td><td>隐藏域</td><td>在不同页面之间<strong>隐式传递数据</strong>；必须同时提供 type、name、value 三个属性</td></tr><tr class="an " style="--i:5"><td><code>radio</code></td><td>单选按钮</td><td>靠<strong>相同的 name</strong> 实现排他性；必须提供 type、name、value</td></tr><tr class="an " style="--i:6"><td><code>checkbox</code></td><td>复选框</td><td>在一组选项中<strong>多项选择</strong>；<strong>同一组复选框必须使用相同的 name</strong></td></tr><tr class="an " style="--i:7"><td><code>submit</code></td><td>提交按钮</td><td>触发整个表单，把内容提交到 form 的 action 所指定的服务端程序</td></tr><tr class="an " style="--i:8"><td><code>button</code></td><td>普通按钮</td><td>需配合 <strong>JavaScript 脚本</strong>执行处理操作，<code>onclick</code> 是常见事件属性</td></tr><tr class="an " style="--i:9"><td><code>reset</code></td><td>重置按钮</td><td>清除表单中所输入的内容，恢复到加载页面时的最初状态</td></tr><tr class="an " style="--i:10"><td><code>image</code></td><td>图像按钮</td><td><code>src</code> 为必须设置的属性；教材建议使用 <strong>CSS 美化普通按钮</strong>来替代它</td></tr></tbody></table>
+  </div></div>
+</section>
+
+<section class="slide" data-kind="codebullets">
+  
+  <header class="s-head">
+    <div class="s-head-left">
+      <div class="kicker an" style="--i:0">代码与要点</div>
+      <h2 class="s-title an" style="--i:1">文本框、密码框、文件域与隐藏域</h2>
+      <p class="s-sub an" style="--i:2">四类最基础的 input 变体，语法只差一个 type</p>
+    </div>
+  </header>
+  <div class="s-body two">
+    <div class="col-l"><ul class="blist small dense"><li class="an " style="--i:1"><span class="bl-dot"></span><span><strong>文本框</strong>：<code>&lt;input type='text' name='文本框名称'&gt;</code>，输入内容以明文形式显示。</span></li><li class="an " style="--i:2"><span class="bl-dot"></span><span><strong>密码框</strong>：<code>&lt;input type='password'&gt;</code>，用 * 或 ● 回显字符以保密。</span></li><li class="an " style="--i:3"><span class="bl-dot"></span><span><strong>文件域</strong>：<code>&lt;input type='file' name='avatarPic'&gt;</code>，服务端通过 name 变量名获取文件数据。</span></li><li class="an " style="--i:4"><span class="bl-dot"></span><span><strong>隐藏域</strong>：<code>&lt;input type='hidden' name='域名称' value='域值'&gt;</code>，数据以<strong>键值对</strong>形式提供：name 是键，value 是值。</span></li><li class="an " style="--i:5"><span class="bl-dot"></span><span><strong>常见编程错误：</strong>name 属性值错误地使用了中文，或不符合标识符的定义；隐藏域<strong>未提供 name 和 value 属性</strong>。</span></li><li class="an " style="--i:6"><span class="bl-dot"></span><span>HTML5 简化写法：<code>readonly='readonly'</code> 可简写为 <code>readonly</code>，<code>disabled='disabled'</code> 可简写为 <code>disabled</code>——这是<strong>布尔属性</strong>的简化写法。</span></li></ul></div>
+    <div class="col-r"><div class="codebox" class="an " style="--i:1">
+      <div class="cb-bar"><span class="cb-lang">HTML</span>
+      <span class="cb-file">文本框常用属性（教材表6-9）</span></div>
+      <pre class="cb-code"><span class="pn">&lt;</span><span class="tg">input</span> type=&quot;text&quot; name=&quot;文本框名称&quot;<span class="pn">&gt;</span>
+
+属性：
+  maxlength   设置文本框中可以输入的最大字符数
+  size        控制文本框的长度，单位是像素，默认值为 20 像素
+  value       设置文本框的默认值
+  placeholder 规定可描述输入字段预期值的简短提示信息
+  readonly    规定该文本框为只读状态
+  disabled    规定应该禁用该 input 标签</pre></div></div>
+  </div>
+</section>
+
+<section class="slide" data-kind="codebullets">
+  
+  <header class="s-head">
+    <div class="s-head-left">
+      <div class="kicker an" style="--i:0">代码与要点</div>
+      <h2 class="s-title an" style="--i:1">单选按钮与复选框</h2>
+      <p class="s-sub an" style="--i:2">教材代码6-4、代码6-5：一组 gender，一组 astr</p>
+    </div>
+  </header>
+  <div class="s-body two">
+    <div class="col-l"><ul class="blist small dense"><li class="an " style="--i:1"><span class="bl-dot"></span><span><code>value</code>：被选中后<strong>传递到服务端的变量值</strong>；<code>checked</code>：默认被选中，不指定则无默认选项。</span></li><li class="an " style="--i:2"><span class="bl-dot"></span><span><strong>单选按钮的排他性通过相同的 name 实现。</strong>服务端读到的是 <code>value</code>（<code>male</code>/<code>female</code>），<strong>而不是显示文本「男」「女」</strong>。</span></li><li class="an " style="--i:3"><span class="bl-dot"></span><span><strong>常见编程错误：</strong>单选按钮必须提供 type、name、value 三个属性，缺少任何一个都无法构成完整的单选按钮。</span></li><li class="an " style="--i:4"><span class="bl-dot"></span><span>复选框用法与单选按钮非常类似，<strong>区别在于单选按钮具有排他性，而复选框允许用户多选</strong>。</span></li><li class="an " style="--i:5"><span class="bl-dot"></span><span><strong>常见编程错误：</strong>同一组复选框使用了不同的 name——<strong>同一组复选框必须使用相同的 name 属性值</strong>。</span></li></ul></div>
+    <div class="col-r"><div class="codebox" class="an " style="--i:1">
+      <div class="cb-bar"><span class="cb-lang">HTML</span>
+      <span class="cb-file">代码6-4 / 代码6-5（教材原文）</span></div>
+      <pre class="cb-code"><span class="c">&lt;!-- 代码6-4 单选按钮示例 --&gt</span>;
+<span class="pn">&lt;</span><span class="tg">form</span> action=&quot;&quot;<span class="pn">&gt;</span>
+    <span class="pn">&lt;</span><span class="tg">input</span> type=&quot;radio&quot; name=&quot;gender&quot; value=&quot;male&quot; checked<span class="pn">&gt;</span>男
+    <span class="pn">&lt;</span><span class="tg">input</span> type=&quot;radio&quot; name=&quot;gender&quot; value=&quot;female&quot;<span class="pn">&gt;</span>女
+<span class="pn">&lt;/</span><span class="tg">form</span><span class="pn">&gt;</span>
+
+<span class="c">&lt;!-- 代码6-5 复选框示例（关键片段） --&gt</span>;
+<span class="pn">&lt;</span><span class="tg">form</span> action=&quot;&quot;<span class="pn">&gt;</span>
+<span class="pn">&lt;</span><span class="tg">p</span><span class="pn">&gt;</span>继杨利伟之后，2005 年，下列哪两名航天员搭乘神舟六号载人飞船，第一次进入轨道舱……<span class="pn">&lt;/</span><span class="tg">p</span><span class="pn">&gt;</span>
+    <span class="pn">&lt;</span><span class="tg">input</span> type=&quot;checkbox&quot; name=&quot;astr&quot; value=&quot;ylw&quot; <span class="pn">/&gt;</span>杨利伟<span class="pn">&lt;</span><span class="tg">br</span><span class="pn">&gt;</span>
+    <span class="pn">&lt;</span><span class="tg">input</span> type=&quot;checkbox&quot; name=&quot;astr&quot; value=&quot;fjl&quot; checked <span class="pn">/&gt;</span>费俊龙<span class="pn">&lt;</span><span class="tg">br</span><span class="pn">&gt;</span>
+    <span class="pn">&lt;</span><span class="tg">input</span> type=&quot;checkbox&quot; name=&quot;astr&quot; value=&quot;nhs&quot; checked <span class="pn">/&gt;</span>聂海胜<span class="pn">&lt;</span><span class="tg">br</span><span class="pn">&gt;</span>
+    <span class="pn">&lt;</span><span class="tg">input</span> type=&quot;checkbox&quot; name=&quot;astr&quot; value=&quot;lbm&quot; <span class="pn">/&gt;</span>刘伯明<span class="pn">&lt;</span><span class="tg">br</span><span class="pn">&gt;</span>
+    <span class="pn">&lt;</span><span class="tg">input</span> type=&quot;checkbox&quot; name=&quot;astr&quot; value=&quot;jhp&quot; <span class="pn">/&gt;</span>景海鹏<span class="pn">&lt;</span><span class="tg">br</span><span class="pn">&gt;</span>
+<span class="pn">&lt;/</span><span class="tg">form</span><span class="pn">&gt;</span></pre></div></div>
+  </div>
+</section>
+
+<section class="slide" data-kind="bullets">
+  
+  <header class="s-head">
+    <div class="s-head-left">
+      <div class="kicker an" style="--i:0">知识要点</div>
+      <h2 class="s-title an" style="--i:1">label 标签：让用户点文字就能选中</h2>
+      <p class="s-sub an" style="--i:2">教材问答：为什么用户必须精确选中文字前面的 ○ 或 □ 才能选中该选项？</p>
+    </div>
+  </header>
+  <div class="s-body"><ul class="blist"><li class="an " style="--i:1"><span class="bl-dot"></span><span>因为缺少 <code>&lt;label&gt;</code>。该标签<strong>专门用于 input 标签</strong>，用户只要单击 label，就可以实现对应 input 的<strong>聚焦</strong>。</span></li><li class="an " style="--i:2"><span class="bl-dot"></span><span><strong>第一种：隐藏式（隐式绑定）</strong>——label 与 input 以<strong>父子嵌套</strong>关系形成隐式绑定：<br><code>&lt;label&gt;&lt;input type='radio' name='gender'&gt;男&lt;/label&gt;</code></span></li><li class="an " style="--i:3"><span class="bl-dot"></span><span><strong>第二种：指定式（显式绑定）</strong>——为 input 添加<strong>唯一的 id</strong>，在 label 中使用 <code>for</code> 属性实现显式绑定：<br><code>&lt;input id='lbm'&gt;&lt;label for='lbm'&gt;刘伯明&lt;/label&gt;</code></span></li><li class="an " style="--i:4"><span class="bl-dot"></span><span><strong>常见编程错误：</strong>使用指定式绑定时，<code>for</code> 属性值对应的是 input 的 <strong>id 属性值</strong>，<strong>而不是 name 属性值</strong>——这是初学者最常踩的坑。</span></li></ul></div>
+</section>
+
+<section class="slide" data-kind="task">
+  
+  <header class="s-head">
+    <div class="s-head-left">
+      <div class="kicker an" style="--i:0">任务驱动</div>
+      <h2 class="s-title an" style="--i:1">任务6-3｜input 标签的综合示例</h2>
+      <p class="s-sub an" style="--i:2">目标：制作一个简单的登录表单，具有重置、提交、图像、普通四类按钮（图6-23）</p>
+    </div>
+  </header>
+  <div class="s-body two">
+    <div class="col-l">
+      <div class="task-goal an" style="--i:1"><span class="tg-label">任务目标</span>根据上述 input 标签的相关知识制作登录表单；单击「删除用户」按钮后执行 onclick 函数（图6-24）。</div>
+      <ol class="task-steps"><li class="an " style="--i:2">用 <code>form</code> 划定表单范围，内部依次放置用户名文本框与密码框。</li><li class="an " style="--i:3">用 <code>size</code> 指定文本框长度，用 <strong>HTML5 新增属性</strong> <code>placeholder</code> 描述提示文字。</li><li class="an " style="--i:4">放置 <code>reset</code> 重置按钮与 <code>submit</code> 提交按钮。</li><li class="an " style="--i:5">放置 <code>button</code> 普通按钮，并为其提供 <code>onclick</code> 属性，指定由 <code>deluser()</code> 函数执行。</li><li class="an " style="--i:6">放置 <code>image</code> 图像按钮，使用素材 <code>image/btn_bg.png</code>。</li></ol>
+    </div>
+    <div class="col-r"><div class="task-code" class="an " style="--i:7">
+          <pre class="cb-code"><span class="pn">&lt;</span><span class="tg">head</span><span class="pn">&gt;</span>
+    <span class="pn">&lt;</span><span class="tg">meta</span> charset=&quot;utf-8&quot;<span class="pn">&gt;</span>
+    <span class="pn">&lt;</span><span class="tg">title</span><span class="pn">&gt;</span>input 按钮<span class="pn">&lt;/</span><span class="tg">title</span><span class="pn">&gt;</span>
+    <span class="pn">&lt;</span><span class="tg">script</span><span class="pn">&gt;</span>
+        function deluser(){
+            if(confirm(&quot;确定删除当前用户?&quot;))
+                console.log(&quot;用户已删除!&quot;);
+        }
+    <span class="pn">&lt;/</span><span class="tg">script</span><span class="pn">&gt;</span>
+<span class="pn">&lt;/</span><span class="tg">head</span><span class="pn">&gt;</span>
+<span class="pn">&lt;</span><span class="tg">body</span><span class="pn">&gt;</span>
+<span class="pn">&lt;</span><span class="tg">form</span> action=&quot;&quot;<span class="pn">&gt;</span>
+    用户名:<span class="pn">&lt;</span><span class="tg">input</span> type=&quot;text&quot; name=&quot;username&quot;  size=&quot;50&quot; placeholder=&quot;输入8 位字母数字组合&quot; <span class="pn">/&gt;</span><span class="pn">&lt;</span><span class="tg">br</span><span class="pn">&gt;</span>
+    密码:<span class="pn">&lt;</span><span class="tg">input</span> type=&quot;password&quot; name=&quot;password&quot; size=&quot;50&quot;  placeholder=&quot;输入6 位密码&quot; <span class="pn">/&gt;</span><span class="pn">&lt;</span><span class="tg">br</span><span class="pn">&gt;</span>
+    <span class="pn">&lt;</span><span class="tg">input</span> type=&quot;reset&quot; value=&quot;重置&quot;<span class="pn">&gt;</span><span class="pn">&lt;</span><span class="tg">input</span> type=&quot;submit&quot; value=&quot;登录&quot;<span class="pn">&gt;</span><span class="pn">&lt;</span><span class="tg">br</span><span class="pn">&gt;</span>
+    <span class="pn">&lt;</span><span class="tg">input</span> type=&quot;button&quot; value=&quot;删除用户&quot; onclick=&quot;deluser()&quot;<span class="pn">&gt;</span>
+    <span class="pn">&lt;</span><span class="tg">input</span> type=&quot;image&quot; src=&quot;image/btn_bg.png&quot; alt=&quot;图片按钮&quot; name=&quot;imageBtn&quot; width=&quot;100&quot;<span class="pn">&gt;</span>
+<span class="pn">&lt;/</span><span class="tg">form</span><span class="pn">&gt;</span>
+<span class="pn">&lt;/</span><span class="tg">body</span><span class="pn">&gt;</span></pre></div></div>
+  </div>
+</section>
+
+<section class="slide" data-kind="code">
+  
+  <header class="s-head">
+    <div class="s-head-left">
+      <div class="kicker an" style="--i:0">代码示例</div>
+      <h2 class="s-title an" style="--i:1">button 标签：让按钮里能装下任何东西</h2>
+      <p class="s-sub an" style="--i:2">教材 6.5.2：input 构成的按钮内容只能是文本；button 里可以放文字、图片、动画</p>
+    </div>
+  </header>
+  <div class="s-body col"><div class="codebox" class="an " style="--i:1">
+      <div class="cb-bar"><span class="cb-lang">HTML</span>
+      <span class="cb-file">代码6-7（教材原文）</span></div>
+      <pre class="cb-code"><span class="pn">&lt;</span><span class="tg">button</span> type=&quot;submit|button|reset&quot; name=&quot;按钮名称&quot; value=&quot;初始值&quot;<span class="pn">&gt;</span>文本|图片|…<span class="pn">&lt;/</span><span class="tg">button</span><span class="pn">&gt;</span>
+
+<span class="c">&lt;!-- 代码6-7 使用 button 标签 --&gt</span>;
+<span class="pn">&lt;</span><span class="tg">form</span> action=&quot;&quot;<span class="pn">&gt;</span>
+    用户名:<span class="pn">&lt;</span><span class="tg">input</span> type=&quot;text&quot; name=&quot;username&quot;  size=&quot;50&quot; placeholder=&quot;输入8 位字母数字组合&quot; <span class="pn">/&gt;</span><span class="pn">&lt;</span><span class="tg">br</span><span class="pn">&gt;</span>
+    密码:<span class="pn">&lt;</span><span class="tg">input</span> type=&quot;password&quot; name=&quot;password&quot; size=&quot;50&quot;  placeholder=&quot;输入6 位密码&quot; <span class="pn">/&gt;</span><span class="pn">&lt;</span><span class="tg">br</span><span class="pn">&gt;</span>
+    <span class="pn">&lt;</span><span class="tg">button</span> type=&quot;submit&quot;<span class="pn">&gt;</span>登录<span class="pn">&lt;/</span><span class="tg">button</span><span class="pn">&gt;</span><span class="pn">&lt;</span><span class="tg">button</span> type=&quot;reset&quot;<span class="pn">&gt;</span>重置<span class="pn">&lt;/</span><span class="tg">button</span><span class="pn">&gt;</span><span class="pn">&lt;</span><span class="tg">br</span><span class="pn">&gt;</span>
+    <span class="pn">&lt;</span><span class="tg">button</span> type=&quot;button&quot; onclick=&quot;deluser()&quot;<span class="pn">&gt;</span>删除用户<span class="pn">&lt;/</span><span class="tg">button</span><span class="pn">&gt;</span>
+    <span class="pn">&lt;</span><span class="tg">button</span><span class="pn">&gt;</span><span class="pn">&lt;</span><span class="tg">img</span> src=&quot;image/btn_bg.png&quot; alt=&quot;图片按钮&quot; width=&quot;100&quot;<span class="pn">&gt;</span><span class="pn">&lt;/</span><span class="tg">button</span><span class="pn">&gt;</span>
+<span class="pn">&lt;/</span><span class="tg">form</span><span class="pn">&gt;</span></pre>
+    </div>
+    <div class="caption an" style="--i:2">注意：<strong>W3C 浏览器中 button 的 type 默认为 submit</strong>，而 <strong>IE9 以前版本的 IE 浏览器中默认为 button</strong>——所以实际开发中请<strong>显式写出 type</strong>。对图片按钮而言，直接把 <code>img</code> 作为 <code>button</code> 的子元素，比用 <code>input type='image'</code> 更方便直观。</div>
+  </div>
+</section>
+
+<section class="slide" data-kind="codebullets">
+  
+  <header class="s-head">
+    <div class="s-head-left">
+      <div class="kicker an" style="--i:0">代码与要点</div>
+      <h2 class="s-title an" style="--i:1">select 标签：列表框与下拉列表是同一套标签</h2>
+      <p class="s-sub an" style="--i:2">教材 6.5.3：下拉列表是「一次只能显示和选择一个选项」的特殊列表框</p>
+    </div>
+  </header>
+  <div class="s-body two">
+    <div class="col-l"><ul class="blist small dense"><li class="an " style="--i:1"><span class="bl-dot"></span><span><strong>列表框</strong>允许用户从选项列表中选择一项或几项，等效于单选按钮（单选时）或复选框（多选时）；选项较多时可<strong>节省很大的空间</strong>。</span></li><li class="an " style="--i:2"><span class="bl-dot"></span><span><code>select</code> 用于声明列表框，指定选项是否可多选、一次可显示几个选项；<code>option</code> 用于设置<strong>选项值 value</strong> 及是否为<strong>默认选项 selected</strong>。</span></li><li class="an " style="--i:3"><span class="bl-dot"></span><span>可选属性 <code>multiple</code> 实现多选效果：不添加时只能选择一个，添加时可选择多个。</span></li><li class="an " style="--i:4"><span class="bl-dot"></span><span><strong>下拉列表</strong>不给 select 添加 size 和 multiple 属性即可——因为 <code>size 属性值默认为 1</code>，可理解为「当前列表框只显示一个选项的<strong>退化情况</strong>」。</span></li><li class="an " style="--i:5"><span class="bl-dot"></span><span><strong>教材问答：</strong>select 的 name 属性值就是整个列表的<strong>变量名</strong>；提交时提交的是 option 的 <code>value</code> 属性值，后端根据 name 读取即可。</span></li></ul></div>
+    <div class="col-r"><div class="codebox" class="an " style="--i:1">
+      <div class="cb-bar"><span class="cb-lang">HTML</span>
+      <span class="cb-file">代码6-8 / 代码6-9（教材原文）</span></div>
+      <pre class="cb-code"><span class="c">&lt;!-- 代码6-8 列表框：size 指定显示数目，multiple 支持多选 --&gt</span>;
+<span class="pn">&lt;</span><span class="tg">select</span> name=&quot;astr&quot; size=&quot;6&quot; multiple=&quot;multiple&quot;<span class="pn">&gt;</span>
+    <span class="pn">&lt;</span><span class="tg">option</span> value=&quot;ylw&quot;<span class="pn">&gt;</span>杨利伟<span class="pn">&lt;/</span><span class="tg">option</span><span class="pn">&gt;</span>
+    <span class="pn">&lt;</span><span class="tg">option</span> value=&quot;fjl&quot; selected=&quot;selected&quot;<span class="pn">&gt;</span>费俊龙<span class="pn">&lt;/</span><span class="tg">option</span><span class="pn">&gt;</span>
+    <span class="pn">&lt;</span><span class="tg">option</span> value=&quot;nhs&quot;<span class="pn">&gt;</span>聂海胜<span class="pn">&lt;/</span><span class="tg">option</span><span class="pn">&gt;</span>
+    <span class="pn">&lt;</span><span class="tg">option</span> value=&quot;lbm&quot;<span class="pn">&gt;</span>刘伯明<span class="pn">&lt;/</span><span class="tg">option</span><span class="pn">&gt;</span>
+    <span class="pn">&lt;</span><span class="tg">option</span> value=&quot;jhp&quot;<span class="pn">&gt;</span>景海鹏<span class="pn">&lt;/</span><span class="tg">option</span><span class="pn">&gt;</span>
+<span class="pn">&lt;/</span><span class="tg">select</span><span class="pn">&gt;</span>
+
+<span class="c">&lt;!-- 代码6-9 下拉列表：不写 size 与 multiple --&gt</span>;
+<span class="pn">&lt;</span><span class="tg">select</span> name=&quot;city&quot; size=&quot;1&quot;<span class="pn">&gt;</span>
+    <span class="pn">&lt;</span><span class="tg">option</span> value=&quot;shanghai&quot;<span class="pn">&gt;</span>上海<span class="pn">&lt;/</span><span class="tg">option</span><span class="pn">&gt;</span>
+    <span class="pn">&lt;</span><span class="tg">option</span> value=&quot;beijing&quot; selected=&quot;selected&quot;<span class="pn">&gt;</span>北京<span class="pn">&lt;/</span><span class="tg">option</span><span class="pn">&gt;</span>
+    <span class="pn">&lt;</span><span class="tg">option</span> value=&quot;newyork&quot;<span class="pn">&gt;</span>纽约<span class="pn">&lt;/</span><span class="tg">option</span><span class="pn">&gt;</span>
+    <span class="pn">&lt;</span><span class="tg">option</span> value=&quot;tokyo&quot;<span class="pn">&gt;</span>东京<span class="pn">&lt;/</span><span class="tg">option</span><span class="pn">&gt;</span>
+<span class="pn">&lt;/</span><span class="tg">select</span><span class="pn">&gt;</span></pre></div></div>
+  </div>
+</section>
+
+<section class="slide" data-kind="codebullets">
+  
+  <header class="s-head">
+    <div class="s-head-left">
+      <div class="kicker an" style="--i:0">代码与要点</div>
+      <h2 class="s-title an" style="--i:1">textarea 标签：多行文本域</h2>
+      <p class="s-sub an" style="--i:2">教材 6.5.4：文本框只能单行显示，内容较多时改用文本域</p>
+    </div>
+  </header>
+  <div class="s-body two">
+    <div class="col-l"><ul class="blist small dense"><li class="an " style="--i:1"><span class="bl-dot"></span><span>语法：<code>&lt;textarea name='文本域名' rows='行数' cols='列数'&gt;…（此处输入默认文字）&lt;/textarea&gt;</code>。</span></li><li class="an " style="--i:2"><span class="bl-dot"></span><span><code>rows</code> 指定行数、<code>cols</code> 指定列数；也可使用 HTML5 新属性 <code>placeholder</code> 添加提示文字。</span></li><li class="an " style="--i:3"><span class="bl-dot"></span><span><strong>默认文字 vs placeholder（教材问答）：</strong>如果<strong>仅添加提示文字</strong>，那么该变量的值<strong>仍为空</strong>；如果<strong>仅添加默认文字</strong>，那么变量的值就是用户添加的默认文字。</span></li><li class="an " style="--i:4"><span class="bl-dot"></span><span>一句话记忆：<strong>placeholder 仅起提示作用，不影响提交的值</strong>；而默认文字<strong>会影响提交给服务器的值</strong>，相当于对变量进行了初始化。</span></li></ul></div>
+    <div class="col-r"><div class="codebox" class="an " style="--i:1">
+      <div class="cb-bar"><span class="cb-lang">HTML</span>
+      <span class="cb-file">代码6-10（教材原文）</span></div>
+      <pre class="cb-code"><span class="pn">&lt;</span><span class="tg">form</span> action=&quot;&quot;<span class="pn">&gt;</span>
+    <span class="pn">&lt;</span><span class="tg">textarea</span> name=&quot;comments&quot; rows=&quot;5&quot; cols=&quot;20&quot; placeholder=&quot;有什么新鲜事想跟大家分享?&quot;<span class="pn">&gt;</span><span class="pn">&lt;/</span><span class="tg">textarea</span><span class="pn">&gt;</span>
+<span class="pn">&lt;/</span><span class="tg">form</span><span class="pn">&gt;</span></pre></div></div>
+  </div>
+</section>
+
+<section class="slide s-ai" data-kind="ai">
+  
+  <header class="s-head">
+    <div class="s-head-left">
+      <div class="kicker an" style="--i:0">AI 前沿</div>
+      <h2 class="s-title an" style="--i:1">AI 前沿：一句话生成整套表单，但校验规则得你来把关</h2>
+      <p class="s-sub an" style="--i:2">表单是 AI 编码助手最常被调用的场景之一，也最容易「看起来对、实际错」</p>
+    </div>
+  </header>
+  <div class="s-body two">
+    <div class="col-l"><div class="ai-card an" style="--i:1">
+      <div class="ai-badge">AI</div>
+      <p>对 <strong>DeepSeek、通义千问、文心一言</strong> 这类大模型说一句「做一个登录表单」，它能在几秒内输出 HTML 与 CSS。但教学与实践经验都表明：AI 生成的表单常常<strong>缺少 label 关联、缺少合适的 type、忽略 GET/POST 的选择</strong>，甚至把密码用 GET 提交。AI 负责「写得快」，你负责「写对、写稳、写安全」。</p></div></div>
+    <div class="col-r"><ul class="blist small ai-list"><li class="an " style="--i:2">AI 辅助编码：<strong>通义灵码、文心快码、GitHub Copilot</strong> 可在 HBuilderX / VSCode 中根据注释实时补全表单结构。</li><li class="an " style="--i:3">AI 生成校验规则：让 AI 为学号、手机号、邮箱等字段生成正则表达式与提示文案，比手写高效得多。</li><li class="an " style="--i:4">AI 无障碍与合规审查：让 AI 逐项检查 label 是否绑定、必填项是否标注、保密字段是否走 POST。</li><li class="an " style="--i:5">职业提醒：<strong>AI 不会替你承担数据泄露的后果</strong>——method 的选择、enctype 的设置、服务端校验的补全，始终由工程师负责。</li></ul></div>
+  </div>
+</section>
+
+<section class="slide" data-kind="quiz">
+  
+  <header class="s-head">
+    <div class="s-head-left">
+      <div class="kicker an" style="--i:0">随堂检测</div>
+      <h2 class="s-title an" style="--i:1">随堂检测</h2>
+      <p class="s-sub an" style="--i:2">选自教材 6.7 作业选择题，检验你的理解</p>
+    </div>
+  </header>
+  <div class="s-body quiz-body">
+    <div class="quiz-top an" style="--i:0">
+      <span class="quiz-meta">共 <b>5</b> 题　·　先独立作答，再点「查看答案」；误点可「重做」</span>
+      <span class="quiz-acts">
+        <button type="button" class="q-reset-all" id="quizResetAll">全部重做</button>
+        <button type="button" class="q-reveal" id="quizReveal">显示全部答案</button>
+      </span>
+    </div>
+    <ol class="quiz dense"><li class="quiz-item single" class="an " style="--i:1" data-type="single" data-answer="B">
+          <div class="q"><span class="q-no">01</span>
+            <span class="q-tag single">单选</span><span class="q-txt">下列属性中，属于表单标签的是（　　）。</span></div>
+          <div class="opts"><button type="button" class="opt" data-k="A"><i>A</i><span>table</span></button><button type="button" class="opt" data-k="B"><i>B</i><span>form</span></button><button type="button" class="opt" data-k="C"><i>C</i><span>action</span></button><button type="button" class="opt" data-k="D"><i>D</i><span>input</span></button></div>
+          <div class="q-foot"><button type="button" class="q-check">查看答案</button>
+            <button type="button" class="q-reset" disabled>重做</button>
+            <span class="q-verdict"></span></div>
+          <div class="q-ans"><b>答案</b><span class="ans-key">B</span><span class="ans-tip">table 是表格标签，action 是 form 的属性，input 是表单控件标签；只有 form 才是「表单标签」本身。</span></div>
+        </li><li class="quiz-item single" class="an " style="--i:2" data-type="single" data-answer="B">
+          <div class="q"><span class="q-no">02</span>
+            <span class="q-tag single">单选</span><span class="q-txt">关于表单提交，说法不正确的是（　　）。</span></div>
+          <div class="opts"><button type="button" class="opt" data-k="A"><i>A</i><span>表单提交通常需要通过 action 属性指定后台处理程序</span></button><button type="button" class="opt" data-k="B"><i>B</i><span>要以 GET 方法进行提交，应将其 action 属性值设置为 GET</span></button><button type="button" class="opt" data-k="C"><i>C</i><span>通过 method="POST" 可以指定 POST 方法</span></button><button type="button" class="opt" data-k="D"><i>D</i><span>GET 方法的特点是值会以请求的参数形式在地址栏中显示</span></button></div>
+          <div class="q-foot"><button type="button" class="q-check">查看答案</button>
+            <button type="button" class="q-reset" disabled>重做</button>
+            <span class="q-verdict"></span></div>
+          <div class="q-ans"><b>答案</b><span class="ans-key">B</span><span class="ans-tip">提交方式由 method 属性指定，而不是 action；action 用于指定处理表单的服务端程序。</span></div>
+        </li><li class="quiz-item single" class="an " style="--i:3" data-type="single" data-answer="B">
+          <div class="q"><span class="q-no">03</span>
+            <span class="q-tag single">单选</span><span class="q-txt">在同一组单选按钮中，实现「互斥」效果的关键是（　　）。</span></div>
+          <div class="opts"><button type="button" class="opt" data-k="A"><i>A</i><span>使用相同的 id</span></button><button type="button" class="opt" data-k="B"><i>B</i><span>使用相同的 name</span></button><button type="button" class="opt" data-k="C"><i>C</i><span>使用相同的 value</span></button><button type="button" class="opt" data-k="D"><i>D</i><span>使用相同的 class</span></button></div>
+          <div class="q-foot"><button type="button" class="q-check">查看答案</button>
+            <button type="button" class="q-reset" disabled>重做</button>
+            <span class="q-verdict"></span></div>
+          <div class="q-ans"><b>答案</b><span class="ans-key">B</span><span class="ans-tip">单选按钮的排他性通过相同的 name 实现；提交到服务端的是 value，不是显示文本。</span></div>
+        </li><li class="quiz-item single" class="an " style="--i:4" data-type="single" data-answer="C">
+          <div class="q"><span class="q-no">04</span>
+            <span class="q-tag single">单选</span><span class="q-txt">使用 label 标签的指定式绑定时，for 属性值应该对应 input 的（　　）。</span></div>
+          <div class="opts"><button type="button" class="opt" data-k="A"><i>A</i><span>name 属性值</span></button><button type="button" class="opt" data-k="B"><i>B</i><span>value 属性值</span></button><button type="button" class="opt" data-k="C"><i>C</i><span>id 属性值</span></button><button type="button" class="opt" data-k="D"><i>D</i><span>type 属性值</span></button></div>
+          <div class="q-foot"><button type="button" class="q-check">查看答案</button>
+            <button type="button" class="q-reset" disabled>重做</button>
+            <span class="q-verdict"></span></div>
+          <div class="q-ans"><b>答案</b><span class="ans-key">C</span><span class="ans-tip">教材明确提示：for 对应的是 id 而非 name，这是初学者最容易犯的错误。</span></div>
+        </li><li class="quiz-item multi" class="an " style="--i:5" data-type="multi" data-answer="AB">
+          <div class="q"><span class="q-no">05</span>
+            <span class="q-tag multi">多选</span><span class="q-txt">关于表单及其控件，下列说法正确的有（　　）。</span></div>
+          <div class="opts"><button type="button" class="opt" data-k="A"><i>A</i><span>method 属性用于指定提交方式，不写时默认为 GET</span></button><button type="button" class="opt" data-k="B"><i>B</i><span>用 input type="file" 上传文件时，form 的 enctype 必须为 multipart/form-data</span></button><button type="button" class="opt" data-k="C"><i>C</i><span>textarea 的 placeholder 提示文字会作为默认值一并提交给服务器</span></button><button type="button" class="opt" data-k="D"><i>D</i><span>下拉列表提交给服务器的是 option 的显示文本，而不是 value</span></button></div>
+          <div class="q-foot"><button type="button" class="q-check">查看答案</button>
+            <button type="button" class="q-reset" disabled>重做</button>
+            <span class="q-verdict"></span></div>
+          <div class="q-ans"><b>答案</b><span class="ans-key">A、B</span><span class="ans-tip"><code>placeholder</code> 只起提示作用，不影响提交的值；select 提交的是 <code>option</code> 的 <strong>value</strong> 属性值。</span></div>
+        </li></ol>
+  </div>
+</section>
+
+<section class="slide" data-kind="summary">
+  
+  <header class="s-head">
+    <div class="s-head-left">
+      
+      <h2 class="s-title an" style="--i:1">本课小结</h2>
+      <p class="s-sub an" style="--i:2">五句话收好，表单的地基就打稳了</p>
+    </div>
+  </header>
+  <div class="s-body"><ul class="blist"><li class="an " style="--i:1"><span class="bl-dot"></span><span>表单负责<strong>收集、发送和处理用户提供的数据</strong>；<code>form</code> 标签既<strong>限定范围</strong>，又<strong>定义提交方式与后台处理程序</strong>。</span></li><li class="an " style="--i:2"><span class="bl-dot"></span><span><code>method</code> 决定数据怎么走：<strong>GET</strong> 附在 URL 后、不保密、有长度限制、适合搜索；<strong>POST</strong> 放在表单主体中、无限制、不显示、保密内容<strong>必须</strong>用它。</span></li><li class="an " style="--i:3"><span class="bl-dot"></span><span><code>input</code> 靠 <code>type</code> 变形：text、password、file、hidden、radio、checkbox、submit、button、reset、image 共 10 种。</span></li><li class="an " style="--i:4"><span class="bl-dot"></span><span><strong>单选靠同名 name 互斥</strong>，<strong>复选框同组必须同名</strong>；提交的是 <code>value</code>，不是你看到的文字。</span></li><li class="an " style="--i:5"><span class="bl-dot"></span><span><code>label</code> 有<strong>隐藏式（嵌套）</strong>与<strong>指定式（for + id）</strong>两种绑定；<code>button</code> 比 <code>input</code> 更能装，图片按钮直接放 <code>img</code> 即可。</span></li></ul></div>
+</section>
+
+<section class="slide" data-kind="homework">
+  
+  <header class="s-head">
+    <div class="s-head-left">
+      
+      <h2 class="s-title an" style="--i:1">课后作业</h2>
+      
+    </div>
+  </header>
+  <div class="s-body"><ul class="blist hw"><li class="an " style="--i:1"><span class="bl-dot"></span><span><strong>选择题：</strong>完成教材 6.7「一、选择题」第 4～5 题，并说明每个选项为何对或错。</span></li><li class="an " style="--i:2"><span class="bl-dot"></span><span><strong>操作题：</strong>正确使用表单标签，制作教材图6-40 所示的表单效果；要求单选、复选均使用 label 绑定，必填项给出提示。</span></li><li class="an " style="--i:3"><span class="bl-dot"></span><span><strong>思考题：</strong>在自己的注册页面上，哪些字段必须用 POST 提交？请列出清单并说明理由。</span></li><li class="an " style="--i:4"><span class="bl-dot"></span><span><strong>预习：</strong>阅读教材 6.5.5～6.5.6，思考：required、pattern 这些新属性，替我们省掉了哪些原本要用 JavaScript 写的代码？</span></li></ul></div>
+</section>
+
+<section class="slide" data-kind="refs">
+  
+  <header class="s-head">
+    <div class="s-head-left">
+      
+      <h2 class="s-title an" style="--i:1">出处与参考</h2>
+      <p class="s-sub an" style="--i:2">本课件内容依据教材，并核对以下权威技术文档</p>
+    </div>
+  </header>
+  <div class="s-body"><ol class="refs"><li class="an " style="--i:1"><span class="ref-idx">01</span><span class="ref-t">教材《网页制作（HTML5+CSS3）》项目6 表格和表单（6.4～6.5.4）</span><span class="ref-u">郑哲、傅冬 主编 · 电子工业出版社 · 2025 年 1 月第 1 版</span></li><li class="an " style="--i:2"><span class="ref-idx">02</span><span class="ref-t">MDN Web Docs · form：表单元素</span><span class="ref-u">https://developer.mozilla.org/zh-CN/docs/Web/HTML/Element/form</span></li><li class="an " style="--i:3"><span class="ref-idx">03</span><span class="ref-t">MDN Web Docs · input：输入（表单输入）元素</span><span class="ref-u">https://developer.mozilla.org/zh-CN/docs/Web/HTML/Element/input</span></li><li class="an " style="--i:4"><span class="ref-idx">04</span><span class="ref-t">MDN Web Docs · label 元素</span><span class="ref-u">https://developer.mozilla.org/zh-CN/docs/Web/HTML/Element/label</span></li><li class="an " style="--i:5"><span class="ref-idx">05</span><span class="ref-t">MDN Web Docs · 发送表单数据（GET 与 POST 的区别）</span><span class="ref-u">https://developer.mozilla.org/zh-CN/docs/Learn/Forms/Sending_and_retrieving_form_data</span></li><li class="an " style="--i:6"><span class="ref-idx">06</span><span class="ref-t">MDN Web Docs · select / textarea 元素</span><span class="ref-u">https://developer.mozilla.org/zh-CN/docs/Web/HTML/Element/select</span></li></ol></div>
+</section>
+
+<section class="slide s-end" data-kind="end">
+  <div class="end-inner">
+    <div class="end-mark an" style="--i:0">·</div>
+    <h2 class="end-t an" style="--i:1">第 16 单元 · 结束</h2>
+    <p class="end-s an" style="--i:2">下一单元：表单新属性与表单美化，让表单既聪明又好看</p>
+    <a class="end-next an" style="--i:3" href="U17%20%E8%A1%A8%E5%8D%95%E6%96%B0%E5%B1%9E%E6%80%A7%E4%B8%8E%E8%A1%A8%E5%8D%95%E7%BE%8E%E5%8C%96.html"><span class="en-lab">下一讲</span><span class="en-t">U17 表单新属性与表单美化</span><span class="en-ar">→</span></a>
+    <a class="end-back an" style="--i:4" href="../../index.html"><span>←</span> 返回总目录</a>
+  </div>
+</section>
+  <div class="legend">← → 翻页　·　C 点击翻页开关　·　O 目录　·　F 全屏　·　P 打印　·　拖动圈选不翻页</div>
+  <div class="hud">
+    <span class="btn" id="btnClick" data-on="1" title="开启 / 关闭「点击鼠标切换页面」（快捷键 C）">点击翻页 开</span>
+    <span class="btn" id="btnNav">目录</span>
+    <span class="btn" id="btnFull">全屏</span>
+    <span class="pageno"><b id="cur">1</b> / 24</span>
+  </div>
+  <div class="flip-toast" id="flipToast"></div>
+  <div class="drawer" id="drawer">
+    <div class="drawer-panel">
+      <div class="drawer-h">本单元目录 <span id="drawerClose">关闭 ✕</span></div>
+      <ul id="drawerList"><li data-go="0"><span class="nv-idx">01</span><span class="nv-t">表单与常用表单标签</span></li><li data-go="1"><span class="nv-idx">02</span><span class="nv-t">本单元我们要达成什么</span></li><li data-go="2"><span class="nv-idx">03</span><span class="nv-t">思政课堂</span></li><li data-go="3"><span class="nv-idx">04</span><span class="nv-t">导览</span></li><li data-go="4"><span class="nv-idx">05</span><span class="nv-t">6.4 表单概述</span></li><li data-go="5"><span class="nv-idx">06</span><span class="nv-t">表单工作原理</span></li><li data-go="6"><span class="nv-idx">07</span><span class="nv-t">6.5 表单标签</span></li><li data-go="7"><span class="nv-idx">08</span><span class="nv-t">form 标签</span></li><li data-go="8"><span class="nv-idx">09</span><span class="nv-t">GET vs POST</span></li><li data-go="9"><span class="nv-idx">10</span><span class="nv-t">input 控件演示</span></li><li data-go="10"><span class="nv-idx">11</span><span class="nv-t">type 属性值</span></li><li data-go="11"><span class="nv-idx">12</span><span class="nv-t">四类输入控件</span></li><li data-go="12"><span class="nv-idx">13</span><span class="nv-t">单选与复选</span></li><li data-go="13"><span class="nv-idx">14</span><span class="nv-t">label 两种绑定</span></li><li data-go="14"><span class="nv-idx">15</span><span class="nv-t">任务6-3 登录表单</span></li><li data-go="15"><span class="nv-idx">16</span><span class="nv-t">button 标签</span></li><li data-go="16"><span class="nv-idx">17</span><span class="nv-t">select 与 option</span></li><li data-go="17"><span class="nv-idx">18</span><span class="nv-t">textarea</span></li><li data-go="18"><span class="nv-idx">19</span><span class="nv-t">AI 前沿</span></li><li data-go="19"><span class="nv-idx">20</span><span class="nv-t">随堂检测</span></li><li data-go="20"><span class="nv-idx">21</span><span class="nv-t">本课小结</span></li><li data-go="21"><span class="nv-idx">22</span><span class="nv-t">课后作业</span></li><li data-go="22"><span class="nv-idx">23</span><span class="nv-t">出处与参考</span></li><li data-go="23"><span class="nv-idx">24</span><span class="nv-t">结束</span></li></ul>
+    </div>
+  </div>
+</div></div>
+<script>
+(function(){
+  var slides = Array.prototype.slice.call(document.querySelectorAll('.slide'));
+  var total = slides.length, cur = 0;
+  var stage = document.getElementById('stage');
+  var bar = document.getElementById('bar'), curEl = document.getElementById('cur');
+  var drawer = document.getElementById('drawer');
+  var mqPortrait = window.matchMedia('(orientation: portrait)');
+  var flow = mqPortrait.matches;
+
+  /* ---- 点击翻页开关（记忆教师偏好，跨课件生效） ---- */
+  var clickOn = true;
+  try{ clickOn = localStorage.getItem('deck_clickflip') !== '0'; }catch(e){}
+  var btnClick = document.getElementById('btnClick');
+  var toastEl = document.getElementById('flipToast'), toastTimer = null;
+  function tip(msg){
+    if(!toastEl) return;
+    toastEl.textContent = msg;
+    toastEl.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function(){ toastEl.classList.remove('show'); }, 1500);
+  }
+  function syncClickBtn(){
+    if(!btnClick) return;
+    if(flow){                                   // 竖屏为滚屏阅读，点击翻页天然不生效
+      btnClick.textContent = '竖屏阅读';
+      btnClick.setAttribute('data-on', '0');
+      btnClick.setAttribute('title', '竖屏为纵向阅读模式，上下滚动即可；旋转为横屏后可用点击翻页');
+      return;
+    }
+    btnClick.textContent = '点击翻页 ' + (clickOn ? '开' : '关');
+    btnClick.setAttribute('data-on', clickOn ? '1' : '0');
+    btnClick.setAttribute('title', clickOn
+      ? '当前：点击鼠标可切换页面。点此关闭（快捷键 C）'
+      : '当前：点击鼠标不翻页，方便圈选讲解。点此开启（快捷键 C）');
+  }
+  function toggleClickFlip(silent){
+    clickOn = !clickOn;
+    try{ localStorage.setItem('deck_clickflip', clickOn ? '1' : '0'); }catch(e){}
+    syncClickBtn();
+    if(!silent) tip(clickOn ? '点击翻页已开启' : '点击翻页已关闭 · 仍可用 ← → 或滑动翻页');
+  }
+  syncClickBtn();
+
+  function hasSelection(){
+    var s = window.getSelection && window.getSelection();
+    return !!(s && String(s.text || s).length > 0);
+  }
+  function setIndex(n){
+    cur = Math.max(0, Math.min(total-1, n));
+    slides.forEach(function(s,i){ s.classList.toggle('is-active', i===cur); });
+    var act = slides[cur];
+    if(act && !flow) act.querySelectorAll('.an').forEach(function(el){ void el.offsetWidth; });
+    bar.style.width = (total>1 ? (cur/(total-1)*100) : 100)+'%';
+    curEl.textContent = cur+1;
+    document.querySelectorAll('#drawerList li').forEach(function(li,i){ li.classList.toggle('cur', i===cur); });
+  }
+  function go(n, instant){
+    n = Math.max(0, Math.min(total-1, n));
+    var same = (n===cur && slides[cur] && slides[cur].classList.contains('is-active'));
+    slides.forEach(function(s,i){
+      s.classList.remove('prev');
+      if(i<n) s.classList.add('prev');
+      if(i===n) s.classList.add('is-active');
+    });
+    setIndex(n);
+    if(flow){
+      var el = slides[n];
+      if(el && el.scrollIntoView) el.scrollIntoView({behavior: instant ? 'auto' : 'smooth', block:'start'});
+    } else if(same){
+      var a = slides[n]; if(a) a.querySelectorAll('.an').forEach(function(el){ void el.offsetWidth; });
+    }
+    try{ history.replaceState(null,'','#'+(n+1)); }catch(e){}
+  }
+
+  /* 键盘 */
+  document.addEventListener('keydown', function(e){
+    var k = e.key;
+    if(k==='ArrowRight'||k==='ArrowDown'||k===' '||k==='PageDown'||k==='Enter'){ e.preventDefault(); go(cur+1); }
+    else if(k==='ArrowLeft'||k==='ArrowUp'||k==='PageUp'){ e.preventDefault(); go(cur-1); }
+    else if(k==='Home'){ go(0); } else if(k==='End'){ go(total-1); }
+    else if(k==='o'||k==='O'){ drawer.classList.toggle('open'); }
+    else if(k==='f'||k==='F'){ toggleFull(); }
+    else if(k==='c'||k==='C'){ toggleClickFlip(); }
+    else if(k==='Escape'){ drawer.classList.remove('open'); }
+    else if(k==='p'||k==='P'){ window.print(); }
+  });
+  function toggleFull(){
+    if(!document.fullscreenElement){ (document.documentElement.requestFullscreen||function(){}).call(document.documentElement); }
+    else { document.exitFullscreen(); }
+  }
+
+  /* 点击翻页：拖动圈选文字、双击选词、点按钮/选项一律不翻页 */
+  var down = null, clickTimer = null;
+  function isInteractive(el){
+    return !!(el.closest('.hud')||el.closest('.drawer')||el.closest('iframe')||el.closest('summary')||
+              el.closest('details')||el.closest('.quiz')||el.closest('a')||el.closest('button')||
+              el.closest('input')||el.closest('select')||el.closest('textarea')||el.closest('label'));
+  }
+  stage.addEventListener('mousedown', function(e){ down = {x:e.clientX, y:e.clientY, t:Date.now()}; });
+  stage.addEventListener('click', function(e){
+    if(flow) return;
+    clearTimeout(clickTimer);
+    if(!clickOn) return;                           // 开关关闭：点击不翻页
+    if(e.detail > 1) return;                       // 双击 / 三击 = 选词，不翻页
+    if(isInteractive(e.target)) return;
+    if(hasSelection()) return;                     // 已有选中内容，不翻页
+    if(down && (Math.abs(e.clientX-down.x)>6 || Math.abs(e.clientY-down.y)>6)) return;  // 拖动圈选
+    if(down && (Date.now()-down.t > 800)) return;  // 长按
+    var r = stage.getBoundingClientRect();
+    var dir = (e.clientX - r.left) > r.width*0.5 ? 1 : -1;
+    clickTimer = setTimeout(function(){
+      if(hasSelection()) return;                   // 圈选期间保持静止
+      go(cur+dir);
+    }, 220);
+  });
+  document.addEventListener('dblclick', function(){ clearTimeout(clickTimer); });
+  document.addEventListener('selectionchange', function(){ if(hasSelection()) clearTimeout(clickTimer); });
+
+  /* 触摸：仅在横向滑动时翻页；竖屏交给页面滚动 */
+  var sx=null, sy=null, st=0;
+  stage.addEventListener('touchstart', function(e){
+    if(e.touches.length>1){ sx=null; return; }
+    sx=e.touches[0].clientX; sy=e.touches[0].clientY; st=Date.now();
+  }, {passive:true});
+  stage.addEventListener('touchend', function(e){
+    if(sx===null) return;
+    var dx=e.changedTouches[0].clientX-sx, dy=e.changedTouches[0].clientY-sy;
+    sx=null;
+    if(flow) return;
+    if(Date.now()-st>900) return;                  // 长按选词
+    if(hasSelection()) return;
+    if(Math.abs(dx)>55 && Math.abs(dy)<Math.abs(dx)*0.75) go(dx<0?cur+1:cur-1);
+  }, {passive:true});
+
+  /* 竖屏：滚动时同步页码与进度 */
+  if('IntersectionObserver' in window){
+    var io = new IntersectionObserver(function(entries){
+      if(!flow) return;
+      var best=null;
+      entries.forEach(function(en){
+        if(en.isIntersecting && (!best || en.intersectionRatio > best.intersectionRatio)) best = en;
+      });
+      if(best){
+        var i = slides.indexOf(best.target);
+        if(i>=0 && i!==cur) setIndex(i);
+      }
+    }, {threshold:[0.2,0.5,0.8]});
+    slides.forEach(function(s){ io.observe(s); });
+  }
+  function onOrient(){
+    flow = mqPortrait.matches;
+    syncClickBtn();
+    clearTimeout(clickTimer);
+  }
+  mqPortrait.addEventListener ? mqPortrait.addEventListener('change', onOrient) : mqPortrait.addListener(onOrient);
+
+  /* 目录 / HUD */
+  if(btnClick) btnClick.addEventListener('click', function(e){ e.stopPropagation(); toggleClickFlip(); });
+  document.getElementById('btnNav').addEventListener('click', function(e){ e.stopPropagation(); drawer.classList.add('open'); });
+  document.getElementById('btnFull').addEventListener('click', function(e){ e.stopPropagation(); toggleFull(); });
+  document.getElementById('drawerClose').addEventListener('click', function(){ drawer.classList.remove('open'); });
+  drawer.addEventListener('click', function(e){ if(e.target===drawer) drawer.classList.remove('open'); });
+  document.querySelectorAll('#drawerList li').forEach(function(li){
+    li.addEventListener('click', function(){ go(parseInt(li.dataset.go,10)); drawer.classList.remove('open'); });
+  });
+
+  /* 随堂检测：点选选项 → 判分 → 显示答案与解析 → 单选/全量重做 */
+  function keysOf(item){
+    return (item.getAttribute('data-answer')||'').toUpperCase().replace(/[^A-Z]/g,'').split('');
+  }
+  function reveal(item){
+    var ans = keysOf(item);
+    item.querySelectorAll('.opt').forEach(function(b){
+      if(ans.indexOf(b.getAttribute('data-k'))>=0) b.classList.add('right');
+    });
+    item.classList.add('revealed');
+  }
+  function resetItem(item){
+    item.classList.remove('revealed','ok','bad');
+    item.querySelectorAll('.opt').forEach(function(b){ b.classList.remove('right','sel'); });
+    var v = item.querySelector('.q-verdict'); if(v) v.textContent='';
+    var rs = item.querySelector('.q-reset'); if(rs) rs.disabled = true;
+  }
+  document.querySelectorAll('.quiz-item').forEach(function(item){
+    var qtype = item.getAttribute('data-type')||'single';
+    var btnReset = item.querySelector('.q-reset');
+    item.querySelectorAll('.opt').forEach(function(btn){
+      btn.addEventListener('click', function(ev){
+        ev.stopPropagation();
+        /* 已揭示答案后再点选项 = 重新作答，自动收起答案 */
+        if(item.classList.contains('revealed')){
+          item.classList.remove('revealed','ok','bad');
+          item.querySelectorAll('.opt').forEach(function(b){ b.classList.remove('right'); });
+          var v0 = item.querySelector('.q-verdict'); if(v0) v0.textContent='';
+        }
+        if(qtype==='single'){
+          item.querySelectorAll('.opt').forEach(function(b){ b.classList.remove('sel'); });
+          btn.classList.add('sel');
+        } else {
+          btn.classList.toggle('sel');
+        }
+        item.classList.remove('ok','bad');
+        var v = item.querySelector('.q-verdict'); if(v) v.textContent='';
+        if(btnReset) btnReset.disabled = false;
+      });
+    });
+    var chk = item.querySelector('.q-check');
+    if(chk) chk.addEventListener('click', function(ev){
+      ev.stopPropagation();
+      var ans = keysOf(item);
+      var sel = Array.prototype.slice.call(item.querySelectorAll('.opt.sel')).map(function(b){ return b.getAttribute('data-k'); });
+      var ok = sel.length>0 && sel.length===ans.length && sel.filter(function(k){ return ans.indexOf(k)>=0; }).length===ans.length;
+      reveal(item);
+      if(btnReset) btnReset.disabled = false;
+      item.classList.remove('ok','bad'); item.classList.add(ok?'ok':'bad');
+      var v = item.querySelector('.q-verdict');
+      if(v) v.textContent = ok ? '✓ 回答正确' : (sel.length ? '✗ 再想一想，正确项已标绿' : '请先选择答案');
+    });
+    if(btnReset) btnReset.addEventListener('click', function(ev){
+      ev.stopPropagation();
+      resetItem(item);
+      tip('本题已重置，可重新作答');
+    });
+  });
+  var btnReveal = document.getElementById('quizReveal');
+  if(btnReveal) btnReveal.addEventListener('click', function(ev){
+    ev.stopPropagation();
+    var on = btnReveal.getAttribute('data-on')==='1';
+    var next = !on;
+    document.querySelectorAll('.quiz-item').forEach(function(item){
+      if(next){
+        reveal(item);
+        var rs = item.querySelector('.q-reset'); if(rs) rs.disabled = false;
+      } else {
+        resetItem(item);
+      }
+    });
+    btnReveal.setAttribute('data-on', next ? '1':'0');
+    btnReveal.textContent = next ? '隐藏答案' : '显示全部答案';
+  });
+  var btnResetAll = document.getElementById('quizResetAll');
+  if(btnResetAll) btnResetAll.addEventListener('click', function(ev){
+    ev.stopPropagation();
+    document.querySelectorAll('.quiz-item').forEach(resetItem);
+    if(btnReveal){ btnReveal.setAttribute('data-on','0'); btnReveal.textContent = '显示全部答案'; }
+    tip('已清空本题全部作答，可重新开始');
+  });
+
+  var h = parseInt((location.hash||'').replace('#',''),10);
+  go(isNaN(h)?0:h-1, true);
+})();
+</script>
+</body>
+</html>

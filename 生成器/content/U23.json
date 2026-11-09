@@ -1,0 +1,457 @@
+{
+  "id": "U23",
+  "project": "项目9",
+  "project_name": "过渡和动画",
+  "unit": "第 23 单元",
+  "title": "变换：2D 变换与 3D 变换",
+  "subtitle": "一个 transform 属性，让元素旋转、缩放、平移、扭曲，甚至变成立方体",
+  "duration": 40,
+  "cover_tags": [
+    "transform",
+    "translate / rotate",
+    "scale / skew",
+    "perspective",
+    "preserve-3d"
+  ],
+  "ref_book": "电子工业出版社 · 2025 年 1 月第 1 版",
+  "objectives": {
+    "knowledge": [
+      "掌握 CSS3 2D 变换的相关概念",
+      "掌握 CSS3 3D 变换的相关概念",
+      "掌握 CSS3 过渡语法及其应用",
+      "掌握 CSS3 动画语法及其应用",
+      "掌握循环动画的制作技巧"
+    ],
+    "skill": [
+      "能使用 CSS3 过渡语法实现过渡效果",
+      "能使用 CSS3 动画语法实现 2D 动画效果",
+      "能使用 CSS3 动画语法实现 3D 动画效果",
+      "能使用 CSS3 动画语法实现循环动画效果"
+    ],
+    "literacy": [
+      "培养精益求精的工匠精神",
+      "培养勇于探索、崇尚科学的意志和品德",
+      "培养严谨求实的学习态度"
+    ]
+  },
+  "slides": [
+    {
+      "type": "objectives",
+      "title": "本单元我们要达成什么",
+      "subtitle": "对照教材《项目9》的学习目标 / 技能目标 / 素养目标",
+      "objectives": {
+        "knowledge": [
+          "掌握 CSS3 2D 变换的相关概念",
+          "掌握 CSS3 3D 变换的相关概念",
+          "理解变换轴心 transform-origin 的作用"
+        ],
+        "skill": [
+          "能使用 transform 实现旋转、缩放、平移、扭曲",
+          "能正确书写复合变换函数",
+          "能使用 perspective 与 preserve-3d 搭建 3D 场景"
+        ],
+        "literacy": [
+          "培养精益求精的工匠精神",
+          "培养勇于探索、崇尚科学的意志和品德",
+          "培养严谨求实的学习态度"
+        ]
+      }
+    },
+    {
+      "type": "ideology",
+      "title": "迭代开发：工匠精神在代码里的样子",
+      "subtitle": "教材《项目9》思政课堂",
+      "nav": "思政课堂",
+      "text": "互联网的<strong>迭代开发思想</strong>是工匠精神的一种体现，这种思想强调在开发过程中不断进行反馈和改进，追求产品的完美和极致。在每一次迭代过程中，开发人员不断优化和改进产品，逐步完善产品的功能和性能，以满足用户的需求和期望。<strong>这种不断追求卓越的精神正是工匠精神的体现。</strong>在现代社会，工匠精神已经成为许多行业所追求的核心价值。无论是软件工程师、设计师还是其他领域的专业人才，都需要具备这种精益求精的精神，只有这样才能创造出更加优秀的产品。",
+      "topic": "本单元的「变换」效果往往需要反复微调角度、轴心与透视距离。请结合岗位谈一谈：你在调试页面效果时，愿意为一个 1 像素的误差反复迭代多少次？为什么？"
+    },
+    {
+      "type": "outline",
+      "title": "本单元导览",
+      "subtitle": "从二维平面走到三维空间",
+      "nav": "导览",
+      "items": [
+        "变换（transform）到底能做哪几件事？（9.1）",
+        "2D 变换：坐标系、五大函数、复合变换与变换轴心（9.2）",
+        "3D 变换：立体坐标系、3D 函数、透视与消失点（9.3）",
+        "任务 9-1：用 3D 变换做一个真正的正方体骰子"
+      ]
+    },
+    {
+      "type": "section",
+      "no": "9.1",
+      "title": "变换",
+      "text": "不改变文档流，只改变「看起来在哪、看起来多大」。",
+      "nav": "9.1 变换"
+    },
+    {
+      "type": "bullets",
+      "title": "transform：CSS3 的变换属性",
+      "subtitle": "教材原文：允许对元素进行旋转、扭曲、缩放、平移、矩阵变形等",
+      "nav": "transform 概念",
+      "items": [
+        "变换（transform）是 <strong>CSS3 的新样式属性之一</strong>，允许对元素进行<strong>旋转 rotate、扭曲 skew、缩放 scale、平移 translate、矩阵变形 matrix</strong> 等操作。",
+        "由此可实现 <strong>2D 变换</strong>或 <strong>3D 变换</strong>。",
+        "基本语法：<code>transform: none | transform-functions;</code>",
+        "<code>none</code> 表示<strong>没有变换</strong>；<code>transform-functions</code> 表示<strong>一个或多个</strong>变换函数。",
+        "重要提醒：transform <strong>不会让元素脱离文档流</strong>，它只是改变了元素的视觉呈现，原位置依然被占据。"
+      ]
+    },
+    {
+      "type": "section",
+      "no": "9.2",
+      "title": "2D 变换",
+      "text": "先把坐标系弄清楚，否则正负号永远会搞反。",
+      "nav": "9.2 2D 变换"
+    },
+    {
+      "type": "bullets",
+      "title": "2D 变换的坐标系（教材图 9-1）",
+      "subtitle": "原点在元素左上角，y 轴向下为正——与数学课里的坐标系相反",
+      "nav": "2D 坐标系",
+      "items": [
+        "CSS3 的 2D 变换基于 <strong>2D 图形坐标系</strong>：原点 (0,0) 位于<strong>元素的左上角</strong>。",
+        "每个点使用一组 <strong>(x, y)</strong> 构建的<strong>笛卡儿坐标系</strong>来描述。",
+        "<strong>x 轴向右为正方向，y 轴向下为正方向。</strong>",
+        "因此 <code>translate(10px, 20px)</code> 表示<strong>向右 10px、向下 20px</strong>；<code>translateY(-20px)</code> 才是向上。"
+      ]
+    },
+    {
+      "type": "table",
+      "title": "常用的 2D 变换函数（教材表 9-1）",
+      "subtitle": "五大函数：平移、旋转、缩放、倾斜、矩阵",
+      "nav": "表9-1 2D函数",
+      "head": [
+        "2D 变换函数",
+        "描述"
+      ],
+      "rows": [
+        [
+          "<code>translate(tx,ty)</code>",
+          "包含两个参数值，分别指定 x 轴和 y 轴的平移量。根据<strong>左侧（x 轴）</strong>和<strong>顶部（y 轴）</strong>位置给定的参数，从当前元素位置开始移动"
+        ],
+        [
+          "<code>rotate(ra)</code>",
+          "包含一个角度参数，指定元素<strong>顺时针</strong>旋转的角度。<strong>参数值为负表示逆时针</strong>旋转"
+        ],
+        [
+          "<code>scale(sx[,sy])</code>",
+          "两个参数分别为 x 轴、y 轴的缩放值。<strong>第二个参数为空时等于第一个</strong>；小于 1 为缩小，大于 1 为放大"
+        ],
+        [
+          "<code>skew(ax[,ay])</code>",
+          "两个参数分别为 x 轴、y 轴<strong>倾斜的角度</strong>。第二个参数为空时<strong>默认值为 0</strong>；值为负表示向相反方向倾斜"
+        ],
+        [
+          "<code>matrix(a,b,c,d,tx,ty)</code>",
+          "以包含 <strong>6 个值</strong>的转换矩阵形式指定 2D 变换。<strong>a、b、c、d</strong> 描述线变换，<strong>tx</strong> 表示水平偏移，<strong>ty</strong> 表示垂直偏移"
+        ]
+      ]
+    },
+    {
+      "type": "code",
+      "title": "2D 变换综合示例（代码 9-1）",
+      "subtitle": "同一组 100px×100px 的方块，分别应用 5 种变换（图 9-2）",
+      "nav": "代码9-1",
+      "lang": "css",
+      "file": "style.css",
+      "code": ".outer{ background-color:#FFE4C4; height:100%; }\n.box{ background-color:#01FFFF; width:100px; height:100px;\n      display:inline-block; margin:50px; text-align:center; }\n.box2{ transform: rotate(45deg); }\n.box3{ transform: translate(10px,20px); }\n.box4{ transform: scale(2,0.5); }\n.box5{ transform: skew(30deg,20deg); }\n.box6{ transform: matrix(1,0.2,-1.2,1,0,0); }",
+      "caption": "<b>对照表 9-1 看代码：</b><code>rotate(45deg)</code> 顺时针 45 度；<code>scale(2,0.5)</code> 横向放大 2 倍、纵向压缩一半；<code>matrix(1,0.2,-1.2,1,0,0)</code> 是前四者叠加后的矩阵写法。"
+    },
+    {
+      "type": "bullets",
+      "title": "单轴函数与复合变换",
+      "subtitle": "教材标注的「常见的编程错误」：多个变换函数之间要用空格，不能用逗号",
+      "nav": "复合变换",
+      "items": [
+        "只在一个轴上变换时，可用单轴函数：<code>translateX()</code>、<code>translateY()</code>、<code>scaleX()</code>、<code>scaleY()</code>、<code>skewX()</code>、<code>skewY()</code>。",
+        "CSS3 支持对同一元素进行<strong>多个变换函数的复合操作</strong>：<code>transform: transform-functions1 transform-functions2 …</code>",
+        "示例：<code>transform: scale(2.0) translate(10px,20px);</code>",
+        "<strong>多个变换函数之间必须使用空格分隔</strong>——教材原文：<strong>使用逗号而不使用空格分隔多个变换函数，是一种常见的编程错误。</strong>",
+        "复合变换的<strong>书写顺序会影响结果</strong>：先平移后旋转 ≠ 先旋转后平移，因为变换是依次作用于坐标系的。"
+      ]
+    },
+    {
+      "type": "demo",
+      "title": "交互演示｜五种 2D 变换与变换轴心",
+      "subtitle": "上行：rotate / translate / scale / skew / matrix；下行：默认轴心与 top left 轴心的对比",
+      "nav": "2D 变换演示",
+      "items": [
+        "<code>rotate(45deg)</code> 为<strong>顺时针</strong>，负值才是逆时针。",
+        "<code>translate()</code> 的两个值分别是<strong>向右</strong>与<strong>向下</strong>的位移量。",
+        "<code>scale(sx, sy)</code> 只写一个值时，<strong>两轴等比缩放</strong>。",
+        "下行右侧的橙色块把 <code>transform-origin</code> 设为 <strong>top left</strong>，缩放时<strong>左上角固定不动</strong>——这就是轴心的作用。"
+      ],
+      "hint": "把 scale 与 rotate 写在一起（用空格分隔），交换顺序再看看结果是否相同。",
+      "html": "<style>.d23{margin:0;font-family:'PingFang SC',system-ui,sans-serif;color:#1b2a44}.d23 .row{display:flex;justify-content:center;gap:14px;padding:4px 0}.d23 .cell{width:114px;text-align:center}.d23 .bx{height:76px;border-radius:10px;background:linear-gradient(135deg,#2f6bff,#0fb5c9);color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;box-shadow:0 10px 24px -12px rgba(20,40,90,.6)}.d23 .r{animation:rr 3s linear infinite}.d23 .t{animation:tt 2.4s ease-in-out infinite alternate}.d23 .s{animation:ss 2.2s ease-in-out infinite alternate}.d23 .k{animation:kk 2.6s ease-in-out infinite alternate}.d23 .m{animation:mm 3s ease-in-out infinite alternate}.d23 .lb{margin-top:7px;font-size:11px;color:#1d46b8;font-family:Menlo,monospace}.d23 .orow{display:flex;justify-content:center;gap:24px;margin-top:16px}.d23 .og{position:relative;width:240px;height:104px;background:#eef3ff;border:1px solid #d5e2fb;border-radius:10px}.d23 .ghost{position:absolute;left:22px;top:22px;width:56px;height:56px;border:2px dashed #9db8f0;border-radius:8px}.d23 .org{position:absolute;left:22px;top:22px;width:56px;height:56px;border-radius:8px;background:linear-gradient(135deg,#ff9d00,#ff5e7d);animation:sc 2.4s ease-in-out infinite alternate}.d23 .tl{transform-origin:top left}.d23 .cap{position:absolute;right:10px;bottom:8px;font-size:11px;color:#5a6c85;font-family:Menlo,monospace}@keyframes rr{from{transform:rotate(0)}to{transform:rotate(360deg)}}@keyframes tt{from{transform:translate(0,0)}to{transform:translate(16px,-16px)}}@keyframes ss{from{transform:scale(1)}to{transform:scale(0.62,1.32)}}@keyframes kk{from{transform:skew(0,0)}to{transform:skew(22deg,-12deg)}}@keyframes mm{from{transform:matrix(1,0,0,1,0,0)}to{transform:matrix(1,0.2,-1.2,1,0,0)}}@keyframes sc{from{transform:scale(1)}to{transform:scale(1.55)}}</style><div class='d23'><div class='row'><div class='cell'><div class='bx r'>rotate</div><div class='lb'>rotate(360deg)</div></div><div class='cell'><div class='bx t'>translate</div><div class='lb'>translate(16px,-16px)</div></div><div class='cell'><div class='bx s'>scale</div><div class='lb'>scale(0.62,1.32)</div></div><div class='cell'><div class='bx k'>skew</div><div class='lb'>skew(22deg,-12deg)</div></div><div class='cell'><div class='bx m'>matrix</div><div class='lb'>matrix(1,.2,-1.2,1,0,0)</div></div></div><div class='orow'><div class='og'><div class='ghost'></div><div class='org'></div><div class='cap'>默认轴心 50% 50%</div></div><div class='og'><div class='ghost'></div><div class='org tl'></div><div class='cap'>transform-origin: top left</div></div></div></div>"
+    },
+    {
+      "type": "codebullets",
+      "title": "变换轴心 transform-origin（代码 9-2）",
+      "subtitle": "缩放、扭曲的轴心默认在盒子中心；想换支点，就改这个属性",
+      "nav": "变换轴心",
+      "items": [
+        "语法：<code>transform-origin: x y;</code>——<strong>属性值 x 和 y 之间使用空格分隔</strong>（不是逗号）。",
+        "未指定 x y 时，默认变换轴心是<strong>元素中心点 50% 50%</strong>，也可用 <code>center center</code> 等价替换。",
+        "x、y 可以是<strong>具体像素</strong>，也可以是 CSS3 预定义方位值：<code>top</code>、<code>bottom</code>、<code>left</code>、<code>right</code>、<code>center</code>。",
+        "教材解析：box2 与 box4 都放大 2 倍并半透明，默认轴心在中心（box2）；把缩放点定到左上角后得到 box4 的效果（图 9-3）。"
+      ],
+      "lang": "css",
+      "file": "style.css",
+      "code": "/* 代码 9-2（关键片段） */\n.outer{ display:inline-block; background-color:#FFE4C4; height:300px; width:500px; position:relative; }\n.box{ background-color:#01FFFF; width:100px; height:100px; display:inline-block;\n      margin:50px; text-align:center; position:absolute; }\n.box2,.box4{ opacity:0.3; transform:scale(2); }\n.box4{ transform-origin: top left; }\n\n/* 其他写法 */\ntransform-origin: 50px 50px;\ntransform-origin: left bottom;"
+    },
+    {
+      "type": "section",
+      "no": "9.3",
+      "title": "3D 变换",
+      "text": "多了一个 z 轴，就多了一整套「近大远小」的透视规则。",
+      "nav": "9.3 3D 变换"
+    },
+    {
+      "type": "bullets",
+      "title": "3D 立体坐标系与透视原理",
+      "subtitle": "教材图 9-4～9-6：z 轴垂直屏幕，向外为正",
+      "nav": "3D 坐标系",
+      "items": [
+        "<strong>x 轴</strong>：水平向右为正值，反之为负值。",
+        "<strong>y 轴</strong>：垂直向下为正值，反之为负值。",
+        "<strong>z 轴</strong>：<strong>垂直屏幕，向外为正值，向内为负值。</strong>",
+        "<strong>perspective 是观察者与 z=0 平面的距离：</strong>值越大，好像离屏幕越远，物体看起来<strong>越小</strong>；值越小，好像凑到屏幕前，物体看起来<strong>越大</strong>。",
+        "用 <code>translateZ()</code> 把元素向 z 轴正方向移动，它会<strong>看起来比原本大</strong>——这就是透视中<strong>近大远小</strong>的效果。"
+      ]
+    },
+    {
+      "type": "table",
+      "title": "常用的 3D 变换函数与相关属性（教材表 9-2）",
+      "subtitle": "3D 函数大都以「*3d」命名，是在 2D 函数基础上增加了 z 轴方向",
+      "nav": "表9-2 3D函数",
+      "head": [
+        "3D 变换函数 / 属性",
+        "描述"
+      ],
+      "rows": [
+        [
+          "<code>translate3d(tx,ty,tz)</code>",
+          "定义 3D 平移，参数值为在<strong>相应轴方向</strong>上的平移量"
+        ],
+        [
+          "<code>rotate3d(rx,ry,rz,angle)</code>",
+          "定义 3D 旋转，<code>angle</code> 为<strong>绕相应轴方向</strong>旋转的角度"
+        ],
+        [
+          "<code>scale3d(sx,sy,sz)</code>",
+          "定义 3D 缩放，参数值为<strong>相应轴方向</strong>的缩放值"
+        ],
+        [
+          "<code>matrix3d(…)</code>",
+          "以包含 <strong>16 个值</strong>的 4×4 转换矩阵形式指定 3D 变换。<strong>a1…d3</strong> 表示线性变换，<strong>a4、b4、c4、d4</strong> 表示平移"
+        ],
+        [
+          "<code>perspective(length)</code>",
+          "指定<strong>透视距离</strong>，即观察者与 z=0 平面的距离。z 大于 0 时 3D 元素比正常大，z 小于 0 时比正常小"
+        ],
+        [
+          "<code>perspective-origin(x,y)</code>",
+          "定义透视关系中<strong>消失点</strong>的坐标，可以使用方向预设值"
+        ],
+        [
+          "<code>transform-style(flat / preserve-3d)</code>",
+          "<code>flat</code>：所有子元素在 <strong>2D 平面</strong>中呈现（<strong>默认值</strong>）；<code>preserve-3d</code>：所有子元素在 <strong>3D 空间</strong>中呈现"
+        ],
+        [
+          "<code>backface-visibility(visible / hidden)</code>",
+          "设置当元素<strong>背面朝向观察者</strong>时是否可见"
+        ]
+      ]
+    },
+    {
+      "type": "codebullets",
+      "title": "perspective 的两种写法与两个搭档属性",
+      "subtitle": "写在哪一层，决定了 3D 场景是「一个整体」还是「各自为政」",
+      "nav": "perspective 写法",
+      "items": [
+        "<strong>指定父元素</strong>：把 <code>perspective</code> 设在 3D 渲染元素的<strong>共同父元素</strong>上，所有子元素共享同一个透视空间（最常用）。",
+        "<strong>指定子元素</strong>：把它与 <code>transform</code> 写在一起，即 <code>perspective()</code> 函数，只作用于当前元素。教材预告：<strong>任务 9-5 将用这种方式实现卡片翻转。</strong>",
+        "<code>perspective-origin</code> 指定<strong>消失点</strong>位置，默认 <code>center center</code>（等价于 <code>50% 50%</code>）。<strong>只给定一个值时，另一个取默认值 center。</strong>",
+        "<code>backface-visibility</code> 控制<strong>背面是否可见</strong>；做翻牌、翻转卡片时常设为 <code>hidden</code>。",
+        "要让子元素真正待在 3D 空间里，必须先把 <code>transform-style</code> 设为 <code>preserve-3d</code>——<strong>这是 3D 变换最容易漏掉的一步。</strong>"
+      ],
+      "lang": "css",
+      "file": "style.css",
+      "code": "/* （1）指定父元素：设置在 3D 渲染元素的共同父元素上 */\n.parent{ perspective:800px; }\n\n/* （2）指定子元素：与 transform 属性写在一起 */\n.parent .sub{ transform: perspective(800px) rotate(45deg); }\n\n/* 让子元素在 3D 空间中呈现 */\n.parent{ transform-style: preserve-3d; }\n.parent .sub{ backface-visibility: hidden; }"
+    },
+    {
+      "type": "task",
+      "title": "任务 9-1｜制作 3D 骰子",
+      "subtitle": "利用 3D 变换知识，制作图 9-11 的 3D 骰子效果，正方体尺寸为 100px×100px",
+      "nav": "任务9-1 3D骰子",
+      "goal": "用 6 个面拼成一个<strong>真正的正方体</strong>：每个面先旋转到位，再沿 z 轴推出半个边长。",
+      "steps": [
+        "父容器 <code>.outer</code>：400px×200px、<code>padding:50px</code>、背景 <code>#FFE4C4</code>。",
+        "<code>#dice</code>：100px×100px、<code>margin:0 auto</code>、<code>transform-style:preserve-3d</code>、<code>perspective:800px</code>、<code>perspective-origin:bottom center</code>，并用 <code>rotate3d(1,1,0,332deg)</code> 摆出立体角度。",
+        "每个面 <code>.face</code>：用 Flex 将数字居中、<code>position:absolute</code>、<code>backface-visibility:inherit</code>、字号 60px、白色文字。",
+        "正面 front：沿 z 轴<strong>正方向</strong>平移 <strong>50px</strong>（骰子边长的一半）。",
+        "背面 back：平移后再<strong>沿 y 轴旋转 180 度</strong>，让正面朝外；左面 −90 度，右面 90 度，上下面同理绕 x 轴旋转。"
+      ],
+      "lang": "css",
+      "code": "/* 代码 9-3 */\n#dice{\n    width:100px; height:100px; margin:0 auto;\n    transform-style:preserve-3d;\n    perspective:800px;\n    perspective-origin:bottom center;\n    transform:rotate3d(1, 1, 0, 332deg);\n}\n.face{\n    display:flex; align-items:center; justify-content:center;\n    width:100%; height:100%; position:absolute;\n    backface-visibility:inherit; font-size:60px; color:#fff;\n}\n.front { background:rgba(90,90,90,0.7);   transform:translateZ(50px); }\n.back  { background:rgba(0,210,0,0.7);    transform:rotateY(180deg) translateZ(50px); }\n.right { background:rgba(210,0,0,0.7);    transform:rotateY(90deg)  translateZ(50px); }\n.left  { background:rgba(0,0,210,0.7);    transform:rotateY(-90deg) translateZ(50px); }\n.top   { background:rgba(210,210,0,0.7);  transform:rotateX(90deg)  translateZ(50px); }\n.bottom{ background:rgba(210,0,210,0.7);  transform:rotateX(-90deg) translateZ(50px); }"
+    },
+    {
+      "type": "demo",
+      "title": "交互演示｜会转的 3D 骰子（六面点数用纯 CSS 绘制）",
+      "subtitle": "preserve-3d + translateZ(55px) 搭出立方体，rotateY 让它一直转",
+      "nav": "3D 骰子演示",
+      "items": [
+        "骰子边长 110px，所以每个面沿 z 轴平移 <strong>55px</strong>（<strong>边长的一半</strong>）。",
+        "「先旋转、再平移」是固定套路：<code>rotateY(90deg) translateZ(55px)</code> 把面转到右侧并推到位。",
+        "父级 <code>transform-style:preserve-3d</code> 是<strong>必要条件</strong>，否则 6 个面会被压平成一堆。",
+        "这里的点数不是图片，而是 <strong>6 个 div + border-radius:50%</strong> 用网格布局画出来的。"
+      ],
+      "hint": "把 perspective 从 800px 改成 300px，观察「近大远小」会变得多么夸张。",
+      "html": "<style>.d23b{margin:0;font-family:'PingFang SC',system-ui,sans-serif;color:#1b2a44}.d23b .stage{display:flex;align-items:center;justify-content:center;gap:22px;padding:4px 6px}.d23b .scene{width:190px;height:190px;perspective:800px;perspective-origin:center center;display:flex;align-items:center;justify-content:center}.d23b .dice{position:relative;width:110px;height:110px;transform-style:preserve-3d;animation:spin 9s linear infinite}.d23b .face{position:absolute;left:0;top:0;right:0;bottom:0;display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(3,1fr);padding:13px;border-radius:12px;border:2px solid rgba(255,255,255,.4)}.d23b .pip{width:20px;height:20px;border-radius:50%;background:#fff;align-self:center;justify-self:center;box-shadow:inset 0 -3px 0 rgba(0,0,0,.2)}.d23b .f1 .pip:nth-child(1){grid-area:2/2}.d23b .f2 .pip:nth-child(1){grid-area:1/1}.d23b .f2 .pip:nth-child(2){grid-area:3/3}.d23b .f3 .pip:nth-child(1){grid-area:1/1}.d23b .f3 .pip:nth-child(2){grid-area:2/2}.d23b .f3 .pip:nth-child(3){grid-area:3/3}.d23b .f4 .pip:nth-child(1){grid-area:1/1}.d23b .f4 .pip:nth-child(2){grid-area:1/3}.d23b .f4 .pip:nth-child(3){grid-area:3/1}.d23b .f4 .pip:nth-child(4){grid-area:3/3}.d23b .f5 .pip:nth-child(1){grid-area:1/1}.d23b .f5 .pip:nth-child(2){grid-area:1/3}.d23b .f5 .pip:nth-child(3){grid-area:2/2}.d23b .f5 .pip:nth-child(4){grid-area:3/1}.d23b .f5 .pip:nth-child(5){grid-area:3/3}.d23b .f6 .pip:nth-child(1){grid-area:1/1}.d23b .f6 .pip:nth-child(2){grid-area:2/1}.d23b .f6 .pip:nth-child(3){grid-area:3/1}.d23b .f6 .pip:nth-child(4){grid-area:1/3}.d23b .f6 .pip:nth-child(5){grid-area:2/3}.d23b .f6 .pip:nth-child(6){grid-area:3/3}.d23b .front{background:rgba(90,90,90,.9);transform:translateZ(55px)}.d23b .back{background:rgba(0,180,0,.88);transform:rotateY(180deg) translateZ(55px)}.d23b .right{background:rgba(200,0,0,.88);transform:rotateY(90deg) translateZ(55px)}.d23b .left{background:rgba(0,0,200,.88);transform:rotateY(-90deg) translateZ(55px)}.d23b .top{background:rgba(200,180,0,.92);transform:rotateX(90deg) translateZ(55px)}.d23b .bottom{background:rgba(190,0,190,.88);transform:rotateX(-90deg) translateZ(55px)}.d23b .doc{width:300px;font-size:11.5px;line-height:1.9;color:#5a6c85}.d23b .doc code{background:#eef3ff;border:1px solid #d5e2fb;border-radius:5px;padding:1px 5px;color:#1d46b8;font-family:Menlo,monospace;font-size:11px}.d23b .doc p{margin:0 0 6px}@keyframes spin{from{transform:rotateX(-18deg) rotateY(0deg)}to{transform:rotateX(-18deg) rotateY(360deg)}}</style><div class='d23b'><div class='stage'><div class='scene'><div class='dice'><div class='face front f1'><span class='pip'></span></div><div class='face back f2'><span class='pip'></span><span class='pip'></span></div><div class='face right f3'><span class='pip'></span><span class='pip'></span><span class='pip'></span></div><div class='face left f4'><span class='pip'></span><span class='pip'></span><span class='pip'></span><span class='pip'></span></div><div class='face top f5'><span class='pip'></span><span class='pip'></span><span class='pip'></span><span class='pip'></span><span class='pip'></span></div><div class='face bottom f6'><span class='pip'></span><span class='pip'></span><span class='pip'></span><span class='pip'></span><span class='pip'></span><span class='pip'></span></div></div></div><div class='doc'><p><code>transform-style: preserve-3d</code>　·　<code>perspective: 800px</code></p><p><code>front</code> → <code>translateZ(55px)</code></p><p><code>back</code> → <code>rotateY(180deg) translateZ(55px)</code></p><p><code>right</code> → <code>rotateY(90deg) translateZ(55px)</code></p><p><code>left</code> → <code>rotateY(-90deg) translateZ(55px)</code></p><p><code>top</code> → <code>rotateX(90deg) translateZ(55px)</code></p></div></div></div>"
+    },
+    {
+      "type": "ai",
+      "title": "AI 前沿：一句话生成一个 3D 立方体",
+      "subtitle": "空间想象力不够，AI 可以帮你补；但参数还得你来核对",
+      "nav": "AI 前沿",
+      "text": "3D 变换是初学者最容易「脑子里转不过来」的部分：六个面各转多少度、往哪个方向推、透视距离取多少，全靠空间想象。现在你可以直接告诉 AI：<strong>「用 CSS 做一个 100px 的立方体骰子，六个面用 flex 画点数，沿 y 轴无限旋转」</strong>，DeepSeek、通义千问、GitHub Copilot 都能给出完整代码。关键是你要能<strong>看懂并核对那 6 行 transform</strong>——否则改一个尺寸就全乱了。",
+      "items": [
+        "核对清单：translateZ 是否为<strong>边长的一半</strong>？父级是否写了 <code>preserve-3d</code>？perspective 是否落在父层？",
+        "调试技巧：先给 6 个面设不同半透明颜色（教材正是这么做的），能一眼看出哪个面转错了。",
+        "工具推荐：Copilot / 通义灵码可在编辑器里实时补全 <code>@keyframes</code>，并逐行解释每个函数的作用。",
+        "职业提醒：AI 生成的 3D 代码常常缺少<strong>兼容性前缀与降级方案</strong>——上线前必须人工补上。"
+      ]
+    },
+    {
+      "type": "quiz",
+      "title": "随堂检测",
+      "subtitle": "结合教材 9.1～9.3 要点自测",
+      "nav": "随堂检测",
+      "items": [
+        {
+          "q": "在 CSS3 的 2D 坐标系中，原点位于（　　）。",
+          "options": [
+            "A. 元素的中心",
+            "B. 元素的左上角",
+            "C. 浏览器的左上角",
+            "D. 屏幕中心"
+          ],
+          "answer": "B",
+          "tip": "教材图 9-1：原点 (0,0) 在元素左上角，x 轴向右为正，y 轴向下为正。",
+          "type": "single"
+        },
+        {
+          "q": "关于多个变换函数的复合操作，写法正确的是（　　）。",
+          "options": [
+            "A. transform: scale(2.0), translate(10px,20px);",
+            "B. transform: scale(2.0) translate(10px,20px);",
+            "C. transform: scale(2.0) + translate(10px,20px);",
+            "D. transform: scale(2.0) translate(10px,20px),;"
+          ],
+          "answer": "B",
+          "tip": "教材原文：使用逗号而不使用空格分隔多个变换函数，是一种常见的编程错误。",
+          "type": "single"
+        },
+        {
+          "q": "要让子元素在 3D 空间中呈现，父元素必须设置（　　）。",
+          "options": [
+            "A. transform-style: flat;",
+            "B. transform-style: preserve-3d;",
+            "C. backface-visibility: hidden;",
+            "D. perspective-origin: center;"
+          ],
+          "answer": "B",
+          "tip": "transform-style 的默认值是 flat（2D 平面）；只有 preserve-3d 才能让子元素留在 3D 空间。",
+          "type": "single"
+        },
+        {
+          "q": "下列关于 2D 变换函数与变换轴心的说法中，正确的有（　　）。",
+          "options": [
+            "A. <code>rotate(45deg)</code> 表示顺时针旋转 45 度，取负值表示逆时针旋转",
+            "B. <code>scale(2)</code> 只写一个参数时，x、y 两轴等比放大 2 倍",
+            "C. <code>transform-origin</code> 的两个值之间必须用逗号分隔",
+            "D. <code>skew(30deg)</code> 省略第二个参数时，默认与第一个参数相同"
+          ],
+          "answer": "AB",
+          "tip": "轴心用<strong>空格</strong>分隔；<code>skew</code> 省略第二个参数时默认值为 <strong>0</strong>，不是与第一个相同。",
+          "type": "multi"
+        },
+        {
+          "q": "下列关于 3D 变换与透视的说法中，正确的有（　　）。",
+          "options": [
+            "A. z 轴垂直屏幕，向外为正值、向内为负值",
+            "B. <code>perspective</code> 值越大，物体看起来越小",
+            "C. <code>transform-style</code> 的默认值是 <code>preserve-3d</code>",
+            "D. <code>backface-visibility:hidden</code> 可让元素背面朝向观察者时不可见"
+          ],
+          "answer": "ABD",
+          "tip": "<code>transform-style</code> 默认是 <code>flat</code>（2D 平面），必须显式写成 <code>preserve-3d</code> 才能保留 3D 空间。",
+          "type": "multi"
+        }
+      ]
+    },
+    {
+      "type": "summary",
+      "title": "本课小结",
+      "nav": "本课小结",
+      "items": [
+        "一个属性五件事：<code>transform</code> 负责<strong>旋转 rotate、扭曲 skew、缩放 scale、平移 translate、矩阵变形 matrix</strong>；语法为 <code>transform: none | transform-functions;</code>。",
+        "2D 坐标系：原点在<strong>元素左上角</strong>，<strong>x 向右为正、y 向下为正</strong>；<code>rotate</code> 正值为顺时针。",
+        "复合变换多个函数之间<strong>用空格分隔</strong>（用逗号是常见编程错误），且<strong>顺序会影响最终结果</strong>。",
+        "<code>transform-origin: x y</code> 用空格分隔，默认轴心为 <strong>50% 50%</strong>（盒子中心）。",
+        "3D 三要素：<strong>z 轴垂直屏幕向外为正</strong>、<code>transform-style:preserve-3d</code>、<code>perspective</code> 透视距离（<strong>近大远小</strong>）。",
+        "骰子套路：每个面<strong>先旋转到位，再 translateZ(边长的一半)</strong>。"
+      ]
+    },
+    {
+      "type": "homework",
+      "title": "课后作业",
+      "nav": "课后作业",
+      "items": [
+        "<strong>操作题：</strong>完成教材任务 9-1，制作 3D 骰子；把边长改为 160px，重算 translateZ 并验证。",
+        "<strong>简述题（教材 9.8）：</strong>以右手法则为例：伸出右手，大拇指指向旋转轴的正方向，其余四指的环绕方向恰好对应旋转的正方向。请结合本项目的示例，验证并说明 CSS3 的 3D 空间旋转符合<strong>左手法则还是右手法则</strong>。",
+        "<strong>思考题：</strong>把 <code>perspective</code> 分别设为 200px、800px、2000px，截图对比并说明「近大远小」的变化规律。",
+        "<strong>预习：</strong>阅读教材 9.4，思考过渡（transition）与变换（transform）在拼写与作用上有何不同。"
+      ]
+    },
+    {
+      "type": "refs",
+      "title": "出处与参考",
+      "subtitle": "本课件内容依据教材，并核对以下权威技术文档",
+      "nav": "出处与参考",
+      "items": [
+        {
+          "t": "教材《网页制作（HTML5+CSS3）》项目9 过渡和动画（9.1～9.3，PDF 288–299）",
+          "u": "郑哲、傅冬 主编 · 电子工业出版社 · 2025 年 1 月第 1 版"
+        },
+        {
+          "t": "MDN Web Docs · transform",
+          "u": "https://developer.mozilla.org/zh-CN/docs/Web/CSS/transform"
+        },
+        {
+          "t": "MDN Web Docs · transform-function（变换函数）",
+          "u": "https://developer.mozilla.org/zh-CN/docs/Web/CSS/transform-function"
+        },
+        {
+          "t": "MDN Web Docs · transform-origin",
+          "u": "https://developer.mozilla.org/zh-CN/docs/Web/CSS/transform-origin"
+        },
+        {
+          "t": "MDN Web Docs · transform-style 与 perspective（3D 场景）",
+          "u": "https://developer.mozilla.org/zh-CN/docs/Web/CSS/transform-style"
+        },
+        {
+          "t": "W3C · CSS Transforms Module Level 1",
+          "u": "https://www.w3.org/TR/css-transforms-1/"
+        }
+      ]
+    },
+    {
+      "type": "end",
+      "title": "第 23 单元 · 结束",
+      "text": "下一单元：让变化「慢慢发生」——过渡与动画",
+      "nav": "结束"
+    }
+  ]
+}

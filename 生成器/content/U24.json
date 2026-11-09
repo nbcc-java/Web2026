@@ -1,0 +1,428 @@
+{
+  "id": "U24",
+  "project": "项目9",
+  "project_name": "过渡和动画",
+  "unit": "第 24 单元",
+  "title": "过渡与动画：transition 与 @keyframes",
+  "subtitle": "过渡管「两种状态之间」，动画管「一串关键帧」——让页面自己动起来",
+  "duration": 40,
+  "cover_tags": [
+    "transition",
+    "@keyframes",
+    "animation",
+    "animation-fill-mode",
+    "infinite"
+  ],
+  "ref_book": "电子工业出版社 · 2025 年 1 月第 1 版",
+  "objectives": {
+    "knowledge": [
+      "掌握 CSS3 过渡语法及其应用",
+      "掌握 CSS3 动画语法及其应用",
+      "掌握循环动画的制作技巧"
+    ],
+    "skill": [
+      "能使用 CSS3 过渡语法实现过渡效果",
+      "能使用 CSS3 动画语法实现 2D 动画效果",
+      "能使用 CSS3 动画语法实现 3D 动画效果",
+      "能使用 CSS3 动画语法实现循环动画效果"
+    ],
+    "literacy": [
+      "培养精益求精的工匠精神",
+      "培养勇于探索、崇尚科学的意志和品德",
+      "培养严谨求实的学习态度"
+    ]
+  },
+  "slides": [
+    {
+      "type": "objectives",
+      "title": "本单元我们要达成什么",
+      "subtitle": "对照教材《项目9》9.4～9.5 的目标",
+      "objectives": {
+        "knowledge": [
+          "掌握 CSS3 过渡语法及其应用",
+          "掌握 CSS3 动画语法及其应用",
+          "掌握循环动画的制作技巧"
+        ],
+        "skill": [
+          "能使用 transition 实现两种状态之间的过渡",
+          "能用 @keyframes 定义关键帧并启用动画",
+          "能制作无限循环的动画效果"
+        ],
+        "literacy": [
+          "培养精益求精的工匠精神",
+          "培养勇于探索、崇尚科学的意志和品德",
+          "培养严谨求实的学习态度"
+        ]
+      }
+    },
+    {
+      "type": "outline",
+      "title": "本单元导览",
+      "subtitle": "两条主线：过渡（transition）与动画（animation）",
+      "nav": "导览",
+      "items": [
+        "什么是过渡？它管的是「两种状态之间的切换」（9.4）",
+        "任务 9-2：2 秒宽度过渡与多属性过渡",
+        "动画与过渡最大的区别：@keyframes 自定义关键帧（9.5）",
+        "任务 9-3：让 3D 骰子沿 y 轴循环旋转"
+      ]
+    },
+    {
+      "type": "section",
+      "no": "9.4",
+      "title": "过渡",
+      "text": "没有过渡，状态切换就是「跳变」；有了过渡，就有了丝滑。",
+      "nav": "9.4 过渡"
+    },
+    {
+      "type": "bullets",
+      "title": "什么是过渡（transition）",
+      "subtitle": "教材定义：让你定义元素在两种状态之间切换的过渡效果",
+      "nav": "过渡的定义",
+      "items": [
+        "过渡（<code>transition</code>）样式规则能够让你定义元素在<strong>两种状态之间切换</strong>的过渡效果。",
+        "常用做法：给<strong>同一个元素</strong>应用 <code>:hover</code> 伪类和 <code>:active</code> 伪类，并分别定义不同的样式。",
+        "学了 JavaScript 之后，也可以通过<strong>脚本来切换状态</strong>，同样会触发过渡。",
+        "一句话记忆：<strong>过渡需要一个「触发」</strong>——鼠标悬停、点击、获得焦点或类名变化。"
+      ]
+    },
+    {
+      "type": "table",
+      "title": "常用的过渡样式属性（教材表 9-3）",
+      "subtitle": "四个子属性，决定「变什么、变多久、怎么变、何时开始」",
+      "nav": "表9-3 过渡属性",
+      "head": [
+        "样式属性名",
+        "描述"
+      ],
+      "rows": [
+        [
+          "transition-property",
+          "指定 CSS 属性的 name、transition 效果（即<strong>哪些属性参与过渡</strong>）"
+        ],
+        [
+          "transition-duration",
+          "指定 transition 效果需要<strong>多少秒或毫秒</strong>才能完成"
+        ],
+        [
+          "transition-timing-function",
+          "指定 transition 效果的<strong>转速曲线</strong>（即速度如何变化）"
+        ],
+        [
+          "transition-delay",
+          "定义 transition 效果<strong>开始的时间</strong>（延迟多久才启动）"
+        ]
+      ]
+    },
+    {
+      "type": "codebullets",
+      "title": "transition 综合语法与初始值",
+      "subtitle": "写简写时四个值的顺序是固定的：属性、时长、曲线、延迟",
+      "nav": "综合语法",
+      "items": [
+        "综合语法：<code>transition: property duration timing-function delay;</code>",
+        "教材给出的<strong>初始值</strong>：<code>transition-delay: 0s</code>、<code>transition-duration: 0s</code>、<code>transition-property: all</code>、<code>transition-timing-function: ease</code>。",
+        "注意：<strong>duration 默认为 0s</strong>——不写时长就<strong>看不到任何过渡</strong>，这是初学最常见的失误。",
+        "两个时间值同时出现时，<strong>第一个是 duration，第二个是 delay</strong>。",
+        "小技巧：可以在<strong>浏览器开发者工具</strong>中查看所有预设的动画函数效果，甚至可以自定义动画函数（图 9-16）。"
+      ],
+      "lang": "css",
+      "file": "style.css",
+      "code": "/* 综合语法 */\ntransition: property duration timing-function delay;\n\n/* 示例：宽度在 1s 内以 ease-in-out 曲线过渡，延迟 0.3s 开始 */\ndiv{ transition: width 1s ease-in-out 0.3s; }\n\n/* 初始值（教材给出） */\ntransition-delay: 0s\ntransition-duration: 0s\ntransition-property: all\ntransition-timing-function: ease"
+    },
+    {
+      "type": "task",
+      "title": "任务 9-2｜制作简单过渡效果",
+      "subtitle": "创建 div，宽度 100px；鼠标悬停时宽度 300px；实现 2s 的宽度过渡效果（使用默认动画函数）",
+      "nav": "任务9-2 过渡",
+      "goal": "用 <code>:hover</code> 制造两个明显不同的状态，再用 <code>transition</code> 让变化<strong>在 2 秒内慢慢发生</strong>。",
+      "steps": [
+        "新建 div，设置 <code>background-color:#FFE4C4</code>、<code>width:100px</code>、<code>padding:20px</code>。",
+        "写 <code>div:hover{ width:300px; }</code>，让两个状态有明显区别（图 9-12 → 图 9-13）。",
+        "<strong>最关键的一步：</strong>在 <code>div</code> 上写 <code>transition: width 2s;</code>。",
+        "补充 <code>-webkit-transition: width 2s;</code>——这是<strong>兼容性写法</strong>，为让 Safari 支持。",
+        "把鼠标移上去，观察宽度是「跳变」还是「平滑增长」。"
+      ],
+      "lang": "css",
+      "code": "/* 代码 9-4 */\ndiv{\n    background-color:#FFE4C4;\n    width:100px;\n    padding:20px;\n    transition: width 2s;\n    -webkit-transition: width 2s;  /* Safari */\n}\ndiv:hover { width:300px; }"
+    },
+    {
+      "type": "code",
+      "title": "多属性过渡与 all 技巧（代码 9-5）",
+      "subtitle": "多个属性同时过渡时用逗号分隔；属性太多就用 all 代替",
+      "nav": "多属性过渡",
+      "lang": "css",
+      "file": "style.css",
+      "code": "/* 代码 9-5：多属性过渡（图 9-14 → 图 9-15） */\ndiv{\n    background-color:#FFE4C4; width:100px; padding:20px;\n    transition: width ease-in-out 2s, background-color ease-in-out 2s;\n    -webkit-transition: width ease-in-out 2s, background-color ease-in-out 2s; /* Safari */\n}\ndiv:hover{ width:300px; background-color:#f00; }\n\n/* 技巧：用 all 代替所有要实现过渡变化的样式属性 */\ntransition: all ease-in-out 2s;\n-webkit-transition: all ease-in-out 2s; /* Safari */",
+      "caption": "<b>技巧（教材原文）：</b>使用 <code>all</code> 代替所有要实现过渡变化的样式属性，是一种常用的技巧。<br><b>常见的编程错误（教材原文）：</b>把 <code>transition</code> 错拼成 <code>transform</code>——两者一个管「过渡」、一个管「变换」，切勿混淆。"
+    },
+    {
+      "type": "demo",
+      "title": "交互演示｜把鼠标移到卡片上，感受过渡与动画",
+      "subtitle": "上行三张卡是 hover 触发的过渡；下行是 @keyframes 自动播放的动画",
+      "nav": "过渡与动画演示",
+      "items": [
+        "卡片 1：<code>transition: width 2s</code>——宽度从 60px 平滑长到满格。",
+        "卡片 2：<code>transition: all ease-in-out .6s</code>——颜色、位移、阴影一起变。",
+        "卡片 3：<code>transition: transform 1s</code>——旋转 180 度并放大 1.2 倍。",
+        "下行：圆点是 <code>animation: bounce 1.6s ease-in-out infinite</code>，进度条是 <code>animation: fill 3s ease-in-out infinite</code>——<strong>不需要任何触发</strong>。"
+      ],
+      "hint": "过渡必须有「触发」（这里是 :hover），动画只要写一次就会自动循环——这就是两者最直观的区别。",
+      "html": "<style>.d24{margin:0;font-family:'PingFang SC',system-ui,sans-serif;color:#1b2a44}.d24 .row{display:flex;justify-content:center;gap:14px;padding:4px 0}.d24 .card{width:186px;background:#fff;border:1px solid #e2e8f2;border-radius:12px;padding:12px;box-shadow:0 14px 32px -20px rgba(20,40,90,.55)}.d24 .ttl{margin:0 0 10px;text-align:center;font-size:11.5px;font-weight:700;color:#2f6bff;font-family:Menlo,monospace}.d24 .bar{height:26px;border-radius:8px;background:#FFE4C4;width:56px;transition:width 2s;display:flex;align-items:center;padding:0 8px;color:#8a5a00;font-size:11px;white-space:nowrap;overflow:hidden}.d24 .card:hover .bar{width:100%}.d24 .btn{height:32px;border-radius:8px;background:#2f6bff;color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;transition:all ease-in-out .6s}.d24 .card:hover .btn{background:#ff5e7d;transform:translateY(-3px);box-shadow:0 10px 20px -8px rgba(255,94,125,.9)}.d24 .sq{width:58px;height:58px;margin:0 auto;border-radius:10px;background:linear-gradient(135deg,#67cf22,#0fb5c9);transition:transform 1s ease-in-out}.d24 .card:hover .sq{transform:rotate(180deg) scale(1.2)}.d24 .arow{display:flex;align-items:center;justify-content:center;gap:14px;margin-top:16px}.d24 .card2{width:186px;background:#fff;border:1px solid #e2e8f2;border-radius:12px;padding:12px;text-align:center;box-shadow:0 14px 32px -20px rgba(20,40,90,.55)}.d24 .dot{width:46px;height:46px;margin:6px auto 4px;border-radius:50%;background:rgba(250,0,0,.5);animation:bb 1.6s ease-in-out infinite}.d24 .load{height:12px;margin:18px 0 6px;border-radius:999px;background:#eef3ff;overflow:hidden}.d24 .load i{display:block;height:100%;width:0;border-radius:999px;background:linear-gradient(90deg,#2f6bff,#0fb5c9);animation:fl 3s ease-in-out infinite}.d24 .note{margin-top:12px;text-align:center;font-size:11.5px;color:#5a6c85}.d24 .note code{background:#eef3ff;border:1px solid #d5e2fb;border-radius:5px;padding:1px 6px;color:#1d46b8}@keyframes bb{0%,100%{transform:scale(1)}50%{transform:scale(.2)}}@keyframes fl{0%{width:0}100%{width:100%}}</style><div class='d24'><div class='row'><div class='card'><p class='ttl'>transition: width 2s</p><div class='bar'>hover 我</div></div><div class='card'><p class='ttl'>transition: all .6s</p><div class='btn'>hover 我</div></div><div class='card'><p class='ttl'>transition: transform 1s</p><div class='sq'></div></div></div><div class='arow'><div class='card2'><p class='ttl'>@keyframes bounce</p><div class='dot'></div></div><div class='card2'><p class='ttl'>@keyframes fill</p><div class='load'><i></i></div></div></div><p class='note'>上行需要 <strong>:hover 触发</strong>（过渡）　·　下行自动循环播放（<code>animation</code> + <code>infinite</code>）</p></div>"
+    },
+    {
+      "type": "section",
+      "no": "9.5",
+      "title": "动画",
+      "text": "过渡只能描述「从 A 到 B」，动画则可以写出 A→B→C→D 的整条时间线。",
+      "nav": "9.5 动画"
+    },
+    {
+      "type": "bullets",
+      "title": "动画与过渡：最大的区别是什么",
+      "subtitle": "教材结论：动画支持自定义关键帧规则，可控性更高",
+      "nav": "动画 vs 过渡",
+      "items": [
+        "CSS3 中一些样式属性除了可用于过渡，还可以用于<strong>创建动画</strong>，以此取代许多通过动画图像、Flash 动画和 JavaScript 实现的效果。",
+        "原理与过渡非常类似，主要实现<strong>从一个值变化到另一个值</strong>（尺寸大小、数量、百分比和颜色变化等）。",
+        "<strong>最大区别：动画支持自定义关键帧规则。</strong>关键帧规则通过 <code>@keyframes</code> 定义。",
+        "通过在动画序列中定义关键帧（waypoints）的样式，来控制 CSS 动画序列的<strong>中间步骤</strong>。",
+        "因此，<strong>动画的可控性要比过渡的可控性高</strong>；而且动画<strong>不需要触发</strong>，页面加载后即可自行播放。"
+      ]
+    },
+    {
+      "type": "codebullets",
+      "title": "@keyframes 与 animation 的语法",
+      "subtitle": "教材示例：让骰子沿 y 轴从 0 度转到 359 度",
+      "nav": "关键帧语法",
+      "items": [
+        "<code>@keyframes</code> 语法：<code>@keyframes animationname { keyframes-selector { css-styles; } }</code>",
+        "教材解析：按顺序列出关键帧百分比——<strong>0% 对应起始帧，50% 对应中间帧，100% 对应结束帧</strong>。",
+        "<strong>技巧（教材原文）：</strong><code>0%</code> 可以用预设值 <code>from</code> 替代，<code>100%</code> 可以用 <code>to</code> 替代。",
+        "<code>animation</code> 综合语法：<code>animation: name duration timing-function delay iteration-count direction fill-mode;</code>",
+        "示例中的 <code>rotate3d(0,1,0,0deg)</code> 表示<strong>绕 y 轴旋转 0 度</strong>；中间转到 180 度，结束转到 359 度。"
+      ],
+      "lang": "css",
+      "file": "style.css",
+      "code": "/* 定义关键帧 */\n@keyframes rotateDice {\n  0%   { transform: rotate3d(0, 1, 0, 0deg); }\n  50%  { transform: rotate3d(0, 1, 0, 180deg); }\n  100% { transform: rotate3d(0, 1, 0, 359deg); }\n}\n\n/* 启用动画：2s 一个周期，匀速，无限循环 */\n#dice{ animation: rotateDice 2s linear infinite; }\n\n/* 综合语法 */\nanimation: name duration timing-function delay iteration-count direction fill-mode;"
+    },
+    {
+      "type": "table",
+      "title": "常用的 animation 样式属性（教材表 9-4）",
+      "subtitle": "一个简写属性 + 八个子属性",
+      "nav": "表9-4 animation",
+      "head": [
+        "样式属性名",
+        "描述"
+      ],
+      "rows": [
+        [
+          "animation",
+          "<strong>所有动画属性</strong>的简写样式属性"
+        ],
+        [
+          "animation-name",
+          "规定<strong>动画的名称</strong>"
+        ],
+        [
+          "animation-duration",
+          "规定动画完成<strong>一个周期</strong>所花费的时间，单位为秒或毫秒。<strong>默认值是 0</strong>"
+        ],
+        [
+          "animation-timing-function",
+          "规定动画的<strong>速度曲线</strong>。<strong>默认值是 ease</strong>"
+        ],
+        [
+          "animation-fill-mode",
+          "规定当<strong>不播放动画时</strong>（动画完成播放时，或动画有延迟未开始播放时），要应用的元素样式"
+        ],
+        [
+          "animation-delay",
+          "规定动画<strong>何时开始播放</strong>。<strong>默认值是 0</strong>"
+        ],
+        [
+          "animation-iteration-count",
+          "规定动画的<strong>播放次数</strong>。<strong>默认值是 1</strong>"
+        ],
+        [
+          "animation-direction",
+          "规定动画是否在下一个周期<strong>逆向播放</strong>。<strong>默认值是 normal</strong>"
+        ],
+        [
+          "animation-play-state",
+          "规定动画是否<strong>正在播放或暂停</strong>。<strong>默认值是 running</strong>"
+        ]
+      ]
+    },
+    {
+      "type": "bullets",
+      "title": "使用 animation 的三条注意事项",
+      "subtitle": "教材原文要点",
+      "nav": "注意事项",
+      "items": [
+        "<code>animation-name</code> 所规定的动画名称，<strong>必须和前面定义的 @keyframes 动画名称保持一致</strong>——名字对不上，动画完全不会执行。",
+        "<code>animation-duration</code>、<code>animation-timing-function</code>、<code>animation-delay</code> 的用法和过渡样式属性非常类似。",
+        "<code>animation-duration</code> 默认值为 <strong>0</strong>，和上节课的 transition 一样——<strong>不写时长就没有动画</strong>。",
+        "想做循环动画：<code>animation-iteration-count: infinite;</code>（或直接写进简写里）。"
+      ]
+    },
+    {
+      "type": "task",
+      "title": "任务 9-3｜制作旋转骰子",
+      "subtitle": "在任务 9-1 基础上创建自定义动画 rotateDice，让骰子沿 y 轴旋转，2s 一个周期循环播放（图 9-17）",
+      "nav": "任务9-3 旋转骰子",
+      "goal": "用 <code>@keyframes</code> 描述「0° → 180° → 359°」的时间线，再用 <code>animation</code> 简写启用并无限循环。",
+      "steps": [
+        "沿用任务 9-1 的结构与 <code>.face</code> 样式（6 个面保持不变）。",
+        "定义动画：013～023 行由 3 部分构成——<strong>0% 起始帧、50% 中间帧、100% 结束帧</strong>。",
+        "注意这里的 <code>perspective-origin</code> 改为 <strong>center center</strong>（任务 9-1 中是 bottom center）。",
+        "用 <code>animation: rotateDice 2s linear infinite;</code> 启用动画，周期为 2s 且<strong>无限循环</strong>。",
+        "保存后刷新页面，骰子应<strong>无需任何交互</strong>就开始旋转。"
+      ],
+      "lang": "css",
+      "code": "/* 代码 9-6 */\n@keyframes rotateDice {\n  0%   { transform: rotate3d(0, 1, 0, 0deg); }\n  50%  { transform: rotate3d(0, 1, 0, 180deg); }\n  100% { transform: rotate3d(0, 1, 0, 359deg); }\n}\n#dice{\n    width:100px; height:100px; margin:0 auto;\n    transform-style:preserve-3d;\n    perspective:800px;\n    perspective-origin:center center;      /* 与任务9-1 的 bottom center 不同 */\n    animation: rotateDice 2s linear infinite;\n}\n/* .face / .front / .back / .right / .left / .top / .bottom 与代码9-3 相同 */"
+    },
+    {
+      "type": "ai",
+      "title": "AI 前沿：让 AI 帮你「编舞」",
+      "subtitle": "关键帧是最适合交给 AI 的重复性劳动",
+      "nav": "AI 前沿",
+      "text": "写 <code>@keyframes</code> 本质上是<strong>编舞</strong>：把一段动作拆成若干百分比节点，再逐帧给出样式。这恰好是 AI 最擅长的模式化工作——你描述「一个按钮被 hover 时先放大 1.1 倍再回弹，同时阴影扩散」，GitHub Copilot、通义灵码、文心快码就能给出完整的过渡与动画代码。你的价值在于<strong>判断这段舞好不好看、性能可不可接受</strong>。",
+      "items": [
+        "提示词示例：「用 CSS 写一个 2s 的循环呼吸灯动画，两个圆交替缩放，用 animation-delay 错开」。",
+        "性能提醒：优先对 <code>transform</code> 与 <code>opacity</code> 做动画，尽量<strong>少对 width、top、left 做动画</strong>（会触发布局重排）。",
+        "无障碍提醒：应尊重用户的系统偏好，必要时为<strong>减弱动效</strong>偏好提供降级方案。",
+        "职业提醒：AI 很容易写出「能跑但性能差」的动画，能用开发者工具的<strong>性能面板</strong>验证，才是真本事。"
+      ]
+    },
+    {
+      "type": "quiz",
+      "title": "随堂检测",
+      "subtitle": "选自教材 9.8 课后选择题",
+      "nav": "随堂检测",
+      "items": [
+        {
+          "q": "CSS3 中的 @keyframes 规则是用于（　　）。",
+          "options": [
+            "A. 定义动画名称",
+            "B. 定义动画关键帧",
+            "C. 定义动画函数",
+            "D. 定义动画播放的时长"
+          ],
+          "answer": "B",
+          "tip": "关键帧规则通过 @keyframes 定义；名称由 animation-name 指定，时长由 animation-duration 指定。",
+          "type": "single"
+        },
+        {
+          "q": "在 CSS3 中，animation-fill-mode 属性用于设置（　　）。",
+          "options": [
+            "A. 动画播放的时长",
+            "B. 动画运动的函数",
+            "C. 动画结束后元素的样式",
+            "D. 动画的延迟"
+          ],
+          "answer": "C",
+          "tip": "fill-mode 规定当不播放动画时（播放完成后或延迟未开始时）元素应用的样式。",
+          "type": "single"
+        },
+        {
+          "q": "在 CSS3 中，（　　）不是用来控制动画的速度曲线函数。",
+          "options": [
+            "A. ease",
+            "B. linear",
+            "C. linear-gradient",
+            "D. ease-in-out"
+          ],
+          "answer": "C",
+          "tip": "linear-gradient 是渐变背景函数，不是速度曲线。",
+          "type": "single"
+        },
+        {
+          "q": "关于 CSS3 中的 animation 属性，说法不正确的是（　　）。",
+          "options": [
+            "A. 它是一个简写样式属性，可以定义动画的相关样式",
+            "B. 它可以定义动画规则",
+            "C. 它可以指定动画播放的时长",
+            "D. 它可以指定动画播放的循环次数"
+          ],
+          "answer": "B",
+          "tip": "动画规则（关键帧）由 @keyframes 定义，animation 只负责「引用并启用」这个动画。",
+          "type": "single"
+        },
+        {
+          "q": "下列关于过渡 <code>transition</code> 的说法中，正确的有（　　）。",
+          "options": [
+            "A. 简写中同时出现两个时间值时，第一个是 duration，第二个是 delay",
+            "B. <code>transition-property</code> 的初始值是 <code>all</code>",
+            "C. 不写 <code>transition-duration</code> 时默认为 1s，仍能看到过渡",
+            "D. 给同一元素设置 <code>:hover</code> 的不同样式，即可触发过渡"
+          ],
+          "answer": "ABD",
+          "tip": "<code>transition-duration</code> 默认是 <strong>0s</strong>，不写时长就看不到任何过渡效果。",
+          "type": "multi"
+        }
+      ]
+    },
+    {
+      "type": "summary",
+      "title": "本课小结",
+      "nav": "本课小结",
+      "items": [
+        "过渡 <code>transition</code>：定义元素在<strong>两种状态之间切换</strong>的效果，常用 <code>:hover</code> 触发，<strong>必须有触发</strong>。",
+        "简写顺序：<code>transition: property duration timing-function delay;</code>；属性值太多时可用 <code>all</code> 代替。",
+        "动画 <code>animation</code>：通过 <code>@keyframes</code> 自定义<strong>关键帧</strong>，可控制中间步骤，<strong>可控性高于过渡</strong>。",
+        "<code>animation: name duration timing-function delay iteration-count direction fill-mode;</code>——<strong>name 必须与 @keyframes 名称一致</strong>。",
+        "循环动画用 <code>infinite</code>；<strong>duration 默认值为 0</strong>，不写时长就看不到任何效果。"
+      ]
+    },
+    {
+      "type": "homework",
+      "title": "课后作业",
+      "nav": "课后作业",
+      "items": [
+        "<strong>选择题：</strong>完成教材 9.8「一、选择题」第 1～5 题，并说明每个选项为何对或错。",
+        "<strong>操作题：</strong>完成教材任务 9-2 与任务 9-3；把旋转骰子的周期从 2s 改为 5s，并改用 <code>animation-direction:alternate</code> 观察差异。",
+        "<strong>简述题（教材 9.8）：</strong>任务 9-5 使用「指定子元素」的方式实现了卡片翻转动画。请把它改成「<strong>指定父元素</strong>」的方式，比较写法区别，并分析哪种更简洁。",
+        "<strong>预习：</strong>阅读教材 9.6，思考呼吸灯动画中两个圆圈的运动规律有什么关系。"
+      ]
+    },
+    {
+      "type": "refs",
+      "title": "出处与参考",
+      "subtitle": "本课件内容依据教材，并核对以下权威技术文档",
+      "nav": "出处与参考",
+      "items": [
+        {
+          "t": "教材《网页制作（HTML5+CSS3）》项目9 过渡和动画（9.4～9.5，PDF 300–307）",
+          "u": "郑哲、傅冬 主编 · 电子工业出版社 · 2025 年 1 月第 1 版"
+        },
+        {
+          "t": "MDN Web Docs · 使用 CSS 过渡（CSS transitions）",
+          "u": "https://developer.mozilla.org/zh-CN/docs/Web/CSS/CSS_transitions"
+        },
+        {
+          "t": "MDN Web Docs · transition",
+          "u": "https://developer.mozilla.org/zh-CN/docs/Web/CSS/transition"
+        },
+        {
+          "t": "MDN Web Docs · 使用 CSS 动画（CSS animations）",
+          "u": "https://developer.mozilla.org/zh-CN/docs/Web/CSS/CSS_animations"
+        },
+        {
+          "t": "MDN Web Docs · @keyframes",
+          "u": "https://developer.mozilla.org/zh-CN/docs/Web/CSS/@keyframes"
+        },
+        {
+          "t": "MDN Web Docs · animation",
+          "u": "https://developer.mozilla.org/zh-CN/docs/Web/CSS/animation"
+        }
+      ]
+    },
+    {
+      "type": "end",
+      "title": "第 24 单元 · 结束",
+      "text": "下一单元：两个综合案例——呼吸灯与卡片翻转",
+      "nav": "结束"
+    }
+  ]
+}

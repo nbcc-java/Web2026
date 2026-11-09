@@ -1,0 +1,14 @@
+# 系统与缓存
+.DS_Store
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# 教材原件与临时文件（版权原因不入库）
+网页制作教材/
+*.pdf
+
+# 构建临时产物
+*.tmp
+.screenshots/
