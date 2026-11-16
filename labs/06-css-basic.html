@@ -1,0 +1,732 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>项目6 · 选择器与优先级：谁说了算</title>
+<link rel="stylesheet" href="assets/base.css">
+<style>
+  /* ---- 靶场 ---- */
+  .arena {
+    border: 1px dashed var(--line-2); border-radius: var(--r-s);
+    padding: 16px; background: var(--bg-2); display: grid; gap: 12px;
+  }
+  .arena .card2 {
+    border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px;
+    background: var(--panel-2); display: grid; gap: 8px;
+  }
+  .arena h3 { margin: 0; font-size: 15px; }
+  .arena p { margin: 0; font-size: 13px; color: var(--tx-2); }
+  .arena ul { margin: 0; padding-left: 18px; display: flex; gap: 6px; list-style: none; }
+  .arena li.tag {
+    font-size: 11.5px; padding: 2px 9px; border-radius: 99px;
+    background: var(--acc-soft); color: var(--acc-2); border: 1px solid color-mix(in srgb, var(--acc) 30%, transparent);
+  }
+  .arena a.more { font-size: 12.5px; }
+  .arena .hit {
+    outline: 2px solid var(--acc); outline-offset: 2px;
+    position: relative; z-index: 1;
+    box-shadow: 0 0 0 6px var(--acc-soft);
+    border-radius: 4px;
+  }
+  .arena .hit::before {
+    content: attr(data-hit); position: absolute; top: -9px; right: -4px;
+    font-size: 10px; font-family: var(--mono); background: var(--acc); color: #fff;
+    padding: 0 6px; border-radius: 99px; transform: translateY(-100%);
+  }
+
+  .selinput {
+    width: 100%; padding: 9px 12px; font-family: var(--mono); font-size: 13px;
+    background: var(--code-bg); color: var(--tx); border: 1px solid var(--line-2);
+    border-radius: 8px; outline: none;
+  }
+  .selinput:focus { border-color: var(--acc); box-shadow: 0 0 0 3px var(--acc-soft); }
+  .selinput.bad { border-color: var(--err); }
+
+  .chips { display: flex; flex-wrap: wrap; gap: 5px; }
+  .chips button {
+    font-family: var(--mono); font-size: 11.5px; padding: 3px 9px; border-radius: 99px;
+    border: 1px solid var(--line); background: var(--panel-2); color: var(--tx-2); cursor: pointer;
+  }
+  .chips button:hover { color: var(--acc); border-color: var(--acc); }
+
+  .specbar { display: flex; gap: 6px; margin-top: 12px; flex-wrap: wrap; align-items: center; }
+  .specbox {
+    font-family: var(--mono); font-size: 12px; padding: 4px 11px; border-radius: 7px;
+    background: var(--panel-2); border: 1px solid var(--line); color: var(--tx-2);
+  }
+  .specbox b { color: var(--acc-2); font-size: 13px; }
+  .specbox.a { border-color: color-mix(in srgb, #f472b6 45%, transparent); }
+  .specbox.b { border-color: color-mix(in srgb, #a78bfa 45%, transparent); }
+  .specbox.c { border-color: color-mix(in srgb, #38bdf8 45%, transparent); }
+
+  /* ---- 优先级天平 ---- */
+  .battle { display: grid; gap: 10px; }
+  .rule {
+    display: grid; grid-template-columns: 1fr 120px 26px; gap: 10px; align-items: center;
+    padding: 10px 12px; border-radius: var(--r-s); border: 1px solid var(--line);
+    background: var(--panel-2); transition: .2s;
+  }
+  .rule.win { border-color: var(--ok); box-shadow: 0 0 0 2px color-mix(in srgb, var(--ok) 25%, transparent); }
+  .rule .sel { font-family: var(--mono); font-size: 13px; }
+  .rule .wbar { height: 8px; border-radius: 99px; background: var(--panel-3); overflow: hidden; }
+  .rule .wbar i { display: block; height: 100%; border-radius: 99px; transition: width .3s; }
+  .rule .sw { width: 22px; height: 22px; border-radius: 6px; border: 1px solid var(--line-2); }
+  .target {
+    margin: 0; padding: 18px; border-radius: var(--r-s); text-align: center;
+    background: var(--panel-2); border: 1px solid var(--line);
+    font-size: 16px; font-weight: 600; transition: color .25s;
+  }
+  .target small { display: block; font-size: 11.5px; color: var(--tx-3); font-weight: 400; margin-top: 5px; }
+
+  /* ---- 颜色与单位 ---- */
+  .swatch {
+    height: 96px; border-radius: var(--r-s); border: 1px solid var(--line-2);
+    display: grid; place-items: center; font-family: var(--mono); font-size: 13px;
+    transition: background .2s;
+  }
+  .vals { display: grid; gap: 4px; margin-top: 10px; font-family: var(--mono); font-size: 12px; color: var(--tx-2); }
+  .vals span b { color: var(--acc-2); }
+
+  .colorgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; align-items: start; }
+  @media (max-width: 1180px) { .colorgrid { grid-template-columns: 1fr; row-gap: 20px; } }
+  .cell { min-width: 0; }
+  .cellhead {
+    display: flex; align-items: center; gap: 7px;
+    margin: 0 0 9px; font-size: 12px; font-weight: 600; color: var(--tx-2);
+  }
+  .cellhead i { flex: 0 0 auto; width: 7px; height: 7px; border-radius: 50%; background: var(--acc); }
+  .cellhead i.c-rem { background: #a78bfa; }
+  .cellhead i.c-pct { background: var(--warn); }
+  .cellhead i.c-vw  { background: #22c55e; }
+  .cellhead small { font-weight: 400; color: var(--tx-3); }
+
+  /* 字号组：em / rem */
+  .fontbox {
+    border: 1px dashed var(--line-2); border-radius: var(--r-s);
+    padding: 12px; background: var(--bg-2);
+  }
+  /* 这个块本身不设 font-size，字号由 #unitParent 的滑块决定，1em 才等于当前字号 */
+  .fssample {
+    display: flex; align-items: center; gap: 9px; margin: 0 0 10px;
+    font-family: var(--mono); color: var(--tx-3); min-height: 1em; line-height: 1.2;
+  }
+  .fssample > span { color: var(--tx); font-weight: 600; }
+  .fssample > b { font-size: 11px; font-weight: 400; white-space: nowrap; }
+  .fssample > b em { font-style: normal; color: var(--acc-2); }
+  .fssample .emcube {
+    flex: 0 0 auto; width: 1em; height: 1em; border-radius: 2px; background: var(--acc);
+  }
+
+  .barbox { position: relative; }
+  /* 160px 基准线 = 16px 字号下的 10em */
+  .barbox::after {
+    content: ""; position: absolute; left: 160px; top: 0; bottom: 0;
+    border-left: 1px dashed color-mix(in srgb, var(--tx) 55%, transparent);
+    pointer-events: none;
+  }
+  .ruler { position: relative; height: 12px; margin: 0 0 3px; }
+  .ruler b {
+    position: absolute; left: 164px; top: 0;
+    font: 400 10px/1.1 var(--mono); color: var(--tx-3); white-space: nowrap;
+  }
+  /* 关键：这里不写 font-size，柱子才能继承 #unitParent 的字号，10em 才会跟着变 */
+  .ubar {
+    height: 26px; border-radius: 5px; margin-bottom: 7px;
+    background: linear-gradient(90deg, var(--acc), var(--acc-2));
+    color: #fff; font-family: var(--mono); display: flex; align-items: center;
+    padding-left: 8px; white-space: nowrap; transition: width .25s; overflow: hidden;
+  }
+  .ubar > span { font-size: 11px; }
+  /* 10em 柱：内部划出 10 个等宽格子（= 10 个 1em），格子宽度随字号一起变 */
+  .ubar.em {
+    padding-left: 0;
+    background-image:
+      linear-gradient(90deg, rgba(255,255,255,.5) 0 1px, transparent 1px),
+      linear-gradient(90deg, var(--acc), var(--acc-2));
+    background-size: 10% 100%, 100% 100%;
+    background-repeat: repeat-x, no-repeat;
+  }
+  .ubar.em > span { display: block; padding-left: 8px; }
+  .ubar.rem { background: linear-gradient(90deg, #a78bfa, #f472b6); }
+  .ubar.pct { background: linear-gradient(90deg, #f59e0b, #fbbf24); }
+  .ubar.vw  { background: linear-gradient(90deg, #22c55e, #4ade80); }
+
+  /* 宽度组：% 的父容器，宽度可调 */
+  .cbox {
+    border: 1px dashed var(--line-2); border-radius: var(--r-s);
+    padding: 8px; background: var(--bg-2); transition: width .25s;
+  }
+  .cbox .ubar { margin-bottom: 0; }
+
+  /* 宽度组：vw 的迷你视口（真 iframe，vw 由它自己的视口算） */
+  .vpbox {
+    /* content-box：滑块值就是 iframe 的真实视口宽度，20vw 才好核对 */
+    box-sizing: content-box; max-width: 100%;
+    border: 1px solid var(--line-2); border-radius: var(--r-s);
+    background: #fff; overflow: hidden; transition: width .25s;
+  }
+  .vpchrome {
+    display: flex; align-items: center; gap: 4px;
+    padding: 5px 7px; background: #eef2f8; border-bottom: 1px solid #dbe3ec;
+  }
+  .vpchrome i { width: 6px; height: 6px; border-radius: 50%; background: #cfd9e6; }
+  .vpchrome span { margin-left: auto; font: 9px/1 var(--mono); color: #93a3b6; white-space: nowrap; overflow: hidden; }
+  .vpbox iframe { display: block; width: 100%; height: 46px; border: 0; background: #fff; }
+
+  .unitread { margin-top: 10px; font-size: 12px; color: var(--tx-3); font-family: var(--mono); }
+  .unitread b { color: var(--acc-2); font-weight: 600; }
+  .unitread.code { white-space: pre-wrap; color: var(--tx-2); font-size: 11.5px; line-height: 1.6; }
+
+  /* 对照矩阵：一眼看出「谁认谁」 */
+  .matchwrap { margin-top: 16px; }
+  table.match { width: 100%; border-collapse: collapse; font-size: 12px; }
+  table.match th, table.match td {
+    padding: 6px 8px; text-align: center; border-bottom: 1px dashed var(--line);
+    font-family: var(--mono); color: var(--tx-3);
+  }
+  table.match thead th { font-size: 11.5px; color: var(--tx-2); font-weight: 500; }
+  table.match tbody th { text-align: left; color: var(--acc-2); font-weight: 600; white-space: nowrap; }
+  table.match td.y { color: #10b981; background: color-mix(in srgb, #10b981 12%, transparent); font-weight: 600; }
+  table.match thead th:first-child { text-align: left; color: var(--tx-3); }
+  .matchnote { margin-top: 9px; font-size: 11.5px; color: var(--tx-3); line-height: 1.6; }
+  .matchnote code { color: var(--acc-2); }
+
+  .stage-body[hidden] { display: none; }
+  .panel [data-view] { display: none; }
+  .panel [data-view].show { display: block; }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <a class="back" href="index.html">← 目录</a>
+  <div class="crumb">项目 <b>06</b> / 10 · 选择器与优先级</div>
+  <div class="spacer"></div>
+  <div class="pager">
+    <a href="05-form.html">← 上一讲</a>
+    <a href="07-box-model.html">下一讲 →</a>
+  </div>
+  <button class="icon-btn" id="themeBtn" title="切换主题">☀</button>
+</header>
+
+<main class="layout">
+  <section class="stage">
+    <div class="stage-head">
+      <span class="dot"></span>舞台 · 动手区
+      <div class="spacer"></div>
+      <div class="seg" id="viewSeg">
+        <button data-v="arena" class="on">选择器靶场</button>
+        <button data-v="weight">优先级对决</button>
+        <button data-v="color">颜色与单位</button>
+      </div>
+    </div>
+
+    <!-- 靶场 -->
+    <div class="stage-body" id="vArena">
+      <input class="selinput" id="selInput" value=".card2 p" spellcheck="false" placeholder="输入任意 CSS 选择器…">
+      <div class="specbar" id="specbar"></div>
+      <div class="arena" id="arena" style="margin-top:14px">
+        <article class="card2" id="hero">
+          <h3 class="card-title">课程卡片（article#hero.card2）</h3>
+          <p class="desc">第一段说明文字（p.desc）</p>
+          <ul class="tags">
+            <li class="tag">HTML</li>
+            <li class="tag">CSS</li>
+            <li class="tag">JS</li>
+          </ul>
+          <a href="#hero" class="more" data-role="link">查看详情（a.more）</a>
+        </article>
+        <p class="desc">卡片外的一段文字（p.desc）</p>
+      </div>
+    </div>
+
+    <!-- 优先级 -->
+    <div class="stage-body" id="vWeight" hidden>
+      <div class="battle" id="battle"></div>
+      <div class="box" style="margin-top:16px;padding:14px;border:1px dashed var(--line-2);border-radius:10px">
+        <p class="target t" id="target">这段文字的颜色，由权重最高的规则决定<small>目标元素：p#target.t，位于 .box 内部</small></p>
+      </div>
+    </div>
+
+    <!-- 颜色 -->
+    <div class="stage-body" id="vColor" hidden>
+      <div class="colorgrid">
+        <div class="cell">
+          <div class="cellhead"><i></i>颜色值<small>R / G / B 滑块</small></div>
+          <div class="swatch" id="swatch">#3B82F6</div>
+          <div class="vals" id="colorVals"></div>
+        </div>
+
+        <div class="cell">
+          <div class="cellhead"><i></i>跟「字号」走<small>父元素字号滑块</small></div>
+          <div class="fontbox" id="unitParent" style="font-size:16px">
+            <div class="fssample">
+              <span>Aa 网页</span><i class="emcube"></i><b>1em = <em id="emPx">16</em>px</b>
+            </div>
+            <div class="barbox">
+              <div class="ruler" aria-hidden="true"><b>↑ 160px 基准 = 16px 字号下的 10em</b></div>
+              <div class="ubar em" style="width:10em"><span>10em</span></div>
+              <div class="ubar rem" style="width:10rem"><span>10rem</span></div>
+            </div>
+            <div class="unitread" id="fontRead"></div>
+            <div class="unitread code" id="unitCode"></div>
+          </div>
+        </div>
+
+        <div class="cell">
+          <div class="cellhead"><i class="c-pct"></i>跟「父容器宽度」走<small>% 只认这个虚线框</small></div>
+          <div class="cbox" id="cbox">
+            <div class="ubar pct" style="width:50%"><span>50%</span></div>
+          </div>
+          <div class="unitread" id="pctRead"></div>
+        </div>
+
+        <div class="cell">
+          <div class="cellhead"><i class="c-vw"></i>跟「视口宽度」走<small>下面的小窗口就是视口</small></div>
+          <div class="vpbox" id="vpbox">
+            <div class="vpchrome"><i></i><i></i><i></i><span>iframe 视口</span></div>
+            <iframe id="vp" scrolling="no" title="迷你视口：20vw 的参照物"></iframe>
+          </div>
+          <div class="unitread" id="vwRead"></div>
+        </div>
+      </div>
+
+      <div class="matchwrap">
+        <table class="match">
+          <thead>
+            <tr><th>拖哪个滑块 →</th><th>父元素字号</th><th>父容器宽度</th><th>视口宽度</th></tr>
+          </thead>
+          <tbody>
+            <tr><th>10em</th><td class="y">✓ 跟着变</td><td>—</td><td>—</td></tr>
+            <tr><th>10rem</th><td>—</td><td>—</td><td>—</td></tr>
+            <tr><th>50%</th><td>—</td><td class="y">✓ 跟着变</td><td>—</td></tr>
+            <tr><th>20vw</th><td>—</td><td>—</td><td class="y">✓ 跟着变</td></tr>
+          </tbody>
+        </table>
+        <div class="matchnote">四条柱子各自只认一个参照物 —— 所以无论拖哪个滑块，动的永远只有一条。<code>10rem</code> 一行全是横杠，这就是它和 <code>10em</code> 的唯一区别。</div>
+      </div>
+    </div>
+
+    <div class="stage-foot"><span id="footHint">在输入框里改选择器，命中元素会被高亮，并算出它的权重</span></div>
+  </section>
+
+  <aside class="panel">
+    <div data-view="arena" class="show">
+      <div class="pgroup">
+        <div class="plabel">常用选择器（点一下试试）</div>
+        <div class="chips" id="presets"></div>
+      </div>
+      <div class="pgroup">
+        <div class="plabel">命中结果</div>
+        <div class="tip" id="hitTip">正在计算…</div>
+      </div>
+      <div class="pgroup">
+        <div class="plabel">选择器速查</div>
+        <table class="kv">
+          <tr><td>.a</td><td>类选择器，可复用</td></tr>
+          <tr><td>#a</td><td>ID 选择器，页面唯一</td></tr>
+          <tr><td>a b</td><td>后代（含更深层）</td></tr>
+          <tr><td>a &gt; b</td><td>直接子元素</td></tr>
+          <tr><td>a + b</td><td>紧邻的下一个兄弟</td></tr>
+          <tr><td>a ~ b</td><td>后面所有兄弟</td></tr>
+          <tr><td>[attr]</td><td>带某属性</td></tr>
+          <tr><td>:nth-child(n)</td><td>第 n 个子元素</td></tr>
+          <tr><td>::before</td><td>伪元素，造一个假元素</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <div data-view="weight">
+      <div class="pgroup">
+        <div class="plabel">规则 1（红）</div>
+        <div class="seg" id="seg1" style="flex-direction:column">
+          <button data-v="p" class="on">p</button>
+          <button data-v=".t">.t</button>
+          <button data-v="#target">#target</button>
+          <button data-v=".box p">.box p</button>
+        </div>
+      </div>
+      <div class="pgroup">
+        <div class="plabel">规则 2（绿）</div>
+        <div class="seg" id="seg2" style="flex-direction:column">
+          <button data-v="p">p</button>
+          <button data-v=".t" class="on">.t</button>
+          <button data-v="#target">#target</button>
+          <button data-v=".box p">.box p</button>
+        </div>
+      </div>
+      <div class="pgroup">
+        <div class="plabel">规则 3（蓝）</div>
+        <div class="seg" id="seg3" style="flex-direction:column">
+          <button data-v="p">p</button>
+          <button data-v=".t">.t</button>
+          <button data-v="#target">#target</button>
+          <button data-v=".box p" class="on">.box p</button>
+        </div>
+      </div>
+      <div class="pgroup">
+        <label class="switch"><span>给规则 1 加 !important</span><input type="checkbox" id="chImp"><i></i></label>
+        <div class="tip warn" style="margin-top:8px"><div><b>!important 是核武器</b> 它跳过权重比较直接取胜，一旦滥用，后面只能靠再加一个 !important 覆盖，维护会失控。</div></div>
+      </div>
+    </div>
+
+    <div data-view="color">
+      <div class="pgroup">
+        <div class="plabel">R<span class="val" id="rVal">59</span></div>
+        <input type="range" id="cr" min="0" max="255" value="59">
+      </div>
+      <div class="pgroup">
+        <div class="plabel">G<span class="val" id="gVal">130</span></div>
+        <input type="range" id="cg" min="0" max="255" value="130">
+      </div>
+      <div class="pgroup">
+        <div class="plabel">B<span class="val" id="bVal">246</span></div>
+        <input type="range" id="cb" min="0" max="255" value="246">
+      </div>
+      <div class="pgroup">
+        <div class="plabel">父元素字号（影响 em）<span class="val" id="fsVal">16</span></div>
+        <input type="range" id="fs" min="10" max="28" value="16">
+      </div>
+      <div class="pgroup">
+        <div class="plabel">父容器宽度（影响 %）<span class="val" id="cwVal">100%</span></div>
+        <input type="range" id="cw" min="40" max="100" value="100">
+      </div>
+      <div class="pgroup">
+        <div class="plabel">视口宽度（影响 vw）<span class="val" id="vpwVal">380</span></div>
+        <input type="range" id="vpw" min="160" max="900" value="380">
+        <div class="unitread" style="margin-top:6px" id="vpwHint">即小窗口宽度；上限受版面宽度限制</div>
+      </div>
+      <div class="pgroup">
+        <div class="tip"><div><code>em</code> 认父元素字号，<code>rem</code> 只认 html 根字号，<code>%</code> 认父容器宽度（左边那个虚线框），<code>vw</code> 认视口宽度（右边那个小窗口）。四条各自只认一个参照物，所以永远只有一条跟着动。</div></div>
+      </div>
+    </div>
+  </aside>
+</main>
+
+<section class="learn">
+  <div class="card">
+    <h3>权重怎么算：把选择器变成 (a, b, c)</h3>
+    <p><b>a = ID 数量</b>，<b>b = 类 / 属性 / 伪类数量</b>，<b>c = 元素标签 / 伪元素数量</b>。三项从左到右逐位比较，<b>不进位</b>：11 个类也压不过 1 个 ID。</p>
+    <p><code>#hero .desc</code> → (1,1,0)；<code>.card2 p</code> → (0,1,2)；<code>p</code> → (0,0,1)。</p>
+    <p><b>权重相同时，后写的赢</b>（后来居上）。行内 style 直接算 (1,0,0,0)，比任何选择器都高；<code>!important</code> 凌驾一切。</p>
+    <div class="tip"><div><b>写 CSS 的习惯</b> 尽量用低权重选择器（类），别为了"保证生效"堆 ID —— 权重越平，后面越好改。</div></div>
+  </div>
+
+  <div class="card">
+    <h3>颜色与单位的实战建议</h3>
+    <table class="kv">
+      <tr><td>#3B82F6</td><td>十六进制，最常用，可省略重复位写成 #38f</td></tr>
+      <tr><td>rgb(59 130 246)</td><td>十进制，配合透明度用 rgb(59 130 246 / .5)</td></tr>
+      <tr><td>hsl(217 91% 60%)</td><td>色相/饱和度/亮度，调深浅最直观</td></tr>
+      <tr><td>px</td><td>固定像素，边框、圆角常用</td></tr>
+      <tr><td>rem</td><td>相对根字号，做间距与整体缩放的首选</td></tr>
+      <tr><td>em</td><td>相对父字号，会「层层放大」，慎用于深层嵌套</td></tr>
+      <tr><td>% / vw</td><td>相对父容器 / 视口，做流式布局</td></tr>
+    </table>
+    <p class="muted" style="margin-top:10px">还在用 <code>font-size: 12px</code> 写正文？浏览器设置里用户调大字号时它不会跟着变 —— 这就是无障碍问题。</p>
+  </div>
+
+  <div class="card" style="grid-column:1/-1">
+    <h3>单元自测 · 4 题</h3>
+    <div class="quiz" id="quiz"></div>
+  </div>
+</section>
+
+<nav class="footnav">
+  <a href="05-form.html"><small>← 上一讲 05</small><b>表单：把数据收回来</b></a>
+  <a class="next" href="07-box-model.html"><small>下一讲 07</small><b>盒子模型：3D 拆开看 →</b></a>
+</nav>
+
+<script src="assets/ui.js"></script>
+<script>
+(function () {
+  var P = "p6";
+
+  WB.seg(WB.$("#viewSeg"), function (v) {
+    WB.$("#vArena").hidden = v !== "arena";
+    WB.$("#vWeight").hidden = v !== "weight";
+    WB.$("#vColor").hidden = v !== "color";
+    WB.$$(".panel [data-view]").forEach(function (el) { el.classList.toggle("show", el.dataset.view === v); });
+    WB.$("#footHint").textContent = v === "arena" ? "在输入框里改选择器，命中元素会被高亮，并算出它的权重"
+      : v === "weight" ? "给三条规则换选择器，看谁的颜色最终生效"
+      : "三个滑块各管一条柱子：字号管 em、容器宽度管 %、视口宽度管 vw——rem 谁也拖不动它";
+    // 视图从 hidden 切回来时宽高才可量，这里补一次，避免读数停留在 0
+    if (v === "color") { renderContainer(); renderViewport(); }
+  });
+
+  /* ================= 权重计算 ================= */
+  function specOne(s) {
+    var a = (s.match(/#[\w-]+/g) || []).length;
+    var b = (s.match(/\.[\w-]+|\[[^\]]*\]|:(?!:)[\w-]+/g) || []).length;
+    var c = (s.match(/(^|[\s>+~])[a-zA-Z][\w-]*/g) || []).length + (s.match(/::[\w-]+/g) || []).length;
+    return [a, b, c];
+  }
+  function cmp(x, y) {
+    if (x[0] !== y[0]) return x[0] > y[0] ? 1 : -1;
+    if (x[1] !== y[1]) return x[1] > y[1] ? 1 : -1;
+    if (x[2] !== y[2]) return x[2] > y[2] ? 1 : -1;
+    return 0;
+  }
+  function specOf(sel) {
+    var best = [0, 0, 0];
+    sel.split(",").forEach(function (one) {
+      var s = specOne(one.trim());
+      if (cmp(s, best) > 0) best = s;
+    });
+    return best;
+  }
+
+  /* ================= 视图 1：靶场 ================= */
+  var PRESETS = ["*", "p", ".card2", "#hero", ".card2 p", ".card2 > p", "ul li", "li:first-child",
+    "[data-role]", ".desc + ul", "a:hover", "h3, .tag", ".arena > p"];
+
+  WB.$("#presets").innerHTML = PRESETS.map(function (p) {
+    return '<button data-s="' + p.replace(/"/g, "&quot;") + '">' + p + "</button>";
+  }).join("");
+
+  var arena = WB.$("#arena");
+  var input = WB.$("#selInput");
+
+  function applySelector(sel) {
+    // 清理
+    Array.prototype.forEach.call(arena.querySelectorAll("*"), function (el) {
+      el.classList.remove("hit");
+      el.removeAttribute("data-hit");
+    });
+    Array.prototype.forEach.call(arena.children, function (el) {
+      el.classList.remove("hit"); el.removeAttribute("data-hit");
+    });
+    arena.classList.remove("hit");
+
+    if (!sel.trim()) { WB.$("#specbar").innerHTML = ""; return; }
+    var list;
+    try {
+      list = arena.querySelectorAll(sel);
+    } catch (e) {
+      input.classList.add("bad");
+      WB.$("#hitTip").innerHTML = "<b style='color:var(--err)'>选择器语法错误</b><br>浏览器无法解析：" + e.message;
+      WB.$("#specbar").innerHTML = "";
+      return;
+    }
+    input.classList.remove("bad");
+    var spec = specOf(sel);
+    Array.prototype.forEach.call(list, function (el, i) {
+      el.classList.add("hit");
+      el.setAttribute("data-hit", el.tagName.toLowerCase());
+    });
+    WB.$("#specbar").innerHTML =
+      '<span class="specbox" style="border-color:var(--line-2)">命中 <b>' + list.length + "</b> 个元素</span>" +
+      '<span class="specbox a">a  ID <b>' + spec[0] + "</b></span>" +
+      '<span class="specbox b">b  类/属性/伪类 <b>' + spec[1] + "</b></span>" +
+      '<span class="specbox c">c  标签 <b>' + spec[2] + "</b></span>" +
+      '<span class="specbox">权重 <b>(' + spec.join(",") + ")</b></span>";
+
+    var tags = Array.prototype.map.call(list, function (el) {
+      return el.tagName.toLowerCase() + (el.className && typeof el.className === "string" ? "." + el.className.trim().split(/\s+/).join(".") : "");
+    });
+    WB.$("#hitTip").innerHTML = list.length
+      ? "<b>命中：" + (tags.length > 6 ? tags.slice(0, 6).join("、") + " 等" : tags.join("、")) + "</b><br>被高亮的元素会应用这条规则里的所有声明。"
+      : "<b>没有命中任何元素</b><br>检查一下层级关系、类名拼写，或者是不是把 <code>.</code> 写成了 <code>#</code>。";
+  }
+
+  input.addEventListener("input", function () { applySelector(input.value); });
+  WB.$("#presets").addEventListener("click", function (e) {
+    var b = e.target.closest("button[data-s]");
+    if (!b) return;
+    input.value = b.dataset.s;
+    applySelector(input.value);
+  });
+
+  /* ================= 视图 2：优先级对决 ================= */
+  var RULES = [
+    { color: "#f87171", name: "红", seg: "seg1" },
+    { color: "#4ade80", name: "绿", seg: "seg2" },
+    { color: "#60a5fa", name: "蓝", seg: "seg3" }
+  ];
+  var segs = RULES.map(function (r) { return WB.seg(WB.$("#" + r.seg), function () { duel(); }); });
+
+  function duel() {
+    var imp = WB.$("#chImp").checked;
+    var maxW = 0;
+    var data = RULES.map(function (r, i) {
+      var sel = segs[i].get();
+      var sp = specOf(sel);
+      var w = sp[0] * 10000 + sp[1] * 100 + sp[2];
+      if (i === 0 && imp) w += 1e9;
+      maxW = Math.max(maxW, w);
+      return { sel: sel, sp: sp, w: w, color: r.color, name: r.name, imp: i === 0 && imp };
+    });
+    var win = data[0];
+    data.forEach(function (d) { if (d.w > win.w) win = d; });
+    // 同权重时后面的赢
+    data.forEach(function (d) { if (d.w === win.w && d !== win) win = d; });
+
+    WB.$("#battle").innerHTML = data.map(function (d) {
+      var pct = maxW ? Math.max(9, Math.log(d.w + 1) / Math.log(maxW + 1) * 100) : 9;
+      return '<div class="rule' + (d === win ? " win" : "") + '">' +
+        '<div><div class="sel">' + d.sel + (d.imp ? ' <span style="color:var(--warn)">!important</span>' : "") + "</div>" +
+        '<div class="muted" style="font-size:11px">权重 (' + d.sp.join(",") + ") · " + d.name + "</div></div>" +
+        '<div class="wbar"><i style="width:' + Math.min(100, pct) + "%;background:" + d.color + '"></i></div>' +
+        '<div class="sw" style="background:' + d.color + ';opacity:' + (d === win ? 1 : .25) + '"></div></div>';
+    }).join("");
+
+    var t = WB.$("#target");
+    t.style.color = win.color;
+    t.innerHTML = '这段文字的颜色，由权重最高的规则决定<small>' + win.sel + " → " + win.color + "（权重 " + win.sp.join(",") + (win.imp ? " + important" : "") + "）</small>";
+    WB.$("#footHint").textContent = win.imp
+      ? "!important 直接跳过权重比较，红方获胜 —— 但这是最不该出现的写法"
+      : "同权重时后写的赢；ID 的权重比 10 个类还高（不进位）";
+  }
+
+  /* ================= 视图 3：颜色与单位 ================= */
+  function renderColor() {
+    var r = +WB.$("#cr").value, g = +WB.$("#cg").value, b = +WB.$("#cb").value;
+    var hex = "#" + [r, g, b].map(function (v) {
+      return ("0" + v.toString(16)).slice(-2);
+    }).join("").toUpperCase();
+    var sw = WB.$("#swatch");
+    sw.style.background = hex;
+    sw.textContent = hex;
+    sw.style.color = (r * 0.299 + g * 0.587 + b * 0.114) > 150 ? "#111" : "#fff";
+
+    // hsl
+    var rn = r / 255, gn = g / 255, bn = b / 255;
+    var mx = Math.max(rn, gn, bn), mn = Math.min(rn, gn, bn);
+    var l = (mx + mn) / 2, h = 0, s = 0;
+    if (mx !== mn) {
+      s = l > .5 ? (mx - mn) / (2 - mx - mn) : (mx - mn) / (mx + mn);
+      if (mx === rn) h = ((gn - bn) / (mx - mn) + (gn < bn ? 6 : 0));
+      else if (mx === gn) h = (bn - rn) / (mx - mn) + 2;
+      else h = (rn - gn) / (mx - mn) + 4;
+      h = Math.round(h * 60);
+    }
+    WB.$("#colorVals").innerHTML =
+      "<span>hex: <b>" + hex + "</b></span>" +
+      "<span>rgb: <b>rgb(" + r + " " + g + " " + b + ")</b></span>" +
+      "<span>rgba: <b>rgba(" + r + ", " + g + ", " + b + ", .5)</b></span>" +
+      "<span>hsl: <b>hsl(" + h + " " + Math.round(s * 100) + "% " + Math.round(l * 100) + "%)</b></span>";
+    WB.$("#rVal").textContent = r;
+    WB.$("#gVal").textContent = g;
+    WB.$("#bVal").textContent = b;
+  }
+
+  /* ---- 单位演示：四条柱子各认一个参照物，永远只有一条跟着动 ---- */
+  function renderFont() {
+    var fs = +WB.$("#fs").value;
+    var box = WB.$("#unitParent");
+    box.style.fontSize = fs + "px";
+    WB.$("#fsVal").textContent = fs;
+    WB.$("#emPx").textContent = fs;
+    var rem = box.querySelector(".rem");
+    // em 柱的宽度带 .25s 过渡，offsetWidth 读到的是动画中间值，这里按字号直接算
+    WB.$("#fontRead").innerHTML =
+      "10em = <b>" + fs * 10 + "px</b>　← 10 × 父级 " + fs + "px（柱内 10 个 1em 格子，每格 " + fs + "px）<br>" +
+      "10rem = <b>" + rem.offsetWidth + "px</b>　← 只认根字号 16px，动不了";
+    WB.$("#unitCode").textContent =
+      ".parent { font-size: " + fs + "px }        /* 滑块控制 */\n" +
+      ".bar    { width: 10em }   /* = " + (fs * 10) + "px */\n" +
+      ".bar    { width: 10rem }  /* = " + rem.offsetWidth + "px，与父级无关 */";
+  }
+
+  function renderContainer() {
+    var pctVal = +WB.$("#cw").value;
+    var box = WB.$("#cbox");
+    box.style.width = pctVal + "%";
+    var cw = Math.round(box.clientWidth - 16);   // 减掉左右各 8px 内边距 = 内容宽度
+    WB.$("#cwVal").textContent = pctVal + "% (" + cw + "px)";
+    WB.$("#pctRead").innerHTML =
+      "50% = <b>" + Math.round(cw * .5) + "px</b>　← 0.5 × 容器 " + cw + "px<br>" +
+      "容器变宽 → 它跟着变；字号与视口都与它无关";
+  }
+
+  var VP_DOC =
+    '<!doctype html><meta charset="utf-8">' +
+    '<style>' +
+    'html,body{margin:0;height:100%;background:#fff;}' +
+    'body{padding:7px 0 0 8px;font:9px/1 ui-monospace,SFMono-Regular,Menlo,monospace;color:#7b8794;}' +
+    '.lab{margin:0 0 6px;letter-spacing:.03em;}' +
+    '.vw{box-sizing:border-box;width:20vw;height:22px;border-radius:4px;' +
+    'background:linear-gradient(90deg,#22c55e,#4ade80);color:#fff;' +
+    'font:10px/1 ui-monospace,SFMono-Regular,Menlo,monospace;' +
+    'display:flex;align-items:center;padding-left:6px;overflow:hidden;white-space:nowrap;}' +
+    '</style><div class="lab">20vw ↓</div><div class="vw">20vw</div>';
+
+  function vpMax() {
+    var cell = WB.$("#vpbox").parentNode;
+    var avail = cell.clientWidth;
+    if (!avail) return 900;   // 视图还处于 hidden 时量不到宽度，先不夹紧
+    // 减掉左右边框，保证小窗口不越出格子
+    return Math.max(200, Math.min(900, Math.floor(avail - 6)));
+  }
+
+  function renderViewport() {
+    var rail = WB.$("#vpw");
+    var max = vpMax();
+    if (+rail.max !== max) {
+      rail.max = max;
+      if (+rail.value > max) rail.value = max;
+    }
+    var w = +rail.value;
+    WB.$("#vpbox").style.width = w + "px";   // content-box：这就是 iframe 视口宽度
+    WB.$("#vpwVal").textContent = w;
+    WB.$("#vwRead").innerHTML =
+      "20vw = <b>" + (w * 0.2).toFixed(1) + "px</b>　← 0.2 × 视口 " + w + "px<br>" +
+      "视口变宽 → 它跟着变；容器与字号都与它无关";
+  }
+
+  ["cr", "cg", "cb"].forEach(function (id) { WB.range(WB.$("#" + id), null, renderColor); });
+  WB.range(WB.$("#fs"), null, renderFont);
+  WB.range(WB.$("#cw"), null, renderContainer);
+  WB.range(WB.$("#vpw"), null, renderViewport);
+  WB.switch(WB.$("#chImp"), duel);
+
+  // 迷你视口只需写入一次文档；之后只改 iframe 宽度，vw 由浏览器自己重算
+  WB.$("#vp").srcdoc = VP_DOC;
+  var vpT = null;
+  window.addEventListener("resize", function () {
+    clearTimeout(vpT);
+    vpT = setTimeout(function () { renderViewport(); renderContainer(); }, 120);
+  });
+
+  /* ================= 自测 ================= */
+  WB.quiz(WB.$("#quiz"), [
+    {
+      q: "<code>#nav .item</code> 与 <code>.nav .item.active</code> 谁的权重大？",
+      opts: ["前者 (1,1,0)", "后者 (0,3,0)", "一样大", "无法比较"],
+      a: 0,
+      why: "ID 的权重是最高位：(1,1,0) vs (0,3,0)，第一位 1 > 0 直接胜出。类再多也不会「进位」成 ID。"
+    },
+    {
+      q: "同一元素上两条同权重规则冲突，哪条生效？",
+      opts: ["先写的", "后写的", "带 !important 的那条（如果都没有）", "浏览器随机选"],
+      a: 1,
+      why: "权重完全相同时按「源顺序」决定，后出现的覆盖前面的。这也是为什么引入样式表顺序很重要。"
+    },
+    {
+      q: "父元素 font-size 从 16px 改成 20px，下面哪个会跟着变？",
+      opts: ["width: 10rem", "width: 10em", "width: 160px", "border-radius: 8px"],
+      a: 1,
+      why: "em 相对「当前元素的字号」，而当前元素字号默认继承父级，所以跟着变；rem 只相对 html 根字号，不受父级影响。"
+    },
+    {
+      q: "下面哪些选择器写法是合法的（多选）",
+      type: "multi",
+      opts: ["ul > li:first-child", "a[target=_blank]", ".card ::after", "div..title"],
+      a: [0, 1, 2],
+      why: "div..title 有两个连续的点，语法错误。属性选择器的值不加引号在简单值下是合法的；::after 前可以有空格（表示后代伪元素）。"
+    }
+  ], P);
+
+  applySelector(input.value);
+  duel();
+  renderColor();
+  renderFont();
+  renderContainer();
+  renderViewport();
+  WB.$("#footHint").textContent = "在输入框里改选择器，命中元素会被高亮，并算出它的权重";
+  WB.initCopy();
+})();
+</script>
+</body>
+</html>

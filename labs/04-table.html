@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>项目4 · 表格：二维数据的骨架</title>
+<link rel="stylesheet" href="assets/base.css">
+<style>
+  .tblwrap {
+    border: 1px solid var(--line); border-radius: var(--r-s);
+    background: var(--bg-2); overflow: auto; max-height: 320px; position: relative;
+  }
+  table.data-table {
+    border-collapse: separate; border-spacing: 0;
+    font-size: 13px; min-width: 100%; color: var(--tx-2);
+  }
+  table.data-table.sep { border-spacing: 5px; }
+  table.data-table th,
+  table.data-table td {
+    padding: 9px 12px; text-align: center; cursor: crosshair;
+    border: 1px solid var(--line-2); background: var(--bg-2);
+    transition: background .12s, outline-color .12s;
+    min-width: 62px; position: relative;
+  }
+  table.data-table th {
+    background: var(--panel-2); color: var(--tx); font-weight: 650;
+    cursor: default; position: sticky; top: 0; z-index: 3;
+    box-shadow: inset 0 -1px 0 var(--line-2);
+  }
+  table.data-table td:hover { background: var(--acc-soft); }
+  table.data-table td.sel { background: color-mix(in srgb, var(--acc) 28%, transparent); outline: 2px solid var(--acc); outline-offset: -2px; z-index: 2; }
+  table.data-table td.merged { background: color-mix(in srgb, var(--acc-2) 12%, var(--bg-2)); font-family: var(--mono); font-size: 12px; color: var(--acc-2); }
+  table.data-table.zebra tbody tr:nth-child(even) td { background: var(--panel-2); }
+  table.data-table.zebra tbody tr:nth-child(even) td.merged { background: color-mix(in srgb, var(--acc-2) 16%, var(--panel-2)); }
+
+  .toolbar { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-bottom: 12px; }
+  .hint-inline { font-size: 12px; color: var(--tx-3); }
+
+  .stats-row { display: flex; gap: 16px; flex-wrap: wrap; margin-top: 12px; font-size: 12px; color: var(--tx-3); }
+  .stats-row b { color: var(--acc-2); font-family: var(--mono); font-size: 13px; }
+
+  .stage-body { padding: 16px 18px; }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <a class="back" href="index.html">← 目录</a>
+  <div class="crumb">项目 <b>04</b> / 10 · 表格</div>
+  <div class="spacer"></div>
+  <div class="pager">
+    <a href="03-image-link.html">← 上一讲</a>
+    <a href="05-form.html">下一讲 →</a>
+  </div>
+  <button class="icon-btn" id="themeBtn" title="切换主题">☀</button>
+</header>
+
+<main class="layout">
+  <section class="stage">
+    <div class="stage-head">
+      <span class="dot"></span>舞台 · 表格实验台
+      <div class="spacer"></div>
+      <span class="badge">拖拽选中多个单元格 = 合并 · 单击合并块 = 拆分</span>
+    </div>
+
+    <div class="stage-body">
+      <div class="toolbar">
+        <button class="btn mini" id="btnReset">重置表格</button>
+        <button class="btn mini" id="btnMergeRow">演示横向合并</button>
+        <button class="btn mini" id="btnMergeCol">演示纵向合并</button>
+        <span class="hint-inline" id="hintText">表头固定在顶部（滚动时可观察 sticky）</span>
+      </div>
+      <div class="tblwrap" id="tblwrap"></div>
+      <div class="stats-row">
+        <span>行列：<b id="stDim">4 × 4</b></span>
+        <span>合并块：<b id="stMerge">0</b></span>
+        <span>边框模型：<b id="stModel">collapse</b></span>
+      </div>
+    </div>
+
+    <div class="stage-foot">
+      <span id="footHint">按下鼠标拖过一片单元格，松手即合并；单击已合并的单元格可拆回</span>
+    </div>
+  </section>
+
+  <aside class="panel">
+    <div class="pgroup">
+      <div class="plabel">行数（含表头）<span class="val" id="rowVal">4</span></div>
+      <input type="range" id="rows" min="2" max="7" value="4" step="1">
+    </div>
+    <div class="pgroup">
+      <div class="plabel">列数<span class="val" id="colVal">4</span></div>
+      <input type="range" id="cols" min="2" max="6" value="4" step="1">
+    </div>
+    <div class="pgroup">
+      <div class="plabel">边框模型</div>
+      <div class="seg" id="modelSeg" style="flex-direction:column">
+        <button data-v="collapse" class="on">collapse 合并相邻边框</button>
+        <button data-v="separate">separate 各自独立</button>
+      </div>
+    </div>
+    <div class="pgroup" id="spacingGroup" style="display:none">
+      <div class="plabel">border-spacing<span class="val" id="spVal">5</span></div>
+      <input type="range" id="spacing" min="0" max="16" value="5">
+    </div>
+    <div class="pgroup">
+      <div class="plabel">样式开关</div>
+      <label class="switch"><span>斑马纹 nth-child(even)</span><input type="checkbox" id="chZebra"><i></i></label>
+      <label class="switch"><span>表头吸顶 sticky</span><input type="checkbox" id="chSticky" checked><i></i></label>
+    </div>
+    <div class="pgroup">
+      <div class="plabel">表格 HTML</div>
+      <div class="code-wrap"><pre class="code" id="codeTbl"></pre></div>
+    </div>
+    <div class="pgroup">
+      <div class="labal plabel">配套 CSS</div>
+      <div class="code-wrap"><pre class="code" id="codeCss"></pre></div>
+    </div>
+  </aside>
+</main>
+
+<section class="learn">
+  <div class="card">
+    <h3>表格的层级：table → thead/tbody → tr → th/td</h3>
+    <p><b>table</b> 是容器，<b>thead / tbody / tfoot</b> 分三段（可选但推荐），<b>tr</b> 是一行，<b>th</b> 是表头单元格（加粗居中），<b>td</b> 是数据单元格。</p>
+    <p><b>caption</b> 写表格标题，是表格的无障碍名称，必须紧跟 <code>&lt;table&gt;</code>。</p>
+    <p><b>scope="col" / "row"</b> 告诉屏读器这个表头管的是整列还是整行 —— 合并单元格时尤其重要。</p>
+    <div class="tip"><div><b>表格不是布局工具</b> 2005 年之前用 table 排版，现在一律用 CSS 布局（项目 8）。表格只用来表达"行列对应的二维数据"。</div></div>
+  </div>
+
+  <div class="card">
+    <h3>合并：span 的四个坑</h3>
+    <table class="kv">
+      <tr><th>规则</th><th>说明</th></tr>
+      <tr><td>colspan</td><td>横向占几列，被占的格子要从代码里<b>删掉</b>，不是留空</td></tr>
+      <tr><td>rowspan</td><td>纵向占几行，下面几行的对应 td 都要删</td></tr>
+      <tr><td>删除 ≠ 留空</td><td>多写一个空 td，整行就会多出一格，右边全部错位</td></tr>
+      <tr><td>合并方向</td><td>交叉合并（同时 colspan + rowspan）时，四个角只留左上角那个 td</td></tr>
+    </table>
+    <p class="muted" style="margin-top:10px">左右拖动试试：先把 2×2 合并，再在旁边合并一格，看代码里 td 数量的变化。</p>
+  </div>
+
+  <div class="card" style="grid-column:1/-1">
+    <h3>单元自测 · 4 题</h3>
+    <div class="quiz" id="quiz"></div>
+  </div>
+</section>
+
+<nav class="footnav">
+  <a href="03-image-link.html"><small>← 上一讲 03</small><b>图像与超链接：资源怎么找</b></a>
+  <a class="next" href="05-form.html"><small>下一讲 05</small><b>表单：把数据收回来 →</b></a>
+</nav>
+
+<script src="assets/ui.js"></script>
+<script>
+(function () {
+  var P = "p4";
+
+  var ROWS = 4;   // 含表头
+  var COLS = 4;
+  var grid = [];  // 仅 body 部分：grid[r][c] = cell | null
+  var collapse = true;
+
+  var HEAD = ["姓名", "语文", "数学", "英语", "物理", "化学", "生物"];
+
+  function initGrid() {
+    grid = [];
+    for (var r = 0; r < ROWS - 1; r++) {
+      grid[r] = [];
+      for (var c = 0; c < COLS; c++) {
+        grid[r][c] = { r: r, c: c, rs: 1, cs: 1 };
+      }
+    }
+  }
+
+  function label(cell) {
+    if (cell.rs > 1 || cell.cs > 1) return "合并 " + cell.rs + "×" + cell.cs;
+    return "R" + (cell.r + 1) + "C" + (cell.c + 1);
+  }
+
+  function buildTable() {
+    var pad = "  ";
+    var L = [];
+    L.push('<table class="data-table' + (collapse ? "" : " sep") + '">');
+    L.push(pad + "<thead>");
+    L.push(pad + pad + "<tr>");
+    for (var c = 0; c < COLS; c++) {
+      L.push(pad + pad + pad + '<th scope="col">' + (HEAD[c] || "列" + (c + 1)) + "</th>");
+    }
+    L.push(pad + pad + "</tr>");
+    L.push(pad + "</thead>");
+    L.push(pad + "<tbody>");
+    for (var r = 0; r < ROWS - 1; r++) {
+      L.push(pad + pad + "<tr>");
+      for (var c2 = 0; c2 < COLS; c2++) {
+        var cell = grid[r][c2];
+        if (!cell) continue;
+        var attrs = "";
+        if (cell.rs > 1) attrs += ' rowspan="' + cell.rs + '"';
+        if (cell.cs > 1) attrs += ' colspan="' + cell.cs + '"';
+        var cls = (cell.rs > 1 || cell.cs > 1) ? ' class="merged"' : "";
+        L.push(pad + pad + pad + "<td" + attrs + cls + " data-r=\"" + cell.r + "\" data-c=\"" + cell.c + "\">" + label(cell) + "</td>");
+      }
+      L.push(pad + pad + "</tr>");
+    }
+    L.push(pad + "</tbody>");
+    L.push("</table>");
+    return L;
+  }
+
+  function render() {
+    var L = buildTable();
+    var html = L.join("\n");
+    WB.$("#tblwrap").innerHTML = html;
+    WB.code(WB.$("#codeTbl"), html.replace(/ data-[rc]="\d+"/g, ""), "html");
+
+    var css = [
+      "table {\n  border-collapse: " + (collapse ? "collapse" : "separate") + ";",
+      collapse ? "" : "  border-spacing: " + WB.$("#spacing").value + "px;",
+      "  width: 100%;\n}",
+      "th, td {\n  border: 1px solid #ccc;\n  padding: 8px 12px;\n  text-align: center;\n}",
+      "thead th {\n  position: sticky;\n  top: 0;\n  background: #f1f5f9;\n}",
+      WB.$("#chZebra").checked ? "tbody tr:nth-child(even) {\n  background: #f8fafc;\n}" : ""
+    ].filter(Boolean).join("\n");
+    WB.code(WB.$("#codeCss"), css, "css");
+
+    // 附加状态类
+    var tbl = WB.$("#tblwrap table");
+    if (WB.$("#chZebra").checked) tbl.classList.add("zebra");
+    if (!WB.$("#chSticky").checked) {
+      WB.$$("thead th", tbl).forEach(function (th) { th.style.position = "static"; });
+    }
+
+    var merges = 0, total = 0;
+    for (var r = 0; r < ROWS - 1; r++) for (var c = 0; c < COLS; c++) {
+      var cell = grid[r][c];
+      if (cell) { total++; if (cell.rs > 1 || cell.cs > 1) merges++; }
+    }
+    WB.$("#stDim").textContent = (ROWS - 1) + " × " + COLS;
+    WB.$("#stMerge").textContent = merges;
+    WB.$("#stModel").textContent = collapse ? "collapse" : "separate";
+    WB.$("#rowVal").textContent = ROWS;
+    WB.$("#colVal").textContent = COLS;
+  }
+
+  /* ---- 拖拽合并 ---- */
+  var drag = null;
+  var wrap = WB.$("#tblwrap");
+
+  function cellsBetween(a, b) {
+    var r1 = Math.min(a.r, b.r), r2 = Math.max(a.r, b.r);
+    var c1 = Math.min(a.c, b.c), c2 = Math.max(a.c, b.c);
+    for (var r = r1; r <= r2; r++) for (var c = c1; c <= c2; c++) {
+      if (!grid[r] || !grid[r][c]) return null;
+      var cell = grid[r][c];
+      if (cell.rs > 1 || cell.cs > 1) return null;   // 不跨已合并的块
+    }
+    return { r1: r1, r2: r2, c1: c1, c2: c2 };
+  }
+
+  function paintSel(rect) {
+    WB.$$("td", wrap).forEach(function (td) {
+      var r = +td.dataset.r, c = +td.dataset.c;
+      var on = rect && r >= rect.r1 && r <= rect.r2 && c >= rect.c1 && c <= rect.c2;
+      td.classList.toggle("sel", !!on);
+    });
+  }
+
+  wrap.addEventListener("mousedown", function (e) {
+    var td = e.target.closest("td");
+    if (!td) return;
+    e.preventDefault();
+    var cell = grid[+td.dataset.r][+td.dataset.c];
+    if (cell && (cell.rs > 1 || cell.cs > 1)) {
+      // 拆分
+      for (var r = cell.r; r < cell.r + cell.rs; r++)
+        for (var c = cell.c; c < cell.c + cell.cs; c++)
+          grid[r][c] = { r: r, c: c, rs: 1, cs: 1 };
+      WB.toast("已拆回 " + cell.rs * cell.cs + " 个单元格");
+      render();
+      return;
+    }
+    drag = { r: +td.dataset.r, c: +td.dataset.c };
+    paintSel({ r1: drag.r, r2: drag.r, c1: drag.c, c2: drag.c });
+  });
+
+  wrap.addEventListener("mousemove", function (e) {
+    if (!drag) return;
+    var td = e.target.closest("td");
+    if (!td) return;
+    var rect = cellsBetween(drag, { r: +td.dataset.r, c: +td.dataset.c });
+    if (rect) paintSel(rect);
+  });
+
+  document.addEventListener("mouseup", function () {
+    if (!drag) return;
+    var sel = WB.$$("td.sel", wrap);
+    var rs = [], cs = [];
+    sel.forEach(function (td) { rs.push(+td.dataset.r); cs.push(+td.dataset.c); });
+    if (sel.length > 1) {
+      var r1 = Math.min.apply(null, rs), r2 = Math.max.apply(null, rs);
+      var c1 = Math.min.apply(null, cs), c2 = Math.max.apply(null, cs);
+      for (var r = r1; r <= r2; r++) for (var c = c1; c <= c2; c++) grid[r][c] = null;
+      grid[r1][c1] = { r: r1, c: c1, rs: r2 - r1 + 1, cs: c2 - c1 + 1 };
+      WB.toast("已合并为 " + (r2 - r1 + 1) + " 行 × " + (c2 - c1 + 1) + " 列，其余 td 已从代码中删除");
+      WB.$("#footHint").textContent = "合并完成：代码里只剩一个 td，且写上了 rowspan/colspan —— 被吃掉的格子不能留空 td";
+    }
+    paintSel(null);
+    drag = null;
+    render();
+  });
+
+  /* ---- 控制 ---- */
+  WB.range(WB.$("#rows"), null, function (v) { ROWS = v; initGrid(); render(); });
+  WB.range(WB.$("#cols"), null, function (v) { COLS = v; initGrid(); render(); });
+  WB.range(WB.$("#spacing"), null, function () { render(); });
+
+  WB.seg(WB.$("#modelSeg"), function (v) {
+    collapse = v === "collapse";
+    WB.$("#spacingGroup").style.display = collapse ? "none" : "block";
+    render();
+  });
+  WB.switch(WB.$("#chZebra"), render);
+  WB.switch(WB.$("#chSticky"), render);
+
+  WB.on(WB.$("#btnReset"), "click", function () { initGrid(); render(); WB.toast("表格已重置"); });
+  WB.on(WB.$("#btnMergeRow"), "click", function () {
+    initGrid();
+    grid[1][1] = { r: 1, c: 1, rs: 1, cs: 2 };
+    grid[1][2] = null;
+    render();
+    WB.$("#footHint").textContent = 'colspan="2"：第二行第 2、3 格合成一格，代码里删掉了第二个 td';
+  });
+  WB.on(WB.$("#btnMergeCol"), "click", function () {
+    initGrid();
+    grid[1][0] = { r: 1, c: 0, rs: 2, cs: 1 };
+    grid[2][0] = null;
+    render();
+    WB.$("#footHint").textContent = 'rowspan="2"：第一列第 2、3 行合成一格，下一行少写一个 td';
+  });
+
+  /* ---- 自测 ---- */
+  WB.quiz(WB.$("#quiz"), [
+    {
+      q: "把一个 td 设置为 <code>rowspan=\"3\"</code>，接下来两行应该怎么处理？",
+      opts: ["各写一个空的 &lt;td&gt;&lt;/td&gt; 占位", "删掉对应位置的 td", "把后面两行的整行删掉", "什么都不用做，浏览器会自动跳过"],
+      a: 1,
+      why: "rowspan 表示这个单元格向下「吃掉」两行空间，被吃掉的位置不能再有 td。写空 td 会导致整行多出一格、右侧全部错位。"
+    },
+    {
+      q: "想让相邻单元格共用一条边框线（看起来是 1px 细线），应该用？",
+      opts: ["border-collapse: collapse", "border-collapse: separate + border-spacing: 0", "给 table 加 cellpadding=0", "把每个 td 的 border 设为 none"],
+      a: 0,
+      why: "separate 模式下相邻边框永远是两条（除非 spacing 为 0 也仍会双线）；只有 collapse 才会把相邻边框合并成一条。"
+    },
+    {
+      q: "下面哪个不是 td / th 的合法属性？",
+      opts: ["colspan", "rowspan", "scope", "cellspacing"],
+      a: 3,
+      why: "cellspacing 是 table 上的属性（且已过时，应改用 CSS 的 border-spacing）。scope 合法，写在 th 上，取 col / row / colgroup / rowgroup。"
+    },
+    {
+      q: "关于表格的无障碍，正确的有（多选）",
+      type: "multi",
+      opts: ["用 caption 写表格标题", "th 加 scope 说明表头管辖范围", "用 table 来做整页布局最省事", "纯装饰的表格可以加 role=\"presentation\""],
+      a: [0, 1, 3],
+      why: "table 只用于二维数据。若表格只是用来布局，加 role=presentation 让屏读器忽略表格语义 —— 但更好的做法是根本不用表格布局。"
+    }
+  ], P);
+
+  initGrid();
+  render();
+  WB.initCopy();
+})();
+</script>
+</body>
+</html>

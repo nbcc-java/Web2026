@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>项目9 · 媒体应用：音视频与嵌入</title>
+<link rel="stylesheet" href="assets/base.css">
+<style>
+  .player {
+    border-radius: var(--r-s); overflow: hidden; border: 1px solid var(--line-2);
+    background: #05070a; max-width: 520px;
+  }
+  .player video { display: block; width: 100%; height: auto; background: #05070a; }
+  .player audio { display: block; width: 100%; padding: 6px; }
+
+  .mediainfo { display: grid; gap: 6px; margin-top: 14px; font-size: 12.5px; }
+  .mediainfo div { padding: 7px 11px; border-radius: 7px; background: var(--panel-2); border: 1px solid var(--line); color: var(--tx-2); }
+  .mediainfo b { color: var(--acc-2); font-family: var(--mono); }
+  .mediainfo .warnline { border-color: color-mix(in srgb, var(--warn) 40%, transparent); background: color-mix(in srgb, var(--warn) 10%, transparent); }
+
+  .framewrap {
+    border: 2px dashed var(--acc); border-radius: 8px; overflow: hidden;
+    background: var(--panel-2); margin: 0 auto; transition: width .2s;
+  }
+  .framewrap iframe { display: block; width: 100%; height: 100%; border: 0; }
+  .frameaside { display: grid; gap: 10px; margin-top: 14px; font-size: 12.5px; color: var(--tx-2); }
+  .frameaside b { color: var(--acc-2); font-family: var(--mono); }
+
+  .ratiobox { position: relative; }
+  .ratiochip {
+    position: absolute; right: 8px; top: 8px; z-index: 2;
+    font-family: var(--mono); font-size: 10.5px; padding: 2px 8px;
+    background: var(--acc); color: #fff; border-radius: 99px;
+  }
+
+  .stage-body[hidden] { display: none; }
+  .panel [data-view] { display: none; }
+  .panel [data-view].show { display: block; }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <a class="back" href="index.html">← 目录</a>
+  <div class="crumb">项目 <b>09</b> / 10 · 媒体应用</div>
+  <div class="spacer"></div>
+  <div class="pager">
+    <a href="08-layout.html">← 上一讲</a>
+    <a href="10-animation.html">下一讲 →</a>
+  </div>
+  <button class="icon-btn" id="themeBtn" title="切换主题">☀</button>
+</header>
+
+<main class="layout">
+  <section class="stage">
+    <div class="stage-head">
+      <span class="dot"></span>舞台 · 动手区
+      <div class="spacer"></div>
+      <div class="seg" id="viewSeg">
+        <button data-v="video" class="on">视频</button>
+        <button data-v="audio">音频</button>
+        <button data-v="frame">嵌入与响应式</button>
+      </div>
+    </div>
+
+    <!-- 视频 -->
+    <div class="stage-body" id="vVideo">
+      <div class="player"><video id="vid" playsinline muted loop></video></div>
+      <div class="mediainfo" id="vidInfo"></div>
+    </div>
+
+    <!-- 音频 -->
+    <div class="stage-body" id="vAudio" hidden>
+      <div class="player" style="max-width:420px"><audio id="aud" controls></audio></div>
+      <div class="mediainfo" id="audInfo"></div>
+    </div>
+
+    <!-- 嵌入 -->
+    <div class="stage-body" id="vFrame" hidden>
+      <div class="ratiobox">
+        <div class="framewrap" id="framewrap" style="width:480px;aspect-ratio:16/9">
+          <iframe id="fr" title="内嵌页面演示"></iframe>
+        </div>
+        <span class="ratiochip" id="ratioChip">16 / 9</span>
+      </div>
+      <div class="frameaside" id="frameInfo"></div>
+    </div>
+
+    <div class="stage-foot"><span id="footHint">开关右侧属性，观察播放器行为的变化</span></div>
+  </section>
+
+  <aside class="panel">
+    <div data-view="video" class="show">
+      <div class="pgroup">
+        <div class="plabel">video 属性</div>
+        <label class="switch"><span>controls 显示控件</span><input type="checkbox" id="vControls" checked><i></i></label>
+        <label class="switch"><span>autoplay 自动播放</span><input type="checkbox" id="vAuto" checked><i></i></label>
+        <label class="switch"><span>muted 静音</span><input type="checkbox" id="vMuted" checked><i></i></label>
+        <label class="switch"><span>loop 循环</span><input type="checkbox" id="vLoop" checked><i></i></label>
+        <label class="switch"><span>playsinline 行内播放</span><input type="checkbox" id="vInline" checked><i></i></label>
+      </div>
+      <div class="pgroup">
+        <div class="plabel">播放控制</div>
+        <div class="row">
+          <button class="btn mini" id="vPlay">播放</button>
+          <button class="btn mini" id="vPause">暂停</button>
+          <button class="btn mini" id="vRestart">回到开头</button>
+        </div>
+      </div>
+      <div class="pgroup">
+        <div class="plabel">当前代码</div>
+        <div class="code-wrap"><pre class="code" id="codeVideo"></pre></div>
+      </div>
+    </div>
+
+    <div data-view="audio">
+      <div class="pgroup">
+        <div class="plabel">audio 属性</div>
+        <label class="switch"><span>controls 显示控件</span><input type="checkbox" id="aControls" checked><i></i></label>
+        <label class="switch"><span>loop 循环播放</span><input type="checkbox" id="aLoop"><i></i></label>
+        <label class="switch"><span>autoplay 自动播放</span><input type="checkbox" id="aAuto"><i></i></label>
+        <label class="switch"><span>muted 静音</span><input type="checkbox" id="aMuted"><i></i></label>
+      </div>
+      <div class="pgroup">
+        <div class="plabel">音量<span class="val" id="volVal">70</span></div>
+        <input type="range" id="vol" min="0" max="100" value="70">
+      </div>
+      <div class="pgroup">
+        <div class="plabel">当前代码</div>
+        <div class="code-wrap"><pre class="code" id="codeAudio"></pre></div>
+      </div>
+      <div class="pgroup">
+        <div class="tip warn"><div><b>自动播放策略</b> 现代浏览器禁止「带声音的自动播放」。要么静音（muted），要么等用户点一下再 <code>play()</code> —— 这是为了避免网页突然出声。</div></div>
+      </div>
+    </div>
+
+    <div data-view="frame">
+      <div class="pgroup">
+        <div class="plabel">容器宽度<span class="val" id="fwVal">480</span></div>
+        <input type="range" id="fw" min="220" max="720" value="480">
+      </div>
+      <div class="pgroup">
+        <div class="plabel">aspect-ratio</div>
+        <div class="seg" id="ratioSeg">
+          <button data-v="16/9" class="on">16 / 9</button>
+          <button data-v="4/3">4 / 3</button>
+          <button data-v="1/1">1 / 1</button>
+        </div>
+      </div>
+      <div class="pgroup">
+        <div class="plabel">当前代码</div>
+        <div class="code-wrap"><pre class="code" id="codeFrame"></pre></div>
+      </div>
+      <div class="pgroup">
+        <div class="tip"><div>拖动宽度滑块，观察内嵌页面在 <b>520px</b> 断点处自动切换布局 —— 这就是媒体查询。</div></div>
+      </div>
+    </div>
+  </aside>
+</main>
+
+<section class="learn">
+  <div class="card">
+    <h3>媒体标签一览</h3>
+    <table class="kv">
+      <tr><td>video</td><td>视频容器，src 指向文件，source 可给多格式兜底</td></tr>
+      <tr><td>audio</td><td>音频容器，属性与 video 基本一致（没有 poster/width）</td></tr>
+      <tr><td>track</td><td>字幕轨（kind="captions"），无障碍必备</td></tr>
+      <tr><td>iframe</td><td>嵌入另一个页面：地图、视频、第三方表单</td></tr>
+      <tr><td>picture</td><td>按条件（宽度/格式）选不同图片，做艺术方向裁剪</td></tr>
+      <tr><td>canvas</td><td>用 JS 绘制，可做图表、游戏、实时视频流</td></tr>
+    </table>
+    <p class="muted" style="margin-top:10px">本页的两块播放器：视频用 <code>canvas.captureStream()</code> 实时生成画面，音频用 JS 合成 WAV 并转成 Blob URL —— 都是真在播，且完全离线。</p>
+  </div>
+
+  <div class="card">
+    <h3>属性速记</h3>
+    <p><b>controls</b> 显示浏览器自带控件；<b>autoplay</b> 自动播放（需 muted）；<b>loop</b> 循环；<b>muted</b> 静音；<b>playsinline</b> iOS 上不自动全屏。</p>
+    <p><b>preload</b> 取值 <code>none / metadata / auto</code>，控制页面加载时预下载多少。移动端流量敏感，常设 <code>preload="metadata"</code>。</p>
+    <p><b>poster</b> 视频封面图，只在有 src 时生效。</p>
+    <div class="tip"><div><b>响应式视频</b> 老写法是 padding-top:56.25% 的占位；现在直接 <code>aspect-ratio: 16/9</code> 一行搞定，配合 <code>width:100%</code>。</div></div>
+  </div>
+
+  <div class="card" style="grid-column:1/-1">
+    <h3>单元自测 · 4 题</h3>
+    <div class="quiz" id="quiz"></div>
+  </div>
+</section>
+
+<nav class="footnav">
+  <a href="08-layout.html"><small>← 上一讲 08</small><b>页面布局：从文档流到 Flex</b></a>
+  <a class="next" href="10-animation.html"><small>下一讲 10</small><b>过渡与动画：让页面动起来 →</b></a>
+</nav>
+
+<script src="assets/ui.js"></script>
+<script>
+(function () {
+  var P = "p9";
+
+  WB.seg(WB.$("#viewSeg"), function (v) {
+    WB.$("#vVideo").hidden = v !== "video";
+    WB.$("#vAudio").hidden = v !== "audio";
+    WB.$("#vFrame").hidden = v !== "frame";
+    WB.$$(".panel [data-view]").forEach(function (el) { el.classList.toggle("show", el.dataset.view === v); });
+    WB.$("#footHint").textContent = v === "video" ? "开关右侧属性，观察播放器行为的变化"
+      : v === "audio" ? "这是一段用 JS 合成的真实音频，可以真的听到声音"
+      : "拖动宽度滑块，观察内嵌页面在 520px 断点处切换布局";
+  });
+
+  /* ================= 视频：canvas 实时画面 ================= */
+  var canvas = document.createElement("canvas");
+  canvas.width = 640; canvas.height = 360;
+  var ctx = canvas.getContext("2d");
+  var vid = WB.$("#vid");
+  var t0 = performance.now();
+
+  function draw() {
+    var t = (performance.now() - t0) / 1000;
+    var g = ctx.createLinearGradient(0, 0, 640, 360);
+    g.addColorStop(0, "#0b1220");
+    g.addColorStop(.5, "#12324f");
+    g.addColorStop(1, "#0b3b3b");
+    ctx.fillStyle = g;
+    ctx.fillRect(0, 0, 640, 360);
+
+    // 网格
+    ctx.strokeStyle = "rgba(255,255,255,.06)";
+    ctx.lineWidth = 1;
+    for (var x = 0; x < 640; x += 40) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, 360); ctx.stroke(); }
+    for (var y = 0; y < 360; y += 40) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(640, y); ctx.stroke(); }
+
+    // 弹跳球
+    var bx = 320 + Math.sin(t * 1.1) * 210;
+    var by = 180 + Math.cos(t * 1.7) * 96;
+    var rg = ctx.createRadialGradient(bx, by, 4, bx, by, 46);
+    rg.addColorStop(0, "#7dd3fc");
+    rg.addColorStop(1, "rgba(59,130,246,0)");
+    ctx.fillStyle = rg;
+    ctx.beginPath(); ctx.arc(bx, by, 46, 0, 7); ctx.fill();
+
+    // 时钟文字
+    ctx.fillStyle = "rgba(255,255,255,.92)";
+    ctx.font = "600 30px ui-monospace, monospace";
+    ctx.textAlign = "center";
+    ctx.fillText(t.toFixed(2) + " s", 320, 196);
+    ctx.font = "13px ui-monospace, monospace";
+    ctx.fillStyle = "rgba(255,255,255,.5)";
+    ctx.fillText("canvas.captureStream() → video.srcObject", 320, 228);
+
+    requestAnimationFrame(draw);
+  }
+  draw();
+
+  var hasStream = false;
+  try {
+    if (canvas.captureStream) {
+      vid.srcObject = canvas.captureStream(30);
+      hasStream = true;
+    }
+  } catch (e) { hasStream = false; }
+
+  if (!hasStream) {
+    canvas.style.width = "100%";
+    canvas.style.display = "block";
+    vid.parentNode.replaceChild(canvas, vid);
+  }
+
+  function renderVideo() {
+    var v = hasStream ? WB.$("#vid") : null;
+    var attrs = [];
+    if (WB.$("#vControls").checked) attrs.push("controls");
+    if (WB.$("#vAuto").checked) attrs.push("autoplay");
+    if (WB.$("#vMuted").checked) attrs.push("muted");
+    if (WB.$("#vLoop").checked) attrs.push("loop");
+    if (WB.$("#vInline").checked) attrs.push("playsinline");
+
+    if (v) {
+      v.controls = WB.$("#vControls").checked;
+      v.muted = WB.$("#vMuted").checked;
+      v.loop = WB.$("#vLoop").checked;
+      v.setAttribute("playsinline", WB.$("#vInline").checked ? "" : "false");
+      if (WB.$("#vAuto").checked && v.paused) {
+        var p = v.play();
+        if (p && p.catch) p.catch(function () {});
+      }
+      if (!WB.$("#vAuto").checked && !v.paused) v.pause();
+    }
+
+    var code = "<video src=\"demo.mp4\"\n       " + attrs.join("\n       ") + "></video>\n\n<!-- 本演示的实际画面来源 -->\nvideo.srcObject = canvas.captureStream(30);";
+    WB.code(WB.$("#codeVideo"), code, "html");
+
+    WB.$("#vidInfo").innerHTML =
+      "<div>当前属性：<b>" + (attrs.length ? attrs.join(" ") : "（无）") + "</b></div>" +
+      "<div>播放状态：<b>" + (v ? (v.paused ? "暂停" : "播放中") : "（浏览器不支持 captureStream）") + "</b>" +
+      "　静音：<b>" + (WB.$("#vMuted").checked ? "是" : "否") + "</b></div>" +
+      (!WB.$("#vControls").checked ? '<div class="warnline">没有 controls：用户只能靠自己的键鼠/JS 控制，通常等于「没法操作」。</div>' : "") +
+      (WB.$("#vAuto").checked && !WB.$("#vMuted").checked ? '<div class="warnline">autoplay 但没有 muted：浏览器会拦截这次自动播放。</div>' : "");
+  }
+
+  ["vControls", "vAuto", "vMuted", "vLoop", "vInline"].forEach(function (id) {
+    WB.switch(WB.$("#" + id), renderVideo);
+  });
+  WB.on(WB.$("#vPlay"), "click", function () {
+    var v = WB.$("#vid");
+    if (v && v.play) { v.play().catch(function () {}); setTimeout(renderVideo, 120); }
+  });
+  WB.on(WB.$("#vPause"), "click", function () { var v = WB.$("#vid"); if (v && v.pause) v.pause(); renderVideo(); });
+  WB.on(WB.$("#vRestart"), "click", function () { var v = WB.$("#vid"); if (v) v.currentTime = 0; });
+
+  /* ================= 音频：JS 合成 WAV ================= */
+  function wavBlob() {
+    var sr = 22050, notes = [523.25, 659.25, 783.99, 1046.5];
+    var each = 0.32, total = notes.length * each + 0.5;
+    var n = Math.floor(sr * total);
+    var buf = new ArrayBuffer(44 + n * 2), view = new DataView(buf);
+    function str(off, s) { for (var i = 0; i < s.length; i++) view.setUint8(off + i, s.charCodeAt(i)); }
+    str(0, "RIFF"); view.setUint32(4, 36 + n * 2, true); str(8, "WAVE"); str(12, "fmt ");
+    view.setUint32(16, 16, true); view.setUint16(20, 1, true); view.setUint16(22, 1, true);
+    view.setUint32(24, sr, true); view.setUint32(28, sr * 2, true);
+    view.setUint16(32, 2, true); view.setUint16(34, 16, true);
+    str(36, "data"); view.setUint32(40, n * 2, true);
+    for (var i = 0; i < n; i++) {
+      var tt = i / sr;
+      var idx = Math.min(notes.length - 1, Math.floor(tt / each));
+      var local = tt - idx * each;
+      var env = Math.exp(-local * 5.5) * (tt < notes.length * each ? 1 : 0);
+      var s = (Math.sin(2 * Math.PI * notes[idx] * tt) * .6 +
+               Math.sin(2 * Math.PI * notes[idx] * 2 * tt) * .18) * env * .32;
+      view.setInt16(44 + i * 2, Math.max(-1, Math.min(1, s)) * 32767, true);
+    }
+    return new Blob([view], { type: "audio/wav" });
+  }
+
+  var aud = WB.$("#aud");
+  aud.src = URL.createObjectURL(wavBlob());
+
+  function renderAudio() {
+    var attrs = [];
+    if (WB.$("#aControls").checked) attrs.push("controls");
+    if (WB.$("#aLoop").checked) attrs.push("loop");
+    if (WB.$("#aAuto").checked) attrs.push("autoplay");
+    if (WB.$("#aMuted").checked) attrs.push("muted");
+
+    aud.controls = WB.$("#aControls").checked;
+    aud.loop = WB.$("#aLoop").checked;
+    aud.muted = WB.$("#aMuted").checked;
+    aud.volume = +WB.$("#vol").value / 100;
+    if (WB.$("#aAuto").checked && aud.paused) {
+      var pr = aud.play();
+      if (pr && pr.catch) pr.catch(function () {});
+    }
+    WB.$("#volVal").textContent = WB.$("#vol").value;
+
+    WB.code(WB.$("#codeAudio"), "<audio src=\"ring.wav\"\n       " + attrs.join("\n       ") + "></audio>", "html");
+    WB.$("#audInfo").innerHTML =
+      "<div>当前属性：<b>" + (attrs.length ? attrs.join(" ") : "（无）") + "</b></div>" +
+      "<div>音频来源：<b>Blob URL</b>（JS 合成的 1.8 秒四音琶音，采样率 22050Hz）</div>" +
+      (WB.$("#aAuto").checked ? '<div class="warnline">带声音的 autoplay 会被浏览器拦截 —— 在真实项目里要等用户交互后再调 play()。</div>' : "");
+  }
+  ["aControls", "aLoop", "aAuto", "aMuted"].forEach(function (id) {
+    WB.switch(WB.$("#" + id), renderAudio);
+  });
+  WB.range(WB.$("#vol"), null, renderAudio);
+
+  /* ================= 嵌入与响应式 ================= */
+  var SRCDOC = [
+    '<!DOCTYPE html><html><head><meta charset="utf-8"><style>',
+    '*{box-sizing:border-box}',
+    'body{margin:0;height:100vh;display:grid;place-content:center;gap:8px;text-align:center;',
+    'font:13px/1.6 system-ui,"PingFang SC",sans-serif;background:#0b1220;color:#dbe7f5;',
+    'transition:background .3s}',
+    '.t{font-size:18px;font-weight:700;transition:font-size .3s}',
+    '.m{font-family:ui-monospace,monospace;font-size:12px;color:#7dd3fc}',
+    '.pill{font-family:ui-monospace,monospace;font-size:11px;padding:2px 10px;border-radius:99px;',
+    'background:#1a2740;color:#93c5fd;justify-self:center}',
+    '.m::after{content:"手机布局（单列、小标题）"}',
+    '@media (min-width:520px){',
+    'body{background:#07283f}',
+    '.t{font-size:24px}',
+    '.pill{background:#0e4a63;color:#67e8f9}',
+    '.m::after{content:"桌面布局（大标题、加宽）"}',
+    '}',
+    '</style></head><body>',
+    '<div class="pill" id="w">width</div>',
+    '<div class="t">我在 iframe 里</div>',
+    '<div class="m"></div>',
+    '<script>',
+    'function up(){document.getElementById("w").textContent=window.innerWidth+"px";}',
+    'addEventListener("resize",up);up();',
+    '<\/script></body></html>'
+  ].join("\n");
+
+  var fr = WB.$("#fr");
+  fr.srcdoc = SRCDOC;
+
+  var ratioSeg = WB.seg(WB.$("#ratioSeg"), function () { renderFrame(); });
+  function renderFrame() {
+    var w = +WB.$("#fw").value;
+    var ratio = ratioSeg.get();
+    var wrap = WB.$("#framewrap");
+    wrap.style.width = w + "px";
+    wrap.style.aspectRatio = ratio;
+    WB.$("#fwVal").textContent = w;
+    WB.$("#ratioChip").textContent = ratio.replace("/", " / ");
+
+    WB.$("#frameInfo").innerHTML =
+      "<div>容器宽度 <b>" + w + "px</b>　→　内嵌页面视口约 <b>" + w + "px</b>（" + (w >= 520 ? "命中桌面断点" : "命中手机断点") + "）</div>" +
+      "<div>aspect-ratio: <b>" + ratio + "</b> 时，高度自动为 " + Math.round(w * (ratio === "1/1" ? 1 : ratio === "4/3" ? 3 / 4 : 9 / 16)) + "px</div>" +
+      "<div>把宽度拖到 520px 以下再拖回来，能看到背景色和标题字号同时变化。</div>";
+
+    WB.code(WB.$("#codeFrame"),
+      '<div class="video-box">\n  <iframe src="https://example.com/embed"\n          title="演示视频"\n          loading="lazy"\n          allowfullscreen></iframe>\n</div>\n\n.video-box {\n  width: ' + w + 'px;\n  aspect-ratio: ' + ratio.replace("/", " / ") + ';\n}\n.video-box iframe {\n  width: 100%;\n  height: 100%;\n  border: 0;\n}', "html");
+  }
+  WB.range(WB.$("#fw"), null, renderFrame);
+
+  /* ================= 自测 ================= */
+  WB.quiz(WB.$("#quiz"), [
+    {
+      q: "带声音的 <code>autoplay</code> 经常失效，最可能的原因是？",
+      opts: ["浏览器不支持 autoplay", "浏览器策略要求先静音或用户交互", "src 路径写错", "缺少 controls 属性"],
+      a: 1,
+      why: "Chrome/Safari 等都限制「有声自动播放」。要么加 muted，要么在用户点击后调 video.play()。这也是很多首页视频默认静音的原因。"
+    },
+    {
+      q: "让视频容器始终保持 16:9 且随宽度自适应，现在最简洁的写法是？",
+      opts: ["padding-top: 56.25% 的占位法", "aspect-ratio: 16 / 9", "height: 56.25%", "用 JS 监听 resize 计算高度"],
+      a: 1,
+      why: "aspect-ratio 一行搞定，padding-top 百分比是兼容老浏览器的历史方案。两者配合 width:100% 即可做到随容器缩放。"
+    },
+    {
+      q: "关于 iframe，说法正确的有（多选）",
+      type: "multi",
+      opts: ["iframe 里的页面有独立的文档与样式作用域", "iframe 会阻塞主页面的加载", "加 title 属性有利于无障碍", "iframe 内容可以被主页面 CSS 直接选中修改"],
+      a: [0, 2],
+      why: "iframe 是独立的浏览上下文，主页面 CSS/JS 不能直接操作它的 DOM（同源时可用 contentDocument，但样式仍隔离）。title 供屏读器说明这块区域的用途。"
+    },
+    {
+      q: "给视频加字幕，应该用哪个标签？",
+      opts: ["&lt;caption&gt;", "&lt;track&gt;", "&lt;sub&gt;", "&lt;text&gt;"],
+      a: 1,
+      why: "track 配合 kind=\"captions\" 载入 .vtt 字幕文件，是视频无障碍的标准做法。caption 是表格的标题，sub 是下标。"
+    }
+  ], P);
+
+  renderVideo();
+  renderAudio();
+  renderFrame();
+  WB.initCopy();
+})();
+</script>
+</body>
+</html>

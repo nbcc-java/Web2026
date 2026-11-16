@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>项目7 · 盒子模型：3D 拆开看</title>
+<link rel="stylesheet" href="assets/base.css">
+<style>
+  .scene {
+    position: relative; height: 392px; border-radius: var(--r-s);
+    background:
+      radial-gradient(520px 300px at 50% 42%, var(--acc-soft), transparent 70%),
+      linear-gradient(0deg, color-mix(in srgb, var(--line) 45%, transparent) 1px, transparent 1px) 0 0/100% 38px,
+      linear-gradient(90deg, color-mix(in srgb, var(--line) 45%, transparent) 1px, transparent 1px) 0 0/38px 100%,
+      var(--bg-2);
+    perspective: 1400px; overflow: hidden; cursor: grab; user-select: none;
+    border: 1px solid var(--line);
+  }
+  .scene:active { cursor: grabbing; }
+  .cube {
+    position: absolute; left: 50%; top: 50%; width: 0; height: 0;
+    transform-style: preserve-3d;
+    transform: rotateX(-20deg) rotateY(-26deg);
+  }
+  .layer {
+    position: absolute; left: 0; top: 0;
+    transform-style: preserve-3d;
+    border-radius: 3px;
+    display: flex; align-items: flex-start; justify-content: flex-start;
+    transition: width .12s, height .12s;
+  }
+  .layer > span {
+    position: absolute; left: 6px; top: 4px;
+    font-family: var(--mono); font-size: 10px; letter-spacing: .04em;
+    color: rgba(255, 255, 255, .92);
+    background: rgba(0, 0, 0, .38); padding: 0 5px; border-radius: 3px;
+    white-space: nowrap;
+  }
+  .layer.content {
+    background: linear-gradient(135deg, #3b82f6, #2563eb);
+    box-shadow: 0 0 24px rgba(59, 130, 246, .45);
+    border: 1px solid rgba(255, 255, 255, .35);
+  }
+  .layer.padding {
+    background: rgba(6, 182, 212, .22);
+    border: 1px dashed rgba(6, 182, 212, .9);
+  }
+  .layer.border {
+    background: rgba(245, 158, 11, .26);
+    border: 1px solid rgba(245, 158, 11, .95);
+  }
+  .layer.margin {
+    background: rgba(148, 163, 184, .10);
+    border: 1px dashed rgba(148, 163, 184, .75);
+  }
+  .layer.padding > span { color: #67e8f9; }
+  .layer.border > span { color: #fcd34d; }
+  .layer.margin > span { color: #cbd5e1; }
+  /* 标签错开，避免层叠时互相遮挡 */
+  .layer.margin > span { left: 4px; top: 3px; }
+  .layer.border > span { left: auto; right: 4px; top: 3px; }
+  .layer.padding > span { left: 4px; top: auto; bottom: 3px; }
+  .layer.content > span { left: 50%; top: 50%; transform: translate(-50%, -50%); }
+
+  .readout {
+    display: flex; gap: 8px; flex-wrap: wrap; margin-top: 14px;
+  }
+  .rd {
+    font-family: var(--mono); font-size: 11.5px; padding: 4px 10px; border-radius: 7px;
+    background: var(--panel-2); border: 1px solid var(--line); color: var(--tx-2);
+  }
+  .rd b { color: var(--acc-2); font-size: 12.5px; }
+  .rd.total b { color: var(--ok); }
+
+  .cmp { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 16px; }
+  .cmpitem { padding: 12px; border-radius: var(--r-s); background: var(--panel-2); border: 1px solid var(--line); }
+  .cmpitem h5 { margin: 0 0 10px; font-size: 12px; font-family: var(--mono); color: var(--tx-2); font-weight: 500; }
+  .cmpbox {
+    width: 200px; height: 84px; padding: 20px; border: 4px solid var(--warn);
+    background: var(--bg-2); box-sizing: content-box; border-radius: 3px; margin: 0 auto;
+  }
+  .cmpbox.bb { box-sizing: border-box; }
+  .cmpbox i {
+    display: block; height: 100%; background: linear-gradient(135deg, #3b82f6, #2563eb);
+    border-radius: 2px; font-style: normal; font-family: var(--mono); font-size: 10px;
+    color: #fff; display: grid; place-items: center;
+  }
+  .cmpnote { margin-top: 9px; font-size: 11.5px; color: var(--tx-3); text-align: center; font-family: var(--mono); }
+
+  .stage-body[hidden] { display: none; }
+  .panel [data-view] { display: none; }
+  .panel [data-view].show { display: block; }
+  @media (max-width: 640px) {
+    .cmp { grid-template-columns: 1fr; }
+    .scene { height: 320px; }
+  }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <a class="back" href="index.html">← 目录</a>
+  <div class="crumb">项目 <b>07</b> / 10 · 盒子模型</div>
+  <div class="spacer"></div>
+  <div class="pager">
+    <a href="06-css-basic.html">← 上一讲</a>
+    <a href="08-layout.html">下一讲 →</a>
+  </div>
+  <button class="icon-btn" id="themeBtn" title="切换主题">☀</button>
+</header>
+
+<main class="layout">
+  <section class="stage">
+    <div class="stage-head">
+      <span class="dot"></span>舞台 · 3D 爆炸视图
+      <div class="spacer"></div>
+      <span class="badge">拖拽旋转 · 滚轮缩放</span>
+      <div class="seg" id="viewSeg" style="margin-left:8px">
+        <button data-v="3d" class="on">3D 视图</button>
+        <button data-v="cmp">两种盒模型对比</button>
+      </div>
+    </div>
+
+    <div class="stage-body" id="v3d">
+      <div class="scene" id="scene">
+        <div class="cube" id="cube">
+          <div class="layer margin" id="lMargin"><span>margin</span></div>
+          <div class="layer border" id="lBorder"><span>border</span></div>
+          <div class="layer padding" id="lPadding"><span>padding</span></div>
+          <div class="layer content" id="lContent"><span>content</span></div>
+        </div>
+      </div>
+      <div class="readout" id="readout"></div>
+    </div>
+
+    <div class="stage-body" id="vCmp" hidden>
+      <div class="cmp">
+        <div class="cmpitem">
+          <h5>box-sizing: content-box（默认）</h5>
+          <div class="cmpbox"><i id="cbInner">width:200 内容区 200×84</i></div>
+          <div class="cmpnote" id="cbNote"></div>
+        </div>
+        <div class="cmpitem">
+          <h5>box-sizing: border-box</h5>
+          <div class="cmpbox bb"><i id="bbInner">width:200 含 padding+border</i></div>
+          <div class="cmpnote" id="bbNote"></div>
+        </div>
+      </div>
+      <div class="readout" style="margin-top:16px">
+        <span class="rd">两个盒子都写了 <b>width: 200px; padding: 20px; border: 4px</b></span>
+        <span class="rd total">但实际占位宽度不同 —— 这就是 <b>box-sizing</b> 的区别</span>
+      </div>
+    </div>
+
+    <div class="stage-foot"><span id="footHint">在舞台上按住鼠标拖动可以旋转，滚轮可以缩放</span></div>
+  </section>
+
+  <aside class="panel">
+    <div class="pgroup">
+      <div class="plabel">content 宽<span class="val" id="wVal">200</span></div>
+      <input type="range" id="w" min="90" max="300" value="200">
+    </div>
+    <div class="pgroup">
+      <div class="plabel">content 高<span class="val" id="hVal">120</span></div>
+      <input type="range" id="h" min="60" max="220" value="120">
+    </div>
+    <div class="pgroup">
+      <div class="plabel">padding<span class="val" id="pVal">22</span></div>
+      <input type="range" id="pad" min="0" max="56" value="22">
+    </div>
+    <div class="pgroup">
+      <div class="plabel">border-width<span class="val" id="bVal">5</span></div>
+      <input type="range" id="bw" min="0" max="20" value="5">
+    </div>
+    <div class="pgroup">
+      <div class="plabel">margin<span class="val" id="mVal">16</span></div>
+      <input type="range" id="mg" min="0" max="48" value="16">
+    </div>
+    <div class="pgroup">
+      <div class="plabel">图层分离程度<span class="val" id="eVal">46</span></div>
+      <input type="range" id="exp" min="0" max="110" value="46">
+    </div>
+    <div class="pgroup">
+      <div class="plabel">box-sizing</div>
+      <div class="seg" id="boxSeg">
+        <button data-v="content-box" class="on">content-box</button>
+        <button data-v="border-box">border-box</button>
+      </div>
+    </div>
+    <div class="pgroup">
+      <label class="switch"><span>自动旋转</span><input type="checkbox" id="chSpin"><i></i></label>
+      <button class="btn mini" id="btnReset" style="margin-top:8px">重置视角</button>
+    </div>
+    <div class="pgroup">
+      <div class="plabel">当前 CSS</div>
+      <div class="code-wrap"><pre class="code" id="codeBox"></pre></div>
+    </div>
+  </aside>
+</main>
+
+<section class="learn">
+  <div class="card">
+    <h3>一个盒子由内到外四层</h3>
+    <p><b>content</b> 内容区：文字、图片真正占据的空间，<code>width/height</code> 默认设置的就是它。</p>
+    <p><b>padding</b> 内边距：内容和边框之间的空气，会被背景色填充。<code>padding: 10px 20px</code> 是上下 10、左右 20。</p>
+    <p><b>border</b> 边框：<code>1px solid #ccc</code>，宽度会额外增加盒子的尺寸。</p>
+    <p><b>margin</b> 外边距：盒子与盒子之间的间隙，<b>永远透明</b>，不吃背景色。</p>
+    <div class="tip"><div><b>计算公式</b> 元素占位宽度 = border + padding + width（content-box）。所以 <code>width:100%</code> 再加 padding 一定会撑出横向滚动条 —— 这是新手第一个坑。</div></div>
+  </div>
+
+  <div class="card">
+    <h3>三个必知细节</h3>
+    <p><b>1. margin 会合并。</b>上下相邻的兄弟元素，两个 margin 取较大值而不是相加；父元素与第一个子元素的上 margin 也会合并（这叫 margin collapsing）。</p>
+    <p><b>2. 行内元素的宽高无效。</b><code>span</code> 这种 <code>display:inline</code> 元素设 width/height 不起作用，要改成 inline-block 或 block。</p>
+    <p><b>3. 全局改盒模型。</b>现代项目通常在 reset 里写：</p>
+    <div class="code-wrap"><pre class="code" id="codeReset"></pre></div>
+    <p class="muted" style="margin-top:8px">这样 width 就等于「整个盒子」，写布局时不用再心算 padding。</p>
+  </div>
+
+  <div class="card" style="grid-column:1/-1">
+    <h3>单元自测 · 4 题</h3>
+    <div class="quiz" id="quiz"></div>
+  </div>
+</section>
+
+<nav class="footnav">
+  <a href="06-css-basic.html"><small>← 上一讲 06</small><b>选择器与优先级：谁说了算</b></a>
+  <a class="next" href="08-layout.html"><small>下一讲 08</small><b>页面布局：从文档流到 Flex →</b></a>
+</nav>
+
+<script src="assets/ui.js"></script>
+<script>
+(function () {
+  var P = "p7";
+
+  WB.seg(WB.$("#viewSeg"), function (v) {
+    WB.$("#v3d").hidden = v !== "3d";
+    WB.$("#vCmp").hidden = v !== "cmp";
+    WB.$("#footHint").textContent = v === "3d" ? "在舞台上按住鼠标拖动可以旋转，滚轮可以缩放"
+      : "同样的 width:200px + padding + border，两种盒模型的最终占位宽度不一样";
+  });
+
+  /* ---------------- 3D 场景 ---------------- */
+  var cube = WB.$("#cube");
+  var rotX = -20, rotY = -26, zoom = 1.12, spin = false;
+  var dragging = false, lastX = 0, lastY = 0;
+
+  function applyRot() {
+    cube.style.transform = "rotateX(" + rotX + "deg) rotateY(" + rotY + "deg) scale(" + zoom + ")";
+  }
+
+  var scene = WB.$("#scene");
+  scene.addEventListener("mousedown", function (e) {
+    dragging = true; lastX = e.clientX; lastY = e.clientY;
+    if (spin) { WB.$("#chSpin").checked = false; spin = false; }
+  });
+  window.addEventListener("mousemove", function (e) {
+    if (!dragging) return;
+    rotY += (e.clientX - lastX) * 0.45;
+    rotX -= (e.clientY - lastY) * 0.35;
+    rotX = Math.max(-85, Math.min(85, rotX));
+    lastX = e.clientX; lastY = e.clientY;
+    applyRot();
+  });
+  window.addEventListener("mouseup", function () { dragging = false; });
+  scene.addEventListener("wheel", function (e) {
+    e.preventDefault();
+    zoom = Math.max(.55, Math.min(1.7, zoom - e.deltaY * 0.0012));
+    applyRot();
+  }, { passive: false });
+
+  var spinTimer = null;
+  WB.switch(WB.$("#chSpin"), function (on) {
+    spin = on;
+    if (on) {
+      spinTimer = setInterval(function () { rotY += 0.55; applyRot(); }, 16);
+    } else {
+      clearInterval(spinTimer);
+    }
+  });
+  WB.on(WB.$("#btnReset"), "click", function () {
+    rotX = -20; rotY = -26; zoom = 1.12; applyRot();
+    WB.toast("视角已重置");
+  });
+
+  /* ---------------- 参数与渲染 ---------------- */
+  var boxSizing = "content-box";
+
+  function render() {
+    var w = +WB.$("#w").value, h = +WB.$("#h").value;
+    var pad = +WB.$("#pad").value, bw = +WB.$("#bw").value, mg = +WB.$("#mg").value;
+    var exp = +WB.$("#exp").value;
+
+    WB.$("#wVal").textContent = w;
+    WB.$("#hVal").textContent = h;
+    WB.$("#pVal").textContent = pad;
+    WB.$("#bVal").textContent = bw;
+    WB.$("#mVal").textContent = mg;
+    WB.$("#eVal").textContent = exp;
+
+    // 各层尺寸：border-box 时 width 已是整盒宽，内容区要倒推
+    var cw, ch;
+    if (boxSizing === "border-box") {
+      cw = Math.max(6, w - pad * 2 - bw * 2);
+      ch = Math.max(6, h - pad * 2 - bw * 2);
+    } else {
+      cw = w; ch = h;
+    }
+    var pw = cw + pad * 2, ph = ch + pad * 2;
+    var bwid = pw + bw * 2, bhei = ph + bw * 2;
+    var mwid = bwid + mg * 2, mhei = bhei + mg * 2;
+
+    function place(el, ww, hh, z) {
+      el.style.width = Math.max(2, ww) + "px";
+      el.style.height = Math.max(2, hh) + "px";
+      el.style.transform = "translate(-50%, -50%) translateZ(" + z + "px)";
+    }
+    place(WB.$("#lContent"), cw, ch, 0);
+    place(WB.$("#lPadding"), pw, ph, -exp);
+    place(WB.$("#lBorder"), bwid, bhei, -exp * 2);
+    place(WB.$("#lMargin"), mwid, mhei, -exp * 3);
+
+    // 读数
+    WB.$("#readout").innerHTML =
+      '<span class="rd">content <b>' + cw + " × " + ch + "</b></span>" +
+      '<span class="rd">padding <b>' + pad + "</b></span>" +
+      '<span class="rd">border <b>' + bw + "</b></span>" +
+      '<span class="rd">margin <b>' + mg + "</b></span>" +
+      '<span class="rd total">占位 <b>' + bwid + " × " + bhei + "</b> （不含 margin）</span>" +
+      '<span class="rd">含 margin <b>' + mwid + " × " + mhei + "</b></span>";
+
+    // 对比模块
+    var cbTotal = 200 + 20 * 2 + 4 * 2;
+    WB.$("#cbNote").textContent = "实际占位 " + cbTotal + "px，内容区只有 200px";
+    WB.$("#bbNote").textContent = "实际占位 200px，内容区只剩 " + (200 - 48) + "px";
+    WB.$("#cbInner").textContent = "content 200×84";
+
+    // 代码
+    var css = ".box {\n  width: " + w + "px;\n  height: " + h + "px;\n  padding: " + pad + "px;\n  border: " + bw + "px solid #f59e0b;\n  margin: " + mg + "px;\n  box-sizing: " + boxSizing + ";\n}";
+    WB.code(WB.$("#codeBox"), css, "css");
+  }
+
+  ["w", "h", "pad", "bw", "mg", "exp"].forEach(function (id) {
+    WB.range(WB.$("#" + id), null, render);
+  });
+
+  WB.seg(WB.$("#boxSeg"), function (v) {
+    boxSizing = v;
+    // border-box 下 content 层要跟着「缩小」，视觉上体现内容区变小
+    render();
+    WB.$("#footHint").textContent = v === "border-box"
+      ? "border-box：padding 与 border 从 width 里「吃」掉，内容区变小，但盒子总宽不变"
+      : "content-box（默认）：width 只管内容区，padding 与 border 额外增加到盒子外面";
+  });
+
+  WB.code(WB.$("#codeReset"),
+    "*, *::before, *::after {\n  box-sizing: border-box;\n}", "css");
+
+  /* ---------------- 自测 ---------------- */
+  WB.quiz(WB.$("#quiz"), [
+    {
+      q: "一个盒子 <code>width:200px; padding:10px; border:2px solid</code>（默认盒模型），它的占位宽度是？",
+      opts: ["200px", "220px", "224px", "244px"],
+      a: 2,
+      why: "200 + 左右各 10（padding）+ 左右各 2（border）= 224。content-box 下 width 只算内容区。"
+    },
+    {
+      q: "想要 <code>width:100%</code> 的元素加 padding 后不撑破父容器，最简单的方法是？",
+      opts: ["给父元素加 overflow:hidden", "全局设 box-sizing: border-box", "把 padding 改成 margin", "给元素加 display:inline-block"],
+      a: 1,
+      why: "border-box 让 width 包含 padding 与 border，100% 就真的是父容器的 100%。这也是现代项目都做 box-sizing 重置的原因。"
+    },
+    {
+      q: "关于 margin，说法正确的是（多选）",
+      opts: ["margin 区域永远透明，不显示背景色", "相邻兄弟的上下 margin 会取较大值", "父元素和第一个子元素的上 margin 可能合并", "margin 会撑大元素的可点击区域"],
+      a: [0, 1, 2],
+      why: "margin 在盒子外部且透明，不属于元素本身（点不到、不吃背景）。相邻 margin 会合并（margin collapsing），这是布局里很多「莫名其妙间距」的根源。"
+    },
+    {
+      q: "<code>span</code> 设了 <code>width:200px; height:100px</code> 却没反应，原因是？",
+      opts: ["span 不支持宽高设置，因为它是行内元素", "需要加 !important", "span 必须先设 position", "宽度会被文字撑开，属正常现象"],
+      a: 0,
+      why: "display:inline 的元素宽高由内容决定，width/height 无效（垂直方向的 margin/padding 也不占位）。改成 display:inline-block 或 block 即可。"
+    }
+  ], P);
+
+  render();
+  applyRot();
+  WB.initCopy();
+})();
+</script>
+</body>
+</html>

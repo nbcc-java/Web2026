@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>项目3 · 图像与超链接：资源怎么找</title>
+<link rel="stylesheet" href="assets/base.css">
+<style>
+  /* ---- 文件树 ---- */
+  .tree {
+    font-family: var(--mono); font-size: 12.5px; line-height: 1.95;
+    background: var(--code-bg); border: 1px solid var(--line);
+    border-radius: var(--r-s); padding: 14px 16px; color: var(--tx-2);
+    overflow: auto;
+  }
+  .tree .dir { color: var(--tx-2); opacity: .75; }
+  .tree .file {
+    cursor: pointer; border-radius: 4px; padding: 0 4px; transition: .14s;
+    display: inline-block;
+  }
+  .tree .file:hover { background: var(--panel-3); color: var(--tx); }
+  .tree .file.cur { background: var(--acc); color: #fff; font-weight: 600; }
+  .tree .file.tgt { outline: 1px dashed var(--acc-2); outline-offset: 1px; color: var(--acc-2); }
+  .tree .file.tgt.cur { color: #fff; }
+  .tree .line { white-space: pre; }
+
+  .pathout { margin-top: 14px; display: grid; gap: 8px; }
+  .prow {
+    display: grid; grid-template-columns: 92px 1fr; gap: 10px; align-items: center;
+    font-size: 12.5px;
+  }
+  .prow .k { color: var(--tx-3); font-size: 11.5px; }
+  .prow .v {
+    font-family: var(--mono); font-size: 12.5px; padding: 5px 10px; border-radius: 6px;
+    background: var(--panel-2); border: 1px solid var(--line); word-break: break-all;
+  }
+  .prow .v.bad { border-color: color-mix(in srgb, var(--err) 55%, transparent); background: color-mix(in srgb, var(--err) 10%, transparent); color: var(--err); }
+  .prow .v.good { border-color: color-mix(in srgb, var(--ok) 45%, transparent); background: color-mix(in srgb, var(--ok) 10%, transparent); }
+  .verdict { margin-top: 10px; font-size: 12.5px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .pill { font-size: 11.5px; padding: 2px 9px; border-radius: 99px; font-family: var(--mono); }
+  .pill.ok { background: color-mix(in srgb, var(--ok) 16%, transparent); color: var(--ok); border: 1px solid color-mix(in srgb, var(--ok) 40%, transparent); }
+  .pill.no { background: color-mix(in srgb, var(--err) 16%, transparent); color: var(--err); border: 1px solid color-mix(in srgb, var(--err) 40%, transparent); }
+
+  /* ---- object-fit ---- */
+  .fitwrap { display: flex; gap: 18px; flex-wrap: wrap; align-items: flex-start; }
+  .fitbox {
+    position: relative; border: 2px dashed var(--acc); border-radius: 6px;
+    overflow: hidden; background: var(--panel-2); flex: 0 0 auto;
+  }
+  .fitbox img { width: 100%; height: 100%; display: block; }
+  .fitbox::after {
+    content: "容器"; position: absolute; left: 4px; top: 3px;
+    font-size: 10px; color: #fff; background: rgba(59, 130, 246, .85);
+    padding: 0 5px; border-radius: 3px; font-family: var(--mono);
+  }
+  .fitmeta { font-size: 12.5px; color: var(--tx-2); display: grid; gap: 6px; }
+  .fitmeta b { color: var(--acc-2); font-family: var(--mono); }
+
+  /* ---- 链接状态 ---- */
+  .stategrid { display: grid; gap: 10px; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); }
+  .scard {
+    padding: 13px 14px; border-radius: var(--r-s);
+    background: var(--panel-2); border: 1px solid var(--line);
+    cursor: pointer; transition: .16s;
+  }
+  .scard:hover { border-color: var(--acc); }
+  .scard.on { border-color: var(--acc); box-shadow: 0 0 0 2px var(--acc-soft); }
+  .scard .nm { font-family: var(--mono); font-size: 11.5px; color: var(--tx-3); margin-bottom: 6px; }
+  .scard a { font-size: 14px; }
+  .scard .ds { font-size: 11.5px; color: var(--tx-3); margin-top: 6px; }
+
+  a.demo-link { color: #4da3ff; text-decoration: underline; }
+  a.demo-link:visited { color: #b789ff; }
+  a.demo-link:hover { color: #22d3ee; }
+  a.demo-link:active { color: #f87171; }
+
+  .mockwin { border: 1px solid var(--line-2); border-radius: 8px; overflow: hidden; font-size: 12px; }
+  .mockwin .t { padding: 6px 10px; background: var(--panel-2); border-bottom: 1px solid var(--line); font-family: var(--mono); color: var(--tx-2); }
+  .mockwin .b { padding: 16px; color: var(--tx-3); text-align: center; }
+
+  .anchorbox {
+    height: 190px; overflow: auto; scroll-behavior: smooth;
+    border: 1px solid var(--line); border-radius: var(--r-s); padding: 0 14px;
+    background: var(--panel-2); position: relative;
+  }
+  .anchorbox section { padding: 26px 0 10px; border-bottom: 1px dashed var(--line); }
+  .anchorbox h4 { margin: 0 0 4px; font-size: 13px; }
+  .anchorbox p { margin: 0; font-size: 12.5px; color: var(--tx-3); }
+
+  .stage-body[hidden] { display: none; }
+  .panel [data-view] { display: none; }
+  .panel [data-view].show { display: block; }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <a class="back" href="index.html">← 目录</a>
+  <div class="crumb">项目 <b>03</b> / 10 · 图像与超链接</div>
+  <div class="spacer"></div>
+  <div class="pager">
+    <a href="02-text.html">← 上一讲</a>
+    <a href="04-table.html">下一讲 →</a>
+  </div>
+  <button class="icon-btn" id="themeBtn" title="切换主题">☀</button>
+</header>
+
+<main class="layout">
+  <section class="stage">
+    <div class="stage-head">
+      <span class="dot"></span>舞台 · 动手区
+      <div class="spacer"></div>
+      <div class="seg" id="viewSeg">
+        <button data-v="path" class="on">路径解析器</button>
+        <button data-v="fit">图片填充</button>
+        <button data-v="link">链接与锚点</button>
+      </div>
+    </div>
+
+    <!-- 路径 -->
+    <div class="stage-body" id="vPath">
+      <div class="tree" id="tree"></div>
+      <div class="pathout" id="pathout"></div>
+      <div class="verdict" id="verdict"></div>
+    </div>
+
+    <!-- 填充 -->
+    <div class="stage-body" id="vFit" hidden>
+      <div class="fitwrap">
+        <div class="fitbox" id="fitbox" style="width:320px;height:180px">
+          <img id="fitimg" alt="示意图片">
+        </div>
+        <div class="fitmeta" id="fitmeta"></div>
+      </div>
+    </div>
+
+    <!-- 链接 -->
+    <div class="stage-body" id="vLink" hidden>
+      <div class="seg" style="margin-bottom:12px;max-width:460px" id="stateSeg">
+        <button data-v="link" class="on">:link</button>
+        <button data-v="visited">:visited</button>
+        <button data-v="hover">:hover</button>
+        <button data-v="active">:active</button>
+      </div>
+      <div class="stategrid" id="stateGrid"></div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:18px">
+        <div class="mockwin">
+          <div class="t" id="winTitle">当前页面</div>
+          <div class="b" id="winBody">点击左侧链接 → 在当前标签页打开</div>
+        </div>
+        <div class="mockwin">
+          <div class="t">新标签页</div>
+          <div class="b" id="win2" style="opacity:.4">（空）</div>
+        </div>
+      </div>
+
+      <div style="margin-top:18px">
+        <div class="plabel" style="margin-bottom:6px">锚点跳转（点击试试，容器内平滑滚动）</div>
+        <div class="row" style="margin-bottom:8px">
+          <a class="btn mini" href="#secA">跳到 A 节</a>
+          <a class="btn mini" href="#secB">跳到 B 节</a>
+          <a class="btn mini" href="#secC">跳到 C 节</a>
+        </div>
+        <div class="anchorbox" id="anchorbox">
+          <section id="secA"><h4>A 节 · 图像格式</h4><p>JPG 适合照片，PNG 适合需要透明边缘的图标，SVG 适合图标与图表，WebP 体积更小。</p></section>
+          <section id="secB"><h4>B 节 · 路径规则</h4><p>同级直接写文件名，上一级用 ../，根目录用 / 开头。</p></section>
+          <section id="secC"><h4>C 节 · 无障碍</h4><p>每张有信息量的图片都要写 alt；纯装饰图写 alt=""。</p></section>
+        </div>
+      </div>
+    </div>
+
+    <div class="stage-foot"><span id="footHint">点左侧文件树里的文件名，设为要引用的图片</span></div>
+  </section>
+
+  <aside class="panel">
+    <div data-view="path" class="show">
+      <div class="pgroup">
+        <div class="plabel">当前正在编辑<span class="val" id="curName">index.html</span></div>
+        <div class="seg" id="curSeg" style="flex-direction:column">
+          <button data-v="index.html" class="on">index.html（根目录）</button>
+          <button data-v="pages/list.html">pages/list.html（子目录）</button>
+        </div>
+      </div>
+      <div class="pgroup">
+        <div class="plabel">要引用的图片<span class="val" id="tgtName">images/logo.png</span></div>
+        <div class="tip"><div>在左侧文件树里点击任意文件即可切换目标。三种路径写法会同时给出，对比它们的差别。</div></div>
+      </div>
+      <div class="pgroup">
+        <div class="plabel">生成的代码</div>
+        <div class="code-wrap"><pre class="code" id="codePath"></pre></div>
+      </div>
+    </div>
+
+    <div data-view="fit">
+      <div class="pgroup">
+        <div class="plabel">object-fit<span class="val" id="fitVal">cover</span></div>
+        <div class="seg" id="fitSeg" style="flex-direction:column">
+          <button data-v="fill">fill 拉伸填满</button>
+          <button data-v="contain">contain 完整显示</button>
+          <button data-v="cover" class="on">cover 裁切填满</button>
+          <button data-v="none">none 原始尺寸</button>
+          <button data-v="scale-down">scale-down 取较小</button>
+        </div>
+      </div>
+      <div class="pgroup">
+        <div class="plabel">object-position<span class="val" id="posVal">center</span></div>
+        <div class="seg" id="posSeg">
+          <button data-v="center" class="on">居中</button>
+          <button data-v="left top">左上</button>
+          <button data-v="right bottom">右下</button>
+        </div>
+      </div>
+      <div class="pgroup">
+        <div class="plabel">容器宽度<span class="val" id="wVal">320</span></div>
+        <input type="range" id="fw" min="140" max="440" value="320">
+      </div>
+      <div class="pgroup">
+        <div class="plabel">容器高度<span class="val" id="hVal">180</span></div>
+        <input type="range" id="fh" min="90" max="320" value="180">
+      </div>
+      <div class="pgroup">
+        <div class="plabel">当前代码</div>
+        <div class="code-wrap"><pre class="code" id="codeFit"></pre></div>
+      </div>
+    </div>
+
+    <div data-view="link">
+      <div class="pgroup">
+        <div class="plabel">target 取值</div>
+        <div class="seg" id="targetSeg">
+          <button data-v="_self" class="on">_self</button>
+          <button data-v="_blank">_blank</button>
+        </div>
+      </div>
+      <div class="pgroup">
+        <div class="plabel">安全属性</div>
+        <label class="switch"><span>rel="noopener noreferrer"</span><input type="checkbox" id="chRel" checked><i></i></label>
+      </div>
+      <div class="pgroup">
+        <div class="plabel">当前代码</div>
+        <div class="code-wrap"><pre class="code" id="codeLink"></pre></div>
+      </div>
+      <div class="pgroup">
+        <div class="tip warn"><div><b>只有能改颜色</b> 出于隐私考虑，浏览器只允许 :visited 修改颜色相关属性（color、background-color、border-color 等），改字号或显示图标都不生效。</div></div>
+      </div>
+    </div>
+  </aside>
+</main>
+
+<section class="learn">
+  <div class="card">
+    <h3>路径三兄弟，一次说清</h3>
+    <p><b>相对路径</b> <code>../images/logo.png</code> —— 以「当前文件所在目录」为起点。<code>../</code> 表示回到上一级，可叠加。换服务器、换域名都不用改。</p>
+    <p><b>根相对路径</b> <code>/images/logo.png</code> —— 从网站根目录算。只在部署到服务器后有效，本地双击打开会失效（因为本地根目录是磁盘根）。</p>
+    <p><b>绝对路径</b> <code>https://cdn.example.com/images/logo.png</code> —— 完整地址，跨站引用必须用它。</p>
+    <div class="tip"><div><b>一句话判断</b> 先看「我在哪个目录」，再看「目标在哪个目录」，同目录直接写名，上一级先写 <code>../</code>。</div></div>
+  </div>
+
+  <div class="card">
+    <h3>图片必备的两个属性</h3>
+    <table class="kv">
+      <tr><th>属性</th><th>作用</th></tr>
+      <tr><td>src</td><td>图片地址，必填</td></tr>
+      <tr><td>alt</td><td>替代文本：图片丢失时显示、屏读器朗读、搜索引擎理解</td></tr>
+      <tr><td>width / height</td><td>写上可避免图片加载时页面跳动（CLS）</td></tr>
+      <tr><td>loading="lazy"</td><td>懒加载，首屏外的图片滚动到附近才下载</td></tr>
+    </table>
+    <p class="muted" style="margin-top:10px">纯装饰图写 <code>alt=""</code>，让屏读器直接跳过，而不是念出"image"。</p>
+  </div>
+
+  <div class="card" style="grid-column:1/-1">
+    <h3>单元自测 · 4 题</h3>
+    <div class="quiz" id="quiz"></div>
+  </div>
+</section>
+
+<nav class="footnav">
+  <a href="02-text.html"><small>← 上一讲 02</small><b>文本与列表：内容怎么组织</b></a>
+  <a class="next" href="04-table.html"><small>下一讲 04</small><b>表格：二维数据的骨架 →</b></a>
+</nav>
+
+<script src="assets/ui.js"></script>
+<script>
+(function () {
+  var P = "p3";
+
+  WB.seg(WB.$("#viewSeg"), function (v) {
+    WB.$("#vPath").hidden = v !== "path";
+    WB.$("#vFit").hidden = v !== "fit";
+    WB.$("#vLink").hidden = v !== "link";
+    WB.$$(".panel [data-view]").forEach(function (el) { el.classList.toggle("show", el.dataset.view === v); });
+    if (v === "path") WB.$("#footHint").textContent = "点左侧文件树里的文件名，设为要引用的图片";
+    if (v === "fit") WB.$("#footHint").textContent = "拖动宽高滑块改变容器，观察图片如何被拉伸、裁切或留白";
+    if (v === "link") WB.$("#footHint").textContent = "真实链接的四种状态由 CSS 伪类控制，顺序必须是 LVHA";
+  });
+
+  /* ================= 视图 1：路径解析器 ================= */
+  var FILES = ["index.html", "about.html", "images/logo.png", "images/banner.jpg", "pages/list.html", "pages/detail.html"];
+  var cur = "index.html";
+  var tgt = "images/logo.png";
+
+  function treeHTML() {
+    function file(p, label) {
+      var cls = "file" + (p === cur ? " cur" : "") + (p === tgt ? " tgt" : "");
+      return '<span class="' + cls + '" data-p="' + p + '">' + label + "</span>";
+    }
+    function row(prefix, inner) {
+      return '<div class="line"><span class="dir">' + prefix + "</span>" + inner + "</div>";
+    }
+    return [
+      row("", '<span class="dir">my-site/</span>'),
+      row("├─ ", file("index.html", "index.html")),
+      row("├─ ", file("about.html", "about.html")),
+      row("├─ ", '<span class="dir">images/</span>'),
+      row("│  ├─ ", file("images/logo.png", "logo.png")),
+      row("│  └─ ", file("images/banner.jpg", "banner.jpg")),
+      row("└─ ", '<span class="dir">pages/</span>'),
+      row("   ├─ ", file("pages/list.html", "list.html")),
+      row("   └─ ", file("pages/detail.html", "detail.html"))
+    ].join("");
+  }
+
+  function dirOf(p) { var i = p.lastIndexOf("/"); return i < 0 ? "" : p.slice(0, i); }
+
+  function relPath(from, to) {
+    var a = dirOf(from) ? dirOf(from).split("/") : [];
+    var b = to.split("/");
+    var name = b.pop();
+    var i = 0;
+    while (i < a.length && i < b.length && a[i] === b[i]) i++;
+    var up = a.length - i;
+    var parts = [];
+    for (var k = 0; k < up; k++) parts.push("..");
+    parts = parts.concat(b.slice(i));
+    return parts.length ? parts.join("/") + "/" + name : name;
+  }
+
+  function renderPath() {
+    WB.$("#tree").innerHTML = treeHTML();
+    WB.$("#curName").textContent = cur;
+    WB.$("#tgtName").textContent = tgt;
+    var rel = relPath(cur, tgt);
+    var root = "/" + tgt;
+    var abs = "https://www.example.com/" + tgt;
+    var wrong = tgt; // 直接写完整路径（在子目录里会 404）
+
+    var rows = [
+      ["相对路径", rel, "good", "从当前文件所在目录出发，换域名也不用改"],
+      ["根相对路径", root, "", "从网站根目录算，本地 file:// 打开会失效"],
+      ["绝对路径", abs, "", "完整 URL，跨站引用图片时使用"]
+    ];
+    if (dirOf(cur)) {
+      rows.push(["常见错误", wrong, "bad", "在子目录页面里直接写 images/… 会 404"]);
+    }
+
+    WB.$("#pathout").innerHTML = rows.map(function (r) {
+      var vcls = r[2] === "good" ? "good" : r[2] === "bad" ? "bad" : "";
+      return '<div class="prow"><span class="k">' + r[0] + '</span>' +
+        '<span class="v ' + vcls + '">' + r[1] + "<br><span style='font-size:11px;opacity:.7'>" + r[3] + "</span></span></div>";
+    }).join("");
+
+    WB.$("#verdict").innerHTML = dirOf(cur)
+      ? '<span class="pill no">子目录页面</span> 必须先用 <code>../</code> 退回根目录，否则路径从 pages/ 开始找，找不到 images/'
+      : '<span class="pill ok">根目录页面</span> 当前文件就在根目录，直接写 images/logo.png 即可';
+
+    WB.code(WB.$("#codePath"), '<img src="' + rel + '" alt="网站标志" width="120" height="40">', "html");
+    WB.$("#footHint").textContent = "当前文件 " + cur + " → 目标 " + tgt + "，正确写法：" + rel;
+  }
+
+  WB.$("#tree").addEventListener("click", function (e) {
+    var f = e.target.closest(".file");
+    if (!f) return;
+    var p = f.dataset.p;
+    if (p === cur) { WB.toast("这就是当前正在编辑的文件"); return; }
+    tgt = p;
+    renderPath();
+  });
+
+  WB.seg(WB.$("#curSeg"), function (v) { cur = v; renderPath(); });
+
+  /* ================= 视图 2：object-fit ================= */
+  var IMG = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(
+    '<svg xmlns="http://www.w3.org/2000/svg" width="800" height="300" viewBox="0 0 800 300">' +
+    '<defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1">' +
+    '<stop offset="0" stop-color="#1d4ed8"/><stop offset="1" stop-color="#06b6d4"/></linearGradient></defs>' +
+    '<rect width="800" height="300" fill="url(#g)"/>' +
+    '<g stroke="rgba(255,255,255,.22)" stroke-width="1">' +
+    '<path d="M100 0V300M200 0V300M300 0V300M400 0V300M500 0V300M600 0V300M700 0V300"/>' +
+    '<path d="M0 75H800M0 150H800M0 225H800"/></g>' +
+    '<circle cx="120" cy="80" r="34" fill="#fbbf24"/>' +
+    '<rect x="640" y="190" width="110" height="70" rx="10" fill="#f472b6"/>' +
+    '<text x="400" y="160" font-family="monospace" font-size="42" fill="#fff" text-anchor="middle">800 × 300</text>' +
+    '<text x="400" y="196" font-family="monospace" font-size="15" fill="rgba(255,255,255,.75)" text-anchor="middle">原始比例 8:3</text>' +
+    "</svg>");
+  WB.$("#fitimg").src = IMG;
+
+  var fitSeg = WB.seg(WB.$("#fitSeg"), function () { renderFit(); });
+  var posSeg = WB.seg(WB.$("#posSeg"), function () { renderFit(); });
+
+  function renderFit() {
+    var fit = fitSeg.get() || "cover";
+    var pos = posSeg.get() || "center";
+    var w = +WB.$("#fw").value, h = +WB.$("#fh").value;
+    var box = WB.$("#fitbox");
+    box.style.width = w + "px";
+    box.style.height = h + "px";
+    var img = WB.$("#fitimg");
+    img.style.objectFit = fit;
+    img.style.objectPosition = pos;
+
+    var tips = {
+      fill: "拉伸填满容器，不保持比例 —— 图片会变形。除非是纯色块或渐变，一般不用。",
+      contain: "保持比例完整显示，容器比例不一致时会出现留白（letterbox）。适合 logo、图表。",
+      cover: "保持比例填满容器，超出的部分被裁掉。最常用于卡片封面、头像。",
+      none: "保持原始尺寸，既不缩放也不裁剪。容器小的时候只显示图片的一部分。",
+      "scale-down": "在 none 和 contain 里取「更小」的那个效果，图片永远不会被放大。"
+    };
+    WB.$("#fitmeta").innerHTML =
+      "<div>容器：<b>" + w + " × " + h + "</b>　原图：<b>800 × 300</b></div>" +
+      "<div>object-fit: <b>" + fit + "</b>　object-position: <b>" + pos + "</b></div>" +
+      "<div style='max-width:320px;color:var(--tx-3);font-size:12.5px;margin-top:4px'>" + tips[fit] + "</div>";
+
+    WB.$("#fitVal").textContent = fit;
+    WB.$("#posVal").textContent = pos;
+    WB.$("#wVal").textContent = w;
+    WB.$("#hVal").textContent = h;
+    WB.code(WB.$("#codeFit"),
+      ".cover {\n  width: " + w + "px;\n  height: " + h + "px;\n  object-fit: " + fit + ";\n  object-position: " + pos + ";\n}", "css");
+  }
+  WB.range(WB.$("#fw"), null, renderFit);
+  WB.range(WB.$("#fh"), null, renderFit);
+
+  /* ================= 视图 3：链接状态 ================= */
+  var STATES = {
+    link: ["未访问", "默认颜色，链接的可点击身份色"],
+    visited: ["已访问", "浏览过该地址后变色，帮用户判断「这条路走过」"],
+    hover: ["悬停", "鼠标移上去时的高亮，是最重要的可用性反馈"],
+    active: ["激活", "鼠标按下的瞬间，告诉用户「确实点到了」"]
+  };
+  var stateSeg = WB.seg(WB.$("#stateSeg"), function (v) { renderState(v); });
+
+  function renderState(v) {
+    var grid = WB.$("#stateGrid");
+    grid.innerHTML = Object.keys(STATES).map(function (k) {
+      return '<div class="scard' + (k === v ? " on" : "") + '" data-s="' + k + '">' +
+        '<div class="nm">a:' + k + "</div>" +
+        '<a class="demo-link s-' + k + '" href="#' + k + '">示例链接文字</a>' +
+        '<div class="ds">' + STATES[k][0] + " · " + STATES[k][1] + "</div></div>";
+    }).join("");
+    // 强制某一状态的视觉（用 CSS 类模拟，便于静态对比）
+    var COLORS = { link: "#4da3ff", visited: "#b789ff", hover: "#22d3ee", active: "#f87171" };
+    WB.$$(".demo-link", grid).forEach(function (a) {
+      var s = a.className.split("s-")[1];
+      a.style.color = COLORS[s];
+      if (s === "active") a.style.opacity = ".85";
+      if (s === "visited") a.style.textDecorationColor = "currentColor";
+    });
+    WB.$$(".scard", grid).forEach(function (c) {
+      c.addEventListener("click", function () { stateSeg.set(c.dataset.s); });
+    });
+    WB.$("#footHint").textContent = "LVHA 顺序：link → visited → hover → active，顺序写反会导致某些状态失效";
+  }
+
+  var targetSeg = WB.seg(WB.$("#targetSeg"), function () { renderLink(); });
+  function renderLink() {
+    var t = targetSeg.get() || "_self";
+    var rel = WB.$("#chRel").checked;
+    WB.$("#winTitle").textContent = t === "_self" ? "当前页面（标签页未变）" : "当前页面（保持不动）";
+    WB.$("#winBody").textContent = t === "_self" ? "链接在当前标签页打开，用户的浏览上下文被替换" : "原页面保留，新地址在另一个标签页打开";
+    WB.$("#win2").style.opacity = t === "_blank" ? "1" : ".4";
+    WB.$("#win2").innerHTML = t === "_blank" ? "<b style='color:var(--tx)'>新标签页</b><br>打开了 a.html" : "（空）";
+    var code = '<a href="https://www.example.com" target="' + t + '"' +
+      (t === "_blank" && rel ? ' rel="noopener noreferrer"' : "") + ">访问示例网站</a>";
+    WB.code(WB.$("#codeLink"), code, "html");
+  }
+  WB.switch(WB.$("#chRel"), renderLink);
+
+  /* ================= 自测 ================= */
+  WB.quiz(WB.$("#quiz"), [
+    {
+      q: "在 <code>pages/list.html</code> 里引用 <code>images/logo.png</code>，正确写法是？",
+      opts: ['src="images/logo.png"', 'src="../images/logo.png"', 'src="/../images/logo.png"', 'src="./pages/images/logo.png"'],
+      a: 1,
+      why: "当前文件在 pages/ 目录里，images/ 与 pages/ 同级，先 ../ 退到根目录，再进 images/。A 会变成 pages/images/logo.png（不存在）。"
+    },
+    {
+      q: "要在一张 320×180 的卡片里放 800×300 的封面图，希望「铺满且不变形」，用哪个 object-fit？",
+      opts: ["fill", "contain", "cover", "none"],
+      a: 2,
+      why: "cover 保持比例把容器填满，多余部分裁掉；fill 会拉伸变形；contain 会留白；none 只显示原图一部分且不缩放。"
+    },
+    {
+      q: "关于 :visited，说法正确的是（多选）",
+      type: "multi",
+      opts: ["可以修改颜色类属性", "可以修改 font-size", "伪类顺序应为 link → visited → hover → active", "可以用 JS 读取访问过的链接颜色"],
+      a: [0, 2],
+      why: "浏览器只允许 :visited 改颜色（防止用 CSS 探测用户浏览历史）；改字号无效；JS 也拿不到真实颜色（getComputedStyle 会返回未访问的颜色）。"
+    },
+    {
+      q: 'target="_blank" 时建议同时加什么？',
+      opts: ['rel="noopener noreferrer"', 'download="file"', 'loading="lazy"', 'aria-hidden="true"'],
+      a: 0,
+      why: "noopener 切断新页面对原页面的 window.opener 访问（防钓鱼跳转劫持），noreferrer 同时不发送来源信息。现代浏览器对 _blank 已默认 noopener，但显式写更稳妥。"
+    }
+  ], P);
+
+  renderPath();
+  renderFit();
+  renderState("link");
+  renderLink();
+  WB.$("#footHint").textContent = "点左侧文件树里的文件名，设为要引用的图片";
+  WB.initCopy();
+})();
+</script>
+</body>
+</html>

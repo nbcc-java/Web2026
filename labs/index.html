@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>HTML5 + CSS3 互动教程 · 总目录</title>
+<link rel="stylesheet" href="assets/base.css">
+<style>
+  .hero {
+    padding: clamp(28px, 6vw, 64px) clamp(16px, 4vw, 40px) 8px;
+    max-width: 1180px; margin: 0 auto;
+  }
+  .hero .kicker {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-family: var(--mono); font-size: 12px; letter-spacing: .12em;
+    color: var(--acc-2); text-transform: uppercase;
+    padding: 4px 12px; border-radius: 99px;
+    border: 1px solid color-mix(in srgb, var(--acc-2) 40%, transparent);
+    background: color-mix(in srgb, var(--acc-2) 10%, transparent);
+  }
+  .hero h1 {
+    margin: 18px 0 12px; font-size: clamp(28px, 4.4vw, 46px); line-height: 1.18;
+    letter-spacing: -.02em; font-weight: 800;
+  }
+  .hero h1 em {
+    font-style: normal;
+    background: linear-gradient(100deg, var(--acc), var(--acc-2));
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  .hero p.lead { max-width: 660px; color: var(--tx-2); font-size: 15.5px; margin: 0 0 22px; }
+  .hero .row .btn { padding: 9px 18px; }
+
+  .stats {
+    display: flex; gap: 26px; flex-wrap: wrap; margin-top: 26px;
+    padding-top: 18px; border-top: 1px solid var(--line);
+  }
+  .stats div { font-size: 12.5px; color: var(--tx-3); }
+  .stats b { display: block; font-size: 22px; color: var(--tx); font-family: var(--mono); font-weight: 700; }
+  .stats b span { font-size: 13px; color: var(--tx-3); }
+
+  .sec-title {
+    max-width: 1180px; margin: 34px auto 12px; padding: 0 clamp(16px, 4vw, 40px);
+    display: flex; align-items: baseline; gap: 12px;
+  }
+  .sec-title h2 { margin: 0; font-size: 16px; font-weight: 700; }
+  .sec-title span { font-size: 12.5px; color: var(--tx-3); }
+
+  .cards {
+    max-width: 1180px; margin: 0 auto; padding: 0 clamp(16px, 4vw, 40px);
+    display: grid; gap: 14px;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  }
+  a.pj {
+    position: relative; display: flex; flex-direction: column; gap: 9px;
+    padding: 18px 18px 16px; border-radius: var(--r);
+    border: 1px solid var(--line); background: var(--panel);
+    color: var(--tx); text-decoration: none; overflow: hidden;
+    transition: .2s;
+  }
+  a.pj::after {
+    content: ""; position: absolute; inset: 0 auto 0 0; width: 3px;
+    background: linear-gradient(var(--acc), var(--acc-2));
+    opacity: 0; transition: .2s;
+  }
+  a.pj:hover { transform: translateY(-3px); border-color: color-mix(in srgb, var(--acc) 45%, var(--line)); box-shadow: var(--shadow); }
+  a.pj:hover::after { opacity: 1; }
+  .pj-top { display: flex; align-items: center; gap: 11px; }
+  .pj-no {
+    flex: 0 0 40px; width: 40px; height: 40px; border-radius: 11px;
+    display: grid; place-items: center;
+    font-family: var(--mono); font-size: 15px; font-weight: 700;
+    color: var(--acc); background: var(--acc-soft);
+    border: 1px solid color-mix(in srgb, var(--acc) 30%, transparent);
+  }
+  .pj-title { font-size: 15.5px; font-weight: 650; line-height: 1.3; }
+  .pj-sub { font-size: 11.5px; color: var(--tx-3); font-family: var(--mono); letter-spacing: .03em; }
+  .pj-desc { font-size: 13px; color: var(--tx-2); flex: 1; }
+  .pj-tags { display: flex; flex-wrap: wrap; gap: 5px; }
+  .pj-tags i {
+    font-style: normal; font-size: 11px; padding: 1.5px 8px; border-radius: 99px;
+    background: var(--panel-2); border: 1px solid var(--line); color: var(--tx-3);
+  }
+  .pj-done {
+    position: absolute; top: 14px; right: 14px;
+    font-size: 11px; color: var(--ok); border: 1px solid color-mix(in srgb, var(--ok) 40%, transparent);
+    background: color-mix(in srgb, var(--ok) 12%, transparent);
+    padding: 1px 8px; border-radius: 99px; display: none;
+  }
+  .pj-done.show { display: block; }
+
+  .howto {
+    max-width: 1180px; margin: 34px auto 60px; padding: 0 clamp(16px, 4vw, 40px);
+    display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  }
+  .howto .card p { margin-bottom: 8px; }
+  kbd {
+    font-family: var(--mono); font-size: 11.5px; padding: 1px 6px;
+    border: 1px solid var(--line-2); border-bottom-width: 2px;
+    border-radius: 5px; background: var(--panel-2); color: var(--tx-2);
+  }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="kicker">HTML5 + CSS3 · 项目式互动教程</div>
+  <h1>不是看演示，<br>是<em>亲手把属性拨动一遍</em>。</h1>
+  <p class="lead">
+    10 个项目，10 个可视化实验台。滑动滑块、拖拽元素、切换取值，左侧画面立刻改变，
+    右侧同步生成代码 —— 标签语法、盒模型、布局、表单、媒体、动画这些"看不见的规则"会变成看得见的反馈。
+  </p>
+  <div class="row">
+    <a class="btn primary" href="01-structure.html">从项目 1 开始 →</a>
+    <a class="btn" href="#all">浏览全部 10 个项目</a>
+    <a class="btn" href="../index.html">← 返回课堂导航</a>
+  </div>
+
+  <div class="stats">
+    <div><b id="stPj">10</b>个互动实验台</div>
+    <div><b id="stDone">0<span>/10</span></b>已完成项目</div>
+    <div><b id="stQuiz">0<span>题</span></b>可批改自测</div>
+    <div><b>0<span>依赖</span></b>离线双击即用</div>
+  </div>
+</div>
+
+<div class="sec-title" id="all">
+  <h2>学习路径</h2>
+  <span>建议顺序完成，每个项目 30–45 分钟（含自测）</span>
+</div>
+
+<div class="cards" id="cards"></div>
+
+<div class="sec-title">
+  <h2>怎么用</h2>
+  <span>学生自学 / 课堂投屏 / 教师演示均可</span>
+</div>
+
+<div class="howto">
+  <div class="card">
+    <h3>打开方式</h3>
+    <p>整个文件夹拷到电脑，<b>双击 index.html</b> 即可。全部页面与交互都在本地运行，断网也能用。</p>
+    <p class="muted">若用 VS Code，右键 → Open with Live Server 体验一致。</p>
+  </div>
+  <div class="card">
+    <h3>三个固定区域</h3>
+    <p><b>舞台</b>：实时预览，所有改动立即生效。<br><b>控制面板</b>：滑块 / 开关 / 取值切换。<br><b>下方</b>：知识点、同步代码、单元自测。</p>
+  </div>
+  <div class="card">
+    <h3>课堂建议</h3>
+    <p>先让学生<b>猜</b>"改这个值画面会怎么变"，再动手验证；错的那次比对的印象更深。</p>
+    <p class="muted">右上角 <kbd>☀</kbd> 可切浅色主题，投影更清晰。</p>
+  </div>
+  <div class="card">
+    <h3>进度与自测</h3>
+    <p>每讲末尾 4 题，提交即判分并给出解析；答对 60% 以上自动记为"已完成"。</p>
+    <p class="muted">进度保存在本机浏览器，换电脑不跟随。</p>
+  </div>
+</div>
+
+<footer class="footnav" style="max-width:1180px;margin:0 auto;border:0">
+  <span class="muted">HTML5 + CSS3 互动教程 · 共 10 讲 · 可离线运行</span>
+</footer>
+
+<script src="assets/ui.js"></script>
+<script>
+(function () {
+  var list = [
+    { no: 1, file: "01-structure.html", title: "网页初体验：标签与文档结构",
+      sub: "01 · HTML STRUCTURE", desc: "拆解一个标签的五个零件，勾掉 head / body 看网页会怎样，认识语义化骨架。",
+      tags: ["标签解剖", "文档结构", "语义化"] },
+    { no: 2, file: "02-text.html", title: "文本与列表：内容怎么组织",
+      sub: "02 · TEXT & LISTS", desc: "h1–h6 到 strong / em / mark，切换列表类型与嵌套层级，看清「语义」与「外观」的区别。",
+      tags: ["文本标签", "有序无序列表", "语义 vs 样式"] },
+    { no: 3, file: "03-image-link.html", title: "图像与超链接：资源怎么找",
+      sub: "03 · IMAGE & LINK", desc: "拖拽文件夹树自动生成正确路径，切 object-fit 看图片裁切，体验链接四种状态。",
+      tags: ["路径", "object-fit", "链接状态"] },
+    { no: 4, file: "04-table.html", title: "表格：二维数据的骨架",
+      sub: "04 · TABLE", desc: "拖行列表头生成表格，点选两格合并出 rowspan / colspan，对比两种边框模型。",
+      tags: ["rowspan", "colspan", "border-collapse"] },
+    { no: 5, file: "05-form.html", title: "表单：把数据收回来",
+      sub: "05 · FORM", desc: "十种 input 类型一一点开看外观，故意填错触发原生校验，提交后看真实数据结构。",
+      tags: ["input类型", "原生校验", "label关联"] },
+    { no: 6, file: "06-css-basic.html", title: "选择器与优先级：谁说了算",
+      sub: "06 · SELECTORS", desc: "输入选择器实时高亮命中元素并计数，用天平看清 (a,b,c) 权重怎么比大小。",
+      tags: ["选择器", "优先级", "颜色单位"] },
+    { no: 7, file: "07-box-model.html", title: "盒子模型：3D 拆开看",
+      sub: "07 · BOX MODEL", desc: "可拖拽旋转的 3D 爆炸视图，四层结构随滑块分离；content-box 与 border-box 对照实验。",
+      tags: ["3D 爆炸视图", "padding/border", "box-sizing"] },
+    { no: 8, file: "08-layout.html", title: "页面布局：从文档流到 Flex",
+      sub: "08 · LAYOUT", desc: "切换 display / float / position 看元素搬家，z-index 用 3D 侧视分层，Flex 游乐场实时排布。",
+      tags: ["文档流", "浮动与定位", "Flex"] },
+    { no: 9, file: "09-media.html", title: "媒体应用：音视频与嵌入",
+      sub: "09 · MEDIA", desc: "音视频属性开关逐项生效，iframe 内嵌可缩放页面，容器查询演示响应式断点。",
+      tags: ["audio/video", "iframe", "响应式"] },
+    { no: 10, file: "10-animation.html", title: "过渡与动画：让页面动起来",
+      sub: "10 · TRANSITION & ANIMATION", desc: "调节 duration / 缓动曲线看小球赛跑，拖拽关键帧编辑 @keyframes，3D 卡片翻转。",
+      tags: ["transition", "cubic-bezier", "@keyframes"] }
+  ];
+
+  var prog = WB.progress.all();
+  var done = 0;
+  var html = "";
+  list.forEach(function (p) {
+    var ok = !!prog["p" + p.no];
+    if (ok) done++;
+    html += '<a class="pj" href="' + p.file + '">' +
+      '<span class="pj-done' + (ok ? " show" : "") + '">✓ 已完成</span>' +
+      '<div class="pj-top"><div class="pj-no">' + (p.no < 10 ? "0" + p.no : p.no) + "</div>" +
+      '<div><div class="pj-title">' + p.title + '</div><div class="pj-sub">' + p.sub + "</div></div></div>" +
+      '<div class="pj-desc">' + p.desc + "</div>" +
+      '<div class="pj-tags">' + p.tags.map(function (t) { return "<i>" + t + "</i>"; }).join("") + "</div>" +
+      "</a>";
+  });
+  WB.$("#cards").innerHTML = html;
+
+  WB.$("#stDone").innerHTML = done + "<span>/10</span>";
+  WB.$("#stQuiz").innerHTML = "40<span>题</span>";
+  if (done >= 10) WB.$("#stPj").textContent = "10";
+})();
+</script>
+</body>
+</html>

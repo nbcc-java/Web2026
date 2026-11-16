@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>项目10 · 过渡与动画：让页面动起来</title>
+<link rel="stylesheet" href="assets/base.css">
+<style>
+  /* ---------- 过渡实验室 ---------- */
+  .tstage {
+    position: relative; height: 240px; border-radius: var(--r-s);
+    border: 1px solid var(--line); background:
+      linear-gradient(0deg, color-mix(in srgb, var(--line) 40%, transparent) 1px, transparent 1px) 0 0/100% 40px,
+      linear-gradient(90deg, color-mix(in srgb, var(--line) 40%, transparent) 1px, transparent 1px) 0 0/40px 100%,
+      var(--bg-2);
+    overflow: hidden;
+  }
+  .tbox {
+    position: absolute; left: 24px; top: 24px;
+    width: 92px; height: 92px; border-radius: 10px;
+    background: linear-gradient(135deg, #3b82f6, #06b6d4);
+    display: grid; place-items: center;
+    font-family: var(--mono); font-size: 11px; color: #fff;
+    will-change: transform, background-color, border-radius;
+  }
+  .tbox.on {
+    left: 24px; top: 24px;
+    transform: translate(var(--tx), var(--ty)) rotate(var(--rot)) scale(var(--sc));
+    background: linear-gradient(135deg, #f59e0b, #f43f5e);
+    border-radius: var(--br);
+  }
+  .tnote { margin-top: 12px; font-size: 12.5px; color: var(--tx-2); }
+  .tnote b { color: var(--acc-2); font-family: var(--mono); }
+
+  canvas.curve { width: 100%; height: auto; display: block; border-radius: 8px; background: var(--code-bg); border: 1px solid var(--line); }
+  .prog { height: 6px; border-radius: 99px; background: var(--panel-3); overflow: hidden; margin-top: 10px; }
+  .prog i { display: block; height: 100%; width: 0; border-radius: 99px; background: linear-gradient(90deg, var(--acc), var(--acc-2)); }
+
+  /* ---------- 缓动赛跑 ---------- */
+  .track {
+    display: grid; grid-template-columns: 82px 1fr; align-items: center; gap: 10px;
+    margin-bottom: 9px; font-family: var(--mono); font-size: 10.5px;
+  }
+  .track .nm { color: var(--tx-3); text-align: right; font-size: 10px; }
+  .lane { position: relative; height: 22px; border-radius: 5px; background: var(--panel-2); border: 1px solid var(--line); overflow: hidden; }
+  .lane .ball {
+    position: absolute; top: 3px; left: 2px; width: 38px; height: 14px; border-radius: 99px;
+    background: linear-gradient(90deg, var(--acc), var(--acc-2));
+    transition-property: transform; transition-duration: 1600ms;
+    display: grid; place-items: center; font-size: 8.5px; color: #fff;
+  }
+  .lane .ball.run { transform: translateX(calc(100% * var(--dist))); }
+  .finish { position: absolute; right: 0; top: 0; bottom: 0; width: 3px; background: color-mix(in srgb, var(--err) 70%, transparent); }
+
+  /* ---------- keyframes ---------- */
+  .kfstage {
+    height: 220px; display: grid; place-items: center; border-radius: var(--r-s);
+    border: 1px solid var(--line); background: var(--bg-2); overflow: hidden;
+  }
+  .kfbox {
+    width: 86px; height: 86px; border-radius: 12px;
+    background: linear-gradient(135deg, #8b5cf6, #06b6d4);
+    box-shadow: 0 8px 30px rgba(139, 92, 246, .35);
+  }
+  .kfstrip { display: flex; gap: 4px; margin-top: 14px; }
+  .kfstrip div {
+    flex: 1; text-align: center; font-family: var(--mono); font-size: 10px;
+    padding: 5px 2px; border-radius: 5px; background: var(--panel-2);
+    border: 1px solid var(--line); color: var(--tx-3);
+  }
+
+  .card3d { perspective: 900px; display: grid; place-items: center; height: 200px; }
+  .flipper {
+    position: relative; width: 168px; height: 108px;
+    transform-style: preserve-3d; transition: transform .7s cubic-bezier(.4, .1, .2, 1);
+    cursor: pointer;
+  }
+  .flipper.flip { transform: rotateY(180deg); }
+  .flipper .face {
+    position: absolute; inset: 0; border-radius: 10px; backface-visibility: hidden;
+    display: grid; place-items: center; font-size: 12.5px; color: #fff;
+    font-family: var(--mono); text-align: center; padding: 10px;
+  }
+  .flipper .front { background: linear-gradient(135deg, #3b82f6, #06b6d4); }
+  .flipper .back { background: linear-gradient(135deg, #f59e0b, #f43f5e); transform: rotateY(180deg); }
+
+  .stage-body[hidden] { display: none; }
+  .panel [data-view] { display: none; }
+  .panel [data-view].show { display: block; }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <a class="back" href="index.html">← 目录</a>
+  <div class="crumb">项目 <b>10</b> / 10 · 过渡与动画</div>
+  <div class="spacer"></div>
+  <div class="pager">
+    <a href="09-media.html">← 上一讲</a>
+    <a class="off" href="#">下一讲 →</a>
+  </div>
+  <button class="icon-btn" id="themeBtn" title="切换主题">☀</button>
+</header>
+
+<main class="layout">
+  <section class="stage">
+    <div class="stage-head">
+      <span class="dot"></span>舞台 · 动手区
+      <div class="spacer"></div>
+      <div class="seg" id="viewSeg">
+        <button data-v="trans" class="on">过渡 transition</button>
+        <button data-v="race">缓动赛跑</button>
+        <button data-v="kf">关键帧动画</button>
+      </div>
+    </div>
+
+    <!-- 过渡 -->
+    <div class="stage-body" id="vTrans">
+      <div class="tstage">
+        <div class="tbox" id="tbox">过渡盒子</div>
+      </div>
+      <div class="tnote" id="tnote"></div>
+      <div style="margin-top:14px">
+        <canvas class="curve" id="curve" width="620" height="300"></canvas>
+        <div class="prog"><i id="progbar"></i></div>
+      </div>
+    </div>
+
+    <!-- 赛跑 -->
+    <div class="stage-body" id="vRace" hidden>
+      <div id="tracks"></div>
+      <div class="row" style="margin-top:14px">
+        <button class="btn primary" id="btnRace">开始比赛</button>
+        <span class="muted" id="raceMsg">同一个 duration，不同的缓动曲线 —— 谁会先到？</span>
+      </div>
+    </div>
+
+    <!-- keyframes -->
+    <div class="stage-body" id="vKf" hidden>
+      <div class="kfstage">
+        <div class="kfbox" id="kfbox"></div>
+      </div>
+      <div class="kfstrip" id="kfstrip"></div>
+      <div style="margin-top:18px">
+        <div class="plabel" style="margin-bottom:8px">顺带看看 transform 的 3D 翻牌（点一下卡片）</div>
+        <div class="card3d">
+          <div class="flipper" id="flipper">
+            <div class="face front">点我翻转<br>rotateY(180deg)</div>
+            <div class="face back">背面<br>backface-visibility: hidden</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="stage-foot"><span id="footHint">调好参数后点「切换状态」，观察过渡过程与下方曲线</span></div>
+  </section>
+
+  <aside class="panel">
+    <div data-view="trans" class="show">
+      <div class="pgroup">
+        <div class="plabel">transition-property</div>
+        <div class="seg" id="propSeg">
+          <button data-v="transform" class="on">transform</button>
+          <button data-v="background-color">background</button>
+          <button data-v="border-radius">radius</button>
+          <button data-v="all">all</button>
+        </div>
+      </div>
+      <div class="pgroup">
+        <div class="plabel">duration<span class="val" id="durVal">600ms</span></div>
+        <input type="range" id="dur" min="100" max="2000" step="50" value="600">
+      </div>
+      <div class="pgroup">
+        <div class="plabel">delay<span class="val" id="delayVal">0ms</span></div>
+        <input type="range" id="delay" min="0" max="800" step="50" value="0">
+      </div>
+      <div class="pgroup">
+        <div class="plabel">timing-function</div>
+        <div class="seg" id="tfSeg" style="flex-direction:column">
+          <button data-v="linear" class="on">linear 匀速</button>
+          <button data-v="ease">ease 默认</button>
+          <button data-v="ease-in">ease-in 慢进</button>
+          <button data-v="ease-out">ease-out 慢出</button>
+          <button data-v="ease-in-out">ease-in-out</button>
+          <button data-v="cubic-bezier(.68,-.55,.27,1.55)">back 回弹</button>
+        </div>
+      </div>
+      <div class="pgroup">
+        <div class="plabel">transform 位移 X<span class="val" id="txVal">240</span></div>
+        <input type="range" id="tx" min="-60" max="420" value="240">
+      </div>
+      <div class="pgroup">
+        <div class="plabel">旋转 / 缩放<span class="val" id="rsVal">0° / 1</span></div>
+        <input type="range" id="rot" min="-180" max="180" value="0">
+        <input type="range" id="sc" min="50" max="200" value="100" style="margin-top:4px">
+      </div>
+      <div class="pgroup">
+        <div class="row">
+          <button class="btn primary" id="btnToggle">切换状态</button>
+          <button class="btn mini" id="btnReplay">重播</button>
+        </div>
+      </div>
+      <div class="pgroup">
+        <div class="plabel">当前 CSS</div>
+        <div class="code-wrap"><pre class="code" id="codeTrans"></pre></div>
+      </div>
+    </div>
+
+    <div data-view="race">
+      <div class="pgroup">
+        <div class="plabel">统一时长<span class="val" id="raceDurVal">1600ms</span></div>
+        <input type="range" id="raceDur" min="600" max="3000" step="100" value="1600">
+      </div>
+      <div class="pgroup">
+        <div class="plabel">参赛曲线</div>
+        <table class="kv" id="raceTable"></table>
+      </div>
+      <div class="pgroup">
+        <div class="tip"><div><b>结论</b> 同样的距离、同样的时长，曲线不同 → 运动过程的"性格"完全不同：linear 像机器，ease-out 像刹车，back 会先退一步再冲。</div></div>
+      </div>
+    </div>
+
+    <div data-view="kf">
+      <div class="pgroup">
+        <div class="plabel">动画预设</div>
+        <div class="seg" id="kfSeg" style="flex-direction:column">
+          <button data-v="bounce" class="on">bounce 弹跳</button>
+          <button data-v="pulse">pulse 呼吸</button>
+          <button data-v="spin">spin 旋转</button>
+          <button data-v="slide">slide 平移</button>
+        </div>
+      </div>
+      <div class="pgroup">
+        <div class="plabel">duration<span class="val" id="kfDurVal">1.6s</span></div>
+        <input type="range" id="kfDur" min="400" max="4000" step="100" value="1600">
+      </div>
+      <div class="pgroup">
+        <div class="plabel">iteration-count</div>
+        <div class="seg" id="iterSeg">
+          <button data-v="infinite" class="on">infinite</button>
+          <button data-v="1">1</button>
+          <button data-v="3">3</button>
+        </div>
+      </div>
+      <div class="pgroup">
+        <div class="plabel">direction</div>
+        <div class="seg" id="dirSeg">
+          <button data-v="normal" class="on">normal</button>
+          <button data-v="alternate">alternate</button>
+          <button data-v="reverse">reverse</button>
+        </div>
+      </div>
+      <div class="pgroup">
+        <div class="plabel">timing-function</div>
+        <div class="seg" id="kfTfSeg">
+          <button data-v="ease" class="on">ease</button>
+          <button data-v="linear">linear</button>
+          <button data-v="ease-in-out">in-out</button>
+        </div>
+      </div>
+      <div class="pgroup">
+        <div class="plabel">当前 CSS</div>
+        <div class="code-wrap"><pre class="code" id="codeKf"></pre></div>
+      </div>
+    </div>
+  </aside>
+</main>
+
+<section class="learn">
+  <div class="card">
+    <h3>transition 与 animation 的分工</h3>
+    <p><b>transition（过渡）</b>：两个状态之间的补间。必须有「状态改变」才会触发（hover、加类名、JS 改样式）。不能循环，不能被中途控制方向。</p>
+    <p><b>animation + @keyframes（动画）</b>：可以定义任意多个关键帧、自动播放、循环、来回交替、暂停。更适合装饰性、持续性动画。</p>
+    <p><b>四个子属性</b>：<code>transition: 属性 时长 缓动 延迟</code>，例如 <code>transition: transform .4s ease-in-out .1s</code>。</p>
+    <div class="tip"><div><b>性能提示</b> 动画只改 <code>transform</code> 和 <code>opacity</code> 最流畅（走合成层，不触发重排重绘）；改 width/left/top 会引发 layout，容易掉帧。</div></div>
+  </div>
+
+  <div class="card">
+    <h3>缓动函数怎么选</h3>
+    <table class="kv">
+      <tr><td>linear</td><td>匀速，机械感。进度条、无限旋转</td></tr>
+      <tr><td>ease</td><td>浏览器默认，两头略慢，通用</td></tr>
+      <tr><td>ease-out</td><td>进场动画首选：快进慢停，自然</td></tr>
+      <tr><td>ease-in</td><td>离场动画首选：慢起快走</td></tr>
+      <tr><td>ease-in-out</td><td>位置切换、开关切换，两头都柔和</td></tr>
+      <tr><td>cubic-bezier(…)</td><td>自定义，可做出回弹（y 超出 0~1）</td></tr>
+    </table>
+    <p class="muted" style="margin-top:10px">无障碍：系统里如果开了「减少动态效果」，应该用 <code>@media (prefers-reduced-motion: reduce)</code> 关掉动画。</p>
+  </div>
+
+  <div class="card" style="grid-column:1/-1">
+    <h3>单元自测 · 4 题</h3>
+    <div class="quiz" id="quiz"></div>
+  </div>
+</section>
+
+<nav class="footnav">
+  <a href="09-media.html"><small>← 上一讲 09</small><b>媒体应用：音视频与嵌入</b></a>
+  <a class="next" href="index.html"><small>已完成全部 10 讲</small><b>返回总目录 →</b></a>
+</nav>
+
+<script src="assets/ui.js"></script>
+<script>
+(function () {
+  var P = "p10";
+
+  WB.seg(WB.$("#viewSeg"), function (v) {
+    WB.$("#vTrans").hidden = v !== "trans";
+    WB.$("#vRace").hidden = v !== "race";
+    WB.$("#vKf").hidden = v !== "kf";
+    WB.$$(".panel [data-view]").forEach(function (el) { el.classList.toggle("show", el.dataset.view === v); });
+    WB.$("#footHint").textContent = v === "trans" ? "调好参数后点「切换状态」，观察过渡过程与下方曲线"
+      : v === "race" ? "同一时长、不同曲线，看谁先到终点"
+      : "切换预设与时长，观察 keyframes 在不同 iteration / direction 下的表现";
+    if (v === "trans") drawCurve();
+  });
+
+  /* ================= 视图 1：过渡 ================= */
+  var propSeg = WB.seg(WB.$("#propSeg"), function () { renderTrans(); });
+  var tfSeg = WB.seg(WB.$("#tfSeg"), function () { renderTrans(); drawCurve(); });
+  var isOn = false;
+
+  function renderTrans() {
+    var prop = propSeg.get(), tf = tfSeg.get();
+    var dur = +WB.$("#dur").value, delay = +WB.$("#delay").value;
+    var tx = +WB.$("#tx").value, rot = +WB.$("#rot").value, sc = +WB.$("#sc").value / 100;
+
+    var box = WB.$("#tbox");
+    box.style.transitionProperty = prop;
+    box.style.transitionDuration = dur + "ms";
+    box.style.transitionDelay = delay + "ms";
+    box.style.transitionTimingFunction = tf;
+    box.style.setProperty("--tx", tx + "px");
+    box.style.setProperty("--ty", "96px");
+    box.style.setProperty("--rot", rot + "deg");
+    box.style.setProperty("--sc", sc);
+    box.style.setProperty("--br", "50%");
+
+    WB.$("#durVal").textContent = dur + "ms";
+    WB.$("#delayVal").textContent = delay + "ms";
+    WB.$("#txVal").textContent = tx;
+    WB.$("#rsVal").textContent = rot + "° / " + sc.toFixed(2);
+
+    WB.$("#tnote").innerHTML = "当前状态：<b>" + (isOn ? "状态 B（位移 + 变色 + 变圆）" : "状态 A（原位）") + "</b>　" +
+      "过渡属性：<b>" + prop + "</b>　时长 <b>" + dur + "ms</b>　延迟 <b>" + delay + "ms</b>";
+
+    var css = ".box {\n  transition-property: " + prop + ";\n  transition-duration: " + dur + "ms;\n" +
+      "  transition-timing-function: " + tf + ";\n  transition-delay: " + delay + "ms;\n}\n\n" +
+      ".box.on {\n  transform: translate(" + tx + "px, 96px) rotate(" + rot + "deg) scale(" + sc + ");\n  background: #f43f5e;\n  border-radius: 50%;\n}";
+    WB.code(WB.$("#codeTrans"), css, "css");
+
+    // 进度条：用同一条缓动曲线
+    var bar = WB.$("#progbar");
+    bar.style.transition = "none";
+    bar.style.width = isOn ? "100%" : "0";
+    void bar.offsetWidth;
+    bar.style.transition = "width " + dur + "ms " + tf + " " + delay + "ms";
+  }
+
+  WB.on(WB.$("#btnToggle"), "click", function () {
+    isOn = !isOn;
+    WB.$("#tbox").classList.toggle("on", isOn);
+    renderTrans();
+  });
+  WB.on(WB.$("#btnReplay"), "click", function () {
+    var box = WB.$("#tbox"), bar = WB.$("#progbar");
+    box.classList.remove("on");
+    bar.style.transition = "none"; bar.style.width = "0";
+    void box.offsetWidth;
+    setTimeout(function () {
+      box.classList.add("on");
+      isOn = true;
+      renderTrans();
+    }, 60);
+  });
+  ["dur", "delay", "tx", "rot", "sc"].forEach(function (id) {
+    WB.range(WB.$("#" + id), null, renderTrans);
+  });
+
+  /* ---- 贝塞尔曲线绘制 ---- */
+  var BEZ = {
+    "linear": [0, 0, 1, 1], "ease": [.25, .1, .25, 1], "ease-in": [.42, 0, 1, 1],
+    "ease-out": [0, 0, .58, 1], "ease-in-out": [.42, 0, .58, 1],
+    "cubic-bezier(.68,-.55,.27,1.55)": [.68, -.55, .27, 1.55]
+  };
+  function drawCurve() {
+    var cv = WB.$("#curve");
+    var dpr = window.devicePixelRatio || 1;
+    var W = cv.clientWidth || 620, H = 300;
+    cv.width = W * dpr; cv.height = H * dpr;
+    cv.style.height = H + "px";
+    var g = cv.getContext("2d");
+    g.setTransform(dpr, 0, 0, dpr, 0, 0);
+    g.clearRect(0, 0, W, H);
+
+    var padL = 44, padB = 34, padT = 26, padR = 26;
+    var w = W - padL - padR, h = H - padT - padB;
+    var side = Math.min(w, h);                 // 保持曲线图接近正方形，避免拉伸失真
+    var offX = padL + (w - side) / 2;
+    var p = BEZ[tfSeg.get()] || BEZ.linear;
+    var minY = Math.min(0, p[1], p[3]), maxY = Math.max(1, p[1], p[3]);
+
+    function X(v) { return offX + v * side; }
+    function Y(v) { return padT + h - (v - minY) / (maxY - minY) * h; }
+
+    // 网格
+    g.strokeStyle = "rgba(148,163,184,.18)";
+    g.lineWidth = 1;
+    for (var i = 0; i <= 4; i++) {
+      g.beginPath(); g.moveTo(X(i / 4), padT); g.lineTo(X(i / 4), padT + h); g.stroke();
+      g.beginPath(); g.moveTo(offX, padT + h - i / 4 * h); g.lineTo(offX + side, padT + h - i / 4 * h); g.stroke();
+    }
+    // 参考直线
+    g.strokeStyle = "rgba(148,163,184,.35)";
+    g.setLineDash([4, 4]);
+    g.beginPath(); g.moveTo(X(0), Y(0)); g.lineTo(X(1), Y(1)); g.stroke();
+    g.setLineDash([]);
+
+    // 控制点手柄
+    g.strokeStyle = "rgba(167,139,250,.55)";
+    g.beginPath(); g.moveTo(X(0), Y(0)); g.lineTo(X(p[0]), Y(p[1])); g.stroke();
+    g.beginPath(); g.moveTo(X(1), Y(1)); g.lineTo(X(p[2]), Y(p[3])); g.stroke();
+
+    // 曲线
+    var grad = g.createLinearGradient(padL, 0, padL + w, 0);
+    grad.addColorStop(0, "#3b82f6"); grad.addColorStop(1, "#06b6d4");
+    g.strokeStyle = grad; g.lineWidth = 3;
+    g.beginPath();
+    g.moveTo(X(0), Y(0));
+    g.bezierCurveTo(X(p[0]), Y(p[1]), X(p[2]), Y(p[3]), X(1), Y(1));
+    g.stroke();
+
+    // 端点
+    [[0, 0], [1, 1], [p[0], p[1]], [p[2], p[3]]].forEach(function (pt, i) {
+      g.fillStyle = i < 2 ? "#3b82f6" : "#a78bfa";
+      g.beginPath(); g.arc(X(pt[0]), Y(pt[1]), i < 2 ? 5 : 4, 0, 7); g.fill();
+    });
+
+    // 轴标签
+    g.fillStyle = "rgba(148,163,184,.75)";
+    g.font = "11px ui-monospace, monospace";
+    g.fillText("时间 →", offX + side - 46, padT + h + 22);
+    g.save();
+    g.translate(14, padT + 44);
+    g.rotate(-Math.PI / 2);
+    g.fillText("进度", 0, 0);
+    g.restore();
+    g.fillText("0", offX - 14, padT + h + 4);
+    g.fillText("1", offX + side - 3, padT + h + 18);
+    g.fillStyle = "rgba(155,168,183,.9)";
+    g.font = "12px ui-monospace, monospace";
+    g.fillText("cubic-bezier(" + p.join(", ") + ")", offX + 6, padT - 8);
+  }
+  window.addEventListener("resize", function () { if (!WB.$("#vTrans").hidden) drawCurve(); });
+
+  /* ================= 视图 2：缓动赛跑 ================= */
+  var RACERS = ["linear", "ease", "ease-in", "ease-out", "ease-in-out", "cubic-bezier(.68,-.55,.27,1.55)", "steps(6, end)"];
+  WB.$("#tracks").innerHTML = RACERS.map(function (r, i) {
+    return '<div class="track"><span class="nm">' + r.replace("cubic-bezier", "bezier").replace("steps(6, end)", "steps(6)") + "</span>" +
+      '<div class="lane"><span class="ball" data-i="' + i + '" style="--dist:.9">' + (i + 1) + '</span><span class="finish"></span></div></div>';
+  }).join("");
+
+  WB.$("#raceTable").innerHTML = RACERS.map(function (r, i) {
+    return "<tr><td>" + (i + 1) + "</td><td>" + r + "</td></tr>";
+  }).join("");
+
+  var finished = [];
+  var balls = WB.$$("#tracks .ball");
+  var lanes = WB.$$("#tracks .lane");
+
+  balls.forEach(function (b, i) {
+    b.addEventListener("transitionend", function (e) {
+      if (e.propertyName !== "transform") return;
+      finished.push({ i: i + 1, name: RACERS[i] });
+      if (finished.length === balls.length) {
+        WB.$("#raceMsg").innerHTML = "到达顺序：" + finished.map(function (f, k) {
+          return "<b>" + (k + 1) + ".</b> " + f.name.replace("cubic-bezier", "bezier");
+        }).join("　");
+      }
+    });
+  });
+
+  function startRace() {
+    var dur = +WB.$("#raceDur").value;
+    finished = [];
+    WB.$("#raceMsg").textContent = "比赛中…";
+    balls.forEach(function (b) {
+      b.style.transition = "none";
+      b.style.transform = "translateX(0px)";
+    });
+    void WB.$("#tracks").offsetWidth;
+    balls.forEach(function (b, i) {
+      var dist = Math.max(10, lanes[i].clientWidth - b.offsetWidth - 6);
+      b.style.transition = "transform " + dur + "ms " + RACERS[i];
+      b.style.transform = "translateX(" + dist + "px)";
+    });
+  }
+  WB.on(WB.$("#btnRace"), "click", startRace);
+  WB.range(WB.$("#raceDur"), null, function (v) { WB.$("#raceDurVal").textContent = v + "ms"; });
+  startRace();
+
+  /* ================= 视图 3：keyframes ================= */
+  var kfSeg = WB.seg(WB.$("#kfSeg"), function () { renderKf(); });
+  var iterSeg = WB.seg(WB.$("#iterSeg"), function () { renderKf(); });
+  var dirSeg = WB.seg(WB.$("#dirSeg"), function () { renderKf(); });
+  var kfTfSeg = WB.seg(WB.$("#kfTfSeg"), function () { renderKf(); });
+
+  var KF = {
+    bounce: {
+      css: "@keyframes bounce {\n  0%, 100% { transform: translateY(0); }\n  50% { transform: translateY(-58px); }\n}",
+      stops: ["0%", "50%", "100%"]
+    },
+    pulse: {
+      css: "@keyframes pulse {\n  0%, 100% { transform: scale(1); opacity: 1; }\n  50% { transform: scale(1.3); opacity: .55; }\n}",
+      stops: ["0%", "50%", "100%"]
+    },
+    spin: {
+      css: "@keyframes spin {\n  from { transform: rotate(0deg); }\n  to { transform: rotate(360deg); }\n}",
+      stops: ["0%", "25%", "50%", "75%", "100%"]
+    },
+    slide: {
+      css: "@keyframes slide {\n  0% { transform: translateX(-72px); }\n  50% { transform: translateX(72px) scale(.8); }\n  100% { transform: translateX(-72px); }\n}",
+      stops: ["0%", "50%", "100%"]
+    }
+  };
+
+  var styleEl = document.createElement("style");
+  document.head.appendChild(styleEl);
+
+  function renderKf() {
+    var name = kfSeg.get(), dur = +WB.$("#kfDur").value;
+    var iter = iterSeg.get(), dir = dirSeg.get(), tf = kfTfSeg.get();
+
+    styleEl.textContent = KF[name].css;
+    var box = WB.$("#kfbox");
+    box.style.animation = "none";
+    void box.offsetWidth;
+    box.style.animation = name + " " + dur + "ms " + tf + " 0s " + iter + " " + dir + " both";
+
+    WB.$("#kfDurVal").textContent = (dur / 1000).toFixed(1) + "s";
+    WB.$("#kfstrip").innerHTML = KF[name].stops.map(function (s) { return "<div>" + s + "</div>"; }).join("");
+
+    WB.code(WB.$("#codeKf"),
+      KF[name].css + "\n\n.box {\n  animation-name: " + name + ";\n  animation-duration: " + dur + "ms;\n" +
+      "  animation-timing-function: " + tf + ";\n  animation-iteration-count: " + iter + ";\n" +
+      "  animation-direction: " + dir + ";\n  animation-fill-mode: both;\n}", "css");
+  }
+  WB.range(WB.$("#kfDur"), null, renderKf);
+
+  WB.on(WB.$("#flipper"), "click", function () {
+    WB.$("#flipper").classList.toggle("flip");
+  });
+
+  /* ================= 自测 ================= */
+  WB.quiz(WB.$("#quiz"), [
+    {
+      q: "关于 <code>transition</code>，说法正确的是？",
+      opts: ["它会自动播放并循环", "必须有状态变化才会触发", "它能定义多个关键帧", "它只能用于 hover"],
+      a: 1,
+      why: "transition 是「两个状态之间的补间」，需要触发条件（hover、切换类名、JS 改样式）。自动播放与多关键帧是 animation 的能力。"
+    },
+    {
+      q: "<code>transition: transform .4s ease-in-out .1s</code> 中，.1s 表示？",
+      opts: ["总时长", "延迟开始的时间", "每次循环的间隔", "缓动强度"],
+      a: 1,
+      why: "简写顺序是「属性 时长 缓动 延迟」。前一个时间是 duration，后一个是 delay。写成两个时间时，第一个是时长，第二个是延迟。"
+    },
+    {
+      q: "想让动画「去而复返、永不停歇」，iteration-count 与 direction 该怎么配？",
+      opts: ['infinite + normal', 'infinite + alternate', '1 + alternate', '3 + reverse'],
+      a: 1,
+      why: "alternate 让每次循环反向播放，配合 infinite 就能形成来回往复；normal 每次都会跳回起点，看起来会「闪一下」。"
+    },
+    {
+      q: "下面的做法中，哪些对性能更友好（多选）",
+      type: "multi",
+      opts: ["用 transform: translateX() 做位移", "用 left/top 做位移动画", "用 opacity 做淡入淡出", "动画元素上加 will-change: transform"],
+      a: [0, 2, 3],
+      why: "transform 与 opacity 可以走合成层，不触发布局重排。left/top 每帧都会引发 layout + paint，长动画容易掉帧。will-change 要慎用（会提前占用显存）。"
+    }
+  ], P);
+
+  renderTrans();
+  renderKf();
+  setTimeout(drawCurve, 60);
+  WB.initCopy();
+})();
+</script>
+</body>
+</html>

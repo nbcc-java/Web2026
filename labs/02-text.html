@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>项目2 · 文本与列表：内容怎么组织</title>
+<link rel="stylesheet" href="assets/base.css">
+<style>
+  .preview-doc {
+    background: var(--bg-2); border: 1px solid var(--line);
+    border-radius: var(--r-s); padding: 20px 22px; min-height: 190px;
+    font-size: 15px; color: var(--tx);
+  }
+  .preview-doc > :first-child { margin-top: 0; }
+  .preview-doc h1 { font-size: 2em; margin: .5em 0 .4em; }
+  .preview-doc h2 { font-size: 1.5em; margin: .6em 0 .35em; }
+  .preview-doc h3 { font-size: 1.25em; margin: .6em 0 .3em; }
+  .preview-doc h4 { font-size: 1.05em; margin: .6em 0 .3em; }
+  .preview-doc h5 { font-size: .92em; margin: .6em 0 .3em; }
+  .preview-doc h6 { font-size: .8em; margin: .6em 0 .3em; color: var(--tx-2); }
+  .preview-doc p { margin: .5em 0; color: var(--tx-2); }
+  .preview-doc ul, .preview-doc ol { padding-left: 1.6em; margin: .4em 0; color: var(--tx-2); }
+  .preview-doc li { margin: .18em 0; }
+  .preview-doc dl { margin: .4em 0; }
+  .preview-doc dt { font-weight: 600; color: var(--tx); }
+  .preview-doc dd { margin: .1em 0 .5em 1.4em; color: var(--tx-2); font-size: .94em; }
+  .preview-doc blockquote {
+    margin: .6em 0; padding: .3em 0 .3em 14px;
+    border-left: 3px solid var(--line-2); color: var(--tx-2); font-style: italic;
+  }
+  .preview-doc mark { background: color-mix(in srgb, var(--warn) 40%, transparent); color: var(--tx); padding: 0 3px; border-radius: 3px; }
+  .preview-doc code { background: var(--panel-2); padding: 1px 5px; border-radius: 4px; font-size: .88em; color: var(--acc-2); }
+  .preview-doc hr { border: 0; border-top: 1px dashed var(--line-2); margin: 1em 0; }
+  .preview-doc sub, .preview-doc sup { font-size: .72em; }
+
+  /* 语义标注模式 */
+  .sem-on .preview-doc [data-sem] { position: relative; outline: 1px dashed var(--acc); outline-offset: 3px; border-radius: 3px; }
+  .sem-on .preview-doc [data-sem]::after {
+    content: attr(data-sem); position: absolute; top: -19px; left: -1px;
+    font-family: var(--mono); font-size: 10px; letter-spacing: .02em;
+    padding: 1px 6px; border-radius: 99px; white-space: nowrap;
+    background: var(--acc); color: #fff;
+  }
+
+  .ann {
+    margin-top: 14px; padding: 13px 15px; border-radius: var(--r-s);
+    background: var(--panel-2); border-left: 3px solid var(--acc); font-size: 13px; color: var(--tx-2);
+    min-height: 84px;
+  }
+  .ann b { color: var(--tx); }
+  .ann .k { font-family: var(--mono); color: var(--acc-2); }
+
+  /* 字号标尺 */
+  .scale { display: grid; gap: 5px; }
+  .scale .row-s { display: grid; grid-template-columns: 34px 1fr 52px; align-items: center; gap: 8px; font-family: var(--mono); font-size: 11px; color: var(--tx-3); }
+  .scale .bar { height: 16px; border-radius: 4px; background: linear-gradient(90deg, var(--acc), var(--acc-2)); }
+  .scale .bar span { display: block; height: 100%; border-radius: 4px; }
+
+  .tagchips { display: flex; flex-wrap: wrap; gap: 4px; }
+  .tagchips button {
+    font-family: var(--mono); font-size: 11.5px; padding: 4px 9px;
+    border-radius: 6px; border: 1px solid var(--line); background: var(--panel-2);
+    color: var(--tx-2); cursor: pointer; transition: .14s;
+  }
+  .tagchips button:hover { color: var(--tx); border-color: var(--line-2); }
+  .tagchips button.on { background: var(--acc); border-color: var(--acc); color: #fff; font-weight: 600; }
+
+  .stage-body[hidden] { display: none; }
+  .panel [data-view] { display: none; }
+  .panel [data-view].show { display: block; }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <a class="back" href="index.html">← 目录</a>
+  <div class="crumb">项目 <b>02</b> / 10 · 文本与列表</div>
+  <div class="spacer"></div>
+  <div class="pager">
+    <a href="01-structure.html">← 上一讲</a>
+    <a href="03-image-link.html">下一讲 →</a>
+  </div>
+  <button class="icon-btn" id="themeBtn" title="切换主题">☀</button>
+</header>
+
+<main class="layout">
+  <section class="stage">
+    <div class="stage-head">
+      <span class="dot"></span>舞台 · 动手区
+      <div class="spacer"></div>
+      <div class="seg" id="viewSeg">
+        <button data-v="tag" class="on">文本标签</button>
+        <button data-v="list">列表生成器</button>
+        <button data-v="scale">字号标尺</button>
+      </div>
+    </div>
+
+    <div class="stage-body" id="vTag">
+      <div class="preview-doc" id="tagPreview"></div>
+      <div class="ann" id="tagAnn"></div>
+    </div>
+
+    <div class="stage-body" id="vList" hidden>
+      <div class="preview-doc" id="listPreview"></div>
+    </div>
+
+    <div class="stage-body" id="vScale" hidden>
+      <div class="scale" id="scaleBox"></div>
+      <div class="ann" style="margin-top:18px">
+        <b>浏览器默认字号：16px。</b>h1~h6 的默认大小是相对父元素的 <span class="k">em</span> 倍数，所以把它们的默认样式清掉（<span class="k">margin:0;font-size:1em</span>）之后，六个标题看起来完全一样 —— 说明它们的差别本来只是「默认样式」，真正不可替代的是<span class="k">层级语义</span>。
+      </div>
+    </div>
+
+    <div class="stage-foot">
+      <span id="footHint">点右侧标签，舞台上立刻出现效果与代码</span>
+    </div>
+  </section>
+
+  <aside class="panel">
+    <div data-view="tag" class="show">
+      <div class="pgroup">
+        <div class="plabel">选择标签<span class="val" id="curTag">strong</span></div>
+        <div class="tagchips" id="tagChips"></div>
+      </div>
+      <div class="pgroup">
+        <div class="plabel">观察视角</div>
+        <label class="switch"><span>标注语义（屏读器视角）</span><input type="checkbox" id="chSem" checked><i></i></label>
+      </div>
+      <div class="pgroup">
+        <div class="plabel">当前代码</div>
+        <div class="code-wrap"><pre class="code" id="codeTag"></pre></div>
+      </div>
+      <div class="pgroup">
+        <div class="tip"><div><code>&lt;b&gt;</code> 与 <code>&lt;strong&gt;</code> 长得一样、<code>&lt;i&gt;</code> 与 <code>&lt;em&gt;</code> 也一样。差别只在语义：前者只是"视觉上变粗/变斜"，后者是"这段内容重要/需要重读"。</div></div>
+      </div>
+    </div>
+
+    <div data-view="list">
+      <div class="pgroup">
+        <div class="plabel">列表类型</div>
+        <div class="seg" id="typeSeg">
+          <button data-v="ul" class="on">ul 无序</button>
+          <button data-v="ol">ol 有序</button>
+          <button data-v="dl">dl 定义</button>
+        </div>
+      </div>
+      <div class="pgroup">
+        <div class="plabel">项目符号<span class="val" id="markerVal">disc</span></div>
+        <div class="seg" id="markerSeg"></div>
+      </div>
+      <div class="pgroup">
+        <div class="plabel">嵌套层级<span class="val" id="depthVal">1</span></div>
+        <input type="range" id="depth" min="1" max="3" value="1" step="1">
+      </div>
+      <div class="pgroup" id="startGroup" style="display:none">
+        <div class="plabel">起始序号<span class="val" id="startVal">1</span></div>
+        <input type="range" id="start" min="1" max="10" value="1" step="1">
+      </div>
+      <div class="pgroup">
+        <div class="plabel">当前代码</div>
+        <div class="code-wrap"><pre class="code" id="codeList"></pre></div>
+      </div>
+    </div>
+
+    <div data-view="scale">
+      <div class="pgroup">
+        <div class="plabel">标题默认样式</div>
+        <table class="kv">
+          <tr><th>标签</th><th>默认字号</th></tr>
+          <tr><td>h1</td><td>2em / 32px</td></tr>
+          <tr><td>h2</td><td>1.5em / 24px</td></tr>
+          <tr><td>h3</td><td>1.17em / 18.7px</td></tr>
+          <tr><td>h4</td><td>1em / 16px</td></tr>
+          <tr><td>h5</td><td>.83em / 13.3px</td></tr>
+          <tr><td>h6</td><td>.67em / 10.7px</td></tr>
+        </table>
+      </div>
+      <div class="pgroup">
+        <div class="tip warn"><div><b>常见错误</b> 为了字号好看而跳过层级：h1 直接跳到 h4。语义上这叫"标题断层"，屏读器和搜索引擎都会困惑。要改大小就写 CSS。</div></div>
+      </div>
+    </div>
+  </aside>
+</main>
+
+<section class="learn">
+  <div class="card">
+    <h3>文本标签速查</h3>
+    <table class="kv">
+      <tr><th>标签</th><th>语义 / 用途</th></tr>
+      <tr><td>strong</td><td>重要内容（默认加粗）</td></tr>
+      <tr><td>b</td><td>无强调的加粗（关键词、产品名）</td></tr>
+      <tr><td>em</td><td>重音强调，语气加重（默认斜体）</td></tr>
+      <tr><td>i</td><td>无强调的斜体（术语、外语、图标字体）</td></tr>
+      <tr><td>mark</td><td>与当前上下文相关的标记，像荧光笔</td></tr>
+      <tr><td>del / ins</td><td>删除线 / 下划线，表示文档修改痕迹</td></tr>
+      <tr><td>small</td><td>附属细则：版权、免责声明</td></tr>
+      <tr><td>sub / sup</td><td>下标 H<sub>2</sub>O / 上标 x<sup>2</sup></td></tr>
+      <tr><td>code / kbd</td><td>代码片段 / 键盘输入</td></tr>
+      <tr><td>blockquote</td><td>引用段落（长引用）</td></tr>
+      <tr><td>br / hr</td><td>换行 / 主题分隔线，都是空元素</td></tr>
+    </table>
+  </div>
+
+  <div class="card">
+    <h3>列表的三条硬规则</h3>
+    <p><b>1. 只能装 li。</b><code>ul</code>、<code>ol</code> 的直接子元素只能是 <code>li</code>（可以嵌 <code>ul</code>，但要放在 <code>li</code> 里面）。</p>
+    <p><b>2. 改项目符号用 CSS。</b><code>list-style-type: disc | circle | square | none</code>，有序列表还有 <code>decimal / lower-alpha / upper-roman</code>。</p>
+    <p><b>3. 定义列表是成对的。</b><code>dt</code> 是术语，<code>dd</code> 是解释，一个 dt 可以配多个 dd。</p>
+    <div class="tip"><div><b>动手任务</b> 用嵌套 ul 做一个"课程目录"：3 个一级模块，每个模块下 2 个课时，并把一级的项目符号换成方块。</div></div>
+  </div>
+
+  <div class="card" style="grid-column:1/-1">
+    <h3>单元自测 · 4 题</h3>
+    <div class="quiz" id="quiz"></div>
+  </div>
+</section>
+
+<nav class="footnav">
+  <a href="01-structure.html"><small>← 上一讲 01</small><b>网页初体验：标签与文档结构</b></a>
+  <a class="next" href="03-image-link.html"><small>下一讲 03</small><b>图像与超链接：资源怎么找 →</b></a>
+</nav>
+
+<script src="assets/ui.js"></script>
+<script>
+(function () {
+  var P = "p2";
+
+  /* ================= 视图切换 ================= */
+  WB.seg(WB.$("#viewSeg"), function (v) {
+    WB.$("#vTag").hidden = v !== "tag";
+    WB.$("#vList").hidden = v !== "list";
+    WB.$("#vScale").hidden = v !== "scale";
+    WB.$$(".panel [data-view]").forEach(function (el) { el.classList.toggle("show", el.dataset.view === v); });
+    WB.$("#footHint").textContent = v === "tag" ? "点右侧标签，舞台上立刻出现效果与代码"
+      : v === "list" ? "拖动层级滑块，观察 li 里如何再嵌套一层列表"
+      : "六个标题的默认字号是相对 16px 计算出来的";
+  });
+
+  /* ================= 视图 1：文本标签 ================= */
+  var TAGS = {
+    h1: { html: "网页设计与制作", code: "<h1>网页设计与制作</h1>", sem: "一级标题", d: "整个页面最重要的标题，一个页面通常只有一个。默认 2em 加粗。" },
+    h2: { html: "第一章 HTML 基础", code: "<h2>第一章 HTML 基础</h2>", sem: "二级标题", d: "章节标题。层级用于组织结构，不用于调字号。" },
+    h3: { html: "1.1 标签语法", code: "<h3>1.1 标签语法</h3>", sem: "三级标题", d: "小节标题。h4~h6 继续往下分，不要为了字号小而跳级。" },
+    p: { html: "HTML 是网页的骨架，CSS 负责外观，JavaScript 负责行为。", code: "<p>HTML 是网页的骨架，CSS 负责外观，JavaScript 负责行为。</p>", sem: "段落", d: "最常用的文本容器。段落之间浏览器会自动留出上下外边距。" },
+    strong: { html: "考试时间：<strong>本周五 14:00</strong>，不得迟到。", code: "<p>考试时间：<strong>本周五 14:00</strong>，不得迟到。</p>", sem: "重要", d: "表示内容重要性。屏读器会加重语气，搜索引擎也会把它当成关键词信号。" },
+    b: { html: "这款相机型号是 <b>X100V</b>。", code: "<p>这款相机型号是 <b>X100V</b>。</p>", sem: "仅加粗", d: "只想要粗体外观、没有强调语义时用。视觉与 strong 完全一样。" },
+    em: { html: "我<em>真的</em>没有迟到。", code: "<p>我<em>真的</em>没有迟到。</p>", sem: "重音", d: "语气上的强调，读出来会加重。默认斜体。" },
+    i: { html: "学名 <i>Homo sapiens</i>。", code: "<p>学名 <i>Homo sapiens</i>。</p>", sem: "仅斜体", d: "术语、外语、图标字体用它。视觉与 em 一样，语义不同。" },
+    mark: { html: "请<mark>携带学生证</mark>入场。", code: "<p>请<mark>携带学生证</mark>入场。</p>", sem: "标记", d: "像荧光笔划重点，表示与当前情境相关。默认黄底。" },
+    del: { html: "课程费用：<del>299 元</del> 199 元", code: "<p>课程费用：<del>299 元</del> 199 元</p>", sem: "已删除", d: "表示内容被删除，常见于价格调整、文档修订。" },
+    ins: { html: "上课地点：<ins>实训楼 302</ins>", code: "<p>上课地点：<ins>实训楼 302</ins></p>", sem: "新增", d: "表示内容是新插入的。del 与 ins 常成对出现，表达修订痕迹。" },
+    small: { html: "© 2026 智润童心教研组 · 版权所有", code: "<p><small>© 2026 智润童心教研组 · 版权所有</small></p>", sem: "细则", d: "附属细则、免责声明、版权信息，默认缩小到 0.8em。" },
+    sub: { html: "水的化学式：H<sub>2</sub>O", code: "<p>水的化学式：H<sub>2</sub>O</p>", sem: "下标", d: "化学式、数学下标。" },
+    sup: { html: "勾股定理：a<sup>2</sup> + b<sup>2</sup> = c<sup>2</sup>", code: "<p>勾股定理：a<sup>2</sup> + b<sup>2</sup> = c<sup>2</sup></p>", sem: "上标", d: "幂次、脚注编号。" },
+    code: { html: "设置宽度用 <code>width: 100%</code>。", code: "<p>设置宽度用 <code>width: 100%</code>。</p>", sem: "代码", d: "行内代码片段，默认等宽字体。整段代码用 pre 包 code。" },
+    blockquote: { html: "结构决定内容，样式只是表达。", code: "<blockquote>结构决定内容，样式只是表达。</blockquote>", sem: "引用", d: "引用他人观点。cite 属性可写来源网址。" },
+    br: { html: "第一行<br>第二行", code: "<p>第一行<br>第二行</p>", sem: "换行", d: "强制换行，空元素。只用于诗句、地址这类「换行本身有含义」的场景，不要拿它排版。" },
+    hr: { html: "上文结束<hr>下文开始", code: "<p>上文结束</p><hr><p>下文开始</p>", sem: "分隔", d: "主题间的分隔线，空元素。语义是「段落级的话题转换」。" }
+  };
+
+  var chips = WB.$("#tagChips");
+  chips.innerHTML = Object.keys(TAGS).map(function (k) {
+    return '<button data-t="' + k + '"' + (k === "strong" ? ' class="on"' : "") + ">" + k + "</button>";
+  }).join("");
+
+  var cur = "strong";
+  function renderTag() {
+    var t = TAGS[cur];
+    WB.$("#tagPreview").innerHTML = t.html;
+    WB.$("#tagAnn").innerHTML = "<b>&lt;" + cur + "&gt; · " + t.sem + "</b><br>" + t.d;
+    // 语义标注
+    var map = { strong: "重要", b: "仅外观", em: "重音", i: "仅外观", mark: "标记", del: "删除", ins: "新增", small: "细则", sub: "下标", sup: "上标", code: "代码", blockquote: "引用", br: "换行", hr: "分隔", h1: "h1 标题", h2: "h2 标题", h3: "h3 标题", p: "段落" };
+    WB.$$("#tagPreview *").forEach(function (el) {
+      var n = el.tagName.toLowerCase();
+      if (map[n]) el.setAttribute("data-sem", map[n]);
+    });
+    var sem = WB.$("#chSem").checked;
+    WB.$("#vTag").classList.toggle("sem-on", sem && !!map[cur]);
+    WB.code(WB.$("#codeTag"), t.code, "html");
+    WB.$("#curTag").textContent = cur;
+    WB.$("#footHint").textContent = sem ? "虚线框与角标显示的是「语义角色」，不是样式" : "已关闭语义标注，看到的就是纯视觉效果";
+  }
+
+  chips.addEventListener("click", function (e) {
+    var b = e.target.closest("button[data-t]");
+    if (!b) return;
+    cur = b.dataset.t;
+    WB.$$("button", chips).forEach(function (x) { x.classList.toggle("on", x === b); });
+    renderTag();
+  });
+  WB.switch(WB.$("#chSem"), renderTag);
+
+  /* ================= 视图 2：列表生成器 ================= */
+  var DATA = ["HTML 结构与语义", "CSS 布局与美化", "JavaScript 交互"];
+  var typeSeg = WB.seg(WB.$("#typeSeg"), function () { buildMarker(); renderList(); });
+  var markerSeg = null;
+
+  function buildMarker() {
+    var type = typeSeg.get();
+    var opts = type === "ol"
+      ? [["decimal", "数字"], ["lower-alpha", "小写字母"], ["upper-roman", "罗马数字"], ["none", "无"]]
+      : [["disc", "实心圆"], ["circle", "空心圆"], ["square", "方块"], ["none", "无"]];
+    var box = WB.$("#markerSeg");
+    box.innerHTML = opts.map(function (o, i) {
+      return '<button data-v="' + o[0] + '"' + (i === 0 ? ' class="on"' : "") + ">" + o[1] + "</button>";
+    }).join("");
+    markerSeg = WB.seg(box, function () { renderList(); });
+    WB.$("#startGroup").style.display = type === "ol" ? "block" : "none";
+  }
+
+  function build(depth, indent) {
+    var type = typeSeg.get();
+    var tag = type === "dl" ? "dl" : type;
+    var pad = new Array(indent + 1).join("  ");
+    var attr = "";
+    var marker = markerSeg ? markerSeg.get() : (type === "ol" ? "decimal" : "disc");
+    if (type === "ol" && +WB.$("#start").value > 1) attr += ' start="' + WB.$("#start").value + '"';
+    if (marker && marker !== (type === "ol" ? "decimal" : "disc")) attr += ' style="list-style-type:' + marker + '"';
+    var lines = [pad + "<" + tag + attr + ">"];
+    DATA.forEach(function (t, i) {
+      if (type === "dl") {
+        lines.push(pad + "  <dt>" + t + "</dt>");
+        lines.push(pad + "  <dd>" + t.split(" ")[0] + " 相关的内容说明</dd>");
+      } else if (depth > 1 && i === 1) {
+        lines.push(pad + "  <li>" + t);
+        lines = lines.concat(build(depth - 1, indent + 2));
+        lines.push(pad + "  </li>");
+      } else {
+        lines.push(pad + "  <li>" + t + "</li>");
+      }
+    });
+    lines.push(pad + "</" + tag + ">");
+    return lines;
+  }
+
+  function renderList() {
+    var lines = build(+WB.$("#depth").value, 0);
+    var code = lines.join("\n");
+    WB.$("#listPreview").innerHTML = code;
+    WB.code(WB.$("#codeList"), code, "html");
+    WB.$("#depthVal").textContent = WB.$("#depth").value;
+    WB.$("#markerVal").textContent = markerSeg ? markerSeg.get() : "-";
+    WB.$("#startVal").textContent = WB.$("#start").value;
+    WB.$("#footHint").textContent = typeSeg.get() === "ul"
+      ? "嵌套列表必须写在 li 内部 —— 直接放在 ul 下是非法的"
+      : typeSeg.get() === "ol"
+        ? "有序列表会自动编号，start 可以让它从任意数字开始"
+        : "定义列表是 dt + dd 成对出现，一个 dt 可以配多个 dd";
+  }
+
+  WB.range(WB.$("#depth"), null, renderList);
+  WB.range(WB.$("#start"), null, renderList);
+
+  /* ================= 视图 3：字号标尺 ================= */
+  var HS = [["h1", 2], ["h2", 1.5], ["h3", 1.17], ["h4", 1], ["h5", .83], ["h6", .67]];
+  WB.$("#scaleBox").innerHTML = HS.map(function (h) {
+    return '<div class="row-s"><span>' + h[0] + '</span><div class="bar"><span style="width:' + (h[1] / 2 * 100) + '%"></span></div><span>' + Math.round(h[1] * 16) + "px</span></div>";
+  }).join("");
+
+  /* ================= 自测 ================= */
+  WB.quiz(WB.$("#quiz"), [
+    {
+      q: "想让一段文字「视觉变粗，但不表达任何重要性」，应该用？",
+      opts: ["&lt;strong&gt;", "&lt;b&gt;", "&lt;em&gt;", "&lt;mark&gt;"],
+      a: 1,
+      why: "b 只负责视觉加粗；strong 表示「重要」，会影响屏读器语气和搜索权重。同理 i 与 em：i 只是斜体外观，em 是语气重音。"
+    },
+    {
+      q: "下面哪段嵌套列表是合法的？",
+      opts: [
+        '<span class="mono">&lt;ul&gt;&lt;ul&gt;&lt;li&gt;A&lt;/li&gt;&lt;/ul&gt;&lt;/ul&gt;</span>',
+        '<span class="mono">&lt;ul&gt;&lt;li&gt;A&lt;ul&gt;&lt;li&gt;A1&lt;/li&gt;&lt;/ul&gt;&lt;/li&gt;&lt;/ul&gt;</span>',
+        '<span class="mono">&lt;ul&gt;&lt;li&gt;A&lt;/li&gt;&lt;ul&gt;&lt;li&gt;A1&lt;/li&gt;&lt;/ul&gt;&lt;/ul&gt;</span>',
+        '<span class="mono">&lt;ul&gt;&lt;li&gt;A&lt;p&gt;A1&lt;/p&gt;&lt;/li&gt;&lt;/ul&gt;</span>'
+      ],
+      a: 1,
+      why: "ul 的直接子元素只能是 li。要嵌套，必须把子列表放进某个 li 的内部（B）。C 把 ul 放成了 ul 的兄弟子元素，非法；D 中间夹了 p 也不是列表。"
+    },
+    {
+      q: "把列表前面的圆点换成方块，正确做法是？",
+      opts: ['在 ul 上写 list-style="square"', 'CSS：list-style-type: square', '用 &lt;li type="square"&gt;', '用 CSS：list-style-image: square'],
+      a: 1,
+      why: "项目符号属于「表现」，必须用 CSS 的 list-style-type 控制。HTML 的 type 属性在 ul 上早已废弃，list-style-image 要的是图片地址而不是关键字。"
+    },
+    {
+      q: "关于 h1~h6，说法正确的是（多选）",
+      type: "multi",
+      opts: ["它们表示内容层级，不是字号档位", "可以为了字号好看而跳过层级", "默认字号是相对 16px 的 em 倍数", "一个页面里 h1 通常只出现一次"],
+      a: [0, 2, 3],
+      why: "标题的职责是组织大纲。跳级（h1 → h4）会破坏大纲结构，屏读器用户和搜索引擎都难以理解。要改视觉大小，永远用 CSS。"
+    }
+  ], P);
+
+  buildMarker();
+  renderTag();
+  renderList();
+  WB.$("#footHint").textContent = "点右侧标签，舞台上立刻出现效果与代码";
+  WB.initCopy();
+})();
+</script>
+</body>
+</html>

@@ -149,6 +149,23 @@ body{font-family:"PingFang SC","Microsoft YaHei","Helvetica Neue",Arial,sans-ser
 .resume .ra{color:#7fd7e4;font-weight:800}
 .resume[hidden]{display:none}
 
+/* ---------- Labs band ---------- */
+.labsband{max-width:1240px;margin:-20px auto 0;padding:0 24px;position:relative;z-index:3}
+.labsband>a{display:flex;align-items:center;gap:16px;text-decoration:none;color:#eaf6fb;
+  background:linear-gradient(115deg,#0d2b3a,#123f52 52%,#0e6f88);
+  border:1px solid rgba(127,215,228,.3);border-radius:16px;padding:16px 20px;
+  box-shadow:0 22px 44px -30px rgba(8,50,70,.95);transition:transform .2s,box-shadow .2s,border-color .2s;
+  flex-wrap:wrap}
+.labsband>a:hover{transform:translateY(-2px);border-color:#7fd7e4;
+  box-shadow:0 26px 50px -28px rgba(8,50,70,1)}
+.labsband .ico{flex:none;width:42px;height:42px;border-radius:12px;display:grid;place-items:center;
+  background:rgba(127,215,228,.14);border:1px solid rgba(127,215,228,.34)}
+.labsband .tx{flex:1 1 220px;min-width:0}
+.labsband .tx b{display:block;font-size:15.5px;font-weight:800;letter-spacing:.02em;color:#fff;margin-bottom:3px}
+.labsband .tx span{font-size:12.5px;color:#a9c9da;line-height:1.6}
+.labsband .go2{flex:none;font-size:13px;font-weight:700;color:#0d2b3a;background:#7fd7e4;
+  border-radius:999px;padding:8px 16px;white-space:nowrap}
+
 /* ---------- Chips ---------- */
 .chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px}
 .chip{display:inline-flex;align-items:center;gap:7px;cursor:pointer;font-family:inherit;
@@ -220,6 +237,12 @@ footer code{font-family:var(--mono);background:#fff;border:1px solid var(--line)
   .kbd{display:none}
   .search{max-width:none;flex:1 1 100%}
   .proj-h h2{font-size:17px}
+  .labsband{margin-top:-14px;padding:0 18px}
+  .labsband>a{padding:14px 16px;gap:12px}
+  .labsband .ico{width:36px;height:36px;border-radius:10px}
+  .labsband .tx b{font-size:14.5px}
+  .labsband .tx span{font-size:12px}
+  .labsband .go2{display:none}
 }
 </style>
 </head>
@@ -236,6 +259,7 @@ footer code{font-family:var(--mono);background:#fff;border:1px solid var(--line)
       <div class="stat"><b>__DEMO__</b><span>实时演示</span></div>
       <div class="stat"><b>__QUIZ__</b><span>随堂检测题</span></div>
       <div class="stat"><b>__UNITS__</b><span>PPTX 版本</span></div>
+      <div class="stat"><b>10</b><span>互动实验</span></div>
     </div>
     <div class="tools">
       <div class="search">
@@ -252,6 +276,22 @@ footer code{font-family:var(--mono);background:#fff;border:1px solid var(--line)
     </div>
   </div>
 </header>
+
+<div class="labsband">
+  <a href="labs/index.html" target="_blank" rel="noopener">
+    <span class="ico" aria-hidden="true">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#7fd7e4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="3.2"/>
+        <path d="M12 2.6v3.2M12 18.2v3.2M2.6 12h3.2M18.2 12h3.2M5.4 5.4l2.3 2.3M16.3 16.3l2.3 2.3M18.6 5.4l-2.3 2.3M7.7 16.3l-2.3 2.3"/>
+      </svg>
+    </span>
+    <span class="tx">
+      <b>互动实验台 · 10 讲可视化教程</b>
+      <span>拖拽合并单元格、旋转 3D 盒模型、拖动贝塞尔曲线、开一个迷你视口验证 vw —— 标签语法、盒模型、布局、表单、媒体、动画的规则都能亲手拨一遍。零依赖，断网双击即用。</span>
+    </span>
+    <span class="go2">进入实验台 →</span>
+  </a>
+</div>
 
 <main id="list">
 __SECTIONS__

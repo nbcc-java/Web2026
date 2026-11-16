@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>项目8 · 页面布局：从文档流到 Flex</title>
+<link rel="stylesheet" href="assets/base.css">
+<style>
+  .flowstage {
+    border: 1px dashed var(--line-2); border-radius: var(--r-s);
+    padding: 16px; background: var(--bg-2); font-size: 13.5px; color: var(--tx-2); line-height: 2;
+  }
+  .dbox {
+    background: linear-gradient(135deg, #3b82f6, #06b6d4);
+    color: #fff; font-size: 12px; font-family: var(--mono);
+    padding: 8px 12px; border-radius: 5px; width: 150px; height: 52px;
+    transition: display .2s;
+  }
+  .readfacts { display: grid; gap: 6px; margin-top: 14px; font-size: 12.5px; color: var(--tx-2); }
+  .readfacts div { padding: 7px 11px; border-radius: 7px; background: var(--panel-2); border: 1px solid var(--line); }
+  .readfacts b { color: var(--acc-2); font-family: var(--mono); }
+
+  /* ---- 浮动 ---- */
+  .floatstage {
+    border: 1px dashed var(--warn); border-radius: var(--r-s);
+    padding: 12px; background: var(--bg-2); font-size: 13px; color: var(--tx-2);
+    position: relative;
+  }
+  .floatstage::after {
+    content: "父容器"; position: absolute; right: 8px; bottom: 6px;
+    font-size: 10px; color: var(--warn); font-family: var(--mono);
+  }
+  .fbox {
+    width: 120px; height: 78px; border-radius: 6px; margin: 4px;
+    background: linear-gradient(135deg, #f59e0b, #f97316);
+    color: #fff; font-size: 11.5px; font-family: var(--mono);
+    display: grid; place-items: center; text-align: center;
+  }
+  .floatstage p { margin: 0; }
+  .floatstage p::before { content: ""; display: block; }
+
+  /* ---- 定位 ---- */
+  .posstage {
+    position: relative; height: 300px; border: 1px solid var(--line);
+    border-radius: var(--r-s); background: var(--bg-2); overflow: auto;
+    contain: paint; /* 让 fixed 相对这个"视口"定位，便于演示 */
+  }
+  .posstage .inner { height: 620px; padding: 14px; }
+  .posstage .label { font-family: var(--mono); font-size: 11px; color: var(--tx-3); }
+  .posbox {
+    width: 108px; height: 56px; border-radius: 6px; display: grid; place-items: center;
+    background: linear-gradient(135deg, #a78bfa, #6366f1); color: #fff;
+    font-size: 11.5px; font-family: var(--mono); z-index: 2;
+    transition: top .15s, left .15s;
+  }
+  .posbox.abs { position: absolute; }
+
+  .stack { position: relative; height: 130px; margin-top: 14px; }
+  .stack .s {
+    position: absolute; width: 140px; height: 78px; border-radius: 8px;
+    display: flex; align-items: flex-start; justify-content: flex-start;
+    padding: 7px 9px; box-sizing: border-box;
+    font-family: var(--mono); font-size: 10px; text-align: left;
+    color: #fff; transition: .25s; border: 1px solid rgba(255,255,255,.25);
+  }
+  .stack .s1 { left: 0; top: 0; background: linear-gradient(135deg, #3b82f6, #2563eb); }
+  .stack .s2 { left: 46px; top: 26px; background: linear-gradient(135deg, #f59e0b, #f97316); }
+  .stack .s3 { left: 92px; top: 52px; background: linear-gradient(135deg, #22c55e, #16a34a); }
+
+  /* ---- Flex ---- */
+  .flexwrap {
+    border: 1px dashed var(--line-2); border-radius: var(--r-s);
+    padding: 12px; background: var(--bg-2); min-height: 230px; display: flex;
+  }
+  .fitem {
+    background: linear-gradient(135deg, #3b82f6, #06b6d4); color: #fff;
+    font-family: var(--mono); font-size: 12px; border-radius: 6px;
+    padding: 14px 10px; text-align: center; min-width: 54px;
+    box-shadow: 0 2px 10px rgba(59, 130, 246, .25);
+  }
+  .fitem:nth-child(2) { background: linear-gradient(135deg, #a78bfa, #8b5cf6); }
+  .fitem:nth-child(3) { background: linear-gradient(135deg, #f59e0b, #f97316); }
+  .fitem:nth-child(4) { background: linear-gradient(135deg, #22c55e, #16a34a); }
+  .fitem span { font-size: 10px; opacity: .8; display: block; }
+
+  .stage-body[hidden] { display: none; }
+  .panel [data-view] { display: none; }
+  .panel [data-view].show { display: block; }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <a class="back" href="index.html">← 目录</a>
+  <div class="crumb">项目 <b>08</b> / 10 · 页面布局</div>
+  <div class="spacer"></div>
+  <div class="pager">
+    <a href="07-box-model.html">← 上一讲</a>
+    <a href="09-media.html">下一讲 →</a>
+  </div>
+  <button class="icon-btn" id="themeBtn" title="切换主题">☀</button>
+</header>
+
+<main class="layout">
+  <section class="stage">
+    <div class="stage-head">
+      <span class="dot"></span>舞台 · 动手区
+      <div class="spacer"></div>
+      <div class="seg" id="viewSeg">
+        <button data-v="flow" class="on">文档流</button>
+        <button data-v="float">浮动</button>
+        <button data-v="pos">定位</button>
+        <button data-v="flex">Flex</button>
+      </div>
+    </div>
+
+    <!-- 文档流 -->
+    <div class="stage-body" id="vFlow">
+      <div class="flowstage">
+        普通文字开始，<span class="dbox" id="dbox">我是一个盒子 150×52</span>后面继续跟着文字，用来观察这个盒子是独占一行、还是和文字挤在同一行里。
+      </div>
+      <div class="readfacts" id="flowFacts"></div>
+    </div>
+
+    <!-- 浮动 -->
+    <div class="stage-body" id="vFloat" hidden>
+      <div class="floatstage" id="floatstage">
+        <div class="fbox" id="fbox">float 盒</div>
+        <p id="ftext">
+          浮动元素会脱离正常的文档流，被推到父容器的左边或右边，后面的行内内容（这段文字）会环绕它排列。
+          这是 2005 年前后最主流的布局手段 —— 用浮动做多栏、用 clear 收尾。浮动本身是为「文字环绕图片」设计的，
+          后来被拿来排版，才产生了那么多清除浮动的黑科技。
+        </p>
+      </div>
+      <div class="readfacts" id="floatFacts"></div>
+    </div>
+
+    <!-- 定位 -->
+    <div class="stage-body" id="vPos" hidden>
+      <div class="posstage" id="posstage">
+        <div class="inner">
+          <div class="label">↓ 这是一个可滚动的"视口"，滚动它观察 fixed / sticky 的差别</div>
+          <div style="height:26px"></div>
+          <div class="posbox" id="posbox">目标盒子</div>
+          <div style="height:40px"></div>
+          <p class="label">内容区……继续往下滚，sticky 会在到达阈值时"粘住"，fixed 则完全不动。</p>
+          <div style="height:420px"></div>
+          <div class="label">滚动到底部了</div>
+        </div>
+      </div>
+
+      <div class="plabel" style="margin:16px 0 6px">z-index 层叠：谁在上层</div>
+      <div class="stack">
+        <div class="s s1" id="z1">蓝 z-index: 1</div>
+        <div class="s s2" id="z2">橙 z-index: 2</div>
+        <div class="s s3" id="z3">绿 z-index: 3</div>
+      </div>
+    </div>
+
+    <!-- Flex -->
+    <div class="stage-body" id="vFlex" hidden>
+      <div class="flexwrap" id="flexbox">
+        <div class="fitem">1<span>item</span></div>
+        <div class="fitem">2<span>item</span></div>
+        <div class="fitem">3<span>item</span></div>
+        <div class="fitem">4<span>item</span></div>
+      </div>
+      <div class="readfacts" id="flexFacts"></div>
+    </div>
+
+    <div class="stage-foot"><span id="footHint">切换 display 取值，观察盒子是独占一行还是和别人挤在一起</span></div>
+  </section>
+
+  <aside class="panel">
+    <!-- flow -->
+    <div data-view="flow" class="show">
+      <div class="pgroup">
+        <div class="plabel">display</div>
+        <div class="seg" id="dispSeg" style="flex-direction:column">
+          <button data-v="block" class="on">block 块级</button>
+          <button data-v="inline">inline 行内</button>
+          <button data-v="inline-block">inline-block 行内块</button>
+          <button data-v="none">none 隐藏</button>
+        </div>
+      </div>
+      <div class="pgroup">
+        <div class="plabel">当前 CSS</div>
+        <div class="code-wrap"><pre class="code" id="codeFlow"></pre></div>
+      </div>
+      <div class="pgroup">
+        <div class="tip"><div><b>文档流</b> 浏览器默认的排版规则：块级元素从上往下堆，行内元素从左往右排，塞满一行就换行。</div></div>
+      </div>
+    </div>
+
+    <!-- float -->
+    <div data-view="float">
+      <div class="pgroup">
+        <div class="plabel">float</div>
+        <div class="seg" id="floatSeg">
+          <button data-v="none" class="on">none</button>
+          <button data-v="left">left</button>
+          <button data-v="right">right</button>
+        </div>
+      </div>
+      <div class="pgroup">
+        <div class="plabel">文字清除浮动</div>
+        <div class="seg" id="clearSeg">
+          <button data-v="none" class="on">clear:none</button>
+          <button data-v="both">clear:both</button>
+        </div>
+      </div>
+      <div class="pgroup">
+        <label class="switch"><span>父容器创建 BFC（overflow:hidden）</span><input type="checkbox" id="chBFC"><i></i></label>
+        <div class="tip warn" style="margin-top:8px"><div id="collapseTip">父容器高度会被浮动元素"漏掉"—— 这就是所谓的高度塌陷。</div></div>
+      </div>
+      <div class="pgroup">
+        <div class="plabel">当前 CSS</div>
+        <div class="code-wrap"><pre class="code" id="codeFloat"></pre></div>
+      </div>
+    </div>
+
+    <!-- pos -->
+    <div data-view="pos">
+      <div class="pgroup">
+        <div class="plabel">position</div>
+        <div class="seg" id="posSeg" style="flex-direction:column">
+          <button data-v="static" class="on">static 默认</button>
+          <button data-v="relative">relative 相对自身</button>
+          <button data-v="absolute">absolute 相对定位祖先</button>
+          <button data-v="fixed">fixed 相对视口</button>
+          <button data-v="sticky">sticky 粘性</button>
+        </div>
+      </div>
+      <div class="pgroup">
+        <div class="plabel">偏移 top<span class="val" id="topVal">20</span></div>
+        <input type="range" id="offTop" min="-40" max="140" value="20">
+      </div>
+      <div class="pgroup">
+        <div class="plabel">偏移 left<span class="val" id="leftVal">20</span></div>
+        <input type="range" id="offLeft" min="-40" max="200" value="20">
+      </div>
+      <div class="pgroup">
+        <div class="plabel">层叠顺序</div>
+        <div class="seg" id="zSeg">
+          <button data-v="123" class="on">1 · 2 · 3</button>
+          <button data-v="321">3 · 2 · 1</button>
+        </div>
+      </div>
+      <div class="pgroup">
+        <div class="plabel">当前 CSS</div>
+        <div class="code-wrap"><pre class="code" id="codePos"></pre></div>
+      </div>
+    </div>
+
+    <!-- flex -->
+    <div data-view="flex">
+      <div class="pgroup">
+        <div class="plabel">flex-direction</div>
+        <div class="seg" id="dirSeg">
+          <button data-v="row" class="on">row</button>
+          <button data-v="column">column</button>
+          <button data-v="row-reverse">row-rev</button>
+        </div>
+      </div>
+      <div class="pgroup">
+        <div class="plabel">justify-content（主轴）</div>
+        <div class="seg" id="justSeg" style="flex-direction:column">
+          <button data-v="flex-start" class="on">flex-start</button>
+          <button data-v="center">center</button>
+          <button data-v="flex-end">flex-end</button>
+          <button data-v="space-between">space-between</button>
+          <button data-v="space-around">space-around</button>
+          <button data-v="space-evenly">space-evenly</button>
+        </div>
+      </div>
+      <div class="pgroup">
+        <div class="plabel">align-items（交叉轴）</div>
+        <div class="seg" id="alignSeg">
+          <button data-v="stretch" class="on">stretch</button>
+          <button data-v="flex-start">start</button>
+          <button data-v="center">center</button>
+          <button data-v="flex-end">end</button>
+        </div>
+      </div>
+      <div class="pgroup">
+        <div class="plabel">gap<span class="val" id="gapVal">10</span></div>
+        <input type="range" id="gap" min="0" max="40" value="10">
+      </div>
+      <div class="pgroup">
+        <div class="plabel">第 2 项 flex-grow<span class="val" id="growVal">0</span></div>
+        <input type="range" id="grow" min="0" max="6" value="0">
+      </div>
+      <div class="pgroup">
+        <div class="plabel">当前 CSS</div>
+        <div class="code-wrap"><pre class="code" id="codeFlex"></pre></div>
+      </div>
+    </div>
+  </aside>
+</main>
+
+<section class="learn">
+  <div class="card">
+    <h3>布局的四代方案</h3>
+    <p><b>1. 文档流</b>：块级上下堆、行内左右排。一切布局的起点。</p>
+    <p><b>2. 浮动 float</b>：让元素靠左/靠右、文字环绕。做多栏布局要配 clear 或 BFC，否则父容器高度塌陷。</p>
+    <p><b>3. 定位 position</b>：脱离文档流做层叠。absolute 找「最近的 position 不为 static 的祖先」当参照物，没有就找页面。</p>
+    <p><b>4. Flex / Grid</b>：现代布局。一维用 Flex，二维用 Grid，几乎可以替代前三种方案做页面结构。</p>
+    <div class="tip"><div><b>选型口诀</b> 排列元素用 Flex，划分区域用 Grid；只有「徽标角标」「浮层弹窗」这类才用 position:absolute。</div></div>
+  </div>
+
+  <div class="card">
+    <h3>四个高频坑</h3>
+    <table class="kv">
+      <tr><td>高度塌陷</td><td>子元素全浮动 → 父元素高度为 0。解法：overflow:hidden 或 clearfix</td></tr>
+      <tr><td>absolute 参照物</td><td>祖先没写 position，盒子会跑到页面左上角</td></tr>
+      <tr><td>z-index 失效</td><td>只对定位元素（或 flex 子项）生效，且受父级层叠上下文限制</td></tr>
+      <tr><td>sticky 不粘</td><td>祖先有 overflow:hidden/auto 时会失效；必须设 top/bottom 阈值</td></tr>
+    </table>
+    <p class="muted" style="margin-top:10px">另外：<code>display:none</code> 的元素不占位、不渲染；<code>visibility:hidden</code> 只是看不见，位置还在。</p>
+  </div>
+
+  <div class="card" style="grid-column:1/-1">
+    <h3>单元自测 · 4 题</h3>
+    <div class="quiz" id="quiz"></div>
+  </div>
+</section>
+
+<nav class="footnav">
+  <a href="07-box-model.html"><small>← 上一讲 07</small><b>盒子模型：3D 拆开看</b></a>
+  <a class="next" href="09-media.html"><small>下一讲 09</small><b>媒体应用：音视频与嵌入 →</b></a>
+</nav>
+
+<script src="assets/ui.js"></script>
+<script>
+(function () {
+  var P = "p8";
+
+  WB.seg(WB.$("#viewSeg"), function (v) {
+    ["flow", "float", "pos", "flex"].forEach(function (k) {
+      WB.$("#v" + k.charAt(0).toUpperCase() + k.slice(1)).hidden = (k !== v);
+    });
+    WB.$$(".panel [data-view]").forEach(function (el) { el.classList.toggle("show", el.dataset.view === v); });
+    WB.$("#footHint").textContent =
+      v === "flow" ? "切换 display 取值，观察盒子是独占一行还是和别人挤在一起" :
+      v === "float" ? "切换 float，看文字如何环绕；再试试关掉 BFC，看父容器高度塌陷" :
+      v === "pos" ? "切换 position 并拖动偏移滑块，滚动视口观察 fixed 与 sticky" :
+      "切换 justify-content 与 align-items，看主轴与交叉轴的区别";
+    if (v === "flow") renderFlow();
+    if (v === "float") renderFloat();
+    if (v === "pos") renderPos();
+    if (v === "flex") renderFlex();
+  });
+
+  /* ================= 文档流 ================= */
+  var dispSeg = WB.seg(WB.$("#dispSeg"), function () { renderFlow(); });
+
+  function renderFlow() {
+    var d = dispSeg.get();
+    var box = WB.$("#dbox");
+    box.style.display = d;
+    var facts = {
+      block: ["独占一行，前后都换行", "width / height 生效，默认撑满父容器", "可以设 margin: auto 水平居中"],
+      inline: ["和文字排在同一行，塞满才换行", "width / height 无效（尺寸由内容决定）", "垂直方向的 margin 不占位"],
+      "inline-block": ["像文字一样排在行内，塞满才换行", "width / height 生效 —— 既要并排又要定尺寸时用它", "基线对齐会让底部出现几像素缝隙（可加 vertical-align）"],
+      none: ["元素完全不渲染，不占任何位置", "屏读器也读不到（无障碍上等价于删除）", "想「看不见但占位」用 visibility: hidden"]
+    };
+    WB.$("#flowFacts").innerHTML = facts[d].map(function (t) { return "<div>· " + t + "</div>"; }).join("");
+    WB.code(WB.$("#codeFlow"), ".box {\n  display: " + d + ";\n  width: 150px;\n  height: 52px;\n}", "css");
+  }
+
+  /* ================= 浮动 ================= */
+  var floatSeg = WB.seg(WB.$("#floatSeg"), function () { renderFloat(); });
+  var clearSeg = WB.seg(WB.$("#clearSeg"), function () { renderFloat(); });
+
+  function renderFloat() {
+    var f = floatSeg.get();
+    var c = clearSeg.get();
+    var bfc = WB.$("#chBFC").checked;
+    var box = WB.$("#fbox");
+    var p = WB.$("#ftext");
+    var stage = WB.$("#floatstage");
+
+    box.style.float = f;
+    p.style.clear = c;
+    stage.style.overflow = bfc ? "hidden" : "visible";
+
+    var h = stage.offsetHeight;
+    var stageH = stage.clientHeight;
+    WB.$("#floatFacts").innerHTML =
+      "<div>float: <b>" + f + "</b>　clear: <b>" + c + "</b>　父容器 BFC: <b>" + (bfc ? "开启" : "关闭") + "</b></div>" +
+      "<div>父容器当前高度：<b>" + h + "px</b> —— " +
+      (f === "none" ? "没有浮动，父容器正常包裹内容" :
+        bfc ? "BFC 让父容器形成独立的块，能包住浮动元素，高度恢复正常" :
+          "浮动元素脱离了文档流，父容器「看不见」它，高度被漏掉（高度塌陷）") + "</div>";
+
+    WB.$("#collapseTip").innerHTML = bfc
+      ? "已创建 BFC：父容器重新包裹浮动元素，边框不再塌成一条线。"
+      : "父容器高度会被浮动元素「漏掉」—— 这就是高度塌陷。勾选上面的 BFC 开关修复它。";
+
+    var css = ".box {\n  float: " + f + ";\n  width: 120px;\n  height: 78px;\n}\n\n.text {\n  clear: " + c + ";\n}" +
+      (bfc ? "\n\n.parent {\n  overflow: hidden; /* 创建 BFC */\n}" : "");
+    WB.code(WB.$("#codeFloat"), css, "css");
+  }
+  WB.switch(WB.$("#chBFC"), renderFloat);
+
+  /* ================= 定位 ================= */
+  var posSeg = WB.seg(WB.$("#posSeg"), function () { renderPos(); });
+  var zSeg = WB.seg(WB.$("#zSeg"), function () { renderZ(); });
+
+  function renderPos() {
+    var p = posSeg.get();
+    var t = +WB.$("#offTop").value, l = +WB.$("#offLeft").value;
+    var box = WB.$("#posbox");
+    box.style.position = p;
+    box.style.top = t + "px";
+    box.style.left = l + "px";
+    WB.$("#topVal").textContent = t;
+    WB.$("#leftVal").textContent = l;
+
+    var notes = {
+      static: "默认值。top / left 完全无效，元素老老实实待在文档流里。",
+      relative: "相对「自己原来的位置」偏移，原来的空间还留着 —— 它没有脱离文档流。常用来做 absolute 的定位参照物。",
+      absolute: "脱离文档流，相对「最近的 position 不为 static 的祖先」定位。这里的参照物就是这个带边框的滚动区。",
+      fixed: "相对视口固定，滚动页面时不动。常用于吸顶导航、客服按钮。（此处的滚动区被当作视口）",
+      sticky: "在滚动到阈值（top 值）前表现像 relative，到达后像 fixed 粘住，离开父容器范围就解除。"
+    };
+    WB.$("#footHint").textContent = notes[p];
+    WB.code(WB.$("#codePos"),
+      ".box {\n  position: " + p + ";\n  top: " + t + "px;\n  left: " + l + "px;\n  z-index: 2;\n}", "css");
+  }
+
+  function renderZ() {
+    var order = zSeg.get();
+    var vals = order === "123" ? [1, 2, 3] : [3, 2, 1];
+    WB.$("#z1").style.zIndex = vals[0];
+    WB.$("#z2").style.zIndex = vals[1];
+    WB.$("#z3").style.zIndex = vals[2];
+    WB.$("#z1").textContent = "蓝 z-index: " + vals[0];
+    WB.$("#z2").textContent = "橙 z-index: " + vals[1];
+    WB.$("#z3").textContent = "绿 z-index: " + vals[2];
+  }
+
+  WB.range(WB.$("#offTop"), null, renderPos);
+  WB.range(WB.$("#offLeft"), null, renderPos);
+
+  /* ================= Flex ================= */
+  var dirSeg = WB.seg(WB.$("#dirSeg"), function () { renderFlex(); });
+  var justSeg = WB.seg(WB.$("#justSeg"), function () { renderFlex(); });
+  var alignSeg = WB.seg(WB.$("#alignSeg"), function () { renderFlex(); });
+
+  function renderFlex() {
+    var dir = dirSeg.get(), just = justSeg.get(), align = alignSeg.get();
+    var gap = +WB.$("#gap").value, grow = +WB.$("#grow").value;
+    var box = WB.$("#flexbox");
+    box.style.flexDirection = dir;
+    box.style.justifyContent = just;
+    box.style.alignItems = align;
+    box.style.gap = gap + "px";
+    WB.$$(".fitem", box)[1].style.flexGrow = grow;
+
+    WB.$("#gapVal").textContent = gap;
+    WB.$("#growVal").textContent = grow;
+
+    var axis = (dir === "column" || dir === "column-reverse") ? "垂直" : "水平";
+    var cross = axis === "水平" ? "垂直" : "水平";
+    WB.$("#flexFacts").innerHTML =
+      "<div>主轴方向：<b>" + axis + "</b>（flex-direction: " + dir + "）→ justify-content 管的是" + axis + "方向的分布</div>" +
+      "<div>交叉轴：<b>" + cross + "</b> → align-items 管的是" + cross + "方向的对齐</div>" +
+      "<div>第 2 项 flex-grow: <b>" + grow + "</b> " + (grow > 0 ? "→ 它会吃掉所有剩余空间" : "→ 不参与分配剩余空间") + "</div>";
+
+    var css = ".container {\n  display: flex;\n  flex-direction: " + dir + ";\n  justify-content: " + just + ";\n  align-items: " + align + ";\n  gap: " + gap + "px;\n}" +
+      (grow > 0 ? "\n\n.item:nth-child(2) {\n  flex-grow: " + grow + ";\n}" : "");
+    WB.code(WB.$("#codeFlex"), css, "css");
+  }
+  WB.range(WB.$("#gap"), null, renderFlex);
+  WB.range(WB.$("#grow"), null, renderFlex);
+
+  /* ================= 自测 ================= */
+  WB.quiz(WB.$("#quiz"), [
+    {
+      q: "要让 <code>span</code> 既能和文字排在同一行、又能设置宽高，应该用？",
+      opts: ["display: block", "display: inline", "display: inline-block", "position: absolute"],
+      a: 2,
+      why: "inline 不能设宽高；block 会独占一行；inline-block 兼得两者。现代写法也可以直接用 flex 容器来排。"
+    },
+    {
+      q: "子元素全部 float:left 后，父容器高度变成 0。最直接的修复是？",
+      opts: ["给子元素加 clear:both", "给父容器加 overflow:hidden 或 clearfix", "给父容器设 height:100%", "把 float 改成 display:inline"],
+      a: 1,
+      why: "浮动让子元素脱离文档流，父容器算不出高度（高度塌陷）。让父容器创建 BFC（overflow:hidden / display:flow-root）或在末尾加清除浮动元素即可。clear 加在子元素上解决的是「环绕」问题，不是塌陷。"
+    },
+    {
+      q: "<code>position:absolute</code> 的元素，参照物是？",
+      opts: ["永远是浏览器窗口", "最近的 position 不为 static 的祖先元素", "它的父元素，无论父元素是否定位", "body 元素"],
+      a: 1,
+      why: "absolute 会向上找第一个「已定位」（relative/absolute/fixed/sticky）的祖先作为包含块；一个都找不到时，才相对初始包含块（页面）定位。这就是「角标跑到页面左上角」的原因。"
+    },
+    {
+      q: "Flex 容器里，<code>justify-content</code> 控制的是什么？",
+      opts: ["交叉轴上的对齐", "主轴上的分布方式", "子元素能否换行", "子元素的间距"],
+      a: 1,
+      why: "justify-content 管主轴（由 flex-direction 决定），align-items 管交叉轴，flex-wrap 控制换行，gap 控制间距。"
+    }
+  ], P);
+
+  renderFlow();
+  renderFloat();
+  renderPos();
+  renderZ();
+  renderFlex();
+  WB.$("#footHint").textContent = "切换 display 取值，观察盒子是独占一行还是和别人挤在一起";
+  WB.initCopy();
+})();
+</script>
+</body>
+</html>
